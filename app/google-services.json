@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "973214169451",
+    "firebase_url": "https://project-3918384647339420127.firebaseio.com",
+    "project_id": "project-3918384647339420127",
+    "storage_bucket": "project-3918384647339420127.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973214169451:android:af6b934458b50997",
+        "android_client_info": {
+          "package_name": "atlow.chemi.mymada"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "973214169451-v7u4qs6rq39s2b1ggoehf6v42p4utsmd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "atlow.chemi.mymada",
+            "certificate_hash": "4a73eaf04107dac3d7668775b1ef63f839db7deb"
+          }
+        },
+        {
+          "client_id": "973214169451-kuefu5586r7k8j4naeje9h0bu2co2pcn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBI6bv6jJM1Ei32GcCiSTxMAto2AKv_7ww"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "973214169451-kuefu5586r7k8j4naeje9h0bu2co2pcn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
