@@ -1,0 +1,139 @@
+package atlow.chemi.mymada;
+
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.service.notification.NotificationListenerService;
+import android.service.notification.StatusBarNotification;
+import android.widget.Toast;
+
+@TargetApi(Build.VERSION_CODES.KITKAT)
+public class NotificationService extends NotificationListenerService {
+    protected String text;
+    Context context;
+    public static boolean isNotificationAccessEnabled = false;
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        isNotificationAccessEnabled = false;
+        ContentResolver contentResolver = getApplicationContext().getContentResolver();
+        String enabledNotificationListeners = android.provider.Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
+        String packageName = getApplicationContext().getPackageName();
+        if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
+                    .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+    @Override
+    public IBinder onBind(Intent intent) {
+        IBinder iBinder = super.onBind(intent);
+        isNotificationAccessEnabled = true;
+        return iBinder;
+    }
+    @Override
+    public boolean onUnbind(Intent intent)   {
+        boolean onUnbind = super.onUnbind(intent);
+        isNotificationAccessEnabled = false;
+        return onUnbind;
+    }
+    @Override
+    public void onNotificationPosted(StatusBarNotification statusBarNotification) {
+        SharedPreferences sp = getSharedPreferences("Settings", 0);
+        Boolean Mapp = sp.getBoolean("Mapp", false);
+        Toast.makeText(context, "Yayy! i got thoe notification!", Toast.LENGTH_SHORT).show();
+        if (Mapp && (statusBarNotification.getPackageName().contains("mdaemergency") || statusBarNotification.getPackageName().equals("atlow.mymadaadmin"))) {
+            Bundle extras = statusBarNotification.getNotification().extras;
+            String pack = statusBarNotification.getPackageName();
+            String ticker = "";
+            try {
+                ticker = statusBarNotification.getNotification().tickerText.toString();
+            }catch (Exception e)    {
+                ticker = "";
+            }
+            String title = extras.getString("android.title");
+            try {
+                if (extras.getCharSequence("android.text") != null)
+                text = extras.getCharSequence("android.text").toString();
+                else
+                    text = "תקלה";
+            }catch (Exception e)  {
+                text = "\nתקלה!";
+            }
+            Intent intent = new Intent("MADA_APP");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("pack", pack);
+            intent.putExtra("ticker", ticker);
+            intent.putExtra("title", title);
+            intent.putExtra("text", text);
+            if (title != null) {
+                if (title.contains("*אירוע חדש*")) {
+                    if(text.contains("אירוע חדש"))
+                        intent.putExtra("callT",1);
+                    else if(text.contains("הודעת קבוצת"))
+                        intent.putExtra("callT",2);
+                    else if(text.contains("הודעת צוות"))
+                        intent.putExtra("callT",3);
+                    else
+                        intent.putExtra("callT", 1);
+                    String time = title.replace("*אירוע חדש*", "");
+                    intent.putExtra("time", time);
+                    GrobootRec.madasApp(statusBarNotification.getNotification().contentIntent);
+                    sendBroadcast(intent);
+                }else if (title.contains("*הודעה מנהלתית חדשה*"))   {
+                    intent.putExtra("callT", 4);
+                    String time = title.replace("*הודעה מנהלתית חדשה*", "");
+                    intent.putExtra("time", time);
+                    GrobootRec.madasApp(statusBarNotification.getNotification().contentIntent);
+                    sendBroadcast(intent);
+                }
+            } else {
+                GrobootRec.madasApp(statusBarNotification.getNotification().contentIntent);
+                sendBroadcast(intent);
+            }
+        }
+    }
+    @Override
+    public void onNotificationRemoved(StatusBarNotification statusBarNotification)  {
+        //nothing yet;
+    }
+
+
+    @Override
+    @TargetApi(Build.VERSION_CODES.N)
+    public void onListenerConnected() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            getActiveNotifications();
+        }
+    }
+
+    @Override
+    @TargetApi(Build.VERSION_CODES.N)
+    public void onListenerDisconnected() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Notification listener disconnected - requesting rebind
+            requestRebind(new ComponentName(this, NotificationListenerService.class));
+        }
+    }
+}

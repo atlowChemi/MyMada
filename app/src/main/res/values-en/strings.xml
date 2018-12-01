@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MADA reports</string>
+    <string name="Fna">First name</string>
+    <string name="HN">Patient form</string>
+    <string name="HT">Bill</string>
+    <string name="Lna">Family name</string>
+    <string name="Minf">Call info</string>
+    <string name="Mrec">approve receiving</string>
+    <string name="SUM">Amount</string>
+    <string name="TversionNumber">Version number: %1$s.\nThe app was created by the \"AtlowApps\" team. all rights are reserved to Chemi@low and Itiel atlow.\nWe thank Yossi Cassoutoת Yochai Benita and Shalom Sacks for all theire help.\n\nThe application was built by MADA volunteers in order to help with existing actions, and to create new abilities in order to make life easier for the volunteers.\n\nIn any case of an error or a problem, or if you\'ve got a question or a request for us, you may contact us via the contact page, and we will do our best to respond A.S.A.P.\n\nTha application is not an official MDA app. the Implications of the usage are of the users only.</string>
+    <string name="aQ">Volunteer 1</string>
+    <string name="bQ">Volunteer 2</string>
+    <string name="cQ">Volunteer 3</string>
+    <string name="action_settings">Settings</string>
+    <string name="address">Call address</string>
+    <string name="ambN">AMB. number</string>
+    <string name="code">Medical code</string>
+    <string name="contactUs">Contact us</string>
+    <string name="Mhac">Dictate forms</string>
+    <string name="dialog_help">In order for the app to recognize emergency calls from the official MADA app, it needs permission to read the notifications.\nTo do that, you need to click \"ok\" and in the window that will open, find the \"mada reports\" and enable it.</string>
+    <string name="dialog_no">not now</string>
+    <string name="dialog_yes">allow notification reading</string>
+    <string name="driverQ">Driver</string>
+    <string name="enjoy">Enjoy the shift!</string>
+    <string name="from">your email address</string>
+    <string name="hello_world">Form dictation</string>
+    <string name="info">About the app</string>
+    <string name="mailBT">write youe message here</string>
+    <string name="name">name</string>
+    <string name="notM">You\'re an active volunteer and you see this window?\nContact us and we will solve the problem.</string>
+    <string name="pref_default_shabatT">6</string>
+    <string name="passH">Write the code here</string>
+    <string name="visa">Visa number</string>
+    <string name="notMada">It seems to us yoyu are not a MADA volunteer.\nIn order for the app to work on this phone, the official MADA app instaled.\nIf the MADA app is installed, try disconnecting and reconnecting and then try again.\nEnjoy the app!</string>
+    <string name="pref_description_Maenable_off">MADA app recognition off.</string>
+    <string name="pref_description_Maenable_on">MADA app recognition on.</string>
+    <string name="pref_description_app_on">The sound played on new call, will be the sound you pick.</string>
+    <string name="pref_description_apr_off">The message will be sent immediately with no delay.</string>
+    <string name="pref_description_apr_on">Before message is sent, you\'ll be asked to approve it.</string>
+    <string name="pref_description_enable_off">SMS recognition off.</string>
+    <string name="pref_description_enable_on">SMS recognition on.</string>
+    <string name="pref_description_loop_off">Notification will play once.</string>
+    <string name="pref_description_newWin_off">When new call arrives, a pop-up won\'t be fired.</string>
+    <string name="pref_description_newWin_on">When new call arrives, a pop-up will be fired.</string>
+    <string name="pref_description_not_off">When new call arrives, a notification won\'t be fired.</string>
+    <string name="pref_description_not_on">When new call arrives, a notification will be fired.</string>
+    <string name="pref_description_ride_off">A new call will join the old notifications.</string>
+    <string name="pref_description_ride_on">A new call will over-ride old notifications.</string>
+    <string name="pref_description_ringtone_off">Sound on new call is off.</string>
+    <string name="pref_description_ringtone_on">Sound on new call is on.</string>
+    <string name="pref_description_shabat_off">Notification will close only if clicked</string>
+    <string name="pref_description_vibrate_off">Vibrate is off.</string>
+    <string name="pref_header_general">Alertr type</string>
+    <string name="pref_header_more">more</string>
+    <string name="pref_header_notifications">notification settings</string>
+    <string name="pref_header_notifictzia">emergency call notifications</string>
+    <string name="pref_header_sending">dictation settings</string>
+    <string name="pref_ringtone_silent">silent</string>
+    <string name="pref_title_Maenable">recognize calls through MADA app</string>
+    <string name="pref_title_app">Pick a custom sound</string>
+    <string name="pref_title_enable">recognize emergency calls</string>
+    <string name="pref_title_loop">Snooze (night mode)</string>
+    <string name="pref_title_newWin">pop-up window at new call</string>
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+    <string name="pref_title_ride">over-ride old notifications</string>
+    <string name="pref_title_ringtone">sound alert</string>
+    <string name="pref_title_shabat">auto-stop</string>
+    <string name="pref_title_shabatT">Delay before auto-stop (seconds)</string>
+    <string name="pref_title_vibrate">vibrate</string>
+    <string name="ret">Cancel</string>
+    <string name="send">send</string>
+    <string name="subjectT">message subject</string>
+    <string name="suc">please approve before sending</string>
+    <string name="succ">send</string>
+    <string name="tQ">ID number</string><string name="teamE">You can send in up to 3 volunteers and a driver.\nthe Information sent is the name and the ID.
+\nIn order to send info of a volunteer, you need to check the check-box by his row first.
+\nEnjoy your shift!</string>
+    <string name="teamN">volunteer name</string>
+    <string name="teamT">ID:</string>
+    <string name="test_beep">Fake emergncy call</string>
+    <string name="title_activity_code_c">Code unblock</string>
+    <string name="title_activity_contact">Contact us</string>
+    <string name="title_activity_dialog_parent">Notification reading approval</string>
+    <string name="title_activity_help_page">explanations</string>
+    <string name="title_activity_home_page">Home page</string>
+    <string name="title_activity_info">Info</string>
+    <string name="title_activity_privacy">Privacy policy</string>
+    <string name="title_activity_main2">Ambulance team dictation</string>
+    <string name="title_activity_main_mebu">Home page</string>
+    <string name="title_activity_msgaprove">Message approval</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_sms_res">New message</string>
+    <string name="pickC">Pick a medical code</string>
+    <string name="pref_title_not">notification at new call</string>
+    <string name="pref_title_apr">Review message before sending</string>
+    <string name="pref_description_vibrate_on">Vibrate is on.</string>
+    <string name="pref_description_shabat_on">Notification will auto-stop.</string>
+    <string name="pref_description_app_off">The sound played on new call, is the default.</string>
+    <string name="pref_description_loop_on">Notification will loop till stopped.</string>
+    <string name="pref_header_language">Language settings</string>
+    <string name="pref_description_lang">Pick the language of the app</string>
+    <string name="pref_title_lang">Pick language</string>
+    <string-array name="languages_entry">
+        <item>en</item>
+        <item>iw</item>
+    </string-array>
+    <string-array name="languages">
+        <item>English</item>
+        <item>עברית</item>
+    </string-array>
+    <string-array name="sleep_entry">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="sleep">
+        <item>day - sound &amp; vibration. night - sound &amp; vibration.</item>
+        <item>day - sound &amp; vibration. night - vibration.</item>
+        <item>day - sound &amp; vibration. night - silent.</item>
+        <item>day - vibration. night - sound &amp; vibration.</item>
+        <item>day - silent. night - sound &amp; vibration.</item>
+    </string-array>
+    <string-array name="ampm_entry">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="ampm">
+        <item>sound &amp; vibration</item>
+        <item>vibration</item>
+        <item>silent</item>
+    </string-array>
+    <string-array name="region_entry">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+    </string-array>
+    <string-array name="region">
+        <item>ירושלים</item>
+        <item>איילון</item>
+        <item>אשר</item>
+        <item>גלבוע</item>
+        <item>דן</item>
+        <item>ירדן</item>
+        <item>ירקון</item>
+        <item>כרמל</item>
+        <item>לכיש</item>
+        <item>נגב</item>
+        <item>שרון</item>
+        <item>מוקד 4</item>
+    </string-array>
+    <string name="goodVitalsOLD">%9$s vitals normal range:\npulse: %1$d-%2$d\nbreathing: %3$d-%4$d\nblood pressure: %5$d-%6$d/%7$d-%8$d</string>
+    <string-array name="goodVitals">
+        <item>adult</item>
+        <item>child</item>
+        <item>baby</item>
+    </string-array>
+    <string-array name="oxySizes">
+        <item>small oxygen tank</item>
+        <item>big oxygen tank</item>
+    </string-array>
+    <string name="Mcode">Medical codes</string>
+    <string name="langSwitched">The changes will take place next time you enter of the app.</string>
+    <string name="err">error</string>
+    <string name="ok">OK</string>
+    <string name="codeGood">The code has worked!\nThe app will now work!</string>
+    <string name="codeBad">The code is incorrect.!\nTry again!</string>
+    <string name="emailGood">The E-mail was sent.\nWe will try responding within a few hours.</string>
+    <string name="title_activity_main3">Custom Message</string>
+    <string name="toMoked">Type your message do the dispatch.</string>
+    <string name="customMsgErr">You did not type a message!</string>
+    <string name="msgSent">Message sent successfully!</string>
+    <string name="msgNotSent">Sending Failed, try again!</string>
+    <string name="smsCountChar">characters.</string>
+    <string name="smsCountMsg">messages.</string>
+    <string name="title_activity_moked_page">Send to dispatch </string>
+    <string name="callT3">Shift calls</string>
+    <string name="callT2">Group calls</string>
+    <string name="callT1">on-call calls</string>
+    <string name="callT4">Administrative messages</string>
+    <string name="findT1">Recognize "on-call" calls</string>
+    <string name="findT1_off">"on-call" calls recognition off</string>
+    <string name="findT1_on">"on-call" calls recognition on</string>
+    <string name="findT2">Recognize "team group" calls</string>
+    <string name="findT2_off">"team group" calls recognition off</string>
+    <string name="findT2_on">"team group" calls recognition on</string>
+    <string name="findT3">Recognize shift calls</string>
+    <string name="findT3_off">Shift calls recognition off</string>
+    <string name="findT3_on">Shift calls recognition on</string>
+    <string name="findT4">Recognize Administrative messages</string>
+    <string name="findT4_on">Administrative messages recognition on</string>
+    <string name="findT4_off">Administrative messages recognition off</string>
+    <string name="button_j">Dispatch reports</string>
+    <string name="button_i">Custom message</string>
+    <string name="button_g">oxygen calculator</string>
+    <string name="button_f">contractions timer</string>
+    <string name="button_d">CPR metronome</string>
+    <string name="button_a">Form dictation</string>
+    <string name="button_b">Team report</string>
+    <string name="TestCallApp">כונן</string>
+    <string name="TestCallMsg">דימוי קבלת מקרה כהודעת כונן או כהודעת משמרת?</string>
+    <string name="TestCallSMS">משמרת</string>
+    <string name="TEAMTest">הודעת צוות. 02:34 מונה:1325 כתובת: בדיקה!!! ירושלים בורוכוב. קוד הזנקה: מחלה מבוגר, קוד רפואי: חוסר הכרה</string>
+    <string name="CONANTest">אירוע חדש. 14:18 מונה:267 כתובת: בדיקה!!!ירושלים המ\"ג, קוד הזנקה: מחלה מבוגר, קוד רפואי: דום לב</string>
+    <string name="APP_reco_off">Message recognition off.</string>
+    <string name="search">search</string>
+    <string name="err_amb">please write ambulance number!</string>
+    <string name="err_fn">please write first name!</string>
+    <string name="err_hn">please write form number!</string>
+    <string name="err_ht">please write bill number!</string>
+    <string name="err_ln">please write family name!</string>
+    <string name="err_mc">please pick medical code!</string>
+    <string name="err_sum">please write bill amount!</string>
+    <string name="explain">In order to add a team member, press the + buttom on the bottom right.\nIn order to send the message to dispatch, press the left button.</string>
+    <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
+    <string name="callT">All the calls</string>
+    <string name="pref_title_cutA">separate alert settings</string>
+    <string name="pref_description_cutA_on">each call will alert by it\'s specific type.</string>
+    <string name="pref_description_cutA_off">all calls will alert the same way.</string>
+    <string name="newSettings">We think you are new in this app.\nIt is suggested you check the settings before continuing</string>
+    <string name="pref_title_state">Alert by phone status</string>
+    <string name="pref_description_state_off">Emergency call will make sound even if phone is on silent mode.</string>
+    <string name="pref_description_state_on">Emergency call will make sound only if phone is not on silent/vibrate mode.</string>
+    <string name="CONAN_reco_off">Conan message recognition is off.</string>
+    <string name="MISHM_reco_off">Shift message recognition is off.</string>
+    <string name="pref_title_sleep">day-night mode</string>
+    <string name="pref_description_sleep_on">Between 23:00 and 7:00 calls will not alert.</string>
+    <string name="pref_description_sleep_off">Different alert types by the time day (night is from 23:00 till 7:00)\\\\nplease note!\\\\nthis will not turn on the sound or vibration, but will allow them if sett.</string>
+    <string name="pref_title_region">pick default MDA region</string>
+    <string name="newCall">אירוע חדש</string>
+    <string name="time">התקבל בשעה: %1$s</string>
+    <string name="edit">edit</string>
+    <string name="delete">delete</string>
+    <string name="button_c">pulse calculator</string>
+    <string name="pulse">pulse in 15 seconds</string>
+    <string name="fullPulse">beats per minute</string>
+    <string name="err_pulse">you didn\'t write the number of heart beats in 15 seconds!</string>
+    <string name="stop">עצור</string>
+    <string name="start">הפעלה</string>
+    <string name="startT">click anywhere on the screen to start CPR</string>
+    <string name="radio_kid">child</string>
+    <string name="radio_old">adult</string>
+    <string name="radio_baby">baby</string>
+    <string name="breathing">breathing per minute</string>
+    <string name="systolic">Systolic</string>
+    <string name="diastolic">Diastolic</string>
+    <string name="button_e">vital signs calculator</string>
+    <string name="button_h">tools</string>
+    <string name="service_exp">In order for the app to recognize emergency calls sent by MADA, this must be on.</string>
+    <string name="atm">Atmospheric pressure</string>
+    <string name="psi">psi pressure</string>
+    <string name="pulseClickHint">click the grey area to start pulse timer</string>
+    <string name="seconds">seconds</string>
+    <string name="startContract">Contraction start</string>
+    <string name="endContract">Contraction end</string>
+    <string name="pref_header_moked">dictation settings</string>
+    <string name="pref_header_ampm">day &amp; night settings</string>
+    <string name="pref_header_advanced">advanced settings</string>
+    <string name="pref_head_description_notifications">pick notification behavior - sound, vibration etc.</string>
+    <string name="pref_head_description_moked">pick MDA dispatch to send sms\'s to</string>
+    <string name="pref_head_description_lang">pick application language</string>
+    <string name="pref_head_description_ampm">pick the allowed notifying patterns divided by day &amp; night</string>
+    <string name="pref_head_description_advanced">pick notification behavior - advanced</string>
+    <string name="notifDay">notifications during the day</string>
+    <string name="notifNight">notifications during the night</string>
+    <string name="nightEnd">night shift end</string>
+    <string name="nightStart">night shift start</string>
+    <string name="nightEndDesc">pick time when calls will alert by the day pattern</string>
+    <string name="nightStartDesc">pick time when calls will alert by the night pattern</string>
+    <string name="oxyLeft">minutes left</string>
+    <string name="lpmExp">Assuming oxygen using 10-lpm.</string>
+    <string name="vitalsPulse">"Pulse is "</string>
+    <string name="vitalsBreath">"Breathing is "</string>
+    <string name="vitalsBP">"BP is "</string>
+    <string name="vitalsTakin">proper</string>
+    <string name="vitalsNotTakin">abnormal</string>
+    <string name="vitalsAlert">the information brought here is based on MDA\'s books, and is not accurate with all patienrs. this information is not medical advice.</string>
+    <string name="toDispatch">"send to: "</string>
+    <string name="subject">"subject: "</string>
+    <string name="sender">"sent by: "</string>
+    <string name="msg">message:</string>
+    <string name="emailAlert">make sure this is your real email address so we can get back to you!</string>
+    <string name="title_activity_code">Request unlock code</string>
+    <string name="requestGood">your request has arrived at our systems.\\nWe will try responding within a few hours.</string>
+    <string name="codeNote">please write your email and name, and in the notes write where you volunteer and what your rank is, and we will send a unlock code a.s.a.p</string>
+    <string name="note">notes</string>
+    <string name="APP_reco_none">Please install the MADA app first!</string>
+    <string name="note2">notes</string>
+    <string name="pref_description_stateVib_on">Emergency call will vibrate only if phone is not on silent mode.</string>
+    <string name="pref_description_stateVib_off">Emergency call will vibrate even if phone is on silent mode.</string>
+    <string name="pref_title_stateVib">Vibrate by phone status</string>
+    <string name="navigation_drawer_open">open drawer</string>
+    <string name="navigation_drawer_close">close drawer</string>
+    <string name="button_ag">APGAR calculator</string>
+    <string name="Appe">Appearance</string>
+    <string-array name="Appes">
+        <item>blue or pale all over</item>
+        <item>blue at extremities body pink</item>
+        <item>body and extremities pink</item>
+    </string-array>
+    <string name="Puls">Pulse</string>
+    <string-array name="Pulss">
+        <item>absent</item>
+        <item>less than 100 bpm</item>
+        <item>more than 100 bpm</item>
+    </string-array>
+    <string name="Grim">Grimace</string>
+    <string-array name="Grims">
+        <item>no response to stimulation</item>
+        <item>grimace on suction or aggressive stimulation</item>
+        <item>cry on stimulation</item>
+    </string-array>
+    <string name="Acti">Activity</string>
+    <string-array name="Actis">
+        <item>none</item>
+        <item>some flexion</item>
+        <item>flexed arms and legs</item>
+    </string-array>
+    <string name="Resp">Respiration</string>
+    <string-array name="Resps">
+        <item>absent</item>
+        <item>weak, irregular, gasping</item>
+        <item>strong, robust cry</item>
+    </string-array>
+    <string name="button_p">protocols</string>
+    <string name="title_activity_utills_and_tools">tools</string>
+    <string name="privacyMsg">You had not yet seen the privacy policy. go there now.</string>
+</resources>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/contactP"
+    tools:context="atlow.chemi.mymada.MokedPage">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    </android.support.design.widget.AppBarLayout>
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layoutDirection="ltr"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/scM">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_horizontal_margin"
+    android:id="@+id/cont"
+    tools:context="atlow.chemi.mymada.contactActivity">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/emailATIL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/emailA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:gravity="start"
+            android:nextFocusDown="@+id/emailN"
+            android:nextFocusForward="@+id/emailN"
+            android:inputType="textEmailAddress"
+            android:hint="@string/from" />
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/emailNTIL"
+        android:layout_below="@+id/emailATIL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/emailN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:gravity="start"
+            android:nextFocusDown="@+id/emailS"
+            android:nextFocusForward="@+id/emailS"
+            android:inputType="textAutoComplete"
+            android:hint="@string/name" />
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/emailSTIL"
+        android:layout_below="@+id/emailNTIL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/emailS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:gravity="start"
+            android:nextFocusDown="@+id/emailT"
+            android:nextFocusForward="@+id/emailT"
+            android:inputType="textAutoCorrect"
+            android:hint="@string/subjectT" />
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/emailTTIL"
+        android:layout_below="@+id/emailSTIL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/emailT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="11"
+            android:inputType="textMultiLine"
+            android:hint="@string/mailBT"
+            android:gravity="top" />
+    </android.support.design.widget.TextInputLayout>
+</RelativeLayout>
+    </ScrollView>
+    <android.support.design.widget.FloatingActionButton
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/sendE"
+    android:src="@drawable/ic_send"
+    app:backgroundTint="@color/ColorAqua"
+    app:rippleColor="@color/ColorBlue"
+    android:layout_gravity="bottom|left"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+    android:layout_marginBottom="20dp"/>
+</android.support.design.widget.CoordinatorLayout>

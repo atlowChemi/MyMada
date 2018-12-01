@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ColorPrimary">#bd0000</color>
+    <color name="ColorPrimaryDark">#860000</color>
+    <color name="ColorRedDark">#6b0000</color>
+    <color name="ColorBlue">#98194853</color>
+    <color name="ColorAqua">#32a7c3</color>
+    <color name="Black">#000000</color>
+    <color name="White">#FFFFFF</color>
+    <color name="Grey">#46314d62</color>
+    <color name="GreyNav">#223e3e3e</color>
+    <color name="DarkGrey">#a5314451</color>
+    <color name="materialGrey300">#ffe0e0e0</color>
+    <color name="LightGrey">#efebe9</color>
+    <color name="materialBlueGrey800">#ff37474f</color>
+    <color name="materialGrey600">#ff757575</color>
+    <color name="materialGrey850">#ff303030</color>
+    <color name="highlightedTextMaterialLight">#66009688</color>
+    <color name="rippleMaterialDark">#33ffffff</color>
+    <color name="buttonMaterialDark">#ff5a595b</color>
+    <color name="switchThumbNormalMaterialDark">#ffbdbdbd</color>
+    <color name="viewBg">#f1f5f8</color>
+    <color name="album_title">#4c4c4c</color>
+    <color name="hovesh">#ff757575</color>
+    <color name="noar">#FFD40202</color>
+    <color name="para">#FFFD7F00</color>
+</resources>

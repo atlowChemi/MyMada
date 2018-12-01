@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_contractions"
+            android:icon="@drawable/ic_pregnant"
+            android:title="@string/button_f" />
+        <item
+            android:id="@+id/nav_pulse"
+            android:icon="@drawable/ic_timer"
+            android:title="@string/button_c" />
+        <item
+            android:id="@+id/nav_metronome"
+            android:icon="@drawable/ic_metronome"
+            android:title="@string/button_d" />
+        <item
+            android:id="@+id/nav_mdadim"
+            android:icon="@drawable/ic_mdadim"
+            android:title="@string/button_e" />
+        <item
+            android:id="@+id/nav_oxygen"
+            android:icon="@drawable/ic_oxygen"
+            android:title="@string/button_g" />
+        <item
+            android:id="@+id/nav_apgar"
+            android:icon="@drawable/ic_baby"
+            android:title="@string/button_ag" />
+        <item
+            android:id="@+id/nav_protocole"
+            android:icon="@drawable/ic_book"
+            android:title="@string/button_p" />
+    </group>
+
+</menu>

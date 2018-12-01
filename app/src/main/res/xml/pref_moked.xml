@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+        <ListPreference
+            android:key="moked"
+            android:title="@string/pref_title_region"
+            android:entries="@array/region"
+            android:entryValues="@array/region_entry"
+            android:summary="%s"
+            android:negativeButtonText="@string/ret"
+            android:defaultValue="0"
+            />
+</PreferenceScreen>
