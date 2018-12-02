@@ -26,6 +26,7 @@ import static atlow.chemi.mymada.Applicatio.CnlConan;
 import static atlow.chemi.mymada.Applicatio.CnlGroup;
 import static atlow.chemi.mymada.Applicatio.CnlMinhala;
 import static atlow.chemi.mymada.Applicatio.CnlMishmeret;
+import static atlow.chemi.mymada.Applicatio.manager;
 
 public class GrobootRec extends BroadcastReceiver {
     protected String title, text, CNL;
@@ -185,8 +186,14 @@ public class GrobootRec extends BroadcastReceiver {
                 if (!statVib || silentVib) {
                     if (vib)
                         builder.setVibrate(lng2);
-                    else
+                    else {
                         builder.setVibrate(lng);
+                        //TODO: check if vibration stop[s like this
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            manager.getNotificationChannel(CNL).setVibrationPattern(lng);
+                            manager.getNotificationChannel(CNL).enableVibration(false);
+                        }
+                    }
                 }
                 if (sou && (!stat || !silent)) {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
