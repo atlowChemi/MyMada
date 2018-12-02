@@ -31,11 +31,15 @@ import java.util.TimeZone;
 
 import static atlow.chemi.mymada.Applicatio.Cnl101;
 import static atlow.chemi.mymada.Applicatio.CnlBg;
+import static atlow.chemi.mymada.Applicatio.CnlConan;
+import static atlow.chemi.mymada.Applicatio.CnlGroup;
+import static atlow.chemi.mymada.Applicatio.CnlMinhala;
+import static atlow.chemi.mymada.Applicatio.CnlMishmeret;
 
 public class SMSMonitorService extends Service {
     private BroadcastReceiver callExplicitReceiver;
     protected static String txtS = "";
-    protected String smsSender = "", string, smsBody = "";
+    protected String smsSender = "", string, smsBody = "", CNL;
     final protected int NOTIF_ID = 1;
     protected static int numMessages = 0;
     protected PendingIntent piR;
@@ -106,6 +110,7 @@ public class SMSMonitorService extends Service {
                         }
                     }
                     final SharedPreferences sp = context.getSharedPreferences("Settings", 0);
+                    SharedPreferences notSP = context.getSharedPreferences("notifications", 0);
                     if (smsSender.equals("MADA") || smsSender.equals("101") || smsSender.equals("Mada")) {
                         if ((smsBody.contains("אירוע חדש") || smsBody.contains("הודעת קבוצת") || smsBody.contains("הודעת צוות"))) {
                             if (smsBody.contains("אירוע חדש")) {
@@ -113,26 +118,31 @@ public class SMSMonitorService extends Service {
                                 callT = 1;
                                 callType = sp.getBoolean("callT1", true);
                                 string = "T1";
+                                CNL = CnlConan + notSP.getInt(CnlConan, 0);
                             } else if (smsBody.contains("הודעת קבוצת")) {
                                 //kvutza
                                 callT = 2;
                                 callType = sp.getBoolean("callT2", true);
                                 string = "T2";
+                                CNL = CnlGroup + notSP.getInt(CnlGroup, 0);
                             } else if (smsBody.contains("הודעת צוות")) {
                                 //shift
                                 callT = 3;
                                 callType = sp.getBoolean("callT3", true);
                                 string = "T3";
+                                CNL = CnlMishmeret + notSP.getInt(CnlMishmeret, 0);
                             } else {
                                 callT = 1;
                                 callType = sp.getBoolean("callT1", true);
                                 string = "T1";
+                                CNL = CnlConan + notSP.getInt(CnlConan, 0);
                             }
                         } else {
                             //conan
                             callT = 1;
                             callType = sp.getBoolean("callT1", true);
                             string = "T1";
+                            CNL = CnlConan + notSP.getInt(CnlConan, 0);
                         }
                     } else {
                         return;
@@ -149,6 +159,7 @@ public class SMSMonitorService extends Service {
                         sou = sp.getBoolean("Nsou", true);
                         app = sp.getBoolean("Napp", false);
                         uri = Uri.parse(sp.getString("NuRi", ""));
+                        CNL = Cnl101 + notSP.getInt(Cnl101, 0);
                     }
                     Calendar now = Calendar.getInstance(TimeZone.getDefault());
                     int hour = now.get(Calendar.HOUR_OF_DAY);
@@ -226,7 +237,7 @@ public class SMSMonitorService extends Service {
                         if (not && callType) {
                             final NotificationManager notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                             PendingIntent intentA = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity1.class), 0);
-                            final NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context, Cnl101).setContentTitle("סמס חדש מהמוקד!")
+                            final NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context, CNL).setContentTitle("סמס חדש מהמוקד!")
                                     .setContentText("לחץ כאן בכדי להכתיב את הטפסים.").setSmallIcon(R.drawable.ic_siren)
                                     .setLights(Color.rgb(255,0,0), 40, 50)
                                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
@@ -237,22 +248,12 @@ public class SMSMonitorService extends Service {
                                 builder.setStyle(new NotificationCompat.BigTextStyle().bigText("בדיקת סמס!"));
                             if (!win) {
                                 if (!statVib || silentVib) {
-                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                        NotificationChannel channel = notifManager.getNotificationChannel(Cnl101);
-                                        if (vib)
-                                            channel.setVibrationPattern(lng2);
-                                        else
-                                            channel.setVibrationPattern(lng);
-                                    }   else {
+                                    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
                                         if (vib)
                                             builder.setVibrate(lng2);
                                         else
                                             builder.setVibrate(lng);
                                     }
-                                }
-                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && !sou) {
-                                    NotificationChannel channel = notifManager.getNotificationChannel(Cnl101);
-                                    channel.setSound(null, null);
                                 }
                                 if (sou && (!stat || !silent)) {
                                     final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -260,15 +261,6 @@ public class SMSMonitorService extends Service {
                                     currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
                                     vo = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
                                     audioManager.setStreamVolume(AudioManager.STREAM_ALARM, vol, 0);
-                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && !sou) {
-                                        NotificationChannel channel = notifManager.getNotificationChannel(Cnl101);
-                                        if (app)
-                                            channel.setSound(uri, null);
-                                        if (!app) {
-                                            Uri url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
-                                            channel.setSound(url, null);
-                                        }
-                                    }
                                     if (app) {
                                         builder.setSound(uri, AudioManager.STREAM_ALARM);
                                     }
@@ -339,7 +331,6 @@ public class SMSMonitorService extends Service {
     }
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 }

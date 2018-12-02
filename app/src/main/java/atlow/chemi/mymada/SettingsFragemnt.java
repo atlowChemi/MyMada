@@ -1,5 +1,13 @@
 package atlow.chemi.mymada;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
 import android.preference.PreferenceCategory;
@@ -14,16 +22,26 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Locale;
 
+import static atlow.chemi.mymada.Applicatio.Cnl101;
+import static atlow.chemi.mymada.Applicatio.CnlConan;
+import static atlow.chemi.mymada.Applicatio.CnlGroup;
+import static atlow.chemi.mymada.Applicatio.CnlMinhala;
+import static atlow.chemi.mymada.Applicatio.CnlMishmeret;
+import static atlow.chemi.mymada.Applicatio.Grp1;
+import static atlow.chemi.mymada.Applicatio.manager;
+
 public class SettingsFragemnt extends PreferenceFragment {
     String oldI = "6";
     SharedPreferences sharedPreferences;
-
+    CheckBoxPreference Napp, NappT1, NappT2, NappT3;
+    RingtonePreference Nrin, NrinT1, NrinT2, NrinT3;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,10 +65,10 @@ public class SettingsFragemnt extends PreferenceFragment {
                 NvibT1.setOnPreferenceChangeListener(list2);
                 CheckBoxPreference NsouT1 = (CheckBoxPreference) findPreference("NsouT1");
                 NsouT1.setOnPreferenceChangeListener(list2);
-                CheckBoxPreference NappT1 = (CheckBoxPreference) findPreference("NappT1");
+                NappT1 = (CheckBoxPreference) findPreference("NappT1");
                 NappT1.setDependency("NsouT1");
                 NappT1.setOnPreferenceChangeListener(list2);
-                RingtonePreference NrinT1 = (RingtonePreference) findPreference("NrinT1");
+                NrinT1 = (RingtonePreference) findPreference("NrinT1");
                 NrinT1.setDependency("NappT1");
                 NrinT1.setOnPreferenceChangeListener(list2);
                 //2
@@ -60,10 +78,10 @@ public class SettingsFragemnt extends PreferenceFragment {
                 NvibT2.setOnPreferenceChangeListener(list2);
                 CheckBoxPreference NsouT2 = (CheckBoxPreference) findPreference("NsouT2");
                 NsouT2.setOnPreferenceChangeListener(list2);
-                CheckBoxPreference NappT2 = (CheckBoxPreference) findPreference("NappT2");
+                NappT2 = (CheckBoxPreference) findPreference("NappT2");
                 NappT2.setDependency("NsouT2");
                 NappT2.setOnPreferenceChangeListener(list2);
-                RingtonePreference NrinT2 = (RingtonePreference) findPreference("NrinT2");
+                NrinT2 = (RingtonePreference) findPreference("NrinT2");
                 NrinT2.setDependency("NappT2");
                 NrinT2.setOnPreferenceChangeListener(list2);
                 //3
@@ -73,10 +91,10 @@ public class SettingsFragemnt extends PreferenceFragment {
                 NvibT3.setOnPreferenceChangeListener(list2);
                 CheckBoxPreference NsouT3 = (CheckBoxPreference) findPreference("NsouT3");
                 NsouT3.setOnPreferenceChangeListener(list2);
-                CheckBoxPreference NappT3 = (CheckBoxPreference) findPreference("NappT3");
+                NappT3 = (CheckBoxPreference) findPreference("NappT3");
                 NappT3.setDependency("NsouT3");
                 NappT3.setOnPreferenceChangeListener(list2);
-                RingtonePreference NrinT3 = (RingtonePreference) findPreference("NrinT3");
+                NrinT3 = (RingtonePreference) findPreference("NrinT3");
                 NrinT3.setDependency("NappT3");
                 NrinT3.setOnPreferenceChangeListener(list2);
             }
@@ -88,10 +106,10 @@ public class SettingsFragemnt extends PreferenceFragment {
                 Nvib.setOnPreferenceChangeListener(list2);
                 CheckBoxPreference Nsou = (CheckBoxPreference) findPreference("NsouT");
                 Nsou.setOnPreferenceChangeListener(list2);
-                CheckBoxPreference Napp = (CheckBoxPreference) findPreference("NappT");
+                Napp = (CheckBoxPreference) findPreference("NappT");
                 Napp.setDependency("NsouT");
                 Napp.setOnPreferenceChangeListener(list2);
-                RingtonePreference Nrin = (RingtonePreference) findPreference("NrinT");
+                Nrin = (RingtonePreference) findPreference("NrinT");
                 Nrin.setDependency("NappT");
                 Nrin.setOnPreferenceChangeListener(list2);
             }
@@ -165,7 +183,7 @@ public class SettingsFragemnt extends PreferenceFragment {
                     pe(newValue, "win");
                     break;
                 case "cutAlarm":
-                    pe(newValue, "cut");
+                    CutPe(newValue, "cut");
                 case "ride":
                     pe(newValue, "ride");
                     break;
@@ -188,16 +206,16 @@ public class SettingsFragemnt extends PreferenceFragment {
                     Sleep(newValue, "sleepNight");
                     break;
                 case "NvibT":
-                    pe(newValue, "Nvib");
+                    NotPe(newValue, "Nvib");
                     break;
                 case "NsouT":
-                    pe(newValue, "Nsou");
+                    NotPe(newValue, "Nsou");
                     break;
                 case "NrinT":
                     Spe(newValue, "NuRi");
                     break;
                 case "NappT":
-                    pe(newValue, "Napp");
+                    NotPe(newValue, "Napp");
                     break;
                 case "findT1":
                     pe(newValue, "callT1");
@@ -212,28 +230,28 @@ public class SettingsFragemnt extends PreferenceFragment {
                     pe(newValue, "callT4");
                     break;
                 case "NvibT1":
-                    pe(newValue, "NvibT1");
+                    NotPe(newValue, "NvibT1");
                     break;
                 case "NvibT2":
-                    pe(newValue, "NvibT2");
+                    NotPe(newValue, "NvibT2");
                     break;
                 case "NvibT3":
-                    pe(newValue, "NvibT3");
+                    NotPe(newValue, "NvibT3");
                     break;
                 case "NvibT4":
-                    pe(newValue, "NvibT4");
+                    NotPe(newValue, "NvibT4");
                     break;
                 case "NsouT1":
-                    pe(newValue, "NsouT1");
+                    NotPe(newValue, "NsouT1");
                     break;
                 case "NsouT2":
-                    pe(newValue, "NsouT2");
+                    NotPe(newValue, "NsouT2");
                     break;
                 case "NsouT3":
-                    pe(newValue, "NsouT3");
+                    NotPe(newValue, "NsouT3");
                     break;
                 case "NsouT4":
-                    pe(newValue, "NsouT4");
+                    NotPe(newValue, "NsouT4");
                     break;
                 case "NrinT1":
                     Spe(newValue, "NuRiT1");
@@ -248,16 +266,16 @@ public class SettingsFragemnt extends PreferenceFragment {
                     Spe(newValue, "NuRiT4");
                     break;
                 case "NappT1":
-                    pe(newValue, "NappT1");
+                    NotPe(newValue, "NappT1");
                     break;
                 case "NappT2":
-                    pe(newValue, "NappT2");
+                    NotPe(newValue, "NappT2");
                     break;
                 case "NappT3":
-                    pe(newValue, "NappT3");
+                    NotPe(newValue, "NappT3");
                     break;
                 case "NappT4":
-                    pe(newValue, "NappT4");
+                    NotPe(newValue, "NappT4");
                     break;
                 case "loop":
                     pe(newValue, "loop");
@@ -280,6 +298,91 @@ public class SettingsFragemnt extends PreferenceFragment {
     };
 
 
+    public void CutPe(Object newValue, String sett) {
+        SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
+        SharedPreferences notSP = getActivity().getSharedPreferences("notifications", 0);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(sett, (Boolean)newValue);
+        editor.apply();
+        int conan = notSP.getInt(CnlConan, 0);
+        int group = notSP.getInt(CnlGroup, 0);
+        int mishmeret = notSP.getInt(CnlMishmeret, 0);
+        int call101 = notSP.getInt(Cnl101, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
+            if((Boolean)newValue) {
+                manager.deleteNotificationChannel((Cnl101 + call101));
+                NotificationChannel serviceChannel = new NotificationChannel((CnlConan + conan), "זיהוי אירועי כונן", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(true);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור אירועי כונן");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (sharedPreferences.getBoolean("NappT1", false))
+                    serviceChannel.setSound(Uri.parse(sharedPreferences.getString("NuRiT1", "")), attributes);
+                else
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                serviceChannel.setGroup(Grp1);
+
+                NotificationChannel serviceChannel2 = new NotificationChannel(CnlGroup + group, "זיהוי אירועי קבוצה", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel2.enableVibration(true);
+                serviceChannel2.setBypassDnd(true);
+                serviceChannel2.setDescription("התראות עבור אירועי קבוצה");
+                serviceChannel2.enableLights(true);
+                serviceChannel2.setShowBadge(true);
+                serviceChannel2.setLightColor(Color.RED);
+                if (sharedPreferences.getBoolean("NappT2", false))
+                    serviceChannel2.setSound(Uri.parse(sharedPreferences.getString("NuRiT2", "")), attributes);
+                else
+                    serviceChannel2.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                serviceChannel2.setGroup(Grp1);
+
+                NotificationChannel serviceChannel3 = new NotificationChannel(CnlMishmeret + mishmeret, "זיהוי אירועי צוות", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel3.enableVibration(true);
+                serviceChannel3.setBypassDnd(true);
+                serviceChannel3.setDescription("התראות עבור אירועי צוות");
+                serviceChannel3.enableLights(true);
+                serviceChannel3.setShowBadge(true);
+                serviceChannel3.setLightColor(Color.RED);
+                if (sharedPreferences.getBoolean("NappT3", false))
+                    serviceChannel3.setSound(Uri.parse(sharedPreferences.getString("NuRiT3", "")), attributes);
+                else
+                    serviceChannel3.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                serviceChannel3.setGroup(Grp1);
+
+                Log.v("conan is", serviceChannel.getId());
+                manager.createNotificationChannel(serviceChannel);
+                manager.createNotificationChannel(serviceChannel2);
+                manager.createNotificationChannel(serviceChannel3);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(Cnl101, ++call101);
+                edit.apply();
+            }   else {
+                manager.deleteNotificationChannel(CnlConan + conan);
+                manager.deleteNotificationChannel((CnlGroup + group));
+                manager.deleteNotificationChannel((CnlMishmeret + mishmeret));
+                NotificationChannel serviceChannel4 = new NotificationChannel((Cnl101 + call101), "זיהוי אירועי חירום", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel4.enableVibration(true);
+                serviceChannel4.setBypassDnd(true);
+                serviceChannel4.setDescription("התראות עבור אירועי חירום שיתקבלו");
+                serviceChannel4.enableLights(true);
+                serviceChannel4.setShowBadge(true);
+                serviceChannel4.setLightColor(Color.RED);
+                if (sharedPreferences.getBoolean("NappT", false))
+                    serviceChannel4.setSound(Uri.parse(sharedPreferences.getString("NuRi", "")), attributes);
+                else
+                    serviceChannel4.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                serviceChannel4.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel4);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(CnlConan, ++conan);
+                edit.putInt(CnlGroup, ++group);
+                edit.putInt(CnlMishmeret, ++mishmeret);
+                edit.apply();
+            }
+        }
+    }
     public boolean pe(Object newValue, String sett) {
         SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
         SharedPreferences.Editor editor = preferences.edit();
@@ -289,9 +392,285 @@ public class SettingsFragemnt extends PreferenceFragment {
     }
     public void Spe(Object newValue, String sett)   {
         SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
+        SharedPreferences notSP = getActivity().getSharedPreferences("notifications", 0);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(sett, newValue.toString());
         editor.apply();
+        int conan = notSP.getInt(CnlConan, 0);
+        int group = notSP.getInt(CnlGroup, 0);
+        int mishmeret = notSP.getInt(CnlMishmeret, 0);
+        int call101 = notSP.getInt(Cnl101, 0);
+        int minhala = notSP.getInt(CnlMinhala, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
+            if (sett.contains("T1")) {
+                boolean vib = sharedPreferences.getBoolean("NvibT1", true);
+                boolean sou = sharedPreferences.getBoolean("NsouT1", true);
+                boolean app = sharedPreferences.getBoolean("NappT1", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRiT1", ""));
+                manager.deleteNotificationChannel(CnlConan + conan);
+                conan++;
+                NotificationChannel serviceChannel = new NotificationChannel(CnlConan + conan, "זיהוי אירועי כונן", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור אירועי כונן");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(CnlConan, conan);
+                edit.apply();
+            } else if (sett.contains("T2")) {
+                boolean vib = sharedPreferences.getBoolean("NvibT2", true);
+                boolean sou = sharedPreferences.getBoolean("NsouT2", true);
+                boolean app = sharedPreferences.getBoolean("NappT2", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRiT2", ""));
+                manager.deleteNotificationChannel(CnlGroup + group);
+                group++;
+                NotificationChannel serviceChannel = new NotificationChannel(CnlGroup + group, "זיהוי אירועי קבוצה", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור אירועי קבוצה");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(CnlGroup, group);
+                edit.apply();
+            } else if (sett.contains("T3")) {
+                boolean vib = sharedPreferences.getBoolean("NvibT3", true);
+                boolean sou = sharedPreferences.getBoolean("NsouT3", true);
+                boolean app = sharedPreferences.getBoolean("NappT3", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRiT3", ""));
+                manager.deleteNotificationChannel(CnlMishmeret + mishmeret);
+                mishmeret++;
+                NotificationChannel serviceChannel = new NotificationChannel(CnlMishmeret + mishmeret, "זיהוי אירועי צוות", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור אירועי משמרת");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(CnlMishmeret, mishmeret);
+                edit.apply();
+            } else if (sett.contains("T4")) {
+                boolean vib = sharedPreferences.getBoolean("NvibT4", true);
+                boolean sou = sharedPreferences.getBoolean("NsouT4", true);
+                boolean app = sharedPreferences.getBoolean("NappT4", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRiT4", ""));
+                manager.deleteNotificationChannel(CnlMinhala + minhala);
+                minhala++;
+                NotificationChannel serviceChannel = new NotificationChannel(CnlMinhala + minhala, "זיהוי הודעות מנהלתיות", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור הודעות מנהלתיות");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(CnlMinhala, minhala);
+                edit.apply();
+            } else if (sett.equals("NuRi")) {
+                boolean vib = sharedPreferences.getBoolean("Nvib", true);
+                boolean sou = sharedPreferences.getBoolean("Nsou", true);
+                boolean app = sharedPreferences.getBoolean("Napp", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRi", ""));
+                manager.deleteNotificationChannel(Cnl101 + call101);
+                call101++;
+                NotificationChannel serviceChannel = new NotificationChannel(Cnl101 + call101, "זיהוי אירועי חירום", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור אירועי חירום");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(Cnl101, call101);
+                edit.apply();
+            }
+        }
+    }
+    public void NotPe(Object newValue, String sett) {
+        SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
+        SharedPreferences notSP = getActivity().getSharedPreferences("notifications", 0);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(sett, (Boolean)newValue);
+        editor.apply();
+        int conan = notSP.getInt(CnlConan, 0);
+        int group = notSP.getInt(CnlGroup, 0);
+        int mishmeret = notSP.getInt(CnlMishmeret, 0);
+        int call101 = notSP.getInt(Cnl101, 0);
+        int minhala = notSP.getInt(CnlMinhala, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
+            if (sett.contains("T1")) {
+                boolean vib = sharedPreferences.getBoolean("NvibT1", true);
+                boolean sou = sharedPreferences.getBoolean("NsouT1", true);
+                boolean app = sharedPreferences.getBoolean("NappT1", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRiT1", ""));
+                manager.deleteNotificationChannel(CnlConan + conan);
+                conan++;
+                NotificationChannel serviceChannel = new NotificationChannel(CnlConan + conan, "זיהוי אירועי כונן", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור אירועי כונן");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(CnlConan, conan);
+                edit.apply();
+            } else if (sett.contains("T2")) {
+                boolean vib = sharedPreferences.getBoolean("NvibT2", true);
+                boolean sou = sharedPreferences.getBoolean("NsouT2", true);
+                boolean app = sharedPreferences.getBoolean("NappT2", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRiT2", ""));
+                manager.deleteNotificationChannel(CnlGroup + group);
+                group++;
+                NotificationChannel serviceChannel = new NotificationChannel(CnlGroup + group, "זיהוי אירועי קבוצה", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור אירועי קבוצה");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(CnlGroup, group);
+                edit.apply();
+            } else if (sett.contains("T3")) {
+                boolean vib = sharedPreferences.getBoolean("NvibT3", true);
+                boolean sou = sharedPreferences.getBoolean("NsouT3", true);
+                boolean app = sharedPreferences.getBoolean("NappT3", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRiT3", ""));
+                manager.deleteNotificationChannel(CnlMishmeret + mishmeret);
+                mishmeret++;
+                NotificationChannel serviceChannel = new NotificationChannel(CnlMishmeret + mishmeret, "זיהוי אירועי צוות", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור אירועי משמרת");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(CnlMishmeret, mishmeret);
+                edit.apply();
+            } else if (sett.contains("T4")) {
+                boolean vib = sharedPreferences.getBoolean("NvibT4", true);
+                boolean sou = sharedPreferences.getBoolean("NsouT4", true);
+                boolean app = sharedPreferences.getBoolean("NappT4", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRiT4", ""));
+                manager.deleteNotificationChannel(CnlMinhala + minhala);
+                minhala++;
+                NotificationChannel serviceChannel = new NotificationChannel(CnlMinhala + minhala, "זיהוי הודעות מנהלתיות", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור הודעות מנהלתיות");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(CnlMinhala, minhala);
+                edit.apply();
+            } else if (sett.equals("NuRi")) {
+                boolean vib = sharedPreferences.getBoolean("Nvib", true);
+                boolean sou = sharedPreferences.getBoolean("Nsou", true);
+                boolean app = sharedPreferences.getBoolean("Napp", false);
+                Uri uri = Uri.parse(sharedPreferences.getString("NuRi", ""));
+                manager.deleteNotificationChannel(Cnl101 + call101);
+                call101++;
+                NotificationChannel serviceChannel = new NotificationChannel(Cnl101 + call101, "זיהוי אירועי חירום", NotificationManager.IMPORTANCE_HIGH);
+                serviceChannel.enableVibration(vib);
+                serviceChannel.setBypassDnd(true);
+                serviceChannel.setDescription("התראות עבור אירועי חירום");
+                serviceChannel.enableLights(true);
+                serviceChannel.setShowBadge(true);
+                serviceChannel.setLightColor(Color.RED);
+                if (app && sou)
+                    serviceChannel.setSound(uri, attributes);
+                else if (sou)
+                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
+                else
+                    serviceChannel.setSound(null, attributes);
+                serviceChannel.setGroup(Grp1);
+                manager.createNotificationChannel(serviceChannel);
+                SharedPreferences.Editor edit = notSP.edit();
+                edit.putInt(Cnl101, call101);
+                edit.apply();
+            }
+        }
     }
     public void OSTT(Object newValue)   {
         EditTextPreference shabatT = (EditTextPreference)findPreference("shabatTime");
