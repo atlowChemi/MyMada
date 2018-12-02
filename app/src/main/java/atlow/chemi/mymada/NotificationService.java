@@ -61,7 +61,6 @@ public class NotificationService extends NotificationListenerService {
     public void onNotificationPosted(StatusBarNotification statusBarNotification) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         Boolean Mapp = sp.getBoolean("Mapp", false);
-        Toast.makeText(context, "Yayy! i got thoe notification!", Toast.LENGTH_SHORT).show();
         if (Mapp && (statusBarNotification.getPackageName().contains("mdaemergency") || statusBarNotification.getPackageName().equals("atlow.mymadaadmin"))) {
             Bundle extras = statusBarNotification.getNotification().extras;
             String pack = statusBarNotification.getPackageName();
@@ -88,6 +87,9 @@ public class NotificationService extends NotificationListenerService {
             intent.putExtra("title", title);
             intent.putExtra("text", text);
             if (title != null) {
+                if (title.equals("מגן דוד אדום")) {
+                    return;
+                }
                 if (title.contains("*אירוע חדש*")) {
                     if(text.contains("אירוע חדש"))
                         intent.putExtra("callT",1);

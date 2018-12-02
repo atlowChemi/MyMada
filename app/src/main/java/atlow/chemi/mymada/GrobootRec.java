@@ -11,8 +11,10 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -20,9 +22,13 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import static atlow.chemi.mymada.Applicatio.Cnl101;
+import static atlow.chemi.mymada.Applicatio.CnlConan;
+import static atlow.chemi.mymada.Applicatio.CnlGroup;
+import static atlow.chemi.mymada.Applicatio.CnlMinhala;
+import static atlow.chemi.mymada.Applicatio.CnlMishmeret;
 
 public class GrobootRec extends BroadcastReceiver {
-    protected String title, text;
+    protected String title, text, CNL;
     protected static String string = "T1";
     protected static PendingIntent madasApp;
     protected Context context;
@@ -30,7 +36,7 @@ public class GrobootRec extends BroadcastReceiver {
     public long[] lng = {0, 0, 0, 0, 0, 0, 0, 0, 0}, lng2 = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
     private static int NOTIF_ID = 5000;
     private MediaPlayer mMediaPlayer;
-    protected int currentVolume, callT;
+    protected int currentVolume, callT, notNum = 0;
     public static float vo = 0;
     protected boolean callType, cut, vib, sou, app;
     private NotificationCompat.Builder builder;
@@ -42,8 +48,8 @@ public class GrobootRec extends BroadcastReceiver {
     }
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Toast.makeText(context, "new MSG recieved!", Toast.LENGTH_SHORT).show();
         final SharedPreferences sp = context.getSharedPreferences("Settings", 0);
+        SharedPreferences notSP = context.getSharedPreferences("notifications", 0);
         boolean win = sp.getBoolean("win", true);
         boolean not = sp.getBoolean("not", true);
         boolean ShabbatM = sp.getBoolean("killS",false);
@@ -77,26 +83,27 @@ public class GrobootRec extends BroadcastReceiver {
                 case 1:
                     callType = sp.getBoolean("callT1", true);
                     string = "T1";
-                    //Toast.makeText(context,"כונן", Toast.LENGTH_LONG).show();
+                    CNL = CnlConan + notSP.getInt(CnlConan, 0);
                     break;
                 case 2:
                     callType = sp.getBoolean("callT2", true);
                     string = "T2";
-                    //Toast.makeText(context, "קבוצה", Toast.LENGTH_LONG).show();
+                    CNL = CnlGroup + notSP.getInt(CnlGroup, 0);
                     break;
                 case 3:
                     callType = sp.getBoolean("callT3", true);
                     string = "T3";
-                    //Toast.makeText(context, "משמרת", Toast.LENGTH_LONG).show();
+                    CNL = CnlMishmeret + notSP.getInt(CnlMishmeret, 0);
                     break;
                 case 4:
                     callType = sp.getBoolean("callT4", true);
                     string = "T4";
+                    CNL = CnlMinhala + notSP.getInt(CnlMinhala, 0);
                     break;
                 default:
                     callType = true;
                     string = "T1";
-                    //Toast.makeText(context, "כונן", Toast.LENGTH_LONG).show();
+                    CNL = CnlConan + notSP.getInt(CnlConan, 0);
                     break;
             }
             smsRes.newC(text);
@@ -122,6 +129,7 @@ public class GrobootRec extends BroadcastReceiver {
             sou = sp.getBoolean("Nsou", true);
             app = sp.getBoolean("Napp", false);
             uri = Uri.parse(sp.getString("NuRi", ""));
+            CNL = Cnl101 + notSP.getInt(Cnl101, 0);
         }
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
         int hour = now.get(Calendar.HOUR_OF_DAY);
@@ -162,9 +170,10 @@ public class GrobootRec extends BroadcastReceiver {
             String tick = string.equals("T4") ? "התקבלה הודעה חדש באפליקציה!" : "התקבל אירוע חדש באפליקציה!";
             String titl = string.equals("T4") ? "הודעה חדשה באפליקציה!" : "אירוע חדש באפליקציה!";
             notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context, Cnl101).setContentTitle(titl)
+            builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context, CNL).setContentTitle(titl)
                     .setContentText("לחץ כאן בכדי להכתיב טפסים.").setSmallIcon(R.drawable.ic_siren)
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
+                    .setVibrate(lng).setSound(null)
                     .setContentIntent(pendingIntent).setAutoCancel(true).addAction(R.drawable.ic_edit, "הכתב", pendingIntent)
                     .setTicker(tick).setStyle(new NotificationCompat.BigTextStyle().bigText(text));
             if(testAp)
@@ -180,16 +189,18 @@ public class GrobootRec extends BroadcastReceiver {
                         builder.setVibrate(lng);
                 }
                 if (sou && (!stat || !silent)) {
-                    final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-                    int vol = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-                    currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-                    vo = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-                    audioManager.setStreamVolume(AudioManager.STREAM_ALARM, vol, 0);
-                    if (app) {
-                        builder.setSound(uri, AudioManager.STREAM_ALARM);
-                    }
-                    if (!app) {
-                        builder.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert), AudioManager.STREAM_ALARM);
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                        final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                        int vol = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+                        currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+                        vo = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+                        audioManager.setStreamVolume(AudioManager.STREAM_ALARM, vol, 0);
+                        if (app) {
+                            builder.setSound(uri, AudioManager.STREAM_ALARM);
+                        }
+                        if (!app) {
+                            builder.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert), AudioManager.STREAM_ALARM);
+                        }
                     }
                 }
                 if(ShabbatM)    {
@@ -199,7 +210,7 @@ public class GrobootRec extends BroadcastReceiver {
                         public void run() {
                             if(sp.getBoolean("ride",false)) {
                                 notifManager.cancelAll();
-                                builder.setVibrate(lng).setSound(null).setChannelId(Cnl101);
+                                builder.setVibrate(lng).setSound(null).setChannelId(CNL);
                                 Notification mNotification = builder.build();
                                 notifManager.notify(0, mNotification);
                             }
@@ -228,18 +239,21 @@ public class GrobootRec extends BroadcastReceiver {
             }
             if(sp.getBoolean("ride",false)) {
                 notifManager.cancelAll();
-                notifManager.notify(0, mNotification);
+                notifManager.notify(notNum, mNotification);
             } else
-                notifManager.notify(++NOTIF_ID, mNotification);
+                notNum = ++NOTIF_ID;
+                notifManager.notify(NOTIF_ID, mNotification);
             }
             /**/
             if (win && (callType || testAp)) {
                 Intent i = new Intent(context, smsRes.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                i.putExtra("notNum", notNum);
+                i.putExtra("loop", sp.getBoolean("loop", false));
+                //TODO: make smsRes shut off the notification (remove and regenerate);
                 i.putExtra("callT", callT);
+
                 context.startActivity(i);
             }
         testAp = false;
