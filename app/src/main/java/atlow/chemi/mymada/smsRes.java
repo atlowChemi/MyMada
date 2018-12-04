@@ -97,6 +97,7 @@ public class smsRes extends AppCompatActivity {
         Uri url = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.alert);
         long[] length = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
+        boolean not = SP.getBoolean("not", true);
         boolean cut = SP.getBoolean("cut", false);
         boolean vib;
         boolean soun;
