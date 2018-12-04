@@ -2,6 +2,7 @@ package atlow.chemi.mymada;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -13,7 +14,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.util.Log;
 import android.widget.Toast;
+
+import static atlow.chemi.mymada.Applicatio.CnlBg;
+import static atlow.chemi.mymada.Applicatio.manager;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class NotificationService extends NotificationListenerService {
@@ -119,6 +124,13 @@ public class NotificationService extends NotificationListenerService {
     @Override
     public void onNotificationRemoved(StatusBarNotification statusBarNotification)  {
         //nothing yet;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && statusBarNotification.getPackageName().equals("atlow.chemi.mymada")) {
+            Notification notification = statusBarNotification.getNotification();
+            if (notification.getChannelId().contains("generated")) {
+                manager.deleteNotificationChannel(notification.getChannelId());
+                Log.v("searchable", notification.getChannelId());
+            }
+        }
     }
 
 

@@ -206,16 +206,16 @@ public class SettingsFragemnt extends PreferenceFragment {
                     Sleep(newValue, "sleepNight");
                     break;
                 case "NvibT":
-                    NotPe(newValue, "Nvib");
+                    pe(newValue, "Nvib");
                     break;
                 case "NsouT":
-                    NotPe(newValue, "Nsou");
+                    pe(newValue, "Nsou");
                     break;
                 case "NrinT":
                     Spe(newValue, "NuRi");
                     break;
                 case "NappT":
-                    NotPe(newValue, "Napp");
+                    pe(newValue, "Napp");
                     break;
                 case "findT1":
                     pe(newValue, "callT1");
@@ -230,28 +230,28 @@ public class SettingsFragemnt extends PreferenceFragment {
                     pe(newValue, "callT4");
                     break;
                 case "NvibT1":
-                    NotPe(newValue, "NvibT1");
+                    pe(newValue, "NvibT1");
                     break;
                 case "NvibT2":
-                    NotPe(newValue, "NvibT2");
+                    pe(newValue, "NvibT2");
                     break;
                 case "NvibT3":
-                    NotPe(newValue, "NvibT3");
+                    pe(newValue, "NvibT3");
                     break;
                 case "NvibT4":
-                    NotPe(newValue, "NvibT4");
+                    pe(newValue, "NvibT4");
                     break;
                 case "NsouT1":
-                    NotPe(newValue, "NsouT1");
+                    pe(newValue, "NsouT1");
                     break;
                 case "NsouT2":
-                    NotPe(newValue, "NsouT2");
+                    pe(newValue, "NsouT2");
                     break;
                 case "NsouT3":
-                    NotPe(newValue, "NsouT3");
+                    pe(newValue, "NsouT3");
                     break;
                 case "NsouT4":
-                    NotPe(newValue, "NsouT4");
+                    pe(newValue, "NsouT4");
                     break;
                 case "NrinT1":
                     Spe(newValue, "NuRiT1");
@@ -266,16 +266,16 @@ public class SettingsFragemnt extends PreferenceFragment {
                     Spe(newValue, "NuRiT4");
                     break;
                 case "NappT1":
-                    NotPe(newValue, "NappT1");
+                    pe(newValue, "NappT1");
                     break;
                 case "NappT2":
-                    NotPe(newValue, "NappT2");
+                    pe(newValue, "NappT2");
                     break;
                 case "NappT3":
-                    NotPe(newValue, "NappT3");
+                    pe(newValue, "NappT3");
                     break;
                 case "NappT4":
-                    NotPe(newValue, "NappT4");
+                    pe(newValue, "NappT4");
                     break;
                 case "loop":
                     pe(newValue, "loop");
@@ -296,111 +296,22 @@ public class SettingsFragemnt extends PreferenceFragment {
             return true;
         }
     };
-
-
     public void CutPe(Object newValue, String sett) {
         SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
-        SharedPreferences notSP = getActivity().getSharedPreferences("notifications", 0);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(sett, (Boolean)newValue);
         editor.apply();
-        int conan = notSP.getInt(CnlConan, 0);
-        int group = notSP.getInt(CnlGroup, 0);
-        int mishmeret = notSP.getInt(CnlMishmeret, 0);
-        int call101 = notSP.getInt(Cnl101, 0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
-            if((Boolean)newValue) {
-                manager.deleteNotificationChannel((Cnl101 + call101));
-                NotificationChannel serviceChannel = new NotificationChannel((CnlConan + conan), "זיהוי אירועי כונן", NotificationManager.IMPORTANCE_HIGH);
-                serviceChannel.enableVibration(true);
-                serviceChannel.setBypassDnd(true);
-                serviceChannel.setDescription("התראות עבור אירועי כונן");
-                serviceChannel.enableLights(true);
-                serviceChannel.setShowBadge(true);
-                serviceChannel.setLightColor(Color.RED);
-                if (sharedPreferences.getBoolean("NappT1", false))
-                    serviceChannel.setSound(Uri.parse(sharedPreferences.getString("NuRiT1", "")), attributes);
-                else
-                    serviceChannel.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
-                serviceChannel.setGroup(Grp1);
-
-                NotificationChannel serviceChannel2 = new NotificationChannel(CnlGroup + group, "זיהוי אירועי קבוצה", NotificationManager.IMPORTANCE_HIGH);
-                serviceChannel2.enableVibration(true);
-                serviceChannel2.setBypassDnd(true);
-                serviceChannel2.setDescription("התראות עבור אירועי קבוצה");
-                serviceChannel2.enableLights(true);
-                serviceChannel2.setShowBadge(true);
-                serviceChannel2.setLightColor(Color.RED);
-                if (sharedPreferences.getBoolean("NappT2", false))
-                    serviceChannel2.setSound(Uri.parse(sharedPreferences.getString("NuRiT2", "")), attributes);
-                else
-                    serviceChannel2.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
-                serviceChannel2.setGroup(Grp1);
-
-                NotificationChannel serviceChannel3 = new NotificationChannel(CnlMishmeret + mishmeret, "זיהוי אירועי צוות", NotificationManager.IMPORTANCE_HIGH);
-                serviceChannel3.enableVibration(true);
-                serviceChannel3.setBypassDnd(true);
-                serviceChannel3.setDescription("התראות עבור אירועי צוות");
-                serviceChannel3.enableLights(true);
-                serviceChannel3.setShowBadge(true);
-                serviceChannel3.setLightColor(Color.RED);
-                if (sharedPreferences.getBoolean("NappT3", false))
-                    serviceChannel3.setSound(Uri.parse(sharedPreferences.getString("NuRiT3", "")), attributes);
-                else
-                    serviceChannel3.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
-                serviceChannel3.setGroup(Grp1);
-
-                Log.v("conan is", serviceChannel.getId());
-                manager.createNotificationChannel(serviceChannel);
-                manager.createNotificationChannel(serviceChannel2);
-                manager.createNotificationChannel(serviceChannel3);
-                SharedPreferences.Editor edit = notSP.edit();
-                edit.putInt(Cnl101, ++call101);
-                edit.apply();
-            }   else {
-                manager.deleteNotificationChannel(CnlConan + conan);
-                manager.deleteNotificationChannel((CnlGroup + group));
-                manager.deleteNotificationChannel((CnlMishmeret + mishmeret));
-                NotificationChannel serviceChannel4 = new NotificationChannel((Cnl101 + call101), "זיהוי אירועי חירום", NotificationManager.IMPORTANCE_HIGH);
-                serviceChannel4.enableVibration(true);
-                serviceChannel4.setBypassDnd(true);
-                serviceChannel4.setDescription("התראות עבור אירועי חירום שיתקבלו");
-                serviceChannel4.enableLights(true);
-                serviceChannel4.setShowBadge(true);
-                serviceChannel4.setLightColor(Color.RED);
-                if (sharedPreferences.getBoolean("NappT", false))
-                    serviceChannel4.setSound(Uri.parse(sharedPreferences.getString("NuRi", "")), attributes);
-                else
-                    serviceChannel4.setSound(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert), attributes);
-                serviceChannel4.setGroup(Grp1);
-                manager.createNotificationChannel(serviceChannel4);
-                SharedPreferences.Editor edit = notSP.edit();
-                edit.putInt(CnlConan, ++conan);
-                edit.putInt(CnlGroup, ++group);
-                edit.putInt(CnlMishmeret, ++mishmeret);
-                edit.apply();
-            }
-        }
     }
-    public boolean pe(Object newValue, String sett) {
+    public void pe(Object newValue, String sett) {
         SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(sett, (Boolean)newValue);
         editor.apply();
-        return true;
     }
     public void Spe(Object newValue, String sett)   {
         SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
-        SharedPreferences notSP = getActivity().getSharedPreferences("notifications", 0);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(sett, newValue.toString());
-        editor.apply();
-    }
-    public void NotPe(Object newValue, String sett) {
-        SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(sett, (Boolean)newValue);
         editor.apply();
     }
     public void OSTT(Object newValue)   {

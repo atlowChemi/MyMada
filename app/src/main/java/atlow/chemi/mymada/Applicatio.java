@@ -25,8 +25,8 @@ import java.util.Locale;
 
 public class Applicatio extends MultiDexApplication {
     public double d = 12;
-    public static final String Grp1 = "grpCalls", Grp2 = "grpOthers", CnlBg = "runInBg", Cnl101 = "101Calls", CnlMinhala = "minhala",
-            CnlConan = "conan", CnlGroup = "group", CnlMishmeret = "mishmeret";
+    public static final String Grp1 = "grpCalls", Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", Cnl101 = "101Calls",
+            CnlMinhala = "minhala", CnlConan = "conan", CnlGroup = "group", CnlMishmeret = "mishmeret", CnlWin = "notWithWin";
     public static NotificationManager manager;
     protected BroadcastReceiver receiver;
     @Override
@@ -69,8 +69,8 @@ public class Applicatio extends MultiDexApplication {
             SharedPreferences notSP = getSharedPreferences("notifications", 0);
             int call101 = notSP.getInt(Cnl101, 0);
             int minhala = notSP.getInt(CnlMinhala, 0);
-            AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
-            NotificationChannelGroup group1 = new NotificationChannelGroup(Grp1, "התראות אודות מקרים");
+            AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
+            NotificationChannelGroup group3 = new NotificationChannelGroup(Grp3, "התראות מקרים");
             NotificationChannelGroup group2 = new NotificationChannelGroup(Grp2, "התראות שונות");
 
             NotificationChannel serviceChannel = new NotificationChannel(CnlBg, "פעילות ברקע", NotificationManager.IMPORTANCE_MIN);
@@ -80,32 +80,22 @@ public class Applicatio extends MultiDexApplication {
             serviceChannel.setDescription("חיוני כדי לאפשר זיהוי מקרים");
             serviceChannel.setGroup(Grp2);
 
-            NotificationChannel serviceChannel2 = new NotificationChannel(Cnl101 + call101, "זיהוי אירועי חירום", NotificationManager.IMPORTANCE_HIGH);
-            serviceChannel2.enableVibration(true);
-            serviceChannel2.setBypassDnd(true);
-            serviceChannel2.setDescription("התראות עבור אירועי חירום שיתקבלו");
-            serviceChannel2.enableLights(true);
-            serviceChannel2.setShowBadge(true);
-            serviceChannel2.setLightColor(Color.RED);
-            serviceChannel2.setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.alert), attributes);
-            serviceChannel2.setGroup(Grp1);
-
-            NotificationChannel serviceChannel3 = new NotificationChannel(CnlMinhala + minhala, "זיהוי הודעות מנהלתיות", NotificationManager.IMPORTANCE_HIGH);
-            serviceChannel3.enableVibration(true);
-            serviceChannel3.setBypassDnd(true);
-            serviceChannel3.setDescription("התראות עבור הודעות מנהלתיות");
-            serviceChannel3.enableLights(true);
-            serviceChannel3.setShowBadge(true);
-            serviceChannel3.setLightColor(Color.RED);
-            serviceChannel3.setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.alert), attributes);
-            serviceChannel3.setGroup(Grp1);
+            NotificationChannel serviceChannel4 = new NotificationChannel(CnlWin, "זיהוי הודעות", NotificationManager.IMPORTANCE_LOW);
+            serviceChannel4.enableVibration(false);
+            serviceChannel4.setBypassDnd(false);
+            serviceChannel4.setDescription("התראות עבור הודעות כאשר מוגדר להקפיץ גם חלון");
+            serviceChannel4.enableLights(false);
+            serviceChannel4.setShowBadge(true);
+            serviceChannel4.setLightColor(Color.RED);
+            serviceChannel4.setGroup(Grp3);
 
             manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannelGroup(group1);
-            manager.createNotificationChannelGroup(group2);
-            manager.createNotificationChannel(serviceChannel);
-            manager.createNotificationChannel(serviceChannel2);
-            manager.createNotificationChannel(serviceChannel3);
+            if (manager != null) {
+                manager.createNotificationChannelGroup(group3);
+                manager.createNotificationChannelGroup(group2);
+                manager.createNotificationChannel(serviceChannel);
+                manager.createNotificationChannel(serviceChannel4);
+            }
         }
     }
 }

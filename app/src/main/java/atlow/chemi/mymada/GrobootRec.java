@@ -1,6 +1,7 @@
 package atlow.chemi.mymada;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -8,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -26,6 +29,8 @@ import static atlow.chemi.mymada.Applicatio.CnlConan;
 import static atlow.chemi.mymada.Applicatio.CnlGroup;
 import static atlow.chemi.mymada.Applicatio.CnlMinhala;
 import static atlow.chemi.mymada.Applicatio.CnlMishmeret;
+import static atlow.chemi.mymada.Applicatio.CnlWin;
+import static atlow.chemi.mymada.Applicatio.Grp3;
 import static atlow.chemi.mymada.Applicatio.manager;
 
 public class GrobootRec extends BroadcastReceiver {
@@ -39,8 +44,9 @@ public class GrobootRec extends BroadcastReceiver {
     private MediaPlayer mMediaPlayer;
     protected int currentVolume, callT, notNum = 0;
     public static float vo = 0;
-    protected boolean callType, cut, vib, sou, app;
+    protected boolean callType, cut, vib, sou, app, OreoVib, OreoSou;
     private NotificationCompat.Builder builder;
+    private Uri uri, url;
     private NotificationManager notifManager;
     public GrobootRec() {
     }
@@ -58,6 +64,7 @@ public class GrobootRec extends BroadcastReceiver {
         boolean statVib = sp.getBoolean("statVib",false);
         boolean silent = true;
         boolean silentVib = true;
+        url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
         AudioManager am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
             silent = false;
@@ -114,7 +121,6 @@ public class GrobootRec extends BroadcastReceiver {
         if(testAp || !cut)  {
             callType = true;
         }
-        Uri uri;
         if (string.equals("T4"))    {
             vib = sp.getBoolean("Nvib" + string, true);
             sou = sp.getBoolean("Nsou" + string, true);
@@ -171,86 +177,106 @@ public class GrobootRec extends BroadcastReceiver {
             String tick = string.equals("T4") ? "התקבלה הודעה חדש באפליקציה!" : "התקבל אירוע חדש באפליקציה!";
             String titl = string.equals("T4") ? "הודעה חדשה באפליקציה!" : "אירוע חדש באפליקציה!";
             notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context, CNL).setContentTitle(titl)
+            builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context, CnlWin).setContentTitle(titl)
                     .setContentText("לחץ כאן בכדי להכתיב טפסים.").setSmallIcon(R.drawable.ic_siren)
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                     .setVibrate(lng).setSound(null)
                     .setContentIntent(pendingIntent).setAutoCancel(true).addAction(R.drawable.ic_edit, "הכתב", pendingIntent)
                     .setTicker(tick).setStyle(new NotificationCompat.BigTextStyle().bigText(text));
-            if(testAp)
+            if (testAp)
                 builder.setStyle(new NotificationCompat.BigTextStyle().bigText("בדיקת אפליקציה!")).addAction(R.drawable.ic_info, "פרטים", testPI);
-            else if (madasApp != null)   {
+            else if (madasApp != null) {
                 builder.addAction(R.drawable.ic_info, "פרטים", madasApp);
             }
             if (!win) {
                 if (!statVib || silentVib) {
+                    OreoVib = true;
                     if (vib)
                         builder.setVibrate(lng2);
                     else {
+                        OreoVib = false;
                         builder.setVibrate(lng);
-                        //TODO: check if vibration stop[s like this
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            manager.getNotificationChannel(CNL).setVibrationPattern(lng);
-                            manager.getNotificationChannel(CNL).enableVibration(false);
-                        }
                     }
                 }
                 if (sou && (!stat || !silent)) {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                        final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-                        int vol = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-                        currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-                        vo = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-                        audioManager.setStreamVolume(AudioManager.STREAM_ALARM, vol, 0);
-                        if (app) {
-                            builder.setSound(uri, AudioManager.STREAM_ALARM);
-                        }
-                        if (!app) {
-                            builder.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert), AudioManager.STREAM_ALARM);
-                        }
+                    OreoSou = true;
+                    final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                    int vol = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+                    currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+                    vo = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+                    audioManager.setStreamVolume(AudioManager.STREAM_ALARM, vol, 0);
+                    if (app) {
+                        builder.setSound(uri, AudioManager.STREAM_ALARM);
                     }
+                    if (!app) {
+                        builder.setSound(url, AudioManager.STREAM_ALARM);
+                    }
+                }else {
+                    OreoSou = false;
                 }
-                if(ShabbatM)    {
+                if (ShabbatM) {
                     int finishTime = Integer.parseInt(sp.getString("timeK", "6")); //6 secs
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         public void run() {
-                            if(sp.getBoolean("ride",false)) {
+                            if (sp.getBoolean("ride", false)) {
                                 notifManager.cancelAll();
-                                builder.setVibrate(lng).setSound(null).setChannelId(CNL);
+                                builder.setVibrate(lng).setSound(null).setChannelId(CnlWin);
                                 Notification mNotification = builder.build();
                                 notifManager.notify(0, mNotification);
-                            }
-                            else {
+                            } else {
                                 notifManager.cancel(NOTIF_ID);
-                                builder.setVibrate(lng).setSound(null);
+                                builder.setVibrate(lng).setSound(null).setChannelId(CnlWin);
                                 Notification mNotification = builder.build();
                                 notifManager.notify(++NOTIF_ID, mNotification);
                             }
-                            final AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+                            final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
                             //int a = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
                             //Toast.makeText(getApplicationContext(),"maxVol: " + a + "\noldVol: " + currentVolume,Toast.LENGTH_LONG).show();
                             audioManager.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
+                            mMediaPlayer = new MediaPlayer();
                             try {
                                 mMediaPlayer.setVolume(vo, vo);
-                            }catch (Exception e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
                     }, finishTime * 1000);
                 }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    String cnlId = "generated" + Calendar.getInstance().getTimeInMillis();
+                    AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
+                    NotificationChannel serviceChannel = new NotificationChannel(cnlId, "ערוץ זמני מותאם אישית", NotificationManager.IMPORTANCE_HIGH);
+                    serviceChannel.enableVibration(OreoVib);
+                    serviceChannel.setBypassDnd(true);
+                    serviceChannel.setDescription("התראות עבור אירועי חירום");
+                    serviceChannel.enableLights(true);
+                    serviceChannel.setShowBadge(true);
+                    serviceChannel.setLightColor(Color.RED);
+                    if (OreoSou) {
+                        if (app)
+                            serviceChannel.setSound(uri, attributes);
+                        else
+                            serviceChannel.setSound(url, attributes);
+                    }else
+                        serviceChannel.setSound(null, attributes);
+                    serviceChannel.setGroup(Grp3);
+                    manager.createNotificationChannel(serviceChannel);
+                    builder.setChannelId(cnlId);
+                }
             }
             Notification mNotification = builder.build();
-            if(sp.getBoolean("loop",false)) {
+            if (sp.getBoolean("loop", false)) {
                 mNotification.flags |= Notification.FLAG_INSISTENT;
             }
-            if(sp.getBoolean("ride",false)) {
+            if (sp.getBoolean("ride", false)) {
                 notifManager.cancelAll();
                 notifManager.notify(notNum, mNotification);
-            } else
+            } else {
                 notNum = ++NOTIF_ID;
                 notifManager.notify(NOTIF_ID, mNotification);
             }
+        }
             /**/
             if (win && (callType || testAp)) {
                 Intent i = new Intent(context, smsRes.class);
