@@ -6,6 +6,7 @@ import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -62,6 +63,12 @@ public class Applicatio extends MultiDexApplication {
         IntentFilter filter = new IntentFilter("MADA_APP");
         filter.addAction("atlow.chemi.MyMada.MADA_APP");
         this.registerReceiver(receiver, filter);
+        IntentFilter filter2 = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
+        filter2.addAction(Intent.ACTION_PACKAGE_RESTARTED);
+        filter2.addAction(Intent.ACTION_PACKAGE_ADDED);
+        filter2.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        BroadcastReceiver bcr = new BootCompleteReceiver();
+        this.registerReceiver(bcr, filter2);
     }
 
     private void createNotificationChannel()    {
