@@ -75,10 +75,10 @@ public class GlazgoCalc extends Fragment {
                 i += (verb.getSelectedItemPosition()+1);
                 i += (motor.getSelectedItemPosition()+1);
                 String s = "ציון גלאזגו הוא: " + i;
-                SpannableString ss = new SpannableString(s + "\nיילוד בציון נמוך מ4 זקוק להחייאה מיידית.\nניקוד בין 4 ל6 מסמן על יילוד במצוקה בינונית הזקוק לחמצון והמרצה.\nניקוד גבוה מ6 הינו אינדיקציה ליילוד תקין.");
-                if (i < 4)
+                SpannableString ss = new SpannableString(s + "\nציון נמוך מ9 מוגדר כתרדמת חמורה.\nציון בין 9 ל12 מוגדר כתרדמת בינונית.\nציון גבוה מ12 מוגדר כתרדמת מינורית.");
+                if (i < 9)
                     ss.setSpan(new ForegroundColorSpan(Color.RED),0,s.length(),0);
-                else if (i > 6)
+                else if (i > 12)
                     ss.setSpan(new ForegroundColorSpan(Color.rgb(70,178,58)),0,s.length(),0);
                 else
                     ss.setSpan(new ForegroundColorSpan(Color.rgb(221, 190, 66)),0,s.length(),0);
