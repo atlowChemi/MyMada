@@ -44,6 +44,7 @@ public class UtillTools extends AppCompatActivity {
     private VitalsChecker vitalsChecker= new VitalsChecker();
     private OxyCalc oxyCalc = new OxyCalc();
     private ApgarCalc apgarCalc = new ApgarCalc();
+    private GlazgoCalc glazgoCalc = new GlazgoCalc();
     private BlsProtocoles blsProtocoles = new BlsProtocoles();
 
     /**
@@ -112,14 +113,16 @@ public class UtillTools extends AppCompatActivity {
             if (position == 5)
                 return apgarCalc;
             if (position == 6)
+                return glazgoCalc;
+            if (position == 7)
                 return blsProtocoles;
             return new MetroActivity();
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 7;
+            // Show 8 total pages.
+            return 8;
         }
 
         @Override
@@ -138,6 +141,8 @@ public class UtillTools extends AppCompatActivity {
                 case 5:
                     return getApplicationContext().getResources().getString(R.string.button_ag);
                 case 6:
+                    return getApplicationContext().getResources().getString(R.string.button_gl);
+                case 7:
                     return getApplicationContext().getResources().getString(R.string.button_p);
             }
             return null;

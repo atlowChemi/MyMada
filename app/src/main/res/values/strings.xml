@@ -155,6 +155,7 @@
     <string name="button_f">שעון צירים</string>
     <string name="button_g">מחשבון חמצן</string>
     <string name="button_ag">מחשבון אפגאר</string>
+    <string name="button_gl">מחשבון גלאזגו</string>
     <string name="button_p">פרוטוקלים</string>
     <string name="button_h">כלי עזר</string>
     <string name="button_j">דיווחים למוקד</string>
@@ -280,6 +281,31 @@
         <item>אין נשימה</item>
         <item>נשימה חלשה / איטית</item>
         <item>בכי חזק</item>
+    </string-array>
+    <string name="eyeOpening">פקיחת עיניים</string>
+    <string-array name="eyes">
+        <item>אין</item>
+        <item>פתיחת עיניים בכאב</item>
+        <item>ציות להוראה</item>
+        <item>ספונטנית</item>
+    </string-array>
+
+    <string name="verbal">דיבור</string>
+    <string-array name="verb">
+        <item>אין דיבור</item>
+        <item>השמעת קולות</item>
+        <item>מילים ללא הקשר</item>
+        <item>בילבול, חוסר התמצאות</item>
+        <item>מתמצא ומדבר לעניין</item>
+    </string-array>
+    <string name="motor">תנועה</string>
+    <string-array name="moto">
+        <item>אין תנועה</item>
+        <item>יישור גפיים בכאב</item>
+        <item>כיפוף גפיים בכאב</item>
+        <item>רתיעה מכאב</item>
+        <item>תגובה לפי מיקום הכאב</item>
+        <item>ציות לפקודות</item>
     </string-array>
     <string name="title_activity_utills_and_tools">כלי עזר</string>
     <string name="section_format" translatable="false">Hello World from section: %1$d</string>

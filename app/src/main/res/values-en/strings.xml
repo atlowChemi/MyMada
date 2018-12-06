@@ -304,6 +304,7 @@
     <string name="navigation_drawer_open">open drawer</string>
     <string name="navigation_drawer_close">close drawer</string>
     <string name="button_ag">APGAR calculator</string>
+    <string name="button_gl">Glazgow calculator</string>
     <string name="Appe">Appearance</string>
     <string-array name="Appes">
         <item>blue or pale all over</item>
@@ -333,6 +334,32 @@
         <item>absent</item>
         <item>weak, irregular, gasping</item>
         <item>strong, robust cry</item>
+    </string-array>
+
+    <string name="eyeOpening">Eye Opening</string>
+    <string-array name="eyes">
+        <item>None</item>
+        <item>To pressure</item>
+        <item>To speech</item>
+        <item>Spontaneous</item>
+    </string-array>
+
+    <string name="verbal">Verbal Response</string>
+    <string-array name="verb">
+        <item>None</item>
+        <item>Sounds</item>
+        <item>Words</item>
+        <item>Confused</item>
+        <item>Orientated</item>
+    </string-array>
+    <string name="motor">Verbal Response</string>
+    <string-array name="moto">
+        <item>None</item>
+        <item>Extension</item>
+        <item>Abnormal Flexion</item>
+        <item>Normal Flexion</item>
+        <item>Localizing</item>
+        <item>Obeying  Commands</item>
     </string-array>
     <string name="button_p">protocols</string>
     <string name="title_activity_utills_and_tools">tools</string>
