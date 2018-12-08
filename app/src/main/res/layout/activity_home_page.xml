@@ -11,7 +11,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/ColorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
@@ -22,9 +22,25 @@
     android:layout_height="match_parent"
     android:id="@+id/homeRL"
     tools:context="atlow.chemi.mymada.HomePage">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:background="@drawable/curve_toolbar_bg"
+        android:clickable="false"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/rv"
+        android:layout_marginTop="22dp"
+        android:layout_marginRight="11dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginBottom="55dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
@@ -37,7 +53,6 @@
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:background="@drawable/moked"/>
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="85dp"

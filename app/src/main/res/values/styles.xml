@@ -41,7 +41,11 @@
         <item name="colorControlHighlight">@color/ColorAqua</item>
     </style>
 
-
+    <style name="MyMaterialTheme.SmsRes" parent="MyMaterialTheme.Base">
+        <item name="colorPrimary">@color/OldPrimary</item>
+        <item name="colorPrimaryDark">@color/OldPrimaryDark</item>
+        <item name="colorAccent">@color/OldPrimary</item>
+    </style>
     <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
 
     </style>
@@ -50,13 +54,13 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">@color/ColorPrimary</item>
-        <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/ColorPrimary</item>
         <item name="colorAccent">@color/ColorPrimary</item>
     </style>
 
     <style name="PreTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/ColorPrimary</item>
-        <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/ColorPrimary</item>
 
         <item name="android:windowBackground">@color/materialGrey300</item>
         <item name="android:colorForegroundInverse">@color/Black</item>

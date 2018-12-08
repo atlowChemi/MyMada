@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-feature
         android:name="android.hardware.telephony"
@@ -35,7 +36,7 @@
             android:label="@string/title_activity_sms_res"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/MyMaterialTheme" />
+            android:theme="@style/MyMaterialTheme.SmsRes" />
 
         <receiver
             android:name=".SMSReceiver"
@@ -51,7 +52,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".SMSMonitorService" />
+        <service android:name=".SMSMonitorService"
+            android:label="@string/smsMoni"/>
 
         <activity
             android:name=".SettingsActivity"
@@ -187,7 +189,7 @@
             android:label="@string/button_h"
             android:parentActivityName=".HomePage"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/MyMaterialTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="atlow.chemi.mymada.HomePage" />
@@ -208,7 +210,7 @@
             android:name=".UtillTools"
             android:label="@string/button_h"
             android:parentActivityName=".HomePage"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/MyMaterialTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="atlow.chemi.mymada.HomePage" />

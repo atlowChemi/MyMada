@@ -5,10 +5,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.app.Application;
@@ -19,6 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
+import android.support.v4.content.ContextCompat;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -58,6 +61,15 @@ public class Applicatio extends MultiDexApplication {
         Configuration configuration = resources.getConfiguration();
         configuration.locale = new Locale(lng);
         resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+        boolean mapp = sharedPreferences.getBoolean("Mapp", false);
+        ComponentName component = new ComponentName(getApplicationContext(), SMSReceiver.class);
+        if (mapp) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent serviceIntent = new Intent(getApplicationContext(), SMSMonitorService.class);
+                ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
+            } else
+                getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        }
 
         receiver = new GrobootRec();
         IntentFilter filter = new IntentFilter("MADA_APP");

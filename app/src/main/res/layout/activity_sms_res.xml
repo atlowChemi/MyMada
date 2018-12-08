@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/MyMaterialTheme.SmsRes"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".smsRes"
@@ -43,7 +44,7 @@
         android:id="@+id/newC"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:background="@color/ColorPrimary"
+        android:background="@color/OldPrimary"
         android:layout_alignParentTop="true"
         android:gravity="center|top"
         android:textStyle="bold" />

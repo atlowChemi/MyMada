@@ -9,10 +9,12 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -34,11 +36,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -54,8 +60,10 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 
 public class HomePage extends AppCompatActivity {
     private Boolean isSMST = false;
@@ -69,10 +77,13 @@ public class HomePage extends AppCompatActivity {
     String[] permissionsRequired = new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE,android.Manifest.permission.READ_SMS, Manifest.permission.READ_PHONE_STATE};
     private SharedPreferences permissionStatus;
     private boolean sentToSettings = false;
+    private homeBAdapter adapter;
+    private static List<HomeB> albumList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home_page);
         context = this;
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
@@ -84,141 +95,47 @@ public class HomePage extends AppCompatActivity {
         }catch (Exception e)    {
             e.printStackTrace();
         }
-        setContentView(R.layout.activity_home_page);
         FirebaseMessaging.getInstance().subscribeToTopic("news");
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-7600269766434003/5732229370");
         mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
-        btn1 = (Button) findViewById(R.id.b1);
-        btn2 = (Button) findViewById(R.id.b3);
-        btn3 = (Button) findViewById(R.id.b4);
-        btn4 = (Button) findViewById(R.id.b5);
-        btn100 = (Button) findViewById(R.id.b100);
-        btn1.setOnTouchListener(new View.OnTouchListener() {
+
+        RecyclerView rv = (RecyclerView)findViewById(R.id.rv);
+        GridLayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 2);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        boolean x = oldX1 - event.getX() > 30 || event.getX() - oldX1 > 30;
-                        boolean y = oldY1 - event.getY() > 30 || event.getY() - oldY1 > 30;
-                        if (x || y)
-                            isMove1 = true;
-                        return true;
-                    case MotionEvent.ACTION_DOWN:
-                        oldY1 = event.getY();
-                        oldX1 = event.getX();
-                        isMove1 = false;
-                        btn1.setAlpha(0.4f);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        btn1.setAlpha(1f);
-                        if (!isMove1)
-                            btn1.performClick();
-                        return true;
-                }
-                return false;
+            public int getSpanSize(int i) {
+                return i == 0 ? 2 : 1;
             }
         });
-        btn100.setOnTouchListener(new View.OnTouchListener() {
+        albumList = new ArrayList<>();
+        adapter = new homeBAdapter(HomePage.this, albumList);
+        rv.setLayoutManager(layoutManager);
+        //rv.setRotationY(180);
+        rv.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(7), true));
+        rv.setItemAnimator(new DefaultItemAnimator());
+        rv.setAdapter(adapter);
+
+        HomeB Tool = new HomeB("tol", R.drawable.btn_shadow_tol);
+        albumList.add(Tool);
+        HomeB Moked = new HomeB("mok", R.drawable.btn_shadow_mok);
+        albumList.add(Moked);
+        HomeB Test = new HomeB("tes", R.drawable.btn_shadow_tes);
+        albumList.add(Test);
+        HomeB Contact = new HomeB("con", R.drawable.btn_shadow_con);
+        albumList.add(Contact);
+        HomeB Info = new HomeB("inf", R.drawable.btn_shadow_inf);
+        albumList.add(Info);
+
+        adapter.notifyDataSetChanged();
+        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        boolean x = oldX100 - event.getX() > 30 || event.getX() - oldX100 > 30;
-                        boolean y = oldY100 - event.getY() > 30 || event.getY() - oldY100 > 30;
-                        if (x || y)
-                            isMove100 = true;
-                        return true;
-                    case MotionEvent.ACTION_DOWN:
-                        oldY100 = event.getY();
-                        oldX100 = event.getX();
-                        isMove100 = false;
-                        btn100.setAlpha(0.4f);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        btn100.setAlpha(1f);
-                        if (!isMove100)
-                            btn100.performClick();
-                        return true;
-                }
-                return false;
-            }
-        });
-        btn2.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        boolean x = oldX2 - event.getX() > 30 || event.getX() - oldX2 > 30;
-                        boolean y = oldY2 - event.getY() > 30 || event.getY() - oldY2 > 30;
-                        if (x || y)
-                            isMove2 = true;
-                        return true;
-                    case MotionEvent.ACTION_DOWN:
-                        oldX2 = event.getX();
-                        oldY2 = event.getY();
-                        isMove2 = false;
-                        btn2.setAlpha(0.4f);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        btn2.setAlpha(1f);
-                        if (!isMove2)
-                            btn2.performClick();
-                        return true;
-                }
-                return false;
-            }
-        });
-        btn3.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        boolean x = oldX3 - event.getX() > 30 || event.getX() - oldX3 > 30;
-                        boolean y = oldY3 - event.getY() > 30 || event.getY() - oldY3 > 30;
-                        if (x || y)
-                            isMove3 = true;
-                        return true;
-                    case MotionEvent.ACTION_DOWN:
-                        oldX3 = event.getX();
-                        oldY3 = event.getY();
-                        isMove3 = false;
-                        btn3.setAlpha(0.4f);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        btn3.setAlpha(1f);
-                        if (!isMove3)
-                            btn3.performClick();
-                        return true;
-                }
-                return false;
-            }
-        });
-        btn4.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        boolean x = oldX4 - event.getX() > 30 || event.getX() - oldX4 > 30;
-                        boolean y = oldY4 - event.getY() > 30 || event.getY() - oldY4 > 30;
-                        if (x || y)
-                            isMove4 = true;
-                        return true;
-                    case MotionEvent.ACTION_DOWN:
-                        oldX4 = event.getX();
-                        oldY4 = event.getY();
-                        isMove4 = false;
-                        btn4.setAlpha(0.4f);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        btn4.setAlpha(1f);
-                        if (!isMove4)
-                            btn4.performClick();
-                        return true;
-                }
-                return false;
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_SETTLING)
+                    adapter.setBtnsAlpha();
+                super.onScrollStateChanged(recyclerView, newState);
             }
         });
         permissionStatus = getSharedPreferences("permissionStatus",MODE_PRIVATE);
@@ -286,39 +203,6 @@ public class HomePage extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         Boolean Privacy = sharedPreferences.getBoolean("privacy", false);
         Boolean oldU = sharedPreferences.getBoolean("oldU", false);
-        if (!Privacy) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-            builder.setMessage(getResources().getString(R.string.privacyMsg)).setCancelable(false)
-                    .setPositiveButton(getResources().getString(R.string.title_activity_privacy), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent(getApplicationContext(), PrivacyActivity.class);
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            final AlertDialog alert = builder.create();
-            TextView textView = (TextView) alert.findViewById(android.R.id.message);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
-            textView = (TextView) alert.findViewById(android.R.id.title);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
-            alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialogInterface) {
-                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                    ok.setTypeface(myTypeface);
-                    canc.setTypeface(myTypeface);
-                    canc.setTextColor(getResources().getColor(R.color.ColorPrimary));
-                }
-            });
-            alert.show();
-        }
         if (!oldU) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
             builder.setMessage(getResources().getString(R.string.newSettings)).setCancelable(false)
@@ -352,159 +236,39 @@ public class HomePage extends AppCompatActivity {
             });
             alert.show();
         }
-    }
-    public void mok(View view) {
-        SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
-        Boolean realM = sharedPreferences.getBoolean("realM", false), isMADA = false;
-        if (!realM) {
-            isMADA = isPI(getApplicationContext(), "com.groboot.mdaemergency");
-            try {
-                smsGot();
-            } catch (Exception e) {
-                isSMST = false;
-            }
-        }
-        Intent intent;
-        if (realM || (isMADA && isSMST)) {
-            intent = new Intent(getApplicationContext(), MokedPage.class);
-            SharedPreferences.Editor sp1 = sharedPreferences.edit();
-            sp1.putBoolean("realM", true);
-            sp1.apply();
-        }else
-            intent = new Intent(getApplicationContext(), lockPage.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-    public void con(View view) {
-        SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
-        Boolean realM = sharedPreferences.getBoolean("realM", false), isMADA = false;
-        if (!realM) {
-            isMADA = isPI(getApplicationContext(), "com.groboot.mdaemergency");
-            try {
-                smsGot();
-            } catch (Exception e) {
-                isSMST = false;
-            }
-        }
-        if (realM || (isMADA && isSMST)) {
-            Intent intent = new Intent(getApplicationContext(), contactActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }else   {
+        if (!Privacy) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-            builder.setTitle("שים לב!").setMessage("האפליקציה לא מזהה אותך כמתנדב. האם אתה מעוניין בקוד הפעלה או ביצירת קשר רגילה?").setCancelable(true)
-                    .setNegativeButton("אני רוצה קוד הפעלה", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(getApplicationContext(), codeRequest.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            builder.setMessage(getResources().getString(R.string.privacyMsg)).setCancelable(false)
+                    .setPositiveButton(getResources().getString(R.string.title_activity_privacy), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent(getApplicationContext(), PrivacyActivity.class);
                             startActivity(intent);
                         }
-                    }).setPositiveButton("יצירת קשר", new DialogInterface.OnClickListener() {
+                    })
+                    .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            TextView textView = (TextView) alert.findViewById(android.R.id.message);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            textView = (TextView) alert.findViewById(android.R.id.title);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            alert.setOnShowListener(new DialogInterface.OnShowListener() {
                 @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent(getApplicationContext(), contactActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                public void onShow(DialogInterface dialogInterface) {
+                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                    ok.setTypeface(myTypeface);
+                    canc.setTypeface(myTypeface);
+                    canc.setTextColor(getResources().getColor(R.color.ColorPrimary));
                 }
             });
-            builder.show();
+            alert.show();
         }
-        //Toast.makeText(getApplicationContext(),"עובדים על זה...",Toast.LENGTH_SHORT).show();
-    }
-    public void tol(View view) {
-        Intent intent = new Intent(getApplicationContext(), UtillTools.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-    public void inf(View view) {
-        Intent intent = new Intent(getApplicationContext(), InfoActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-    public void tes(View view) {
-        final SharedPreferences sp = getSharedPreferences("Settings", 0);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-        builder.setMessage(getResources().getString(R.string.TestCallMsg)).setCancelable(true)
-                .setPositiveButton(getResources().getString(R.string.TestCallSMS), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if ((sp.getBoolean("not", true) || sp.getBoolean("win", true)) && sp.getBoolean("Mapp", false)) {
-                            if (sp.getBoolean("cut", false) && !sp.getBoolean("callT3", true)) {
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.MISHM_reco_off), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency");
-                                PendingIntent testPI;
-                                if (launchIntent != null) {
-                                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                                    testPI = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), launchIntent, 0);
-                                } else {
-                                    testPI = null;
-                                }
-                                Intent intent = new Intent("atlow.chemi.MyMada.MADA_APP");
-                                intent.setAction("atlow.chemi.MyMada.MADA_APP");
-                                intent.putExtra("callT", 3);
-                                intent.putExtra("text", getResources().getString(R.string.TEAMTest));
-                                GrobootRec.madasApp(testPI);
-                                sendBroadcast(intent);
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.APP_reco_off), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                })
-                .setNegativeButton(getResources().getString(R.string.TestCallApp), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if ((sp.getBoolean("not", true) || sp.getBoolean("win", true)) && sp.getBoolean("Mapp", false)) {
-                            if (sp.getBoolean("cut", false) && !sp.getBoolean("callT1", true)) {
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.CONAN_reco_off), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency");
-                                PendingIntent testPI;
-                                if (launchIntent != null) {
-                                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                                    testPI = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), launchIntent, 0);
-                                } else {
-                                    testPI = null;
-                                }
-                                Intent intent = new Intent("atlow.chemi.MyMada.MADA_APP");
-                                intent.setAction("atlow.chemi.MyMada.MADA_APP");
-                                intent.putExtra("callT", 1);
-                                intent.putExtra("text", getResources().getString(R.string.CONANTest));
-                                GrobootRec.madasApp(testPI);
-                                sendBroadcast(intent);
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.APP_reco_off), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        TextView textView = (TextView) alert.findViewById(android.R.id.message);
-        if (textView != null)
-            textView.setTypeface(myTypeface);
-        textView = (TextView) alert.findViewById(android.R.id.title);
-        if (textView != null)
-            textView.setTypeface(myTypeface);
-        alert.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                ok.setTypeface(myTypeface);
-                canc.setTypeface(myTypeface);
-                canc.setTextColor(getResources().getColor(R.color.ColorPrimary));
-            }
-        });
-        alert.show();
-    }
-    public static boolean isPI(Context context, String packageName) {
-        final PackageManager packageManager = context.getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
-        if (intent == null) {
-            return false;
-        }
-        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return list.size() > 0;
     }
     private void smsGot() {
         try {
@@ -526,6 +290,44 @@ public class HomePage extends AppCompatActivity {
             isSMST = false;
             e.printStackTrace();
         }
+    }
+    private class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+        GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position == 0) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
+    }
+    /**
+     * Converting dp to pixel
+     */
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
     @Override
     protected void onResume() {
@@ -564,7 +366,6 @@ public class HomePage extends AppCompatActivity {
             }
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
@@ -577,7 +378,6 @@ public class HomePage extends AppCompatActivity {
         menu.findItem(R.id.action_settings).setTitle(sett);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);

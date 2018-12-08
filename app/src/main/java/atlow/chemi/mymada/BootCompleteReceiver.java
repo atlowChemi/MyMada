@@ -22,11 +22,13 @@ public class BootCompleteReceiver extends BroadcastReceiver {
             boolean mapp = sp.getBoolean("Mapp", false);
             ComponentName component = new ComponentName(context, SMSReceiver.class);
             int status = context.getPackageManager().getComponentEnabledSetting(component);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Intent serviceIntent = new Intent(context, SMSMonitorService.class);
-                ContextCompat.startForegroundService(context, serviceIntent);
-            } else
-                context.getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+            if (mapp) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Intent serviceIntent = new Intent(context, SMSMonitorService.class);
+                    ContextCompat.startForegroundService(context, serviceIntent);
+                } else
+                    context.getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+            }
         }
     }
 }
