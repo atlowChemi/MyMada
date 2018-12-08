@@ -84,6 +84,12 @@ public class smsRes extends AppCompatActivity {
             case 4:
                 string = "T4";
                 break;
+            case 5:
+                string = "T3";
+                break;
+            case 6:
+                string = "T6";
+                break;
             default:
                 string = "T1";
                 break;
@@ -103,7 +109,7 @@ public class smsRes extends AppCompatActivity {
         boolean soun;
         boolean app;
         Uri uri;
-        if (string.equals("T4"))    {
+        if (string.equals("T6") || string.equals("T4"))    {
             vib = SP.getBoolean("NvibT4", true);
             soun = SP.getBoolean("NsouT4", true);
             app = SP.getBoolean("NappT4",false);
@@ -227,7 +233,13 @@ public class smsRes extends AppCompatActivity {
                 m.setText("משמרת");
                 break;
             case 4:
-                m.setText("מנהלתית");
+                m.setText("הודעה מנהלתית");
+                break;
+            case 5:
+                m.setText("משמרת");
+                break;
+            case 6:
+                m.setText("שירות");
                 break;
             default:
                 m.setText("כונן");
@@ -238,7 +250,20 @@ public class smsRes extends AppCompatActivity {
         String KodR;
         String mikre;
         String Address;
-        if (!Stxt.contains("אירוע חדש") && !Stxt.contains("הודעת קבוצת התראה צוות") && !Stxt.contains("הודעת צוות"))    {
+        if (callT == 5) {
+            Stxt = Stxt.substring(0, Stxt.indexOf("//"));
+            try {
+                    time = getBetweenStrings(Stxt, "בשעה ", " ");
+            }catch (Exception e1) {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                time = sdf.format(now.getTime());
+            }
+            String ti = getResources().getString(R.string.time, time);
+            t.setText(ti);
+            a.setText(Stxt);
+            a.setMaxLines(5);
+            a.setMovementMethod(new ScrollingMovementMethod());
+        } else if (!Stxt.contains("אירוע חדש") && !Stxt.contains("הודעת קבוצת התראה צוות") && !Stxt.contains("הודעת צוות"))    {
             try {
                 time = getBetweenStrings(Stxt, "", "מונה:");
             } catch (Exception e) {

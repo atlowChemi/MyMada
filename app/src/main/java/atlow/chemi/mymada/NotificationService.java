@@ -17,6 +17,10 @@ import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
+import java.util.Objects;
+
 import static atlow.chemi.mymada.Applicatio.CnlBg;
 import static atlow.chemi.mymada.Applicatio.manager;
 
@@ -69,7 +73,7 @@ public class NotificationService extends NotificationListenerService {
         if (Mapp && (statusBarNotification.getPackageName().contains("mdaemergency") || statusBarNotification.getPackageName().equals("atlow.mymadaadmin"))) {
             Bundle extras = statusBarNotification.getNotification().extras;
             String pack = statusBarNotification.getPackageName();
-            String ticker = "";
+            String ticker;
             try {
                 ticker = statusBarNotification.getNotification().tickerText.toString();
             }catch (Exception e)    {
@@ -78,11 +82,12 @@ public class NotificationService extends NotificationListenerService {
             String title = extras.getString("android.title");
             try {
                 if (extras.getCharSequence("android.text") != null)
-                text = extras.getCharSequence("android.text").toString();
+                    text = Objects.requireNonNull(extras.getCharSequence("android.text")).toString();
                 else
                     text = "תקלה";
             }catch (Exception e)  {
                 text = "\nתקלה!";
+                Crashlytics.log("notification text is null!\n" + e);
             }
             Intent intent = new Intent("MADA_APP");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -95,21 +100,33 @@ public class NotificationService extends NotificationListenerService {
                 if (title.equals("מגן דוד אדום")) {
                     return;
                 }
+                //conan, group, mishmeret, minhala, oldType, sherut.
                 if (title.contains("*אירוע חדש*")) {
-                    if(text.contains("אירוע חדש"))
+                    if (text.contains("שירות") || text.contains("כלכלה") || text.contains("תפילה"))
+                        intent.putExtra("callT", 6);
+                    else if(text.contains("אירוע חדש"))
                         intent.putExtra("callT",1);
                     else if(text.contains("הודעת קבוצת"))
                         intent.putExtra("callT",2);
                     else if(text.contains("הודעת צוות"))
                         intent.putExtra("callT",3);
-                    else
-                        intent.putExtra("callT", 1);
+                    else if (text.contains("על מידע זה חל חיסיון רפואי")) {
+                        intent.putExtra("callT", 5);
+                    }
+                    else {
+                        if (text.contains("על מידע זה חל חיסיון רפואי"))
+                            intent.putExtra("callT", 5);
+                        else
+                            intent.putExtra("callT", 1);
+                    }
                     String time = title.replace("*אירוע חדש*", "");
                     intent.putExtra("time", time);
                     GrobootRec.madasApp(statusBarNotification.getNotification().contentIntent);
                     sendBroadcast(intent);
                 }else if (title.contains("*הודעה מנהלתית חדשה*"))   {
                     intent.putExtra("callT", 4);
+                    if (text.contains("על מידע זה חל חיסיון רפואי"))
+                        intent.putExtra("callT", 5);
                     String time = title.replace("*הודעה מנהלתית חדשה*", "");
                     intent.putExtra("time", time);
                     GrobootRec.madasApp(statusBarNotification.getNotification().contentIntent);

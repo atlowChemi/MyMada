@@ -51,10 +51,12 @@ public class InfoActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_MOVE:
-                        boolean x = oldX1 - event.getX() > 30 || event.getX() - oldX1 > 30;
-                        boolean y = oldY1 - event.getY() > 30 || event.getY() - oldY1 > 30;
-                        if (x || y)
+                        boolean x = oldX1 - event.getX() > 140 || event.getX() - oldX1 > 140;
+                        boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                        if (x || y) {
                             isMove1 = true;
+                            privBtn.setAlpha(1f);
+                        }
                         return true;
                     case MotionEvent.ACTION_DOWN:
                         oldY1 = event.getY();

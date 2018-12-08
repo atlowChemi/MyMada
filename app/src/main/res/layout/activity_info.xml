@@ -50,7 +50,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:background="@drawable/privacy"/>
+            android:background="@drawable/btn_shadow_pri"/>
 
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -20,6 +20,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -85,8 +87,14 @@ public class GrobootRec extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), hachtava, 0);
         PendingIntent testPI = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), launchIntent, 0);
         if (intent != null) {
-            text = intent.getCharSequenceExtra("text").toString();
+            try {
+                text = intent.getCharSequenceExtra("text").toString();
+            }catch (NullPointerException e) {
+                text = "";
+                Crashlytics.log("text extra is null!\n" + e);
+            }
             callT = intent.getIntExtra("callT", 1);
+            Log.d("callT", "" + callT);
             switch (callT)  {
                 case 1:
                     callType = sp.getBoolean("callT1", true);
@@ -108,8 +116,18 @@ public class GrobootRec extends BroadcastReceiver {
                     string = "T4";
                     CNL = CnlMinhala + notSP.getInt(CnlMinhala, 0);
                     break;
+                case 5:
+                    callType = sp.getBoolean("callT3", true);
+                    string = "T3";
+                    CNL = CnlMishmeret + notSP.getInt(CnlMishmeret, 0);
+                    break;
+                case 6:
+                    callType = sp.getBoolean("callT6", true);
+                    string = "T6";
+                    CNL = CnlMinhala + notSP.getInt(CnlMinhala, 0);
+                    break;
                 default:
-                    callType = true;
+                    callType = sp.getBoolean("callT1", true);
                     string = "T1";
                     CNL = CnlConan + notSP.getInt(CnlConan, 0);
                     break;
@@ -121,11 +139,11 @@ public class GrobootRec extends BroadcastReceiver {
         if(testAp || !cut)  {
             callType = true;
         }
-        if (string.equals("T4"))    {
-            vib = sp.getBoolean("Nvib" + string, true);
-            sou = sp.getBoolean("Nsou" + string, true);
-            app = sp.getBoolean("Napp" + string, false);
-            uri = Uri.parse(sp.getString("NuRi" + string, ""));
+        if (string.equals("T6") || string.equals("T4")) {
+            vib = sp.getBoolean("NvibT4", true);
+            sou = sp.getBoolean("NsouT4", true);
+            app = sp.getBoolean("NappT4", false);
+            uri = Uri.parse(sp.getString("NuRiT4", ""));
         }   else if (cut) {
             vib = sp.getBoolean("Nvib" + string, true);
             sou = sp.getBoolean("Nsou" + string, true);
@@ -284,7 +302,6 @@ public class GrobootRec extends BroadcastReceiver {
                 i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                 i.putExtra("notNum", notNum);
                 i.putExtra("loop", sp.getBoolean("loop", false));
-                //TODO: make smsRes shut off the notification (remove and regenerate);
                 i.putExtra("callT", callT);
 
                 context.startActivity(i);
