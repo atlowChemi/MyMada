@@ -33,7 +33,7 @@
     <extra android:name="type" android:value="adva" />
 </header>
     <header
-        android:fragment="atlow.chemi.mymada.SettingsFragemnt"
+        android:fragment="atlow.chemi.mymada.LangFragment"
         android:icon="@drawable/ic_translate"
         android:title="@string/pref_header_language"
         android:summary="@string/pref_head_description_lang"

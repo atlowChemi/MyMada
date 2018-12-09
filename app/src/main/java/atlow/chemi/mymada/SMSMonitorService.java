@@ -21,21 +21,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.media.AudioAttributesCompat;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import static atlow.chemi.mymada.Applicatio.Cnl101;
 import static atlow.chemi.mymada.Applicatio.CnlBg;
-import static atlow.chemi.mymada.Applicatio.CnlConan;
-import static atlow.chemi.mymada.Applicatio.CnlGroup;
-import static atlow.chemi.mymada.Applicatio.CnlMinhala;
-import static atlow.chemi.mymada.Applicatio.CnlMishmeret;
 import static atlow.chemi.mymada.Applicatio.CnlWin;
 import static atlow.chemi.mymada.Applicatio.Grp3;
 import static atlow.chemi.mymada.Applicatio.manager;
@@ -43,7 +37,7 @@ import static atlow.chemi.mymada.Applicatio.manager;
 public class SMSMonitorService extends Service {
     private BroadcastReceiver callExplicitReceiver;
     protected static String txtS = "";
-    protected String smsSender = "", string, smsBody = "", CNL;
+    protected String smsSender = "", string, smsBody = "";
     final protected int NOTIF_ID = 1;
     protected static int numMessages = 0;
     protected PendingIntent piR;
@@ -123,42 +117,54 @@ public class SMSMonitorService extends Service {
                     if (smsSender.equals("MADA") || smsSender.equals("101") || smsSender.equals("Mada") || smsSender.contains("7931329")) {
                         Log.v("succ number:", smsSender);
                         if ((smsBody.contains("אירוע חדש") || smsBody.contains("הודעת קבוצת") || smsBody.contains("הודעת צוות"))) {
-                            if (smsBody.contains("אירוע חדש")) {
+                            if (smsBody.contains("שירות") || smsBody.contains("כלכלה") || smsBody.contains("תפילה")) {
+                                //sheirut
+                                callT = 6;
+                                callType = sp.getBoolean("callT6", true);
+                                string = "T6";
+                            } else if (smsBody.contains("אירוע חדש")) {
                                 //conan
                                 callT = 1;
                                 callType = sp.getBoolean("callT1", true);
                                 string = "T1";
-                                CNL = CnlConan + notSP.getInt(CnlConan, 0);
                             } else if (smsBody.contains("הודעת קבוצת")) {
                                 //kvutza
                                 callT = 2;
                                 callType = sp.getBoolean("callT2", true);
                                 string = "T2";
-                                CNL = CnlGroup + notSP.getInt(CnlGroup, 0);
                             } else if (smsBody.contains("הודעת צוות")) {
                                 //shift
                                 callT = 3;
                                 callType = sp.getBoolean("callT3", true);
                                 string = "T3";
-                                CNL = CnlMishmeret + notSP.getInt(CnlMishmeret, 0);
                             } else {
                                 callT = 1;
                                 callType = sp.getBoolean("callT1", true);
                                 string = "T1";
-                                CNL = CnlConan + notSP.getInt(CnlConan, 0);
                             }
                         } else {
-                            //conan
-                            callT = 1;
-                            callType = sp.getBoolean("callT1", true);
-                            string = "T1";
-                            CNL = CnlConan + notSP.getInt(CnlConan, 0);
+                            if (smsBody.contains("על מידע זה חל חיסיון רפואי")) {
+                                //Old SMS nusach
+                                callT = 5;
+                                callType = sp.getBoolean("callT3", true);
+                                string = "T3";
+                            } else {
+                                //conan
+                                callT = 1;
+                                callType = sp.getBoolean("callT1", true);
+                                string = "T1";
+                            }
                         }
                     } else {
                         return;
                     }
                     cut = sp.getBoolean("cut", false);
-                    if (cut) {
+                    if (string.equals("T6") || string.equals("T4")) {
+                        vib = sp.getBoolean("NvibT4", true);
+                        sou = sp.getBoolean("NsouT4", true);
+                        app = sp.getBoolean("NappT4", false);
+                        uri = Uri.parse(sp.getString("NuRiT4", ""));
+                    }   else if (cut) {
                         vib = sp.getBoolean("Nvib" + string, true);
                         sou = sp.getBoolean("Nsou" + string, true);
                         app = sp.getBoolean("Napp" + string, false);
@@ -169,7 +175,6 @@ public class SMSMonitorService extends Service {
                         sou = sp.getBoolean("Nsou", true);
                         app = sp.getBoolean("Napp", false);
                         uri = Uri.parse(sp.getString("NuRi", ""));
-                        CNL = Cnl101 + notSP.getInt(Cnl101, 0);
                     }
                     Calendar now = Calendar.getInstance(TimeZone.getDefault());
                     int hour = now.get(Calendar.HOUR_OF_DAY);
@@ -257,8 +262,6 @@ public class SMSMonitorService extends Service {
                             if (testB)
                                 builder.setStyle(new NotificationCompat.BigTextStyle().bigText("בדיקת סמס!"));
                             if (!win) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                                    builder.setChannelId(CNL);
                                 if (!statVib || silentVib) {
                                     OreoVib = true;
                                     if (vib)
@@ -266,11 +269,6 @@ public class SMSMonitorService extends Service {
                                     else {
                                         OreoVib = false;
                                         builder.setVibrate(lng);
-                                        //TODO: check if vibration stops like this
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                            manager.getNotificationChannel(CNL).setVibrationPattern(lng);
-                                            manager.getNotificationChannel(CNL).enableVibration(false);
-                                        }
                                     }
                                 }
                                 if (sou && (!stat || !silent)) {
@@ -288,8 +286,6 @@ public class SMSMonitorService extends Service {
                                     }
                                 }else {
                                     OreoSou = false;
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                                        manager.getNotificationChannel(CNL).setSound(null, null);
                                 }
                                 if (ShabbatM) {
                                     int finishTime = Integer.parseInt(sp.getString("timeK", "6")); //6 secs

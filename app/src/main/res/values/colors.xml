@@ -9,6 +9,7 @@
     <color name="ColorAqua">#32a7c3</color>
     <color name="Black">#000000</color>
     <color name="Shadow">#3e000000</color>
+    <color name="ShadowEnd">#07000000</color>
     <color name="White">#FFFFFF</color>
     <color name="Grey">#46314d62</color>
     <color name="GreyNav">#223e3e3e</color>

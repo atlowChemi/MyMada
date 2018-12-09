@@ -15,6 +15,7 @@ import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +35,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     protected boolean isValidFragment(String fragmentName)  {
+        if (fragmentName.contains("LangFragment"))
+            return LangFragment.class.getName().equals(fragmentName);
         return SettingsFragemnt.class.getName().equals(fragmentName);
     }
 
@@ -54,7 +57,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         SharedPreferences.Editor sp1 = sp.edit();
         sp1.putBoolean("oldU", true);
         sp1.apply();
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        Log.d("title is", getSupportActionBar().getTitle().toString());
         getSupportActionBar().setTitle(types[type]);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -82,16 +85,26 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             type = 4;
         if (header.id == R.id.langId)
             type = 5;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            getSupportActionBar().setTitle(types[type]);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                type = 0;
+                getSupportActionBar().setTitle(types[0]);
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        type = 0;
+        getSupportActionBar().setTitle(types[type]);
     }
     @Override
     public void onDestroy() {

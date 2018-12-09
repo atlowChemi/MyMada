@@ -226,6 +226,7 @@
     <string name="explain">In order to add a team member, press the + buttom on the bottom right.\nIn order to send the message to dispatch, press the left button.</string>
     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
     <string name="callT">All the calls</string>
+    <string name="callTS">calls of sheirut</string>
     <string name="pref_title_cutA">separate alert settings</string>
     <string name="pref_description_cutA_on">each call will alert by it\'s specific type.</string>
     <string name="pref_description_cutA_off">all calls will alert the same way.</string>
