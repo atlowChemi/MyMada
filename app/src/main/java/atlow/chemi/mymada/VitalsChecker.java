@@ -99,7 +99,8 @@ public class VitalsChecker extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View v = inflater.inflate(R.layout.activity_vital, container, false);
-        v.setRotationY(180);
+        if (SettingsActivity.isRTL())
+            v.setRotationY(180);
         return v;
     }
     @Override
@@ -116,11 +117,14 @@ public class VitalsChecker extends Fragment {
         b.setTypeface(myTypeface);
         c.setTypeface(myTypeface);
         final RadioGroup group = (RadioGroup) view.findViewById(R.id.radioAge);
+        if (!SettingsActivity.isRTL())
+            group.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 View radioButton = group.findViewById(i);
                 ageRank = group.indexOfChild(radioButton);
+                calc();
             }
         });
         //txt
@@ -142,117 +146,24 @@ public class VitalsChecker extends Fragment {
         systolicTIL.setTypeface(myTypeface);
         diastolicTIL.setTypeface(myTypeface);
         //txt watcher
+        pulsa.addTextChangedListener(new MyTextWatcher(pulsa));
+        breathing.addTextChangedListener(new MyTextWatcher(breathing));
         systolic.addTextChangedListener(new MyTextWatcher(systolic));
+        diastolic.addTextChangedListener(new MyTextWatcher(diastolic));
 
         //vr
         vitalR = (TextView) view.findViewById(R.id.vitalsResult);
         vitalR.setMovementMethod(new ScrollingMovementMethod());
         vitalR.setTypeface(myTypeface);
-
-        //send
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.sendVitals);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-        if (!SettingsActivity.isRTL()) {
-            lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-            fab.setLayoutParams(lp);
-        }
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //pulse
-                topP = ageRank == 0 ? correct[3][0][2] : ageRank == 1 ? correct[3][0][1] : correct[3][0][0];
-                lowP = ageRank == 0 ? correct[3][1][2] : ageRank == 1 ? correct[3][1][1] : correct[3][1][0];
-                if (!pulsa.getText().toString().trim().isEmpty() || pulsa.getText().toString().trim().matches("[0-9]+")) {
-                    String shortPulse = pulsa.getText().toString().trim();
-                    int pulse2c = Integer.parseInt(shortPulse.replaceAll("[\\D]", ""));
-                    goodP = pulse2c >= lowP && pulse2c <= topP;
-                }
-                //breathing
-                topB = ageRank == 0 ? correct[2][0][2] : ageRank == 1 ? correct[2][0][1] : correct[2][0][0];
-                lowB = ageRank == 0 ? correct[2][1][2] : ageRank == 1 ? correct[2][1][1] : correct[2][1][0];
-                if (!breathing.getText().toString().trim().isEmpty() || breathing.getText().toString().trim().matches("[0-9]+")) {
-                    String shortBreath = breathing.getText().toString().trim();
-                    int breath2c = Integer.parseInt(shortBreath.replaceAll("[\\D]", ""));
-                    goodB = breath2c >= lowB && breath2c <= topB;
-                }
-                //sys
-                topSYS = ageRank == 0 ? correct[0][0][2] : ageRank == 1 ? correct[0][0][1] : correct[0][0][0];
-                lowSYS = ageRank == 0 ? correct[0][1][2] : ageRank == 1 ? correct[0][1][1] : correct[0][1][0];
-                if (!systolic.getText().toString().trim().isEmpty() || systolic.getText().toString().trim().matches("[0-9]+")) {
-                    String SYS = systolic.getText().toString().trim();
-                    int sys2c = Integer.parseInt(SYS.replaceAll("[\\D]", ""));
-                    goodSYS = sys2c >= lowSYS && sys2c <= topSYS;
-                }
-                //dia
-                topDIA = ageRank == 0 ? correct[1][0][2] : ageRank == 1 ? correct[1][0][1] : correct[1][0][0];
-                lowDIA = ageRank == 0 ? correct[1][1][2] : ageRank == 1 ? correct[1][1][1] : correct[1][1][0];
-                if (!diastolic.getText().toString().trim().isEmpty() || diastolic.getText().toString().trim().matches("[0-9]+")) {
-                    String DIA = diastolic.getText().toString().trim();
-                    int dia2c = Integer.parseInt(DIA.replaceAll("[\\D]", ""));
-                    goodDIA = dia2c >= lowDIA && dia2c <= topDIA;
-                }
-                //sys
-                if ((!systolic.getText().toString().trim().isEmpty() || systolic.getText().toString().trim().matches("[0-9]+" )) && (!diastolic.getText().toString().trim().isEmpty() || diastolic.getText().toString().trim().matches("[0-9]+"))) {
-                    String SYS9 = systolic.getText().toString().trim();
-                    int sys2c9 = Integer.parseInt(SYS9.replaceAll("[\\D]", ""));
-                    String DIA9 = diastolic.getText().toString().trim();
-                    int dia2c9 = Integer.parseInt(DIA9.replaceAll("[\\D]", ""));
-                    goodLD = (sys2c9 - dia2c9 < 61) && (sys2c9 - dia2c9 > 29);
-                }
-                //calc
-                String goodVitalsAge[] = getActivity().getResources().getStringArray(R.array.goodVitals);
-                String goodVitalsNew = getActivity().getResources().getString(R.string.goodVitalsOLD, lowP, topP, lowB, topB, lowSYS, topSYS, lowDIA, topDIA, goodVitalsAge[ageRank]);
-                String alert = getActivity().getResources().getString(R.string.vitalsAlert);
-                String Pulse = null, Breathing = null, BP = null;
-                if (!pulsa.getText().toString().trim().isEmpty())
-                    Pulse = pulseS + (goodP ? goodS : bad);
-                if (!breathing.getText().toString().trim().isEmpty())
-                    Breathing = breathingS + (goodB ? goodS : bad);
-                if (!systolic.getText().toString().trim().isEmpty() && !diastolic.getText().toString().trim().isEmpty())
-                    BP = bpS + (goodSYS && goodDIA && goodLD ? goodS : bad);
-                else if (!systolic.getText().toString().trim().isEmpty() && diastolic.getText().toString().trim().isEmpty())
-                    BP = bpS + (goodSYS ? goodS : bad);
-                String toSpan = (Pulse != null ? Pulse + "\n" : "") + (Breathing != null ? Breathing + "\n" : "") + (BP != null ? BP + "\n" : "") + goodVitalsNew + "\n" + alert;
-                SpannableString s = new SpannableString(toSpan);
-                int where = 0;
-                if (!pulsa.getText().toString().trim().isEmpty()) {
-                    int till = goodP ? goodS.length() : bad.length();
-                    s.setSpan(new ForegroundColorSpan(goodP ? Color.GREEN : Color.RED), pulseS.length(), pulseS.length()+till, 0);
-                    where += pulseS.length()+till+1;
-                }
-                if (!breathing.getText().toString().trim().isEmpty()) {
-                    int till = goodB ? goodS.length() : bad.length();
-                    s.setSpan(new ForegroundColorSpan(goodB ? Color.GREEN : Color.RED), where+breathingS.length(), where+breathingS.length()+till, 0);
-                    where += breathingS.length()+till+1;
-                }
-                if (!systolic.getText().toString().trim().isEmpty() && !diastolic.getText().toString().trim().isEmpty()) {
-                    int till = goodSYS && goodDIA && goodLD ? goodS.length() : bad.length();
-                    s.setSpan(new ForegroundColorSpan(goodSYS && goodDIA && goodLD ? Color.GREEN : Color.RED), where+bpS.length(), where+bpS.length()+till, 0);
-                    where += bpS.length()+till+1;
-                }else if (!systolic.getText().toString().trim().isEmpty() && diastolic.getText().toString().trim().isEmpty()) {
-                    int till = goodSYS ? goodS.length() : bad.length();
-                    s.setSpan(new ForegroundColorSpan(goodSYS ? Color.GREEN : Color.RED), where+bpS.length(), where+bpS.length()+till, 0);
-                    where += bpS.length()+till+1;
-                }
-                s.setSpan(new ForegroundColorSpan(Color.BLUE), where+goodVitalsNew.length(), s.length(), 0);
-                vitalR.setText(s);
-            }
-        });
     }
 
     private class MyTextWatcher implements TextWatcher {
         private View view;
-
         private MyTextWatcher(View view) {
             this.view = view;
         }
-
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
                 case R.id.systolic:
@@ -265,6 +176,86 @@ public class VitalsChecker extends Fragment {
                     }
                     break;
             }
+            calc();
         }
+    }
+    private void calc() {
+        //pulse
+        topP = ageRank == 0 ? correct[3][0][2] : ageRank == 1 ? correct[3][0][1] : correct[3][0][0];
+        lowP = ageRank == 0 ? correct[3][1][2] : ageRank == 1 ? correct[3][1][1] : correct[3][1][0];
+        if (!pulsa.getText().toString().trim().isEmpty() || pulsa.getText().toString().trim().matches("[0-9]+")) {
+            String shortPulse = pulsa.getText().toString().trim();
+            int pulse2c = Integer.parseInt(shortPulse.replaceAll("[\\D]", ""));
+            goodP = pulse2c >= lowP && pulse2c <= topP;
+        }
+        //breathing
+        topB = ageRank == 0 ? correct[2][0][2] : ageRank == 1 ? correct[2][0][1] : correct[2][0][0];
+        lowB = ageRank == 0 ? correct[2][1][2] : ageRank == 1 ? correct[2][1][1] : correct[2][1][0];
+        if (!breathing.getText().toString().trim().isEmpty() || breathing.getText().toString().trim().matches("[0-9]+")) {
+            String shortBreath = breathing.getText().toString().trim();
+            int breath2c = Integer.parseInt(shortBreath.replaceAll("[\\D]", ""));
+            goodB = breath2c >= lowB && breath2c <= topB;
+        }
+        //sys
+        topSYS = ageRank == 0 ? correct[0][0][2] : ageRank == 1 ? correct[0][0][1] : correct[0][0][0];
+        lowSYS = ageRank == 0 ? correct[0][1][2] : ageRank == 1 ? correct[0][1][1] : correct[0][1][0];
+        if (!systolic.getText().toString().trim().isEmpty() || systolic.getText().toString().trim().matches("[0-9]+")) {
+            String SYS = systolic.getText().toString().trim();
+            int sys2c = Integer.parseInt(SYS.replaceAll("[\\D]", ""));
+            goodSYS = sys2c >= lowSYS && sys2c <= topSYS;
+        }
+        //dia
+        topDIA = ageRank == 0 ? correct[1][0][2] : ageRank == 1 ? correct[1][0][1] : correct[1][0][0];
+        lowDIA = ageRank == 0 ? correct[1][1][2] : ageRank == 1 ? correct[1][1][1] : correct[1][1][0];
+        if (!diastolic.getText().toString().trim().isEmpty() || diastolic.getText().toString().trim().matches("[0-9]+")) {
+            String DIA = diastolic.getText().toString().trim();
+            int dia2c = Integer.parseInt(DIA.replaceAll("[\\D]", ""));
+            goodDIA = dia2c >= lowDIA && dia2c <= topDIA;
+        }
+        //sys
+        if ((!systolic.getText().toString().trim().isEmpty() || systolic.getText().toString().trim().matches("[0-9]+" )) && (!diastolic.getText().toString().trim().isEmpty() || diastolic.getText().toString().trim().matches("[0-9]+"))) {
+            String SYS9 = systolic.getText().toString().trim();
+            int sys2c9 = Integer.parseInt(SYS9.replaceAll("[\\D]", ""));
+            String DIA9 = diastolic.getText().toString().trim();
+            int dia2c9 = Integer.parseInt(DIA9.replaceAll("[\\D]", ""));
+            goodLD = (sys2c9 - dia2c9 < 61) && (sys2c9 - dia2c9 > 29);
+        }
+        //calc
+        String goodVitalsAge[] = getActivity().getResources().getStringArray(R.array.goodVitals);
+        String goodVitalsNew = getActivity().getResources().getString(R.string.goodVitalsOLD, lowP, topP, lowB, topB, lowSYS, topSYS, lowDIA, topDIA, goodVitalsAge[ageRank]);
+        String alert = getActivity().getResources().getString(R.string.vitalsAlert);
+        String Pulse = null, Breathing = null, BP = null;
+        if (!pulsa.getText().toString().trim().isEmpty())
+            Pulse = pulseS + (goodP ? goodS : bad);
+        if (!breathing.getText().toString().trim().isEmpty())
+            Breathing = breathingS + (goodB ? goodS : bad);
+        if (!systolic.getText().toString().trim().isEmpty() && !diastolic.getText().toString().trim().isEmpty())
+            BP = bpS + (goodSYS && goodDIA && goodLD ? goodS : bad);
+        else if (!systolic.getText().toString().trim().isEmpty() && diastolic.getText().toString().trim().isEmpty())
+            BP = bpS + (goodSYS ? goodS : bad);
+        String toSpan = (Pulse != null ? Pulse + "\n" : "") + (Breathing != null ? Breathing + "\n" : "") + (BP != null ? BP + "\n" : "") + goodVitalsNew + "\n" + alert;
+        SpannableString s = new SpannableString(toSpan);
+        int where = 0;
+        if (!pulsa.getText().toString().trim().isEmpty()) {
+            int till = goodP ? goodS.length() : bad.length();
+            s.setSpan(new ForegroundColorSpan(goodP ? Color.GREEN : Color.RED), pulseS.length(), pulseS.length()+till, 0);
+            where += pulseS.length()+till+1;
+        }
+        if (!breathing.getText().toString().trim().isEmpty()) {
+            int till = goodB ? goodS.length() : bad.length();
+            s.setSpan(new ForegroundColorSpan(goodB ? Color.GREEN : Color.RED), where+breathingS.length(), where+breathingS.length()+till, 0);
+            where += breathingS.length()+till+1;
+        }
+        if (!systolic.getText().toString().trim().isEmpty() && !diastolic.getText().toString().trim().isEmpty()) {
+            int till = goodSYS && goodDIA && goodLD ? goodS.length() : bad.length();
+            s.setSpan(new ForegroundColorSpan(goodSYS && goodDIA && goodLD ? Color.GREEN : Color.RED), where+bpS.length(), where+bpS.length()+till, 0);
+            where += bpS.length()+till+1;
+        }else if (!systolic.getText().toString().trim().isEmpty() && diastolic.getText().toString().trim().isEmpty()) {
+            int till = goodSYS ? goodS.length() : bad.length();
+            s.setSpan(new ForegroundColorSpan(goodSYS ? Color.GREEN : Color.RED), where+bpS.length(), where+bpS.length()+till, 0);
+            where += bpS.length()+till+1;
+        }
+        s.setSpan(new ForegroundColorSpan(Color.BLUE), where+goodVitalsNew.length(), s.length(), 0);
+        vitalR.setText(s);
     }
 }

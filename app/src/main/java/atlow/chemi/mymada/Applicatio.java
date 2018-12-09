@@ -27,20 +27,24 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Locale;
 
+import static android.service.notification.NotificationListenerService.requestRebind;
+
 public class Applicatio extends MultiDexApplication {
     public double d = 12;
     public static final String Grp1 = "grpCalls", Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", Cnl101 = "101Calls",
             CnlMinhala = "minhala", CnlConan = "conan", CnlGroup = "group", CnlMishmeret = "mishmeret", CnlWin = "notWithWin";
     public static NotificationManager manager;
     protected BroadcastReceiver receiver;
+    private static Context mContext;
     @Override
     protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
+        super.attachBaseContext(LocalHelper.onAttach(base));
         MultiDex.install(this);
     }
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext = getApplicationContext();
         createNotificationChannel();
         try {
             FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
@@ -56,19 +60,16 @@ public class Applicatio extends MultiDexApplication {
         SharedPreferences.Editor spe = sharedPreferences.edit();
         spe.putString("fcm", FirebaseInstanceId.getInstance().getToken());
         spe.apply();
-        String lng = sharedPreferences.getString("lng","iw");
+        /*String lng = sharedPreferences.getString("lng","iw");
         Resources resources = getApplicationContext().getResources();
         Configuration configuration = resources.getConfiguration();
         configuration.locale = new Locale(lng);
-        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());*/
         boolean mapp = sharedPreferences.getBoolean("Mapp", false);
-        ComponentName component = new ComponentName(getApplicationContext(), SMSReceiver.class);
         if (mapp) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Intent serviceIntent = new Intent(getApplicationContext(), SMSMonitorService.class);
-                ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
-            } else
-                getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+            Intent serviceIntent = new Intent(getApplicationContext(), SMSMonitorService.class);
+            ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
+            tryConnectService();
         }
 
         receiver = new GrobootRec();
@@ -86,8 +87,6 @@ public class Applicatio extends MultiDexApplication {
     private void createNotificationChannel()    {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             SharedPreferences notSP = getSharedPreferences("notifications", 0);
-            int call101 = notSP.getInt(Cnl101, 0);
-            int minhala = notSP.getInt(CnlMinhala, 0);
             AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
             NotificationChannelGroup group3 = new NotificationChannelGroup(Grp3, "התראות מקרים");
             NotificationChannelGroup group2 = new NotificationChannelGroup(Grp2, "התראות שונות");
@@ -98,6 +97,14 @@ public class Applicatio extends MultiDexApplication {
             serviceChannel.setShowBadge(false);
             serviceChannel.setDescription("חיוני כדי לאפשר זיהוי מקרים");
             serviceChannel.setGroup(Grp2);
+            NotificationChannel serviceChannel2 = new NotificationChannel("Push", "הודעות פוש", NotificationManager.IMPORTANCE_HIGH);
+            serviceChannel2.enableVibration(true);
+            serviceChannel2.setBypassDnd(true);
+            serviceChannel2.setDescription("התראות להודעות פוש שישלחו כגון בקשות קוד וכדו'");
+            serviceChannel2.enableLights(true);
+            serviceChannel2.setShowBadge(true);
+            serviceChannel2.setLightColor(Color.RED);
+            serviceChannel2.setGroup(Grp2);
 
             NotificationChannel serviceChannel4 = new NotificationChannel(CnlWin, "זיהוי הודעות", NotificationManager.IMPORTANCE_LOW);
             serviceChannel4.enableVibration(false);
@@ -113,8 +120,21 @@ public class Applicatio extends MultiDexApplication {
                 manager.createNotificationChannelGroup(group3);
                 manager.createNotificationChannelGroup(group2);
                 manager.createNotificationChannel(serviceChannel);
+                manager.createNotificationChannel(serviceChannel2);
                 manager.createNotificationChannel(serviceChannel4);
             }
         }
+    }
+    public static void tryConnectService() {
+        toggleNotificationListenerService();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ComponentName componentName = new ComponentName(mContext, NotificationService.class);
+            requestRebind(componentName);
+        }
+    }
+    public static void toggleNotificationListenerService() {
+        PackageManager pm = mContext.getPackageManager();
+        pm.setComponentEnabledSetting(new ComponentName(mContext, NotificationService.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        pm.setComponentEnabledSetting(new ComponentName(mContext, NotificationService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
 }

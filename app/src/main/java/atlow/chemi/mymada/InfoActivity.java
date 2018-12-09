@@ -3,6 +3,7 @@ package atlow.chemi.mymada;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +27,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.util.List;
 
 public class InfoActivity extends AppCompatActivity {
@@ -35,6 +38,7 @@ public class InfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        resetTitle();
         setContentView(R.layout.activity_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -74,6 +78,19 @@ public class InfoActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocalHelper.onAttach(base));
+    }
+    private void resetTitle() {
+        try {
+            int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
+            if (label != 0)
+                setTitle(label);
+        } catch (PackageManager.NameNotFoundException e) {
+            Crashlytics.log(e.getMessage());
+        }
+    }
     public void privacy(View view) {
         Intent intent = new Intent(getApplicationContext(), PrivacyActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -94,8 +111,6 @@ public class InfoActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        ComponentName component = new ComponentName(getBaseContext(), SMSReceiver.class);
-        int status = getPackageManager().getComponentEnabledSetting(component);
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -108,11 +123,8 @@ public class InfoActivity extends AppCompatActivity {
                 if (!item.isChecked()) {
                     item.setChecked(true);
                     /*new*/
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        ContextCompat.startForegroundService(this, serviceIntent);
-                    }   else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    ContextCompat.startForegroundService(this, serviceIntent);
                     /*end new*/
                     Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                     boolean activityExists = isCallable(test);
@@ -211,11 +223,8 @@ public class InfoActivity extends AppCompatActivity {
                         s.putBoolean("Mapp", true);
                     }
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        stopService(serviceIntent);
-                    }else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
                 }

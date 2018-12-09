@@ -69,6 +69,11 @@
     <string name="pref_title_shabatT">פרק הזמן עד סגירת התראה (בשניות)</string>
     <string name="pref_default_shabatT">6</string>
 
+
+    <string name="findT6" translatable="false">זהה הודעות שירות</string>
+    <string name="findT6_on" translatable="false">זיהוי הודעות שירות פועל</string>
+    <string name="findT6_off" translatable="false">זיהוי הודעות שירות כבוי</string>
+
     <string name="callT1">אירועי כונן</string>
     <string name="findT1">זהה מקרי כונן</string>
     <string name="findT1_on">זיהוי מקרי כונן פועל</string>

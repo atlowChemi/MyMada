@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">דיווחי מגן דוד אדום</string>
     <string name="smsMoni" translatable="false">זיהוי סמסים ברקע</string>
+    <string name="notiMoni" translatable="false">זיהוי התראות ברקע</string>
     <string name="hello_world">הכתבת טופס</string>
     <string name="ambN">מספר אמבולנס</string>
     <string name="visa">מספר ויזה</string>
@@ -31,6 +32,7 @@
     <string name="TversionNumber">גרסה מספר: %1$s.\nפותח על ידי צוות \"AtlowApps\". כל הזכויות על העיצוב, הרעיונות והביצוע שמורים לChemi@low ולאיתיאל אטלו.\nתודתינו מסורה ליוסי קסוטו, ליוחאי בניטה ולשלום סאקס על סיועם הרב.\n\nהאפליקציה פותחה על ידי מתנדבים במטרה להנגיש פעולות קיימות ובמטרה ליצור פעולות חדשות שיקלו על המתנדבים בפעילות חירום ושגרה.\n\nבכל שאלה, בקשה, בעיה או תקלה ניתן לפנות אלינו דרך עמוד יצירת קשר, ואנו נעשה כמיטב יכולתנו לתת מענה לכל הבקשות.\n\nאפליקציה זו איננה אפליקציה רשמית של מד\"א, ואיננה קשורה באופן כלשהוא למד\"א. המשתמש בה נושא באחריות המלאה בהשלכות השימוש.</string>
     <string name="title_activity_main2">דיווח אנשי צוות</string>
     <string name="enjoy">משמרת מהנה!</string>
+    <string name="Nteam">הוספת איש צוות</string>
     <string name="teamN">שם איש צוות</string>
     <string name="teamT">ת.ז:</string>
     <string name="teamE">ניתן לדווח על 3 מתנדבים ונהג.\nהדיווח הוא של שם פרטי ומשפחה יחד עם ת.ז.
@@ -42,6 +44,7 @@
     <string name="dialog_no">לא כרגע</string>
     <string name="title_activity_contact">יצירת קשר</string>
     <string name="title_activity_code">בקשת קוד הפעלה</string>
+    <string name="title_code">הכנסת קוד הפעלה</string>
     <string name="contactUs">צור קשר</string>
     <string name="from">כתובת המייל שלך</string>
     <string name="name">שם</string>
@@ -165,6 +168,8 @@
     <string name="TestCallSMS">משמרת</string>
     <string name="newSettings">נראה כי זוהי כניסתך הראשונה לאפליקציה.\nמומלץ לבדוק את כל ההגדרות לפני תחילת השימוש</string>
     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
+    <string name="importanceMsg" translatable="false">זיהינו כי התראה על זיהוי הודעות ברקע מופיעה במסך.\nלידיעתך, ניתן להעלים אותו על ידי העברה לדחיפות נמוכה.</string>
+    <string name="importance" translatable="false">הורד דחיפות</string>
     <string name="TEAMTest">הודעת צוות. 02:34 מונה:1325 כתובת: בדיקה!!! ירושלים בורוכוב. קוד הזנקה: מחלה מבוגר, קוד רפואי: חוסר הכרה</string>
     <string name="CONANTest">אירוע חדש. 14:18 מונה:267 כתובת: בדיקה!!!ירושלים המ\"ג, קוד הזנקה: מחלה מבוגר, קוד רפואי: דום לב</string>
     <string name="APP_reco_off">איתור הודעות כבוי.</string>
@@ -188,6 +193,7 @@
 
     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
     <string name="callT">כל האירועים</string>
+    <string name="callTS">הודעות שירות</string>
 
 
     <string name="pref_title_state">התראה לפי סטטוס מכשיר</string>
@@ -310,4 +316,6 @@
     </string-array>
     <string name="title_activity_utills_and_tools">כלי עזר</string>
     <string name="section_format" translatable="false">Hello World from section: %1$d</string>
+
+    <string name="title_mda">הורדת יישומון מד\"א</string>
 </resources>

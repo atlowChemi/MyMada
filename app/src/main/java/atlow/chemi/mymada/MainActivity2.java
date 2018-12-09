@@ -1,5 +1,6 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -8,6 +9,8 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -27,11 +30,13 @@ import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,11 +53,14 @@ public class MainActivity2 extends Fragment {
     private static int job;
     private static LayoutInflater inflater;
     private static VolunteerAdapter adapter;
-    private static FloatingActionButton newPpl;
     private static List<Volunteer> albumList;
     private Typeface myTypeface;
     private static String[] colors = {"נהג","חובש","פראמדיק","רופא","מתנדב","משתלם","שירות לאומי"};
     String DELIVERED = "SMS_DELIVERED";
+    private boolean isMove = false, isMove2 = false;
+    private float oldX1, oldY1, oldX2, oldY2;
+    private Button newSendButtonM2;
+    private static Button newPplBtn;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,23 +73,26 @@ public class MainActivity2 extends Fragment {
             view.setRotationY(180);
         return view;
     }
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SharedPreferences sp2 = getActivity().getSharedPreferences("Settings",0);
         final SharedPreferences sp = getActivity().getSharedPreferences("Test", 0);
-        FloatingActionButton button1 = (FloatingActionButton) view.findViewById(R.id.M2btn1E);
-        newPpl = (FloatingActionButton) view.findViewById(R.id.newMan);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) button1.getLayoutParams();
-        CoordinatorLayout.LayoutParams lp2 = (CoordinatorLayout.LayoutParams) newPpl.getLayoutParams();
-        if (SettingsActivity.isRTL())
-            button1.setRotationY(180);
-        if (!SettingsActivity.isRTL())  {
-            lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-            button1.setLayoutParams(lp);
-            lp2.gravity = Gravity.BOTTOM | Gravity.LEFT;
-            newPpl.setLayoutParams(lp2);
+        newSendButtonM2 = view.findViewById(R.id.M2btn1ENew);
+        newPplBtn = view.findViewById(R.id.newManNew);
+        GradientDrawable drawable = (GradientDrawable) newPplBtn.getBackground();
+        drawable.mutate();
+        drawable.setColor(getActivity().getResources().getColor(R.color.White));
+        newPplBtn.setBackground(drawable);
+        newPplBtn.setTextColor(getActivity().getResources().getColor(R.color.ColorNice));
+        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send_flip);
+        if (!SettingsActivity.isRTL()) {
+            img = getActivity().getResources().getDrawable(R.drawable.ic_send);
+            LinearLayout l = view.findViewById(R.id.LinBtns);
+            l.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         }
+        newSendButtonM2.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
         albumList = new ArrayList<>();
         adapter = new VolunteerAdapter(getActivity(), albumList);
@@ -101,7 +112,34 @@ public class MainActivity2 extends Fragment {
         ambNum.setTypeface(myTypeface);
         final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item, colors);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        newPpl.setOnClickListener(new View.OnClickListener() {
+        newPplBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        boolean x = oldX2 - event.getX() > 10 || event.getX() - oldX2 > 10;
+                        boolean y = oldY2 - event.getY() > 50 || event.getY() - oldY2 > 50;
+                        if (x || y) {
+                            isMove2 = true;
+                            newPplBtn.setAlpha(1f);
+                        }
+                        return true;
+                    case MotionEvent.ACTION_DOWN:
+                        oldY2 = event.getY();
+                        oldX2 = event.getX();
+                        isMove2 = false;
+                        newPplBtn.setAlpha(0.4f);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        newPplBtn.setAlpha(1f);
+                        if (!isMove2)
+                            newPplBtn.performClick();
+                        return true;
+                }
+                return false;
+            }
+        });
+        newPplBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 inflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -124,7 +162,7 @@ public class MainActivity2 extends Fragment {
                     @Override
                     public void onShow(DialogInterface dialogInterface) {
                         Button canc = builder.getButton(DialogInterface.BUTTON_NEGATIVE);
-                        canc.setTextColor(getActivity().getResources().getColor(R.color.ColorPrimary));
+                        canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
                         Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
                         ok.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -144,7 +182,7 @@ public class MainActivity2 extends Fragment {
                                             explain.setVisibility(View.GONE);
                                             break;
                                         case 4:
-                                            newPpl.setVisibility(View.GONE);
+                                            newPplBtn.setVisibility(View.GONE);
                                             break;
                                     }
                                     builder.dismiss();
@@ -156,7 +194,34 @@ public class MainActivity2 extends Fragment {
                 builder.show();
             }
         });
-        button1.setOnClickListener(new View.OnClickListener() {
+        newSendButtonM2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        boolean x = oldX1 - event.getX() > 10 || event.getX() - oldX1 > 10;
+                        boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                        if (x || y) {
+                            isMove = true;
+                            newSendButtonM2.setAlpha(1f);
+                        }
+                        return true;
+                    case MotionEvent.ACTION_DOWN:
+                        oldY1 = event.getY();
+                        oldX1 = event.getX();
+                        isMove = false;
+                        newSendButtonM2.setAlpha(0.4f);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        newSendButtonM2.setAlpha(1f);
+                        if (!isMove)
+                            newSendButtonM2.performClick();
+                        return true;
+                }
+                return false;
+            }
+        });
+        newSendButtonM2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(txtboxN.getText().toString().trim().isEmpty())
@@ -187,8 +252,8 @@ public class MainActivity2 extends Fragment {
     public static void deleteVol(int position)    {
         albumList.remove(position);
         adapter.notifyDataSetChanged();
-        if (newPpl.getVisibility() != View.VISIBLE)
-            newPpl.setVisibility(View.VISIBLE);
+        if (newPplBtn.getVisibility() != View.VISIBLE)
+            newPplBtn.setVisibility(View.VISIBLE);
     }
     public static void editVol(final int position, final Context context)    {
         View newMan = inflater.inflate(R.layout.add_human, null);
@@ -211,7 +276,7 @@ public class MainActivity2 extends Fragment {
             @Override
             public void onShow(DialogInterface dialogInterface) {
                 Button canc = builder.getButton(DialogInterface.BUTTON_NEGATIVE);
-                canc.setTextColor(context.getResources().getColor(R.color.ColorPrimary));
+                canc.setTextColor(context.getResources().getColor(R.color.OldPrimary));
                 Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -360,7 +425,7 @@ public class MainActivity2 extends Fragment {
                 Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
                 canc.setTypeface(myTypeface);
                 ok.setTypeface(myTypeface);
-                canc.setTextColor(getActivity().getResources().getColor(R.color.ColorPrimary));
+                canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
             }
         });
         builder.show();

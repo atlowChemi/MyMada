@@ -208,7 +208,7 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                                 Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                                 ok.setTypeface(myTypeface);
                                 canc.setTypeface(myTypeface);
-                                canc.setTextColor(mContext.getResources().getColor(R.color.ColorPrimary));
+                                canc.setTextColor(mContext.getResources().getColor(R.color.OldPrimary));
                             }
                         });
                         alert.show();
@@ -262,7 +262,7 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
     public int getItemCount() {
         return albumList.size();
     }
-    public void setBtnsAlpha() {
+    void setBtnsAlpha() {
         for(Button b : btns)
             b.setAlpha(1f);
     }

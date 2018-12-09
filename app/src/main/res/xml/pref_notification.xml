@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:key="Sheirut" android:title="@string/callTS">
+        <CheckBoxPreference
+            android:key="T6"
+            android:widgetLayout="@layout/switch_x"
+            android:title="@string/findT6"
+            android:summaryOn="@string/findT6_on"
+            android:summaryOff="@string/findT6_off"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
     <PreferenceCategory android:key="all" android:title="@string/callT">
         <CheckBoxPreference
             android:key="NvibT"

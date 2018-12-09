@@ -221,7 +221,7 @@ public class smsRes extends AppCompatActivity {
         t.setTypeface(myTypeface);
         one.setTypeface(myTypeface);
         two.setTypeface(myTypeface);
-        one.setText(string.equals("T4") ? "הודעה חדשה!" : "אירוע חדש!");
+        one.setText(string.equals("T4") || string.equals("T6") ? "הודעה חדשה!" : "אירוע חדש!");
         switch (callT)  {
             case 1:
                 m.setText("כונן");

@@ -132,13 +132,15 @@ public class GrobootRec extends BroadcastReceiver {
                     CNL = CnlConan + notSP.getInt(CnlConan, 0);
                     break;
             }
+            Log.d("callT", "t6 is: " + callType);
             smsRes.newC(text);
             smsRes.alerT(madasApp);
         }
         cut = sp.getBoolean("cut", false);
-        if(testAp || !cut)  {
+        if(testAp)  {
             callType = true;
         }
+        Log.d("callT", "t6 is now: " + callType);
         if (string.equals("T6") || string.equals("T4")) {
             vib = sp.getBoolean("NvibT4", true);
             sou = sp.getBoolean("NsouT4", true);
@@ -150,6 +152,7 @@ public class GrobootRec extends BroadcastReceiver {
             app = sp.getBoolean("Napp" + string, false);
             uri = Uri.parse(sp.getString("NuRi" + string, ""));
         }   else {
+            callType = true;
             vib = sp.getBoolean("Nvib", true);
             sou = sp.getBoolean("Nsou", true);
             app = sp.getBoolean("Napp", false);
@@ -192,8 +195,8 @@ public class GrobootRec extends BroadcastReceiver {
             }
         }
         if (not && (callType)) {
-            String tick = string.equals("T4") ? "התקבלה הודעה חדש באפליקציה!" : "התקבל אירוע חדש באפליקציה!";
-            String titl = string.equals("T4") ? "הודעה חדשה באפליקציה!" : "אירוע חדש באפליקציה!";
+            String tick = string.equals("T4") || string.equals("T6") ? "התקבלה הודעה חדש באפליקציה!" : "התקבל אירוע חדש באפליקציה!";
+            String titl = string.equals("T4") || string.equals("T6") ? "הודעה חדשה באפליקציה!" : "אירוע חדש באפליקציה!";
             notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context, CnlWin).setContentTitle(titl)
                     .setContentText("לחץ כאן בכדי להכתיב טפסים.").setSmallIcon(R.drawable.ic_siren)
@@ -295,17 +298,16 @@ public class GrobootRec extends BroadcastReceiver {
                 notifManager.notify(NOTIF_ID, mNotification);
             }
         }
-            /**/
-            if (win && (callType || testAp)) {
-                Intent i = new Intent(context, smsRes.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                i.putExtra("notNum", notNum);
-                i.putExtra("loop", sp.getBoolean("loop", false));
-                i.putExtra("callT", callT);
-
-                context.startActivity(i);
-            }
-        testAp = false;
+        /**/
+        if (win && (callType || testAp)) {
+            Intent i = new Intent(context, smsRes.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+            i.putExtra("notNum", notNum);
+            i.putExtra("loop", sp.getBoolean("loop", false));
+            i.putExtra("callT", callT);
+            context.startActivity(i);
         }
+        testAp = false;
+    }
 }

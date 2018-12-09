@@ -95,14 +95,4 @@
             android:layout_below="@+id/Motor"/>
     </RelativeLayout>
     </ScrollView>
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/sendVitalsGlaz"
-        android:src="@drawable/ic_done"
-        app:backgroundTint="@color/ColorAqua"
-        app:rippleColor="@color/ColorBlue"
-        android:layout_gravity="bottom|left"
-        android:layout_marginLeft="5dp"
-        android:layout_marginBottom="5dp"/>
 </android.support.design.widget.CoordinatorLayout>

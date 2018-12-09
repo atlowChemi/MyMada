@@ -6,49 +6,13 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true">
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/OxyTime">
-        <TextView
-            android:id="@+id/txtOxyMin"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="15"
-            android:paddingTop="15dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:background="@color/buttonMaterialDark"
-            android:textSize="50sp"
-            android:textColor="#fff" />
-
-        <TextView
-            android:id="@+id/txt_TimerSecond"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/txtOxyMin"
-            android:gravity="center_horizontal"
-            android:text="@string/oxyLeft"
-            android:background="@color/buttonMaterialDark"
-            android:textSize="25sp"
-            android:textColor="#fff" />
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/txt_TimerSecond"
-            android:gravity="center_horizontal"
-            android:text="@string/lpmExp"
-            android:background="@color/buttonMaterialDark"
-            android:textSize="15sp"
-            android:textColor="#d6d6d6"
-            android:id="@+id/twoOxy"/>
-    </RelativeLayout>
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/OxyTime"
         android:id="@+id/ballonType"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin">
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="54dp"
@@ -61,6 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ballonType"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:clickable="true"
         android:focusable="true"
         android:id="@+id/ATM_TIL">
@@ -76,6 +42,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_below="@+id/ATM_TIL"
         android:id="@+id/PSI_TIL">
         <android.support.v7.widget.AppCompatEditText
@@ -86,4 +54,40 @@
             android:maxLength="4"
             android:hint="@string/psi"/>
     </android.support.design.widget.TextInputLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/buttonMaterialDark"
+        android:id="@+id/OxyTime">
+        <TextView
+            android:id="@+id/txtOxyMin"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="15"
+            android:paddingTop="15dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="50sp"
+            android:textColor="#fff" />
+        <TextView
+            android:id="@+id/txt_TimerSecond"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtOxyMin"
+            android:gravity="center_horizontal"
+            android:text="@string/oxyLeft"
+            android:textSize="25sp"
+            android:textColor="#fff" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_TimerSecond"
+            android:gravity="center_horizontal"
+            android:text="@string/lpmExp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"
+            android:textColor="#d6d6d6"
+            android:id="@+id/twoOxy"/>
+    </RelativeLayout>
 </RelativeLayout>

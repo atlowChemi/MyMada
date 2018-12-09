@@ -43,15 +43,20 @@
             </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/yourMsgBtn"
-        android:src="@drawable/ic_send"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        app:backgroundTint="@color/ColorAqua"
-        app:rippleColor="@color/ColorBlue" />
+    <Button
+        android:id="@+id/yourMsgBtnNew"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/btns_new"
+        android:gravity="center|center_horizontal|center_vertical"
+        android:text="@string/succ"
+        android:textColor="#FFF"
+        android:textSize="20sp" />
 </RelativeLayout>

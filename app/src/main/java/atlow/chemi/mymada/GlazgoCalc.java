@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,7 +31,8 @@ public class GlazgoCalc extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View v = inflater.inflate(R.layout.activity_glazgo_calc, container, false);
-        v.setRotationY(180);
+        if (SettingsActivity.isRTL())
+            v.setRotationY(180);
         return v;
     }
     @Override
@@ -55,35 +57,56 @@ public class GlazgoCalc extends Fragment {
         spinnerArrayAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerArrayAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerArrayAdapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        eye = (Spinner)view.findViewById(R.id.EyeS);
-        verb = (Spinner)view.findViewById(R.id.VerbalS);
-        motor = (Spinner)view.findViewById(R.id.MotorS);
+        eye = view.findViewById(R.id.EyeS);
+        verb = view.findViewById(R.id.VerbalS);
+        motor = view.findViewById(R.id.MotorS);
         eye.setAdapter(spinnerArrayAdapter1);
         verb.setAdapter(spinnerArrayAdapter2);
         motor.setAdapter(spinnerArrayAdapter3);
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.sendVitalsGlaz);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-        if (!SettingsActivity.isRTL()) {
-            lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-            fab.setLayoutParams(lp);
-        }
-        fab.setOnClickListener(new View.OnClickListener() {
+        eye.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                int i = 0;
-                i += (eye.getSelectedItemPosition()+1);
-                i += (verb.getSelectedItemPosition()+1);
-                i += (motor.getSelectedItemPosition()+1);
-                String s = "ציון גלאזגו הוא: " + i;
-                SpannableString ss = new SpannableString(s + "\nציון נמוך מ9 מוגדר כתרדמת חמורה.\nציון בין 9 ל12 מוגדר כתרדמת בינונית.\nציון גבוה מ12 מוגדר כתרדמת מינורית.");
-                if (i < 9)
-                    ss.setSpan(new ForegroundColorSpan(Color.RED),0,s.length(),0);
-                else if (i > 12)
-                    ss.setSpan(new ForegroundColorSpan(Color.rgb(70,178,58)),0,s.length(),0);
-                else
-                    ss.setSpan(new ForegroundColorSpan(Color.rgb(221, 190, 66)),0,s.length(),0);
-                a.setText(ss);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                calc();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
+        verb.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                calc();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        motor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                calc();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+    private void calc(){
+        int i = 0;
+        i += (eye.getSelectedItemPosition()+1);
+        i += (verb.getSelectedItemPosition()+1);
+        i += (motor.getSelectedItemPosition()+1);
+        String s = "ציון גלאזגו הוא: " + i;
+        SpannableString ss = new SpannableString(s + "\nציון נמוך מ9 מוגדר כתרדמת חמורה.\nציון בין 9 ל12 מוגדר כתרדמת בינונית.\nציון גבוה מ12 מוגדר כתרדמת מינורית.");
+        if (i < 9)
+            ss.setSpan(new ForegroundColorSpan(Color.RED),0,s.length(),0);
+        else if (i > 12)
+            ss.setSpan(new ForegroundColorSpan(Color.rgb(70,178,58)),0,s.length(),0);
+        else
+            ss.setSpan(new ForegroundColorSpan(Color.rgb(221, 190, 66)),0,s.length(),0);
+        a.setText(ss);
     }
 }

@@ -8,7 +8,7 @@
     <string name="Minf">Call info</string>
     <string name="Mrec">approve receiving</string>
     <string name="SUM">Amount</string>
-    <string name="TversionNumber">Version number: %1$s.\nThe app was created by the \"AtlowApps\" team. all rights are reserved to Chemi@low and Itiel atlow.\nWe thank Yossi Cassoutoת Yochai Benita and Shalom Sacks for all theire help.\n\nThe application was built by MADA volunteers in order to help with existing actions, and to create new abilities in order to make life easier for the volunteers.\n\nIn any case of an error or a problem, or if you\'ve got a question or a request for us, you may contact us via the contact page, and we will do our best to respond A.S.A.P.\n\nTha application is not an official MDA app. the Implications of the usage are of the users only.</string>
+    <string name="TversionNumber">Version number: %1$s.\nThe app was created by the \"AtlowApps\" team. All rights are reserved to Chemi@low and Itiel atlow.\nWe thank Yossi Cassouto, Yochai Benita and Shalom Sacks for all their help.\n\nThe application was built by MADA volunteers in order to help with existing actions, and to create new abilities in order to make life easier for the volunteers.\n\nIn any case of an error or a problem, or if you\'ve got a question or a request for us, you may contact us via the contact page, and we will do our best to respond A.S.A.P.\n\nTha application is not an official MDA app. the Implications of the usage are of the users only.</string>
     <string name="aQ">Volunteer 1</string>
     <string name="bQ">Volunteer 2</string>
     <string name="cQ">Volunteer 3</string>
@@ -32,7 +32,7 @@
     <string name="pref_default_shabatT">6</string>
     <string name="passH">Write the code here</string>
     <string name="visa">Visa number</string>
-    <string name="notMada">It seems to us yoyu are not a MADA volunteer.\nIn order for the app to work on this phone, the official MADA app instaled.\nIf the MADA app is installed, try disconnecting and reconnecting and then try again.\nEnjoy the app!</string>
+    <string name="notMada">It seems to us you are not a MADA volunteer.\nIn order for the app to work on this phone, the official MADA app has to be installed.\nIf the MADA app is installed, try disconnecting and reconnecting in the MADA app, and then try again.\nEnjoy the app!</string>
     <string name="pref_description_Maenable_off">MADA app recognition off.</string>
     <string name="pref_description_Maenable_on">MADA app recognition on.</string>
     <string name="pref_description_app_on">The sound played on new call, will be the sound you pick.</string>
@@ -51,7 +51,7 @@
     <string name="pref_description_ringtone_on">Sound on new call is on.</string>
     <string name="pref_description_shabat_off">Notification will close only if clicked</string>
     <string name="pref_description_vibrate_off">Vibrate is off.</string>
-    <string name="pref_header_general">Alertr type</string>
+    <string name="pref_header_general">Alert type</string>
     <string name="pref_header_more">more</string>
     <string name="pref_header_notifications">notification settings</string>
     <string name="pref_header_notifictzia">emergency call notifications</string>
@@ -73,9 +73,11 @@
     <string name="subjectT">message subject</string>
     <string name="suc">please approve before sending</string>
     <string name="succ">send</string>
-    <string name="tQ">ID number</string><string name="teamE">You can send in up to 3 volunteers and a driver.\nthe Information sent is the name and the ID.
+    <string name="tQ">ID number</string>
+    <string name="teamE">You can send in up to 3 volunteers and a driver.\nthe Information sent is the name and the ID.
 \nIn order to send info of a volunteer, you need to check the check-box by his row first.
 \nEnjoy your shift!</string>
+    <string name="Nteam">add team member</string>
     <string name="teamN">volunteer name</string>
     <string name="teamT">ID:</string>
     <string name="test_beep">Fake emergncy call</string>
@@ -226,6 +228,7 @@
     <string name="explain">In order to add a team member, press the + buttom on the bottom right.\nIn order to send the message to dispatch, press the left button.</string>
     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
     <string name="callT">All the calls</string>
+    <string name="callTS">calls of sheirut</string>
     <string name="pref_title_cutA">separate alert settings</string>
     <string name="pref_description_cutA_on">each call will alert by it\'s specific type.</string>
     <string name="pref_description_cutA_off">all calls will alert the same way.</string>
@@ -253,7 +256,7 @@
     <string name="radio_kid">child</string>
     <string name="radio_old">adult</string>
     <string name="radio_baby">baby</string>
-    <string name="breathing">breathing per minute</string>
+    <string name="breathing">breaths per minute</string>
     <string name="systolic">Systolic</string>
     <string name="diastolic">Diastolic</string>
     <string name="button_e">vital signs calculator</string>
@@ -286,13 +289,14 @@
     <string name="vitalsBP">"BP is "</string>
     <string name="vitalsTakin">proper</string>
     <string name="vitalsNotTakin">abnormal</string>
-    <string name="vitalsAlert">the information brought here is based on MDA\'s books, and is not accurate with all patienrs. this information is not medical advice.</string>
+    <string name="vitalsAlert">the information brought here is based on MDA\'s books, and may vary betweeb patients. this information is not medical advice.</string>
     <string name="toDispatch">"send to: "</string>
     <string name="subject">"subject: "</string>
     <string name="sender">"sent by: "</string>
     <string name="msg">message:</string>
     <string name="emailAlert">make sure this is your real email address so we can get back to you!</string>
-    <string name="title_activity_code">Request unlock code</string>
+    <string name="title_activity_code">Contact us</string>
+    <string name="title_code">use unlock code</string>
     <string name="requestGood">your request has arrived at our systems.\\nWe will try responding within a few hours.</string>
     <string name="codeNote">please write your email and name, and in the notes write where you volunteer and what your rank is, and we will send a unlock code a.s.a.p</string>
     <string name="note">notes</string>
@@ -364,4 +368,5 @@
     <string name="button_p">protocols</string>
     <string name="title_activity_utills_and_tools">tools</string>
     <string name="privacyMsg">You had not yet seen the privacy policy. go there now.</string>
+    <string name="title_mda">official MADA app</string>
 </resources>

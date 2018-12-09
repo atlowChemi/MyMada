@@ -1,6 +1,8 @@
 package atlow.chemi.mymada;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +11,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
+import com.crashlytics.android.Crashlytics;
+
 public class lockPage extends AppCompatActivity {
     private Button btn5, btn6, btn7;
     private boolean isMove5 = false, isMove6 = false, isMove7 = false;
@@ -16,14 +20,15 @@ public class lockPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        resetTitle();
         setContentView(R.layout.activity_not_mada);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        btn5 = (Button) findViewById(R.id.b9);
-        btn6 = (Button) findViewById(R.id.b6);
-        btn7 = (Button) findViewById(R.id.b4);
+        btn5 = findViewById(R.id.b9);
+        btn6 = findViewById(R.id.b6);
+        btn7 = findViewById(R.id.b4);
         btn5.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -99,6 +104,19 @@ public class lockPage extends AppCompatActivity {
                 return false;
             }
         });
+    }
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocalHelper.onAttach(base));
+    }
+    private void resetTitle() {
+        try {
+            int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
+            if (label != 0)
+                setTitle(label);
+        } catch (PackageManager.NameNotFoundException e) {
+            Crashlytics.log(e.getMessage());
+        }
     }
     public void cod(View view) {
         Intent intent = new Intent(getApplicationContext(), codeC.class);

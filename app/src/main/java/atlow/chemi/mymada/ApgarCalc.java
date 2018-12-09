@@ -36,7 +36,8 @@ public class ApgarCalc extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View v = inflater.inflate(R.layout.activity_apgar_calc, container, false);
-        v.setRotationY(180);
+        if (SettingsActivity.isRTL())
+           v.setRotationY(180);
         return v;
     }
     @Override
@@ -81,31 +82,72 @@ public class ApgarCalc extends Fragment {
         Grimace.setAdapter(spinnerArrayAdapter3);
         Activity.setAdapter(spinnerArrayAdapter4);
         Respirations.setAdapter(spinnerArrayAdapter5);
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.sendVitals);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
-        if (!SettingsActivity.isRTL()) {
-            lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-            fab.setLayoutParams(lp);
-        }
-        fab.setOnClickListener(new View.OnClickListener() {
+        Apperence.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                int i = 0;
-                i += Apperence.getSelectedItemPosition();
-                i += Pulse.getSelectedItemPosition();
-                i += Grimace.getSelectedItemPosition();
-                i += Activity.getSelectedItemPosition();
-                i += Respirations.getSelectedItemPosition();
-                String s = "ציון אפגאר הוא: " + i;
-                SpannableString ss = new SpannableString(s + "\nיילוד בציון נמוך מ4 זקוק להחייאה מיידית.\nניקוד בין 4 ל6 מסמן על יילוד במצוקה בינונית הזקוק לחמצון והמרצה.\nניקוד גבוה מ6 הינו אינדיקציה ליילוד תקין.");
-                if (i < 4)
-                    ss.setSpan(new ForegroundColorSpan(Color.RED),0,s.length(),0);
-                else if (i > 6)
-                    ss.setSpan(new ForegroundColorSpan(Color.rgb(70,178,58)),0,s.length(),0);
-                else
-                    ss.setSpan(new ForegroundColorSpan(Color.rgb(221, 190, 66)),0,s.length(),0);
-                a.setText(ss);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                calc();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
+        Pulse.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                calc();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        Grimace.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                calc();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        Activity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                calc();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        Respirations.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                calc();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+    private void calc() {
+        int i = 0;
+        i += Apperence.getSelectedItemPosition();
+        i += Pulse.getSelectedItemPosition();
+        i += Grimace.getSelectedItemPosition();
+        i += Activity.getSelectedItemPosition();
+        i += Respirations.getSelectedItemPosition();
+        String s = "ציון אפגאר הוא: " + i;
+        SpannableString ss = new SpannableString(s + "\nיילוד בציון נמוך מ4 זקוק להחייאה מיידית.\nניקוד בין 4 ל6 מסמן על יילוד במצוקה בינונית הזקוק לחמצון והמרצה.\nניקוד גבוה מ6 הינו אינדיקציה ליילוד תקין.");
+        if (i < 4)
+            ss.setSpan(new ForegroundColorSpan(Color.RED),0,s.length(),0);
+        else if (i > 6)
+            ss.setSpan(new ForegroundColorSpan(Color.rgb(70,178,58)),0,s.length(),0);
+        else
+            ss.setSpan(new ForegroundColorSpan(Color.rgb(221, 190, 66)),0,s.length(),0);
+        a.setText(ss);
     }
 }

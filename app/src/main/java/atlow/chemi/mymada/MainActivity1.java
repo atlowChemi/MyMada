@@ -1,7 +1,10 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RotateDrawable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
@@ -15,12 +18,15 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -40,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity1 extends Fragment {
-    private boolean bool;
+    private boolean bool, isMove = false;
     protected CharSequence[] _options = {
             "מצבי חירום סביבתיים", "2000 גוף זר באוזניים", "2001 גוף זר באף", "2002 גוף זר בעיניים", "2003 הכשת נחש", "2004 הרעלות","2005 התייבשות","2006 מכת ברק","2007 עקיצת עקרב","2008 פגיעה מבע\"ח","2009 פגיעות חום","2010 פגיעות קור","2011 רגישות יתר / אלרגיה","2012 שאיפת חומרים רעילים","2013 שאיפת עשן","2014 תגובה אנפילקטית","2015 צריכת יתר אלכוהול","2016 צריכת יתר סמים","2017 צריכת יתר תרופות","2018 תליה","2099 אחר",
             "טראומה","3000 חבלה בגפיים","3001 חבלה בצוואר","3002 חבלה רב מערכתית","3003 חבלת חזה","3004 חבלת ראש","3005 חבלת אגן","3006 חבלת בטן","3007 חבלת עמ\"ש","3008 חבלת פנים","3009 חשד לשבר צוואר ירך","3010 חשד לשבר בגפיים עליונות","3011  חשד לשבר בגפיים תחתונות","3012 כוויה","3017 כוויה דרגה 1","3018 כוויה דרגה 2","3019 כוויה דרגה 3","3013 כוויה כימית","3014 פגיעת מעיכה","3015 קטיעת אצבעות","3016 קטיעת גפיים","3099 אחר",
@@ -92,6 +98,7 @@ public class MainActivity1 extends Fragment {
     private SharedPreferences sp2;
     public boolean yishuv = true;
     private Typeface myTypeface;
+    private float oldX1, oldY1;
     public MainActivity1()  {
 
     }
@@ -100,7 +107,6 @@ public class MainActivity1 extends Fragment {
         super.onCreate(savedInstanceState);
         myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View view = inflater.inflate(R.layout.activity_main, container, false);
@@ -108,6 +114,7 @@ public class MainActivity1 extends Fragment {
             view.setRotationY(180);
         return view;
     }
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -121,28 +128,17 @@ public class MainActivity1 extends Fragment {
         }
         codeAdapter = new mCodeAdapt(getContext(), arrayOfMediCode, sep);
         sp = (EditText)view.findViewById(R.id.M1button2);
-        final FloatingActionButton button1 = (FloatingActionButton) view.findViewById(R.id.M1btn1);
+        final Button newSendButton = view.findViewById(R.id.M1btnN);
         final EditText family = (EditText)view.findViewById(R.id.M1txt5);
-        assert button1 != null;
         assert family != null;
-        //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) button1.getLayoutParams();
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) button1.getLayoutParams();
-        if(SettingsActivity.isRTL()) {
-            button1.setRotationY(180);
-            lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            button1.setLayoutParams(lp);
-        }
-        if (!SettingsActivity.isRTL()) {
-            //lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-            lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-            button1.setLayoutParams(lp);
-        }
+        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send_flip);
+        if (!SettingsActivity.isRTL())
+            img = getActivity().getResources().getDrawable(R.drawable.ic_send);
+        newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         sp.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
                 if(arg1== EditorInfo.IME_ACTION_DONE){
-                    button1.performClick();
+                    newSendButton.performClick();
                     //do something
                 }
                 return false;
@@ -209,7 +205,34 @@ public class MainActivity1 extends Fragment {
                 dialog.show();
             }
         });
-        button1.setOnClickListener(new View.OnClickListener() {
+        newSendButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        boolean x = oldX1 - event.getX() > 10 || event.getX() - oldX1 > 10;
+                        boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                        if (x || y) {
+                            isMove = true;
+                            newSendButton.setAlpha(1f);
+                        }
+                        return true;
+                    case MotionEvent.ACTION_DOWN:
+                        oldY1 = event.getY();
+                        oldX1 = event.getX();
+                        isMove = false;
+                        newSendButton.setAlpha(0.4f);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        newSendButton.setAlpha(1f);
+                        if (!isMove)
+                            newSendButton.performClick();
+                        return true;
+                }
+                return false;
+            }
+        });
+        newSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bool = true;
@@ -427,7 +450,7 @@ public class MainActivity1 extends Fragment {
                 Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
                 canc.setTypeface(myTypeface);
                 ok.setTypeface(myTypeface);
-                canc.setTextColor(getActivity().getResources().getColor(R.color.ColorPrimary));
+                canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
             }
         });
         builder.show();
