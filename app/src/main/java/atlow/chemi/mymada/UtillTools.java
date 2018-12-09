@@ -3,6 +3,7 @@ package atlow.chemi.mymada;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,6 +34,8 @@ import android.view.ViewGroup;
 
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.crashlytics.android.Crashlytics;
 
 import java.util.List;
 
@@ -65,9 +68,10 @@ public class UtillTools extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        resetTitle();
         setContentView(R.layout.activity_utill_tools);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Create the adapter that will return a fragment for each of the three
@@ -78,11 +82,25 @@ public class UtillTools extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setCurrentItem(2);
-        mViewPager.setRotationY(180);
+        if (SettingsActivity.isRTL())
+            mViewPager.setRotationY(180);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+    }
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocalHelper.onAttach(base));
+    }
+    private void resetTitle() {
+        try {
+            int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
+            if (label != 0)
+                setTitle(label);
+        } catch (PackageManager.NameNotFoundException e) {
+            Crashlytics.log(e.getMessage());
+        }
     }
 
 
@@ -91,11 +109,9 @@ public class UtillTools extends AppCompatActivity {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
         SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
-
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
@@ -116,15 +132,13 @@ public class UtillTools extends AppCompatActivity {
                 return glazgoCalc;
             if (position == 7)
                 return blsProtocoles;
-            return new MetroActivity();
+            return metroActivity;
         }
-
         @Override
         public int getCount() {
             // Show 8 total pages.
             return 8;
         }
-
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
@@ -165,8 +179,6 @@ public class UtillTools extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        ComponentName component = new ComponentName(getBaseContext(), SMSReceiver.class);
-        int status = getPackageManager().getComponentEnabledSetting(component);
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -179,11 +191,8 @@ public class UtillTools extends AppCompatActivity {
                 if (!item.isChecked()) {
                     item.setChecked(true);
                     /*new*/
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        ContextCompat.startForegroundService(this, serviceIntent);
-                    }   else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    ContextCompat.startForegroundService(this, serviceIntent);
                     /*end new*/
                     Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                     boolean activityExists = isCallable(test);
@@ -282,11 +291,8 @@ public class UtillTools extends AppCompatActivity {
                         s.putBoolean("Mapp", true);
                     }
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        stopService(serviceIntent);
-                    }else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
                 }

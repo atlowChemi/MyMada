@@ -8,7 +8,6 @@
     android:padding="@dimen/activity_horizontal_margin">
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="54dp"
         android:orientation="vertical">
         <RadioGroup
             android:layout_width="match_parent"
@@ -112,14 +111,4 @@
             android:textSize="19sp"/>
 
     </LinearLayout>
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/sendVitals"
-        android:src="@drawable/ic_done"
-        app:backgroundTint="@color/ColorAqua"
-        app:rippleColor="@color/ColorBlue"
-        android:layout_gravity="bottom|left"
-        android:layout_marginLeft="5dp"
-        android:layout_marginBottom="5dp"/>
 </android.support.design.widget.CoordinatorLayout>

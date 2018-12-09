@@ -77,7 +77,9 @@
     <string name="subjectT">נושא ההודעה</string>
     <string name="suc">נא אשר לפני שליחה</string>
     <string name="succ">שלח</string>
-    <string name="tQ">מספר ת.ז.</string><string name="teamE">ניתן לדווח על 3 מתנדבים ונהג.\nהדיווח הוא של שם פרטי ומשפחה יחד עם ת.ז.
+    <string name="tQ">מספר ת.ז.</string>
+    <string name="Nteam">הוספת איש צוות</string>
+    <string name="teamE">ניתן לדווח על 3 מתנדבים ונהג.\nהדיווח הוא של שם פרטי ומשפחה יחד עם ת.ז.
 \nכדי לשלוח פרטי מתנדב יש להפעיל תחילה את השורה שלו באמצעות לחיצה על התיבה מימינו.
 \nמשמרת מהנה!</string>
     <string name="teamN">שם איש צוות</string>
@@ -230,6 +232,7 @@
     <string name="explain">בכדי להוסיף איש צוות לחצו על כפתור ה+ בצד ימין בתחתית המסך.\nבכדי לשלוח את ההודעה למוקד לחצו על הכפתור בצד שמאל.</string>
     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
     <string name="callT">כל האירועים</string>
+    <string name="callTS">הודעות שירות</string>
     <string name="pref_title_cutA">הפרדת הגדרות התראה</string>
     <string name="pref_description_cutA_off">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בלי הבדלים</string>
     <string name="pref_description_cutA_on">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בנפרד</string>
@@ -295,6 +298,7 @@
     <string name="msg">הודעה:</string>
     <string name="emailAlert">יש להקפיד שכתובת המייל מדוייקת, אחרת לא נוכל להשיב להודעה!</string>
     <string name="title_activity_code">בקשת קוד הפעלה</string>
+    <string name="title_code">הכנסת קוד הפעלה</string>
     <string name="requestGood">הבקשה הגיעה אלינו ונרשמה. אנו נעשה מיטב המאמצים להגיב במהירות.</string>
     <string name="codeNote">כתוב את פרטיך והוסף בהערות את פרטי ההתנדבות שלך (מרחב ותפקיד) ואנו נבחן את הפרטים ונשלח קוד הפעלה בהקדם.</string>
     <string name="note">הערות</string>
@@ -366,4 +370,5 @@
     <string name="button_p">פרוטוקלים</string>
     <string name="title_activity_utills_and_tools">כלי עזר</string>
     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
+    <string name="title_mda">הורדת יישומון מד\"א</string>
 </resources>

@@ -1,8 +1,10 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +13,8 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,26 +33,52 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.util.List;
+import java.util.Locale;
 
 public class PrivacyActivity extends AppCompatActivity {
     private ProgressBar spinner;
     private WebView webview;
     private String ShowOrHideWebViewInitialUse = "show";
+    private boolean isConnected = true;
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        resetTitle();
         setContentView(R.layout.activity_privacy);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        webview = (WebView) findViewById(R.id.webview);
-        spinner = (ProgressBar)findViewById(R.id.progressBar1);
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager != null) {
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            if (info == null || !info.isConnectedOrConnecting())
+                isConnected = false;
+        }
+        webview =  findViewById(R.id.webview);
+        spinner = findViewById(R.id.progressBar1);
+        webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new CustomWebViewClient());
         webview.clearHistory();
         webview.getSettings().setBuiltInZoomControls(false);
         webview.loadUrl("https://www.freeprivacypolicy.com/privacy/view/29c6571350f6b515af9691bbccbce669");
+    }
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocalHelper.onAttach(base));
+    }
+    private void resetTitle() {
+        try {
+            int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
+            if (label != 0)
+                setTitle(label);
+        } catch (PackageManager.NameNotFoundException e) {
+            Crashlytics.log(e.getMessage());
+        }
     }
 
     private class CustomWebViewClient extends WebViewClient {
@@ -68,6 +99,25 @@ public class PrivacyActivity extends AppCompatActivity {
             sp1.apply();
             super.onPageFinished(view, url);
         }
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if (isConnected)
+                return false;
+            else {
+                String er = "file:///android_asset/err.html";
+                if(Locale.getDefault().getLanguage().equals("en"))
+                    er += "?lng=en";
+                view.loadUrl(er);
+                return true;
+            }
+        }
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String FailingUrl) {
+            String er = "file:///android_asset/err.html";
+            if(Locale.getDefault().getLanguage().equals("en"))
+                er += "?lng=en";
+            view.loadUrl(er);
+        }
     }
 
     @Override
@@ -86,8 +136,6 @@ public class PrivacyActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        ComponentName component = new ComponentName(getBaseContext(), SMSReceiver.class);
-        int status = getPackageManager().getComponentEnabledSetting(component);
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -100,11 +148,8 @@ public class PrivacyActivity extends AppCompatActivity {
                 if (!item.isChecked()) {
                     item.setChecked(true);
                     /*new*/
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        ContextCompat.startForegroundService(this, serviceIntent);
-                    }   else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    ContextCompat.startForegroundService(this, serviceIntent);
                     /*end new*/
                     Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                     boolean activityExists = isCallable(test);
@@ -203,11 +248,8 @@ public class PrivacyActivity extends AppCompatActivity {
                         s.putBoolean("Mapp", true);
                     }
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        stopService(serviceIntent);
-                    }else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
                 }

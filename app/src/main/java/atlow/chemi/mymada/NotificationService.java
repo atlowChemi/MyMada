@@ -15,13 +15,11 @@ import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.util.Objects;
 
-import static atlow.chemi.mymada.Applicatio.CnlBg;
 import static atlow.chemi.mymada.Applicatio.manager;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -32,45 +30,14 @@ public class NotificationService extends NotificationListenerService {
     @Override
     public void onCreate() {
         super.onCreate();
-        isNotificationAccessEnabled = false;
-        ContentResolver contentResolver = getApplicationContext().getContentResolver();
-        String enabledNotificationListeners = android.provider.Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
-        String packageName = getApplicationContext().getPackageName();
-        if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                    .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
-    }
-    @Override
-    public IBinder onBind(Intent intent) {
-        IBinder iBinder = super.onBind(intent);
-        isNotificationAccessEnabled = true;
-        return iBinder;
-    }
-    @Override
-    public boolean onUnbind(Intent intent)   {
-        boolean onUnbind = super.onUnbind(intent);
-        isNotificationAccessEnabled = false;
-        return onUnbind;
     }
     @Override
     public void onNotificationPosted(StatusBarNotification statusBarNotification) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         Boolean Mapp = sp.getBoolean("Mapp", false);
-        if (Mapp && (statusBarNotification.getPackageName().contains("mdaemergency") || statusBarNotification.getPackageName().equals("atlow.mymadaadmin"))) {
+        if (Mapp && (statusBarNotification.getPackageName().contains("mdaemergency")
+                || statusBarNotification.getPackageName().contains("mda.health")
+                || statusBarNotification.getPackageName().equals("atlow.mymadaadmin"))) {
             Bundle extras = statusBarNotification.getNotification().extras;
             String pack = statusBarNotification.getPackageName();
             String ticker;
@@ -104,6 +71,8 @@ public class NotificationService extends NotificationListenerService {
                 if (title.contains("*אירוע חדש*")) {
                     if (text.contains("שירות") || text.contains("כלכלה") || text.contains("תפילה"))
                         intent.putExtra("callT", 6);
+                    else if (text.contains("מנהלתי") || text.contains("מינהלתי") || text.contains("משמרת בנה"))
+                        intent.putExtra("callT", 4);
                     else if(text.contains("אירוע חדש"))
                         intent.putExtra("callT",1);
                     else if(text.contains("הודעת קבוצת"))
@@ -125,6 +94,8 @@ public class NotificationService extends NotificationListenerService {
                     sendBroadcast(intent);
                 }else if (title.contains("*הודעה מנהלתית חדשה*"))   {
                     intent.putExtra("callT", 4);
+                    if (text.contains("שירות") || text.contains("כלכלה") || text.contains("תפילה"))
+                        intent.putExtra("callT", 6);
                     if (text.contains("על מידע זה חל חיסיון רפואי"))
                         intent.putExtra("callT", 5);
                     String time = title.replace("*הודעה מנהלתית חדשה*", "");
@@ -148,6 +119,13 @@ public class NotificationService extends NotificationListenerService {
                 Log.v("searchable", notification.getChannelId());
             }
         }
+    }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("REBIND", "NotificationListenerService onStartCommand begin");
+        if (intent != null)
+            Applicatio.tryConnectService();
+        return START_STICKY;
     }
 
 

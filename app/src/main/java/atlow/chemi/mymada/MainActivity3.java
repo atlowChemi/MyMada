@@ -1,5 +1,6 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +26,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -33,7 +36,10 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class MainActivity3 extends Fragment {
-    TextInputLayout freeMsg;
+    private TextInputLayout freeMsg;
+    private boolean isMove = false;
+    private float oldX1, oldY1;
+    private Button newSendButton;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,28 +52,46 @@ public class MainActivity3 extends Fragment {
             view.setRotationY(180);
         return view;
     }
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SharedPreferences sp = getActivity().getSharedPreferences("Settings", 0);
         final EditText editText = (EditText) view.findViewById(R.id.yourMsg);
         freeMsg = (TextInputLayout) view.findViewById(R.id.freeMsg);
-        FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.yourMsgBtn);
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) button.getLayoutParams();
-        //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) button.getLayoutParams();
-        if (SettingsActivity.isRTL()) {
-            button.setRotationY(180);
-            lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            button.setLayoutParams(lp);
-        }
-        if (!SettingsActivity.isRTL())  {
-            //lp.gravity = Gravity.BOTTOM | GravityCompat.END;
-            lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-            button.setLayoutParams(lp);
-        }
-        button.setOnClickListener(new View.OnClickListener() {
+        newSendButton = view.findViewById(R.id.yourMsgBtnNew);
+        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send_flip);
+        if (!SettingsActivity.isRTL())
+            img = getActivity().getResources().getDrawable(R.drawable.ic_send);
+        newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
+        newSendButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        boolean x = oldX1 - event.getX() > 10 || event.getX() - oldX1 > 10;
+                        boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                        if (x || y) {
+                            isMove = true;
+                            newSendButton.setAlpha(1f);
+                        }
+                        return true;
+                    case MotionEvent.ACTION_DOWN:
+                        oldY1 = event.getY();
+                        oldX1 = event.getX();
+                        isMove = false;
+                        newSendButton.setAlpha(0.4f);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        newSendButton.setAlpha(1f);
+                        if (!isMove)
+                            newSendButton.performClick();
+                        return true;
+                }
+                return false;
+            }
+        });
+        newSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(editText.getText().toString().trim().length() < 1)  {
@@ -116,7 +140,7 @@ public class MainActivity3 extends Fragment {
             @Override
             public void onShow(DialogInterface dialogInterface) {
                 Button canc = builder.getButton(DialogInterface.BUTTON_NEGATIVE);
-                canc.setTextColor(getActivity().getResources().getColor(R.color.ColorPrimary));
+                canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
             }
         });
         builder.show();

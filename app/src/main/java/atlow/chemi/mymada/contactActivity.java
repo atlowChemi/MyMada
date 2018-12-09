@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -38,6 +39,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +65,7 @@ public class contactActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        resetTitle();
         setContentView(R.layout.activity_contact);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -134,6 +138,19 @@ public class contactActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocalHelper.onAttach(base));
+    }
+    private void resetTitle() {
+        try {
+            int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
+            if (label != 0)
+                setTitle(label);
+        } catch (PackageManager.NameNotFoundException e) {
+            Crashlytics.log(e.getMessage());
+        }
     }
     public boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
@@ -261,11 +278,14 @@ public class contactActivity extends AppCompatActivity {
         String alert = getApplicationContext().getResources().getString(R.string.emailAlert) + "\n\n";
         String sender = alert + getApplicationContext().getResources().getString(R.string.sender) + emailN + " - " + emailA + "\n";
         String sub = sender + getApplicationContext().getResources().getString(R.string.subject) +  emailS;
+        int sendI = getApplicationContext().getResources().getString(R.string.sender).length();
+        int subI = getApplicationContext().getResources().getString(R.string.subject).length();
+        int msgI = getApplicationContext().getResources().getString(R.string.msg).length();
         SpannableString subj = new SpannableString(sub + "\n" + getApplicationContext().getResources().getString(R.string.msg) + "\n" + emailT);
         subj.setSpan(new ForegroundColorSpan(Color.RED), 0, alert.length(), 0);
-        subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), alert.length(), alert.length()+5, 0);
-        subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), sender.length(), sender.length()+5, 0);
-        subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), sub.length(), sub.length()+7, 0);
+        subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), alert.length(), alert.length()+sendI, 0);
+        subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), sender.length(), sender.length()+subI, 0);
+        subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), sub.length(), sub.length()+msgI, 0);
         subj.setSpan(myTypeface, 0, subj.length(), 0);
         final AlertDialog builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle).setTitle(getApplicationContext().getResources().getString(R.string.suc)).setMessage(subj)
                 .setCancelable(false)
@@ -294,7 +314,7 @@ public class contactActivity extends AppCompatActivity {
                 Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setTypeface(myTypeface);
                 canc.setTypeface(myTypeface);
-                canc.setTextColor(contactActivity.this.getResources().getColor(R.color.ColorPrimary));
+                canc.setTextColor(contactActivity.this.getResources().getColor(R.color.OldPrimary));
             }
         });
         builder.show();
@@ -315,8 +335,6 @@ public class contactActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        ComponentName component = new ComponentName(getBaseContext(), SMSReceiver.class);
-        int status = getPackageManager().getComponentEnabledSetting(component);
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -329,11 +347,8 @@ public class contactActivity extends AppCompatActivity {
                 if (!item.isChecked()) {
                     item.setChecked(true);
                     /*new*/
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        ContextCompat.startForegroundService(this, serviceIntent);
-                    }   else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    ContextCompat.startForegroundService(this, serviceIntent);
                     /*end new*/
                     Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                     boolean activityExists = isCallable(test);
@@ -360,7 +375,7 @@ public class contactActivity extends AppCompatActivity {
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
 
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.OldPrimary));
                                         }
                                     });
                                     alert.show();
@@ -390,7 +405,7 @@ public class contactActivity extends AppCompatActivity {
                                         @Override
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.OldPrimary));
                                         }
                                     });
                                     alert.show();
@@ -421,7 +436,7 @@ public class contactActivity extends AppCompatActivity {
                                     @Override
                                     public void onShow(DialogInterface dialogInterface) {
                                         Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.OldPrimary));
                                     }
                                 });
                                 alert.show();
@@ -432,11 +447,8 @@ public class contactActivity extends AppCompatActivity {
                         s.putBoolean("Mapp", true);
                     }
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        stopService(serviceIntent);
-                    }else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
                 }

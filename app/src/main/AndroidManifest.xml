@@ -8,8 +8,8 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
-    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+    <!--uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" /-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -38,22 +38,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme.SmsRes" />
 
-        <receiver
-            android:name=".SMSReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.RECIEVE_SMS">
-            <intent-filter android:priority="999">
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-                <action android:name="com.atlow.chemi.MADAforms.TestS" />
-                <action android:name="com.atlow.chemi.MADAforms.del" />
-            </intent-filter>
-        </receiver>
-
-        <service android:name=".SMSMonitorService"
-            android:label="@string/smsMoni"/>
+        <service
+            android:name=".SMSMonitorService"
+            android:label="@string/smsMoni" />
 
         <activity
             android:name=".SettingsActivity"
@@ -91,7 +78,7 @@
         <service
             android:name=".NotificationService"
             android:enabled="@bool/listener"
-            android:label="@string/app_name"
+            android:label="@string/notiMoni"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
@@ -102,7 +89,7 @@
             android:description="@string/address"
             android:enabled="@bool/listenerO"
             android:exported="true"
-            android:label="@string/app_name"
+            android:label="@string/notiMoni"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <meta-data
                 android:name="android.accessibilityservice"
@@ -128,12 +115,7 @@
         <receiver
             android:name=".GrobootRec"
             android:enabled="true"
-            android:exported="true">
-            <intent-filter android:priority="99997">
-                <action android:name="MADA_APP" />
-                <action android:name="atlow.chemi.MyMada.MADA_APP" />
-            </intent-filter>
-        </receiver>
+            android:exported="true" />
 
         <activity
             android:name=".HomePage"
@@ -183,6 +165,7 @@
             android:name=".lockPage"
             android:parentActivityName=".HomePage"
             android:screenOrientation="portrait"
+            android:label="@string/app_name"
             android:theme="@style/MyMaterialTheme" />
         <activity
             android:name=".UtilsTools"
@@ -209,6 +192,7 @@
         <activity
             android:name=".UtillTools"
             android:label="@string/button_h"
+            android:screenOrientation="portrait"
             android:parentActivityName=".HomePage"
             android:theme="@style/MyMaterialTheme">
             <meta-data
@@ -221,19 +205,22 @@
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
-                <data android:scheme="package"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
+                <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_RESTARTED"/>
-                <data android:scheme="package"/>
+                <action android:name="android.intent.action.PACKAGE_RESTARTED" />
+
+                <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED"/>
-                <data android:scheme="package"/>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+
+                <data android:scheme="package" />
             </intent-filter>
         </receiver>
     </application>

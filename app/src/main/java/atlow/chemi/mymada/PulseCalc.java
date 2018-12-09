@@ -34,7 +34,8 @@ public class PulseCalc extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View v = inflater.inflate(R.layout.activity_pulse_calc, container, false);
-        v.setRotationY(180);
+        if (SettingsActivity.isRTL())
+            v.setRotationY(180);
         return v;
     }
     @Override

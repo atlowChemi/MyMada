@@ -1,10 +1,12 @@
 package atlow.chemi.mymada;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 import android.*;
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -64,14 +66,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static atlow.chemi.mymada.Applicatio.CnlBg;
+import static atlow.chemi.mymada.Applicatio.manager;
+
 
 public class HomePage extends AppCompatActivity {
     private Boolean isSMST = false;
     private Context context;
     private Typeface myTypeface;
-    private Button btn1, btn2, btn3, btn4, btn100;
-    private boolean isMove1 = false, isMove2 = false, isMove3 = false, isMove4 = false, isMove100 = false;
-    private float oldX1, oldY1, oldX2, oldY2, oldX3, oldY3, oldX4, oldY4, oldX100, oldY100;
     private static final int PERMISSION_CALLBACK_CONSTANT = 100;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     String[] permissionsRequired = new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE,android.Manifest.permission.READ_SMS, Manifest.permission.READ_PHONE_STATE};
@@ -83,11 +85,13 @@ public class HomePage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        resetTitle();
         setContentView(R.layout.activity_home_page);
         context = this;
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
-        Boolean realM = sharedPreferences.getBoolean("realM", false);
+        boolean realM = sharedPreferences.getBoolean("realM", false);
+        boolean Mapp = sharedPreferences.getBoolean("Mapp", false);
         AdView mAdView;
         FirebaseAnalytics mFirebaseAnalytics;
         try {
@@ -231,7 +235,7 @@ public class HomePage extends AppCompatActivity {
                     Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                     ok.setTypeface(myTypeface);
                     canc.setTypeface(myTypeface);
-                    canc.setTextColor(getResources().getColor(R.color.ColorPrimary));
+                    canc.setTextColor(getResources().getColor(R.color.OldPrimary));
                 }
             });
             alert.show();
@@ -264,10 +268,62 @@ public class HomePage extends AppCompatActivity {
                     Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                     ok.setTypeface(myTypeface);
                     canc.setTypeface(myTypeface);
-                    canc.setTextColor(getResources().getColor(R.color.ColorPrimary));
+                    canc.setTextColor(getResources().getColor(R.color.OldPrimary));
                 }
             });
             alert.show();
+        }
+        if(Mapp && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = manager.getNotificationChannel(CnlBg).getImportance();
+            Log.d("importance", "is " + importance);
+            if (importance != NotificationManager.IMPORTANCE_MIN) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+                builder.setMessage(getResources().getString(R.string.importanceMsg)).setCancelable(false)
+                        .setPositiveButton(getResources().getString(R.string.importance), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                                intent.putExtra(Settings.EXTRA_CHANNEL_ID, CnlBg);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                final AlertDialog alert = builder.create();
+                TextView textView = (TextView) alert.findViewById(android.R.id.message);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
+                textView = (TextView) alert.findViewById(android.R.id.title);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
+                alert.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialogInterface) {
+                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                        Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                        ok.setTypeface(myTypeface);
+                        canc.setTypeface(myTypeface);
+                        canc.setTextColor(getResources().getColor(R.color.OldPrimary));
+                    }
+                });
+                alert.show();
+            }
+        }
+    }
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocalHelper.onAttach(base));
+    }
+    private void resetTitle() {
+        try {
+            int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
+            if (label != 0)
+                setTitle(label);
+        } catch (PackageManager.NameNotFoundException e) {
+            Crashlytics.log(e.getMessage());
         }
     }
     private void smsGot() {
@@ -381,8 +437,6 @@ public class HomePage extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        ComponentName component = new ComponentName(getBaseContext(), SMSReceiver.class);
-        int status = getPackageManager().getComponentEnabledSetting(component);
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -395,51 +449,46 @@ public class HomePage extends AppCompatActivity {
                 if (!item.isChecked()) {
                     item.setChecked(true);
                     /*new*/
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        ContextCompat.startForegroundService(this, serviceIntent);
-                    }   else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    ContextCompat.startForegroundService(this, serviceIntent);
                     /*end new*/
                     Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                     boolean activityExists = isCallable(test);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        if (activityExists) {
-                            try {
-                                if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                                    builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
+                    if (activityExists) {
+                        try {
+                            if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+                                builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
+                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int id) {
                                                     Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                                                     startActivity(intent);
                                                 }
-                                            })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
+                                        })
+                                        .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int id) {
                                                     dialog.cancel();
                                                 }
-                                            });
-                                    final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
+                                        });
+                                final AlertDialog alert = builder.create();
+                                alert.setOnShowListener(new DialogInterface.OnShowListener() {
                                         @Override
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.OldPrimary));
                                         }
-                                    });
-                                    alert.show();
-                                }
-                                s.putBoolean("Mapp", true);
-                            } catch (ActivityNotFoundException e) {
-                                Intent intent = new Intent(this, NotificationService.class);
-                                Intent old = new Intent(this, NotificationServiceOld.class);
-                                stopService(intent);
-                                startService(old);
-                                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                                    builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
+                                });
+                                alert.show();
+                            }
+                            s.putBoolean("Mapp", true);
+                        } catch (ActivityNotFoundException e) {
+                            Intent intent = new Intent(this, NotificationService.class);
+                            Intent old = new Intent(this, NotificationServiceOld.class);
+                            stopService(intent);
+                            startService(old);
+                            if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+                                builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
                                             .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int id) {
                                                     Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
@@ -451,26 +500,26 @@ public class HomePage extends AppCompatActivity {
                                                     dialog.cancel();
                                                 }
                                             });
-                                    final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
+                                final AlertDialog alert = builder.create();
+                                alert.setOnShowListener(new DialogInterface.OnShowListener() {
                                         @Override
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.OldPrimary));
                                         }
-                                    });
-                                    alert.show();
-                                }
-                                s.putBoolean("Mapp", true);
+                                });
+                                alert.show();
                             }
-                        } else {
-                            Intent intent = new Intent(this, NotificationService.class);
-                            Intent old = new Intent(this, NotificationServiceOld.class);
-                            stopService(intent);
-                            startService(old);
-                            if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                                builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
+                            s.putBoolean("Mapp", true);
+                        }
+                    } else {
+                        Intent intent = new Intent(this, NotificationService.class);
+                        Intent old = new Intent(this, NotificationServiceOld.class);
+                        stopService(intent);
+                        startService(old);
+                        if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+                            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
                                         .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
@@ -482,27 +531,21 @@ public class HomePage extends AppCompatActivity {
                                                 dialog.cancel();
                                             }
                                         });
-                                final AlertDialog alert = builder.create();
-                                alert.setOnShowListener(new DialogInterface.OnShowListener() {
+                            final AlertDialog alert = builder.create();
+                            alert.setOnShowListener(new DialogInterface.OnShowListener() {
                                     @Override
                                     public void onShow(DialogInterface dialogInterface) {
                                         Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.OldPrimary));
                                     }
                                 });
-                                alert.show();
-                            }
-                            s.putBoolean("Mapp", true);
+                            alert.show();
                         }
-                    } else {
                         s.putBoolean("Mapp", true);
                     }
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                        stopService(serviceIntent);
-                    }else
-                        getPackageManager().setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
+                    stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
                 }
@@ -515,7 +558,6 @@ public class HomePage extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
     private boolean isCallable(Intent intent) {
         try {
             List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);

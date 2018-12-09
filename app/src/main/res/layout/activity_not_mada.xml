@@ -21,20 +21,34 @@
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:background="@drawable/curve_toolbar_bg"
+            android:contentDescription="@string/app_name"
+            android:clickable="false"/>
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="295dp">
+            android:layout_marginTop="22dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_above="@+id/b9"
+            android:paddingBottom="13dp"
+            android:background="@drawable/text_white_cornered"
+            android:layout_marginBottom="25dp">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="13dp"
+                android:paddingBottom="13dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:gravity="center"
             android:textSize="21sp"
-            android:textStyle="bold"
             android:textColor="@color/ColorRedDark"
             android:text="@string/notMada"
             android:id="@+id/textView11"
@@ -56,29 +70,58 @@
             </RelativeLayout>
         </ScrollView>
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="85dp"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:layout_centerHorizontal="true"
             android:id="@+id/b9"
-            android:layout_above="@+id/b6"
-            android:background="@drawable/code"
-            android:onClick="cod"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="85dp"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/b6"
-            android:layout_above="@+id/b4"
-            android:background="@drawable/official"
+            android:layout_above="@+id/lin"
+            android:text="@string/title_mda"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="#FFF"
+            android:background="@drawable/btns_new"
             android:onClick="TZapp"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="85dp"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/b4"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:paddingBottom="16dp"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:id="@+id/lin"
+            android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="15dp"
-            android:background="@drawable/contact"
-            android:onClick="cond"/>
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/title_code"
+                android:gravity="center"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:textSize="20sp"
+                android:textColor="#FFF"
+                android:layout_marginEnd="4dp"
+                android:id="@+id/b6"
+                android:background="@drawable/btns_new"
+                android:onClick="cod"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/title_activity_code"
+                android:layout_marginStart="4dp"
+                android:gravity="center"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:textSize="20sp"
+                android:textColor="#FFF"
+                android:id="@+id/b4"
+                android:background="@drawable/btns_new"
+                android:onClick="cond"/>
+        </LinearLayout>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

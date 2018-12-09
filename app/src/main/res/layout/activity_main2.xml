@@ -10,8 +10,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="55dp">
+        android:layout_height="match_parent">
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,28 +39,48 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/explain"
+            android:layout_above="@+id/LinBtns"
+            android:layout_marginBottom="8dp"
             android:clipToPadding="false"
             android:scrollbars="vertical" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layoutDirection="rtl"
+            android:id="@+id/LinBtns">
+            <Button
+                android:id="@+id/newManNew"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="0.6"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:paddingEnd="@dimen/activity_horizontal_margin"
+                android:paddingStart="@dimen/activity_horizontal_margin"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/btns_new"
+                android:gravity="center|center_horizontal|center_vertical"
+                android:text="@string/Nteam"
+                android:textColor="#FFF"
+                android:textSize="16sp" />
+            <Button
+                android:id="@+id/M2btn1ENew"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="0.4"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:paddingEnd="@dimen/activity_horizontal_margin"
+                android:paddingStart="@dimen/activity_horizontal_margin"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/btns_new"
+                android:gravity="center|center_horizontal|center_vertical"
+                android:text="@string/succ"
+                android:textColor="#FFF"
+                android:textSize="16sp" />
+        </LinearLayout>
     </RelativeLayout>
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/newMan"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="@color/ColorAqua"
-        android:layout_gravity="bottom|right"
-        android:elevation="0dp"
-        app:rippleColor="@color/ColorBlue"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="5dp"/>
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/M2btn1E"
-        android:src="@drawable/ic_send"
-        app:backgroundTint="@color/ColorAqua"
-        app:rippleColor="@color/ColorBlue"
-        android:layout_gravity="bottom|left"
-        android:layout_marginLeft="5dp"
-        android:layout_marginBottom="5dp"/>
+
+
 </android.support.design.widget.CoordinatorLayout>

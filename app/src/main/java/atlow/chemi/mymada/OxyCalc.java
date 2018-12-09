@@ -23,9 +23,7 @@ public class OxyCalc extends Fragment {
     private EditText psi, atm;
     private TextView time;
     private Spinner oxyType;
-    public OxyCalc()    {
-
-    }
+    public OxyCalc()    {}
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,11 +31,12 @@ public class OxyCalc extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View v = inflater.inflate(R.layout.activity_oxy_calc, container, false);
-        v.setRotationY(180);
-        oxyType = (Spinner)v.findViewById(R.id.OxyTypeS);
-        psi = (EditText)v.findViewById(R.id.PSI);
-        atm = (EditText)v.findViewById(R.id.ATM);
-        time = (TextView)v.findViewById(R.id.txtOxyMin);
+        if (SettingsActivity.isRTL())
+            v.setRotationY(180);
+        oxyType = v.findViewById(R.id.OxyTypeS);
+        psi = v.findViewById(R.id.PSI);
+        atm = v.findViewById(R.id.ATM);
+        time = v.findViewById(R.id.txtOxyMin);
         return v;
     }
     @Override

@@ -33,7 +33,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
     private void sendNotification(int type, String msg, String title, String code) {
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder)new NotificationCompat.Builder(getApplicationContext()).setContentTitle("בקשת קוד חדשה!")
+        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder)new NotificationCompat.Builder(getApplicationContext(), "Push").setContentTitle("בקשת קוד חדשה!")
                 .setContentText(title).setSmallIcon(R.drawable.ic_siren)
                 .setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(), R.mipmap.ic_launcher))
                 .setContentIntent(null).setAutoCancel(true).addAction(R.drawable.ic_edit, "אשר קוד", null)
@@ -43,8 +43,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
     private void sendNotification(String msg, String title) {
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder)new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher).setContentTitle("הודעה חדשה!")
+        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder)new NotificationCompat.Builder(this, "Push")
+                .setSmallIcon(R.drawable.ic_siren).setContentTitle("הודעה חדשה!")
                 .setContentText(title).setStyle(new NotificationCompat.BigTextStyle().bigText(msg)
                         .setSummaryText("לחץ כאן להפעלת הקוד")).setAutoCancel(true).setSound(defaultSoundUri).setContentIntent(null);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -55,11 +55,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra("code", code);
         intent.putExtra("fireKey", fireKey);
         intent.putExtra("toCode", true);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Log.d("KEYERR", "the key is: " + fireKey);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder)new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher).setContentTitle("קוד ההפעלה אושר")
+        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder)new NotificationCompat.Builder(this, "Push")
+                .setSmallIcon(R.drawable.ic_siren).setContentTitle("קוד ההפעלה אושר")
                 .setContentText("קוד ההפעלה שלך הינו: " + code).setStyle(new NotificationCompat.BigTextStyle().bigText("קוד ההפעלה שלך הינו: " + code)
                         .setSummaryText("לחץ כאן להפעלת הקוד")).setAutoCancel(true).setSound(defaultSoundUri).setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
