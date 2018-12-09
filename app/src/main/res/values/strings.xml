@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">דיווחי מגן דוד אדום</string>
     <string name="smsMoni" translatable="false">זיהוי סמסים ברקע</string>
+    <string name="notiMoni" translatable="false">זיהוי התראות ברקע</string>
     <string name="hello_world">הכתבת טופס</string>
     <string name="ambN">מספר אמבולנס</string>
     <string name="visa">מספר ויזה</string>
@@ -188,6 +189,7 @@
 
     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
     <string name="callT">כל האירועים</string>
+    <string name="callTS">הודעות שירות</string>
 
 
     <string name="pref_title_state">התראה לפי סטטוס מכשיר</string>
@@ -310,4 +312,7 @@
     </string-array>
     <string name="title_activity_utills_and_tools">כלי עזר</string>
     <string name="section_format" translatable="false">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

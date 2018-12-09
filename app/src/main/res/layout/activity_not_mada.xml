@@ -21,13 +21,28 @@
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:background="@drawable/curve_toolbar_bg"
+            android:contentDescription="@string/app_name"
+            android:clickable="false"/>
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="295dp">
+            android:layout_marginTop="22dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_above="@+id/b9"
+            android:paddingBottom="12dp"
+            android:background="@drawable/text_white_cornered"
+            android:layout_marginBottom="25dp">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="13dp"
+                android:paddingBottom="13dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

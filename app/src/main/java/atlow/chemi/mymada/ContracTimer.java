@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -42,6 +43,7 @@ public class ContracTimer extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sp = getActivity().getSharedPreferences("Settings", 0);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
@@ -55,7 +57,6 @@ public class ContracTimer extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setReverseLayout(true);
         mLayoutManager.setStackFromEnd(true);
-        sp = getActivity().getSharedPreferences("Settings", 0);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         albumList = new ArrayList<>();
         recyclerView.setLayoutManager(mLayoutManager);
@@ -232,11 +233,15 @@ public class ContracTimer extends Fragment {
         if (albumList.size() > 0) {
             Gson gson = new Gson();
             String json = gson.toJson(albumList);
-            SharedPreferences.Editor se = sp.edit();
-            se.putString("contractList", json);
-            se.putInt("contarctNum", num);
-            se.putLong("contractLong", end.getTime());
-            se.apply();
+            try {
+                SharedPreferences.Editor se = sp.edit();
+                se.putString("contractList", json);
+                se.putInt("contarctNum", num);
+                se.putLong("contractLong", end.getTime());
+                se.apply();
+            }catch (NullPointerException e) {
+                Crashlytics.log(e.getMessage());
+            }
         }
         super.onDestroy();
     }

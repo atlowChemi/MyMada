@@ -192,8 +192,8 @@ public class GrobootRec extends BroadcastReceiver {
             }
         }
         if (not && (callType)) {
-            String tick = string.equals("T4") ? "התקבלה הודעה חדש באפליקציה!" : "התקבל אירוע חדש באפליקציה!";
-            String titl = string.equals("T4") ? "הודעה חדשה באפליקציה!" : "אירוע חדש באפליקציה!";
+            String tick = string.equals("T4") || string.equals("T6") ? "התקבלה הודעה חדש באפליקציה!" : "התקבל אירוע חדש באפליקציה!";
+            String titl = string.equals("T4") || string.equals("T6") ? "הודעה חדשה באפליקציה!" : "אירוע חדש באפליקציה!";
             notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context, CnlWin).setContentTitle(titl)
                     .setContentText("לחץ כאן בכדי להכתיב טפסים.").setSmallIcon(R.drawable.ic_siren)

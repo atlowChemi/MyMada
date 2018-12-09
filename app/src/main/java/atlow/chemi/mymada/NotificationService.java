@@ -15,13 +15,11 @@ import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.util.Objects;
 
-import static atlow.chemi.mymada.Applicatio.CnlBg;
 import static atlow.chemi.mymada.Applicatio.manager;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -32,39 +30,6 @@ public class NotificationService extends NotificationListenerService {
     @Override
     public void onCreate() {
         super.onCreate();
-        isNotificationAccessEnabled = false;
-        ContentResolver contentResolver = getApplicationContext().getContentResolver();
-        String enabledNotificationListeners = android.provider.Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
-        String packageName = getApplicationContext().getPackageName();
-        if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                    .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
-    }
-    @Override
-    public IBinder onBind(Intent intent) {
-        IBinder iBinder = super.onBind(intent);
-        isNotificationAccessEnabled = true;
-        return iBinder;
-    }
-    @Override
-    public boolean onUnbind(Intent intent)   {
-        boolean onUnbind = super.onUnbind(intent);
-        isNotificationAccessEnabled = false;
-        return onUnbind;
     }
     @Override
     public void onNotificationPosted(StatusBarNotification statusBarNotification) {
@@ -148,6 +113,13 @@ public class NotificationService extends NotificationListenerService {
                 Log.v("searchable", notification.getChannelId());
             }
         }
+    }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("REBIND", "NotificationListenerService onStartCommand begin");
+        if (intent != null)
+            Applicatio.tryConnectService();
+        return START_STICKY;
     }
 
 

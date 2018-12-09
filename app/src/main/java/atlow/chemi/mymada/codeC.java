@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,8 +50,13 @@ public class codeC extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_code_c);
+
+        //start
+        SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
+        Log.d("KEYERG", "the key is: " + preferences.getString("firebaseGenratedKey", ""));
+        //end
         boolean toCode = getIntent().getBooleanExtra("toCode", false);
-        String code = getIntent().getStringExtra("code");
+        final String code = getIntent().getStringExtra("code");
         String fireKey = getIntent().getStringExtra("fireKey");
         pdialog = new ProgressDialog(codeC.this);
         pdialog.setIndeterminate(true);
@@ -79,8 +86,8 @@ public class codeC extends AppCompatActivity {
         code1.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count == 1) {
-                    code2.requestFocus();
                     code1.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    code2.requestFocus();
                 }
             }
             @Override
@@ -91,9 +98,11 @@ public class codeC extends AppCompatActivity {
         code2.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count == 1) {
-                    code3.requestFocus();
                     code2.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    code3.requestFocus();
                 }
+                if (count == 0)
+                    code1.requestFocus();
             }
             @Override
             public void afterTextChanged(Editable arg0) {}
@@ -103,14 +112,27 @@ public class codeC extends AppCompatActivity {
         code3.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count == 1) {
-                    code4.requestFocus();
                     code3.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    code4.requestFocus();
                 }
+                if (count == 0)
+                    code2.requestFocus();
             }
             @Override
             public void afterTextChanged(Editable arg0) {}
             @Override
             public void beforeTextChanged(CharSequence s, int start,int count, int after) {}
+        });
+        code4.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count == 0)
+                    code3.requestFocus();
+            }
+            @Override
+            public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
         });
     }
     private void di(String err)   {
@@ -151,45 +173,62 @@ public class codeC extends AppCompatActivity {
         alert.show();
     }
     public void newSendCode(final String myCode, String key)  {
-        pdialog.show();
         if (key.length() <= 0) {
             SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
             key = preferences.getString("firebaseGenratedKey", "");
         }
-        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        mFirebaseDatabase = mFirebaseDatabase.child("codes");
-        mFirebaseDatabase = mFirebaseDatabase.child(key);
-        mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String email = dataSnapshot.child("email").getValue(String.class);
-                String name = dataSnapshot.child("name").getValue(String.class);
-                String reason = dataSnapshot.child("reason").getValue(String.class);
-                String code = dataSnapshot.child("code").getValue(String.class);
-                String token = dataSnapshot.child("token").getValue(String.class);
-                boolean allowed = dataSnapshot.child("allowed").getValue(Boolean.class);
-                boolean used = dataSnapshot.child("used").getValue(Boolean.class);
-                if (myCode.equals(code))  {
-                    if (used)
-                        di("הקוד כבר נוצל בעבר.\nלא ניתן להשתמש בקוד יותר מפעם אחת!");
-                    else if (!allowed)
-                        di("קוד לא אושר לשימוש!");
-                    else {
-                        mFirebaseDatabase.child("used").setValue(true);
-                        gooddi(getResources().getString(R.string.codeGood));
-                        SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
-                        SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                        sp1.putBoolean("realM", true);
-                        sp1.apply();
+        if (key.trim().length() == 0) {
+            di("נראה כי מעולם לא שלחת לנו בקשת קוד.\nבמידה ושלחת כבר פעם, אנא נסה לשלוח בקשת קוד שוב, ופרט על התקלה.");
+        } else {
+            pdialog.show();
+            mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+            mFirebaseDatabase = mFirebaseDatabase.child("codes");
+            mFirebaseDatabase = mFirebaseDatabase.child(key);
+            mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String email = dataSnapshot.child("email").getValue(String.class);
+                    String name = dataSnapshot.child("name").getValue(String.class);
+                    String reason = dataSnapshot.child("reason").getValue(String.class);
+                    String code = dataSnapshot.child("code").getValue(String.class);
+                    String token = dataSnapshot.child("token").getValue(String.class);
+                    boolean allowed = false;
+                    boolean used = true;
+                    try {
+                        allowed = dataSnapshot.child("allowed").getValue(Boolean.class);
+                    } catch (NullPointerException e) {
+                        Crashlytics.log(e.getMessage());
                     }
-                }else   {
-                    di("הקוד שהוזן שגוי!");
+                    try {
+                        used = dataSnapshot.child("used").getValue(Boolean.class);
+                    } catch (NullPointerException e) {
+                        Crashlytics.log(e.getMessage());
+                    }
+                    if (myCode.equals(code)) {
+                        if (used)
+                            di("הקוד כבר נוצל בעבר.\nלא ניתן להשתמש בקוד יותר מפעם אחת!\nייתכן והייתה תקלה. נסו להזין ידנית את הקוד:\n" + myCode);
+                        else if (!allowed)
+                            di("קוד לא אושר לשימוש!\nייתכן ואירעה תקלה. נסה להזין קוד ידנית:\n" + myCode);
+                        else {
+                            mFirebaseDatabase.child("used").setValue(true);
+                            gooddi(getResources().getString(R.string.codeGood));
+                            SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
+                            SharedPreferences.Editor sp1 = sharedPreferences.edit();
+                            sp1.putBoolean("realM", true);
+                            sp1.apply();
+                        }
+                    } else {
+                        di("הקוד שהוזן שגוי!");
+                    }
+                    pdialog.cancel();
                 }
-                pdialog.cancel();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    pdialog.cancel();
+                }
+            });
+        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

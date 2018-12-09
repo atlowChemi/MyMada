@@ -56,6 +56,8 @@ public class SettingsFragemnt extends PreferenceFragment {
             PreferenceCategory cut2 = (PreferenceCategory) findPreference("cut2");
             PreferenceCategory cut3 = (PreferenceCategory) findPreference("cut3");
             PreferenceCategory cut4 = (PreferenceCategory) findPreference("cut4");
+            CheckBoxPreference onOffT6 = (CheckBoxPreference) findPreference("T6");
+            onOffT6.setOnPreferenceChangeListener(list2);
             if (cut) {
                 screen.removePreference(all);
                 //1
@@ -217,6 +219,8 @@ public class SettingsFragemnt extends PreferenceFragment {
                 case "NappT":
                     pe(newValue, "Napp");
                     break;
+                case "T6":
+                    pe(newValue, "callT6");
                 case "findT1":
                     pe(newValue, "callT1");
                     break;

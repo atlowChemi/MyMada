@@ -230,6 +230,7 @@
     <string name="explain">בכדי להוסיף איש צוות לחצו על כפתור ה+ בצד ימין בתחתית המסך.\nבכדי לשלוח את ההודעה למוקד לחצו על הכפתור בצד שמאל.</string>
     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
     <string name="callT">כל האירועים</string>
+    <string name="callTS">הודעות שירות</string>
     <string name="pref_title_cutA">הפרדת הגדרות התראה</string>
     <string name="pref_description_cutA_off">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בלי הבדלים</string>
     <string name="pref_description_cutA_on">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בנפרד</string>
