@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class BlsProtocoles extends Fragment {
-    private ProgressDialog pDialog;
     private ProgressBar spinner;
     private WebView webview;
     private String ShowOrHideWebViewInitialUse = "show";
@@ -26,7 +25,6 @@ public class BlsProtocoles extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pDialog = new ProgressDialog(getActivity());
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
@@ -37,10 +35,6 @@ public class BlsProtocoles extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        pDialog.setTitle(getActivity().getString(R.string.app_name));
-        pDialog.setMessage("טוען ספר פרוטוקולים...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
         webview = (WebView) view.findViewById(R.id.webview);
         spinner = (ProgressBar)view.findViewById(R.id.progressBar2);
         webview.getSettings().setJavaScriptEnabled(true);
@@ -78,6 +72,11 @@ public class BlsProtocoles extends Fragment {
             spinner.setVisibility(View.GONE);
             view.setVisibility(webview.VISIBLE);
             super.onPageFinished(view, url);
+        }
+        @Override
+        public void onReceivedError(WebView webview, int errorCode, String description, String failingUrl) {
+            //TODO: make html of error.
+            webview.loadUrl("file:///android_asset/error.html");
         }
     }
 }
