@@ -71,7 +71,7 @@ public class PrivacyActivity extends AppCompatActivity {
         @Override
         public void onReceivedError(WebView webview, int errorCode, String description, String failingUrl) {
             //TODO: add eroor page.
-            webview.loadUrl("file:///android_asset/error.html");
+            webview.loadUrl("file:///android_asset/err.html");
         }
     }
 
