@@ -76,7 +76,7 @@ public class BlsProtocoles extends Fragment {
         @Override
         public void onReceivedError(WebView webview, int errorCode, String description, String failingUrl) {
             //TODO: make html of error.
-            webview.loadUrl("file:///android_asset/error.html");
+            webview.loadUrl("file:///android_asset/err.html");
         }
     }
 }
