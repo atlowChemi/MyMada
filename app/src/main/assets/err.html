@@ -1,0 +1,93 @@
+﻿<html dir="rtl">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+      <title>שגיאה</title>
+      <style>
+         @font-face {
+            font-family: myFont;
+            src: url('./fonts/opensanshebrew.ttf') format('truetype');
+         }  
+         body {
+            overflow: hidden;
+            background: #eee;
+            background: radial-gradient(ellipse at center, #f3f5f5 0%,#bebfc0 100%);
+         }
+         div#main, div#slider {
+            position: absolute;
+            top: 25%;
+            right: 3px;
+            left: 3px;
+         }
+         #slider {
+            width:100%;
+            overflow: hidden;
+            position: relative;
+         }
+         #bar {
+            background: #bf1716;
+            height: 100%;
+            width: 5%;
+            position: absolute;
+            animation: blinker 3s linear infinite;
+            left: 0;
+            top: 0;
+         }
+         img {
+            width: 97%;
+            padding: 5px;
+            background: #bf1716;
+         }
+         h1 {
+            margin:10px auto;
+            text-align: center;
+            font: 28pt bold;
+            color: #10133c;
+            font-family: myFont, serif;
+         }
+         p {
+            font: 16pt bold;
+            color: #10133c;
+            margin:35px auto;
+            text-align: center;
+            font-family: myFont, serif;
+         }
+         @keyframes blinker {
+            0% {
+               left: 0;
+            }
+            100% {
+               left: 100%;
+            }
+         }
+      </style>
+      <script src="jquery.js"></script>
+      <script>
+         $(document).ready(function() {
+            $("#slider").css("height", $("img").height() - 5);
+            var lng = $.urlParam("lng");
+            if(lng == "en") {
+               $("h1").text("unable to connect :/");
+               $("p").html("we were unable to reach this site<br />check your connection.");
+               $("body").css("direction", "ltr");
+            }
+         });
+         $.urlParam = function(name) {
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            if(results == null)
+               return null;
+            return decodeURI(results[1]) || 0;
+         }
+      </script>
+   </head>
+   <body>
+      <div id="main">
+         <h1>לא ניתן להתחבר :/</h1>
+         <img src="ecg.png" />
+         <div id="slider">
+            <div id="bar"></div>
+         </div>
+         <p id="probId">לא הצלחנו להשיג את האתר המבוקש<br />בדוק את החיבור ונסה שנית.</p>
+      </div>
+   </body>
+</html>
