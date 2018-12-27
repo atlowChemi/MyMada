@@ -13,6 +13,7 @@
         android:theme="@style/CKS"
         android:layout_marginTop="20dp"
         android:focusable="false"
+        app:showText="false"
         android:gravity="center" />
 
 </RelativeLayout>
