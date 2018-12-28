@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,7 +11,7 @@
         android:layout_height="match_parent">
     <RelativeLayout
         android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layoutDirection="ltr">
         <TextView
             android:layout_width="match_parent"
@@ -95,4 +95,42 @@
             android:layout_below="@+id/Motor"/>
     </RelativeLayout>
     </ScrollView>
-</android.support.design.widget.CoordinatorLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/GLZGrade"
+        android:background="@drawable/btns_new"
+        android:padding="14dp"
+        android:textSize="19sp"
+        android:layout_marginBottom="8dp"
+        android:gravity="start|top"
+        android:layout_above="@+id/GLZInfBG"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/GLZInfBG"
+        android:background="@drawable/btns_new"
+        android:drawablePadding="16dp"
+        android:paddingStart="7dp"
+        android:padding="14dp"
+        android:gravity="center_horizontal|top"
+        android:layout_alignParentBottom="true">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:tint="@color/Black"
+            android:src="@drawable/ic_info"/>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/Black"
+            android:layout_marginEnd="10dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/GLZInf"
+            android:textSize="16sp"/>
+    </LinearLayout>
+</RelativeLayout>

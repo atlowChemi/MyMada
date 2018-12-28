@@ -149,16 +149,16 @@ public class HomePage extends AppCompatActivity {
             if(ActivityCompat.shouldShowRequestPermissionRationale(HomePage.this,permissionsRequired[0]) || ActivityCompat.shouldShowRequestPermissionRationale(HomePage.this,permissionsRequired[1]) || ActivityCompat.shouldShowRequestPermissionRationale(HomePage.this,permissionsRequired[2])){
                 //Show Information about why you need the permission
                 AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this, R.style.AlertDialogStyle);
-                builder.setTitle("נדרשות לאפלקציה הרשאות מסוימות");
-                builder.setMessage("האפליקציה זקוקה להרשאות לקריאת סמסים כדי לזהות מקרים שיגיעו, וכדי לאמת שאתה מתנדב מד\"א.");
-                builder.setPositiveButton("אישור הרשאות", new DialogInterface.OnClickListener() {
+                builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
+                builder.setMessage(getApplicationContext().getResources().getString(R.string.permDes));
+                builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                         ActivityCompat.requestPermissions(HomePage.this,permissionsRequired,PERMISSION_CALLBACK_CONSTANT);
                     }
                 });
-                builder.setNegativeButton("דחה", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
@@ -169,9 +169,9 @@ public class HomePage extends AppCompatActivity {
                 //Previously Permission Request was cancelled with 'Dont Ask Again',
                 // Redirect to Settings after showing Information about why you need the permission
                 AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this, R.style.AlertDialogStyle);
-                builder.setTitle("נדרשות לאפלקציה הרשאות מסוימות");
-                builder.setMessage("האפליקציה זקוקה להרשאות לקריאת סמסים כדי לזהות מקרים שיגיעו, וכדי לאמת שאתה מתנדב מד\"א.");
-                builder.setPositiveButton("אישור הרשאות", new DialogInterface.OnClickListener() {
+                builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
+                builder.setMessage(getApplicationContext().getResources().getString(R.string.permDes));
+                builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
@@ -182,7 +182,7 @@ public class HomePage extends AppCompatActivity {
                         startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
                     }
                 });
-                builder.setNegativeButton("דחה", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();

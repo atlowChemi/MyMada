@@ -230,15 +230,15 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                             mContext.startActivity(intent);
                         }else   {
                             AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
-                            builder2.setTitle("שים לב!").setMessage("האפליקציה לא מזהה אותך כמתנדב. האם אתה מעוניין בקוד הפעלה או ביצירת קשר רגילה?").setCancelable(true)
-                                    .setNegativeButton("אני רוצה קוד הפעלה", new DialogInterface.OnClickListener() {
+                            builder2.setTitle(mContext.getResources().getString(R.string.plsNote)).setMessage(mContext.getResources().getString(R.string.plsNoteCon)).setCancelable(true)
+                                    .setNegativeButton(mContext.getResources().getString(R.string.plsNoteConCode), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             Intent intent = new Intent(mContext, codeRequest.class);
                                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                             mContext.startActivity(intent);
                                         }
-                                    }).setPositiveButton("יצירת קשר", new DialogInterface.OnClickListener() {
+                                    }).setPositiveButton(mContext.getResources().getString(R.string.title_activity_contact), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     Intent intent = new Intent(mContext, contactActivity.class);

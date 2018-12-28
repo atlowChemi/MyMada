@@ -151,7 +151,7 @@ public class MainActivity2 extends Fragment {
                 addManName.addTextChangedListener(new MyTextWatcher(addManName));
                 addManName.setTypeface(myTypeface);
                 addManTIL.setTypeface(myTypeface);
-                final AlertDialog builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogStyle).setTitle("הוסף איש צוות").setView(newMan).setCancelable(false)
+                final AlertDialog builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogStyle).setTitle(getActivity().getResources().getString(R.string.Nteam)).setView(newMan).setCancelable(false)
                         .setNegativeButton(getActivity().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -170,7 +170,7 @@ public class MainActivity2 extends Fragment {
                                 ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                                 clipboard.setText(addManName.getText().toString());
                                 if (addManName.getText().toString().isEmpty())
-                                    addManTIL.setError("לא רשמת שם איש צוות!");
+                                    addManTIL.setError(getActivity().getResources().getString(R.string.emailNameNone));
                                 if (addManName.getText().toString().trim().length() > 0) {
                                     addManTIL.setErrorEnabled(false);
                                     Volunteer a = new Volunteer(addManName.getText().toString(), addManSppiner.getSelectedItemPosition(), R.drawable.ic_arrow);
@@ -234,7 +234,7 @@ public class MainActivity2 extends Fragment {
                     textS = "צוות אמבולנס " + merhavim[merhav] + " ";
                     textS += txtboxN.getText() + ":\n";
                     if (albumList.size() == 0) {
-                        di("לא ניתן לשלוח ללא אנשי צוות!");
+                        di(getActivity().getResources().getString(R.string.SendNoNames));
                         return;
                     } else  {
                         for (int i = 0; i<albumList.size(); i++)  {
@@ -265,7 +265,7 @@ public class MainActivity2 extends Fragment {
         addManName.setText(albumList.get(position).getName());
         addManSppiner.setSelection(albumList.get(position).getJob());
         addManTIL = (TextInputLayout) newMan.findViewById(R.id.addManTIL);
-        final AlertDialog builder = new AlertDialog.Builder(context, R.style.AlertDialogStyle).setTitle("הוסף איש צוות").setView(newMan).setCancelable(false)
+        final AlertDialog builder = new AlertDialog.Builder(context, R.style.AlertDialogStyle).setTitle(context.getResources().getString(R.string.Nteam)).setView(newMan).setCancelable(false)
                 .setNegativeButton(context.getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -284,7 +284,7 @@ public class MainActivity2 extends Fragment {
                         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                         clipboard.setText(addManName.getText().toString());
                         if (addManName.getText().toString().isEmpty())
-                            addManTIL.setError("לא רשמת שם איש צוות!");
+                            addManTIL.setError(context.getResources().getString(R.string.emailNameNone));
                         if (addManName.getText().toString().trim().length() > 0) {
                             addManTIL.setErrorEnabled(false);
                             name = addManName.getText().toString();
@@ -352,21 +352,19 @@ public class MainActivity2 extends Fragment {
         private MyTextWatcher(View view) {
             this.view = view;
         }
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
                 case R.id.addManName:
                     if (addManName.getText().toString().isEmpty())
-                        addManTIL.setError("לא רשמת שם איש צוות!");
+                        addManTIL.setError(getActivity().getResources().getString(R.string.emailNameNone));
                     else
                         addManTIL.setErrorEnabled(false);
                     break;
                 case R.id.M2txt1E:
                     if(txtboxN.getText().toString().isEmpty())
-                        ambNum.setError("לא רשמת מספר אמבולנס!");
+                        ambNum.setError(getActivity().getResources().getString(R.string.err_amb));
                     else
                         ambNum.setErrorEnabled(false);
                     break;

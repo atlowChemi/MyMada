@@ -14,9 +14,9 @@ android {
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "atlow.chemi.mymada"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 28
-        versionCode 12004
+        versionCode 12005
         versionName '3 beta'
         multiDexEnabled true
         signingConfig signingConfigs.config

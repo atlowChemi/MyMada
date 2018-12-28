@@ -48,7 +48,7 @@ public class BlsProtocoles extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         pDialog.setTitle(getActivity().getString(R.string.app_name));
-        pDialog.setMessage("טוען ספר פרוטוקולים...");
+        pDialog.setMessage(getActivity().getResources().getString(R.string.load));
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
 
@@ -63,19 +63,21 @@ public class BlsProtocoles extends Fragment {
         webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new BlsProtocoles.CustomWebViewClient());
 
+        //TODO: DEAD url.
         final String BLS = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/bls%5B1%5D.pdf?alt=media&token=7da40564-fe83-4254-a929-f8b2ec67ca41";
         final String ALS = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/als%5B1%5D.pdf?alt=media&token=49d9e5f1-03d5-49d5-a951-b58dce094ca6";
+        final String Dead = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/kuntres.pdf?alt=media&token=2b7c5ce5-e5e5-4fae-9b27-fb2ba4d7e826";
         webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/bls%5B1%5D.pdf?alt=media&token=7da40564-fe83-4254-a929-f8b2ec67ca41");
         FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.typeProtocole);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CharSequence protos[] = new CharSequence[] {"פרוטוקלי BLS", "פרוטוקולי ALS"};
+                CharSequence protos[] = new CharSequence[] {getActivity().getResources().getString(R.string.protocolesBls), getActivity().getResources().getString(R.string.protocolesAls), getActivity().getResources().getString(R.string.protocolesDeath)};
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
-                builder.setTitle("בחר פרוטוקולים לצפייה").setItems(protos, new DialogInterface.OnClickListener() {
+                builder.setTitle(getActivity().getResources().getString(R.string.protocoles)).setItems(protos, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + (i == 0 ? BLS : ALS));
+                        webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + (i == 0 ? BLS : i == 1 ? ALS : Dead));
                     }
                 });
                 builder.show();
