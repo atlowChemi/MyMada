@@ -13,5 +13,5 @@
     <item android:id="@+id/btnChangi" android:drawable="@drawable/new_con"
         android:bottom="5dp"
         android:right="2dp"
-        android:left="2dp"/>
+        android:left="2dp" />
 </layer-list>

@@ -2,6 +2,7 @@ package atlow.chemi.mymada;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -12,11 +13,14 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.TypefaceSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -32,7 +36,8 @@ public class VitalsChecker extends Fragment {
     private int ageRank = 0, topP, lowP, topB, lowB, topSYS, lowSYS, topDIA, lowDIA;
     private EditText pulsa, breathing, systolic, diastolic;
     private TextInputLayout systolicTIL;
-    private TextView vitalR;
+    private TextView vitalR, vitalInf, vitalMsg;
+    private LinearLayout vitalInfBG, vitalMsgBG;
     private boolean goodP, goodB, goodSYS, goodDIA, goodLD;
     private int[][][] correct = new int[4][6][6];
     private String breathingS, bpS, pulseS, goodS, bad;
@@ -152,9 +157,32 @@ public class VitalsChecker extends Fragment {
         diastolic.addTextChangedListener(new MyTextWatcher(diastolic));
 
         //vr
-        vitalR = (TextView) view.findViewById(R.id.vitalsResult);
+        vitalR = view.findViewById(R.id.vitalsResult);
         vitalR.setMovementMethod(new ScrollingMovementMethod());
         vitalR.setTypeface(myTypeface);
+        vitalInf = view.findViewById(R.id.VitalInf);
+        vitalInf.setTypeface(myTypeface);
+        vitalMsg = view.findViewById(R.id.VitalMsg);
+        vitalMsg.setTypeface(myTypeface);
+        vitalInfBG = view.findViewById(R.id.VitalInfBG);
+        vitalMsgBG = view.findViewById(R.id.VitalMsgBG);
+        if (SettingsActivity.isRTL()) {
+            vitalInfBG.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+            vitalMsgBG.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        }
+        GradientDrawable drawable = (GradientDrawable) vitalInfBG.getBackground();
+        drawable.mutate();
+        drawable.setColor(getActivity().getResources().getColor(R.color.White));
+        vitalInfBG.setBackground(drawable);
+        GradientDrawable drawable2 = (GradientDrawable) vitalMsgBG.getBackground();
+        drawable2.mutate();
+        drawable2.setColor(getActivity().getResources().getColor(R.color.White));
+        vitalMsgBG.setBackground(drawable2);
+        SetNums();
+        String goodVitalsAge[] = getActivity().getResources().getStringArray(R.array.goodVitals);
+        String goodVitalsNew = getActivity().getResources().getString(R.string.goodVitalsOLD, lowP, topP, lowB, topB, lowSYS, topSYS, lowDIA, topDIA, goodVitalsAge[ageRank]);
+        vitalInf.setText(goodVitalsNew);
+        vitalMsg.setText(getActivity().getResources().getString(R.string.vitalsAlert));
     }
 
     private class MyTextWatcher implements TextWatcher {
@@ -178,6 +206,16 @@ public class VitalsChecker extends Fragment {
             }
             calc();
         }
+    }
+    private void SetNums() {
+        topP = ageRank == 0 ? correct[3][0][2] : ageRank == 1 ? correct[3][0][1] : correct[3][0][0];
+        lowP = ageRank == 0 ? correct[3][1][2] : ageRank == 1 ? correct[3][1][1] : correct[3][1][0];
+        topB = ageRank == 0 ? correct[2][0][2] : ageRank == 1 ? correct[2][0][1] : correct[2][0][0];
+        lowB = ageRank == 0 ? correct[2][1][2] : ageRank == 1 ? correct[2][1][1] : correct[2][1][0];
+        topSYS = ageRank == 0 ? correct[0][0][2] : ageRank == 1 ? correct[0][0][1] : correct[0][0][0];
+        lowSYS = ageRank == 0 ? correct[0][1][2] : ageRank == 1 ? correct[0][1][1] : correct[0][1][0];
+        topDIA = ageRank == 0 ? correct[1][0][2] : ageRank == 1 ? correct[1][0][1] : correct[1][0][0];
+        lowDIA = ageRank == 0 ? correct[1][1][2] : ageRank == 1 ? correct[1][1][1] : correct[1][1][0];
     }
     private void calc() {
         //pulse
@@ -223,7 +261,9 @@ public class VitalsChecker extends Fragment {
         //calc
         String goodVitalsAge[] = getActivity().getResources().getStringArray(R.array.goodVitals);
         String goodVitalsNew = getActivity().getResources().getString(R.string.goodVitalsOLD, lowP, topP, lowB, topB, lowSYS, topSYS, lowDIA, topDIA, goodVitalsAge[ageRank]);
-        String alert = getActivity().getResources().getString(R.string.vitalsAlert);
+        //Log.d("tagit",goodVitalsNew.indexOf(":") + "");
+        //SpannableString Bolder = new SpannableString(goodVitalsNew);
+        vitalInf.setText(goodVitalsNew);
         String Pulse = null, Breathing = null, BP = null;
         if (!pulsa.getText().toString().trim().isEmpty())
             Pulse = pulseS + (goodP ? goodS : bad);
@@ -233,7 +273,7 @@ public class VitalsChecker extends Fragment {
             BP = bpS + (goodSYS && goodDIA && goodLD ? goodS : bad);
         else if (!systolic.getText().toString().trim().isEmpty() && diastolic.getText().toString().trim().isEmpty())
             BP = bpS + (goodSYS ? goodS : bad);
-        String toSpan = (Pulse != null ? Pulse + "\n" : "") + (Breathing != null ? Breathing + "\n" : "") + (BP != null ? BP + "\n" : "") + goodVitalsNew + "\n" + alert;
+        String toSpan = (Pulse != null ? Pulse + "\n" : "") + (Breathing != null ? Breathing + "\n" : "") + (BP != null ? BP + "\n" : "");
         SpannableString s = new SpannableString(toSpan);
         int where = 0;
         if (!pulsa.getText().toString().trim().isEmpty()) {
@@ -255,7 +295,6 @@ public class VitalsChecker extends Fragment {
             s.setSpan(new ForegroundColorSpan(goodSYS ? Color.GREEN : Color.RED), where+bpS.length(), where+bpS.length()+till, 0);
             where += bpS.length()+till+1;
         }
-        s.setSpan(new ForegroundColorSpan(Color.BLUE), where+goodVitalsNew.length(), s.length(), 0);
         vitalR.setText(s);
     }
 }

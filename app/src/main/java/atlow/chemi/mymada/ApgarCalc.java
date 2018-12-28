@@ -2,6 +2,7 @@ package atlow.chemi.mymada;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -44,14 +46,16 @@ public class ApgarCalc extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
-        TextView apgar1 = (TextView)view.findViewById(R.id.ApperenceTxt);
-        TextView apgar2 = (TextView)view.findViewById(R.id.PulseTxt);
-        TextView apgar3 = (TextView)view.findViewById(R.id.GrimaceTxt);
-        TextView apgar4 = (TextView)view.findViewById(R.id.ActivityTxt);
-        TextView apgar5 = (TextView)view.findViewById(R.id.RespirationsTxt);
-        a = (TextView)view.findViewById(R.id.ResultTxt);
-        a.setMovementMethod(new ScrollingMovementMethod());
+        TextView apgar1 = view.findViewById(R.id.ApperenceTxt);
+        TextView apgar2 = view.findViewById(R.id.PulseTxt);
+        TextView apgar3 = view.findViewById(R.id.GrimaceTxt);
+        TextView apgar4 = view.findViewById(R.id.ActivityTxt);
+        TextView apgar5 = view.findViewById(R.id.RespirationsTxt);
+        LinearLayout apgarInfBG = view.findViewById(R.id.ApgarInfBG);
+        TextView apgarInfi = view.findViewById(R.id.ApgarInfi);
+        a = view.findViewById(R.id.ApgarGrade);
         a.setTypeface(myTypeface);
+        apgarInfi.setTypeface(myTypeface);
         apgar1.setTypeface(myTypeface, Typeface.BOLD);
         apgar2.setTypeface(myTypeface, Typeface.BOLD);
         apgar3.setTypeface(myTypeface, Typeface.BOLD);
@@ -72,11 +76,11 @@ public class ApgarCalc extends Fragment {
         spinnerArrayAdapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerArrayAdapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerArrayAdapter5.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Apperence = (Spinner)view.findViewById(R.id.ApperenceS);
-        Pulse = (Spinner)view.findViewById(R.id.PulseS);
-        Grimace = (Spinner)view.findViewById(R.id.GrimaceS);
-        Activity = (Spinner)view.findViewById(R.id.ActivityS);
-        Respirations = (Spinner)view.findViewById(R.id.RespirationsS);
+        Apperence = view.findViewById(R.id.ApperenceS);
+        Pulse = view.findViewById(R.id.PulseS);
+        Grimace = view.findViewById(R.id.GrimaceS);
+        Activity = view.findViewById(R.id.ActivityS);
+        Respirations = view.findViewById(R.id.RespirationsS);
         Apperence.setAdapter(spinnerArrayAdapter1);
         Pulse.setAdapter(spinnerArrayAdapter2);
         Grimace.setAdapter(spinnerArrayAdapter3);
@@ -132,6 +136,11 @@ public class ApgarCalc extends Fragment {
 
             }
         });
+        GradientDrawable drawable = (GradientDrawable) apgarInfBG.getBackground();
+        drawable.mutate();
+        drawable.setColor(getActivity().getResources().getColor(R.color.White));
+        apgarInfBG.setBackground(drawable);
+        apgarInfi.setText(getActivity().getResources().getString(R.string.ApgarInfo));
     }
     private void calc() {
         int i = 0;
@@ -140,14 +149,16 @@ public class ApgarCalc extends Fragment {
         i += Grimace.getSelectedItemPosition();
         i += Activity.getSelectedItemPosition();
         i += Respirations.getSelectedItemPosition();
-        String s = "ציון אפגאר הוא: " + i;
-        SpannableString ss = new SpannableString(s + "\nיילוד בציון נמוך מ4 זקוק להחייאה מיידית.\nניקוד בין 4 ל6 מסמן על יילוד במצוקה בינונית הזקוק לחמצון והמרצה.\nניקוד גבוה מ6 הינו אינדיקציה ליילוד תקין.");
+        String s = getActivity().getResources().getString(R.string.Apgar, i);
+        GradientDrawable drawable = (GradientDrawable) a.getBackground();
+        drawable.mutate();
         if (i < 4)
-            ss.setSpan(new ForegroundColorSpan(Color.RED),0,s.length(),0);
+            drawable.setColor(Color.rgb(191,23,22));
         else if (i > 6)
-            ss.setSpan(new ForegroundColorSpan(Color.rgb(70,178,58)),0,s.length(),0);
+            drawable.setColor(Color.rgb(70,178,58));
         else
-            ss.setSpan(new ForegroundColorSpan(Color.rgb(221, 190, 66)),0,s.length(),0);
-        a.setText(ss);
+            drawable.setColor(Color.rgb(221, 190, 66));
+        a.setBackground(drawable);
+        a.setText(s);
     }
 }

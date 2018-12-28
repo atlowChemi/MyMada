@@ -1,5 +1,6 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -11,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -32,6 +34,7 @@ import android.text.style.TypefaceSpan;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,11 +60,15 @@ public class contactActivity extends AppCompatActivity {
     private static final String BASE_URL = "https://us-central1-project-3918384647339420127.cloudfunctions.net/date";
     private OkHttpClient client = new OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS).writeTimeout(60, TimeUnit.SECONDS).readTimeout(60, TimeUnit.SECONDS).build();
     private ProgressDialog pdialog;
-    private FloatingActionButton sendButton;
     private EditText emailA, emailN, emailS, emailT;
     private Typeface myTypeface;
     private TextInputLayout emailATIL, emailNTIL, emailSTIL, emailTTIL;
     private static final int REQUEST_PERMISSION_SETTING = 101;
+    private Button sendEM;
+    private boolean isMove = false;
+    private float oldX1, oldY1;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,22 +80,23 @@ public class contactActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         pdialog = new ProgressDialog(contactActivity.this);
         pdialog.setIndeterminate(true);
-        pdialog.setMessage("טוען. אנא המתן...");
+        pdialog.setMessage(getApplicationContext().getResources().getString(R.string.load));
         pdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pdialog.setCancelable(false);
-        emailA = (EditText)findViewById(R.id.emailA);
-        emailN = (EditText)findViewById(R.id.emailN);
-        emailS = (EditText)findViewById(R.id.emailS);
-        emailT = (EditText)findViewById(R.id.emailT);
-        emailATIL = (TextInputLayout) findViewById(R.id.emailATIL);
-        emailNTIL = (TextInputLayout)findViewById(R.id.emailNTIL);
-        emailSTIL = (TextInputLayout)findViewById(R.id.emailSTIL);
-        emailTTIL = (TextInputLayout)findViewById(R.id.emailTTIL);
+        emailA = findViewById(R.id.emailA);
+        emailN = findViewById(R.id.emailN);
+        emailS = findViewById(R.id.emailS);
+        emailT = findViewById(R.id.emailT);
+        emailATIL = findViewById(R.id.emailATIL);
+        emailNTIL = findViewById(R.id.emailNTIL);
+        emailSTIL = findViewById(R.id.emailSTIL);
+        emailTTIL = findViewById(R.id.emailTTIL);
         emailA.addTextChangedListener(new MyTextWatcher(emailA));
         emailN.addTextChangedListener(new MyTextWatcher(emailN));
         emailS.addTextChangedListener(new MyTextWatcher(emailS));
         emailT.addTextChangedListener(new MyTextWatcher(emailT));
-        sendButton = (FloatingActionButton)findViewById(R.id.sendE);
+
+        sendEM = findViewById(R.id.sendEM);
 
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         emailA.setTypeface(myTypeface);
@@ -99,40 +107,62 @@ public class contactActivity extends AppCompatActivity {
         emailTTIL.setTypeface(myTypeface);
         emailS.setTypeface(myTypeface);
         emailSTIL.setTypeface(myTypeface);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) sendButton.getLayoutParams();
-        if(SettingsActivity.isRTL())
-            sendButton.setRotationY(180);
-        if (!SettingsActivity.isRTL()) {
-            lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-            sendButton.setLayoutParams(lp);
-        }
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        Drawable img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send_flip);
+        if (!SettingsActivity.isRTL())
+            img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send);
+        sendEM.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
+        sendEM.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        boolean x = oldX1 - event.getX() > 60 || event.getX() - oldX1 > 60;
+                        boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                        if (x || y) {
+                            isMove = true;
+                            sendEM.setAlpha(1f);
+                        }
+                        return true;
+                    case MotionEvent.ACTION_DOWN:
+                        oldY1 = event.getY();
+                        oldX1 = event.getX();
+                        isMove = false;
+                        sendEM.setAlpha(0.4f);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        sendEM.setAlpha(1f);
+                        if (!isMove)
+                            sendEM.performClick();
+                        return true;
+                }
+                return false;
+            }
+        });
+        sendEM.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String email = emailA.getText().toString().trim();
                 String name = emailN.getText().toString().trim();
                 String subject = emailS.getText().toString().trim();
                 String message = emailT.getText().toString().trim();
-                if (email.length() < 1) {
-                    emailATIL.setError("לא רשמת כתובת מייל!");
-                }else if(!isEmailValid(email))  {
-                    emailATIL.setError("כתובת המייל שהזנת אינה תקינה!");
-                }else if(isEmailValid(email)) {
+                if (email.length() < 1)
+                    emailATIL.setError(getApplicationContext().getResources().getString(R.string.emailNone));
+                else if(!isEmailValid(email))
+                    emailATIL.setError(getApplicationContext().getResources().getString(R.string.emailInvalid));
+                else if(isEmailValid(email))
                     emailATIL.setErrorEnabled(false);
-                }if (name.length() < 1) {
-                    emailNTIL.setError("לא רשמת שם!");
-                }else if(name.length() >= 1)    {
+                if (name.length() < 1)
+                    emailNTIL.setError(getApplicationContext().getResources().getString(R.string.emailNameNone));
+                else
                     emailNTIL.setErrorEnabled(false);
-                }
-                if (subject.length() < 1) {
-                    emailSTIL.setError("לא רשמת נושא להודעה!");
-                }else if(subject.length() >= 1) {
+                if (subject.length() < 1)
+                    emailSTIL.setError(getApplicationContext().getResources().getString(R.string.emailSubjNone));
+                else
                     emailSTIL.setErrorEnabled(false);
-                }if(message.length() < 1)  {
-                    emailTTIL.setError("לא רשמת תוכן בהודעה!");
-                }else if(message.length() >= 1)  {
+                if(message.length() < 1)
+                    emailTTIL.setError(getApplicationContext().getResources().getString(R.string.emailMsgNone));
+                else
                     emailTTIL.setErrorEnabled(false);
-                }
                 if(!email.isEmpty() && isEmailValid(email) && !name.isEmpty() && !subject.isEmpty() && !message.isEmpty()) {
                     sms(email, name, subject, message);
                 }
@@ -166,12 +196,11 @@ public class contactActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         pdialog.cancel();
-                        sendButton.setEnabled(true);
-                        di("שליחה הופסקה בשל תקלה. נסה שוב!");
+                        sendEM.setEnabled(true);
+                        di(getResources().getString(R.string.emailBad));
                     }
                 });
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
@@ -180,22 +209,22 @@ public class contactActivity extends AppCompatActivity {
                         contactActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                sendButton.setEnabled(true);
+                                sendEM.setEnabled(true);
                                 pdialog.cancel();
                                 //gooddi('"' + resp + '"');
                                 if (resp.trim().equals("true"))
                                     gooddi(getResources().getString(R.string.emailGood));
                                 else
-                                    di("שליחה נכשלה. נסה שוב!");
+                                    di(getResources().getString(R.string.emailBad));
                             }
                         });
                     } else {
                         contactActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                sendButton.setEnabled(true);
+                                sendEM.setEnabled(true);
                                 pdialog.cancel();
-                                di("שליחה הופסקה בשל תקלה. נסה שוב!");
+                                di(getResources().getString(R.string.emailBad));
                             }
                         });
                     }
@@ -203,9 +232,9 @@ public class contactActivity extends AppCompatActivity {
                     contactActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            sendButton.setEnabled(true);
+                            sendEM.setEnabled(true);
                             pdialog.cancel();
-                            di("שליחה הופסקה בשל תקלה. נסה שוב!");
+                            di(getResources().getString(R.string.emailBad));
                         }
                     });
                 }
@@ -218,33 +247,33 @@ public class contactActivity extends AppCompatActivity {
         private MyTextWatcher(View view) {
             this.view = view;
         }
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
                 case R.id.emailA:
                     if (emailA.getText().toString().isEmpty())
-                        emailATIL.setError("לא רשמת כתובת אימייל שלך!");
-                    else
+                        emailATIL.setError(getApplicationContext().getResources().getString(R.string.emailNone));
+                    else if(!isEmailValid(emailA.getText().toString()))
+                        emailATIL.setError(getApplicationContext().getResources().getString(R.string.emailInvalid));
+                    else if(isEmailValid(emailA.getText().toString()))
                         emailATIL.setErrorEnabled(false);
                     break;
                 case R.id.emailN:
                     if(emailN.getText().toString().isEmpty())
-                        emailNTIL.setError("לא רשמת מה שמך!");
+                        emailNTIL.setError(getApplicationContext().getResources().getString(R.string.emailNameNone));
                     else
                         emailNTIL.setErrorEnabled(false);
                     break;
                 case R.id.emailS:
                     if (emailS.getText().toString().isEmpty())
-                        emailSTIL.setError("לא רשמת מה נושא האימייל!");
+                        emailSTIL.setError(getApplicationContext().getResources().getString(R.string.emailSubjNone));
                     else
                         emailSTIL.setErrorEnabled(false);
                     break;
                 case R.id.emailT:
                     if(emailT.getText().toString().isEmpty())
-                        emailTTIL.setError("לא רשמת את תוכן ההודעה");
+                        emailTTIL.setError(getApplicationContext().getResources().getString(R.string.emailMsgNone));
                     else
                         emailTTIL.setErrorEnabled(false);
                     break;
@@ -295,13 +324,13 @@ public class contactActivity extends AppCompatActivity {
                     }
                 }).setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        sendButton.setEnabled(false);
+                        sendEM.setEnabled(false);
                         pdialog.show();
                         sendMail(emailA, emailN, emailS, emailT);
                         dialog.cancel();
                     }
                 }).create();
-        TextView textView = (TextView) builder.findViewById(android.R.id.message);
+        TextView textView = builder.findViewById(android.R.id.message);
         if (textView!= null)
             textView.setTypeface(myTypeface);
         textView = (TextView) builder.findViewById(android.R.id.title);
@@ -319,7 +348,6 @@ public class contactActivity extends AppCompatActivity {
         });
         builder.show();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);

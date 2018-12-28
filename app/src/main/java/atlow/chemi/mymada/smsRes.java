@@ -69,6 +69,9 @@ public class smsRes extends AppCompatActivity {
             e.printStackTrace();
         }
         setContentView(R.layout.activity_sms_res);
+        findViewById(R.id.home).setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        if (SettingsActivity.isRTL()) {
+        }
         Bundle extras = getIntent().getExtras();
         int callT = extras.getInt("callT");
         switch (callT)  {

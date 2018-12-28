@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -37,12 +39,30 @@ public class MokedPage extends AppCompatActivity {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private boolean isSMST, isMADA, realM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         resetTitle();
         setContentView(R.layout.activity_moked_page);
+        SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
+        realM = sharedPreferences.getBoolean("realM", false);
+        isMADA = false;
+        if (!realM) {
+            isMADA = isPI(MokedPage.this, "com.groboot.mdaemergency");
+            try {
+                smsGot();
+            } catch (Exception e) {
+                isSMST = false;
+            }
+            if (!(isMADA && isSMST)) {
+                Intent intent = new Intent(MokedPage.this, lockPage.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                finish();
+                startActivity(intent);
+            }
+        }
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
@@ -59,15 +79,16 @@ public class MokedPage extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         if (!sp.getBoolean("pickedMoked", false)) {
-            final AlertDialog build = new AlertDialog.Builder(this, R.style.AlertDialogStyle).setTitle("מוקד ברירת מחדל")
-                    .setMessage("בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. אנא עבור להגדרות והגדר מרחב ברירת מחדל דרך עמוד \"הגדרות הכתבה\"")
-                    .setPositiveButton("עבור להגדרות", new DialogInterface.OnClickListener() {
+            final AlertDialog build = new AlertDialog.Builder(this, R.style.AlertDialogStyle)
+                    .setTitle(getApplicationContext().getResources().getString(R.string.pickMokTtl))
+                    .setMessage(getApplicationContext().getResources().getString(R.string.pickMokTxt))
+                    .setPositiveButton(getApplicationContext().getResources().getString(R.string.goToSet), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
                     startActivity(intent);
                 }
-            }).setNegativeButton("דלג", new DialogInterface.OnClickListener() {
+            }).setNegativeButton(getApplicationContext().getResources().getString(R.string.skip), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.dismiss();
@@ -81,6 +102,36 @@ public class MokedPage extends AppCompatActivity {
                 }
             });
             build.show();
+        }
+    }
+    private static boolean isPI(Context context, String packageName) {
+        final PackageManager packageManager = context.getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+        if (intent == null) {
+            return false;
+        }
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+    private void smsGot() {
+        try {
+            Uri mSmsinboxQueryUri = Uri.parse("content://sms/inbox");
+            Cursor cursor1 = getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
+            startManagingCursor(cursor1);
+            String[] columns = new String[]{"address", "person", "date", "body", "type"};
+            if (cursor1 != null && cursor1.getCount() > 0) {
+                while (cursor1.moveToNext()) {
+                    String address = cursor1.getString(cursor1.getColumnIndex(columns[0]));
+                    if (address.equalsIgnoreCase("MADA")) {
+                        String body = cursor1.getString(cursor1.getColumnIndex(columns[3]));
+                        if (body.contains("רישום נקלט בהצלחה"))
+                            isSMST = true;
+                    }
+                }
+            }
+        }catch (Exception e)    {
+            isSMST = false;
+            e.printStackTrace();
         }
     }
     @Override

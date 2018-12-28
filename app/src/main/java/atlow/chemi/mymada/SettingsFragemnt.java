@@ -460,23 +460,5 @@ public class SettingsFragemnt extends PreferenceFragment {
     public void OLangC(Object newValue) {
         LocalHelper.setLocale(getActivity(), (String) newValue);
         getActivity().recreate();
-        /*SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("lng", (String) newValue);
-        editor.putBoolean("WasLangChanged", true);
-        editor.apply();
-        Resources resources = getActivity().getApplicationContext().getResources();
-        Configuration configuration = resources.getConfiguration();
-        configuration.locale = new Locale((String)newValue);
-        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
-        getActivity().recreate();
-        /*AlertDialog builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle)
-                .setMessage(getResources().getString(R.string.langSwitched)).setCancelable(false)
-                .setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                }).create();
-        builder.show();*/
     }
 }

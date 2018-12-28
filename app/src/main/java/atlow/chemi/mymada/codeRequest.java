@@ -1,6 +1,7 @@
 package atlow.chemi.mymada;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -13,6 +14,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +39,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -65,7 +70,6 @@ import okhttp3.Response;
 
 public class codeRequest extends AppCompatActivity {
     private ProgressDialog pdialog;
-    private FloatingActionButton sendButton;
     private EditText codeA, codeN, codeT;
     private TextInputLayout codeATIL, codeNTIL, codeTTIL;
     private String token;
@@ -73,8 +77,11 @@ public class codeRequest extends AppCompatActivity {
     private static final int PERMISSION_CALLBACK_CONSTANT = 100;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     String[] permissionsRequired = new String[]{android.Manifest.permission.READ_SMS, Manifest.permission.READ_PHONE_STATE};
-    private boolean sentToSettings = false;
+    private boolean sentToSettings = false, isMove = false, isConnected = true;
+    private float oldX1, oldY1;
+    private Button sendCR;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,8 +92,9 @@ public class codeRequest extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
-        builder.setTitle("שים לב!").setMessage("קוד הפעלה מאפשר שליחת הודעות למוקד מד\"א.\nבמידה ואינך מתנדב פעיל במד\"א, אין לך צורך בקוד הפעלה!").setCancelable(false);
-        builder.setPositiveButton("הבנתי", new DialogInterface.OnClickListener() {
+        builder.setTitle(getApplicationContext().getResources().getString(R.string.plsNote))
+                .setMessage(getApplicationContext().getResources().getString(R.string.plsNoteT)).setCancelable(false);
+        builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
@@ -96,7 +104,7 @@ public class codeRequest extends AppCompatActivity {
         token = FirebaseInstanceId.getInstance().getToken();
         pdialog = new ProgressDialog(codeRequest.this);
         pdialog.setIndeterminate(true);
-        pdialog.setMessage("טוען. אנא המתן...");
+        pdialog.setMessage(getApplicationContext().getResources().getString(R.string.load));
         pdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pdialog.setCancelable(false);
         final Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
@@ -109,12 +117,12 @@ public class codeRequest extends AppCompatActivity {
             e.printStackTrace();
         }
         dd.setTypeface(myTypeface);
-        codeA = (EditText) findViewById(R.id.codeA);
-        codeN = (EditText) findViewById(R.id.codeN);
-        codeT = (EditText) findViewById(R.id.codeT);
-        codeATIL = (TextInputLayout) findViewById(R.id.codeATIL);
-        codeNTIL = (TextInputLayout) findViewById(R.id.codeNTIL);
-        codeTTIL = (TextInputLayout) findViewById(R.id.codeTTIL);
+        codeA = findViewById(R.id.codeA);
+        codeN = findViewById(R.id.codeN);
+        codeT = findViewById(R.id.codeT);
+        codeATIL = findViewById(R.id.codeATIL);
+        codeNTIL = findViewById(R.id.codeNTIL);
+        codeTTIL = findViewById(R.id.codeTTIL);
         codeA.addTextChangedListener(new MyTextWatcher(codeA));
         codeN.addTextChangedListener(new MyTextWatcher(codeN));
         codeT.addTextChangedListener(new MyTextWatcher(codeT));
@@ -124,37 +132,59 @@ public class codeRequest extends AppCompatActivity {
         codeATIL.setTypeface(myTypeface);
         codeNTIL.setTypeface(myTypeface);
         codeTTIL.setTypeface(myTypeface);
-        sendButton = (FloatingActionButton) findViewById(R.id.sendE);
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) sendButton.getLayoutParams();
-        if (SettingsActivity.isRTL())
-            sendButton.setRotationY(180);
-        if (!SettingsActivity.isRTL()) {
-            lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-            sendButton.setLayoutParams(lp);
-        }
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        sendCR = findViewById(R.id.sendCR);
+        Drawable img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send_flip);
+        if (!SettingsActivity.isRTL())
+            img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send);
+        sendCR.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
+        sendCR.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        boolean x = oldX1 - event.getX() > 10 || event.getX() - oldX1 > 10;
+                        boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                        if (x || y) {
+                            isMove = true;
+                            sendCR.setAlpha(1f);
+                        }
+                        return true;
+                    case MotionEvent.ACTION_DOWN:
+                        oldY1 = event.getY();
+                        oldX1 = event.getX();
+                        isMove = false;
+                        sendCR.setAlpha(0.4f);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        sendCR.setAlpha(1f);
+                        if (!isMove)
+                            sendCR.performClick();
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        sendCR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String email = codeA.getText().toString().trim();
                 String name = codeN.getText().toString().trim();
                 String message = codeT.getText().toString().trim();
-                if (email.length() < 1) {
-                    codeATIL.setError("לא רשמת כתובת מייל!");
-                } else if (!isEmailValid(email)) {
-                    codeATIL.setError("כתובת המייל שהזנת אינה תקינה!");
-                } else if (isEmailValid(email)) {
+                if (email.length() < 1)
+                    codeATIL.setError(getApplicationContext().getResources().getString(R.string.emailNone));
+                else if(!isEmailValid(email))
+                    codeATIL.setError(getApplicationContext().getResources().getString(R.string.emailInvalid));
+                else if(isEmailValid(email))
                     codeATIL.setErrorEnabled(false);
-                }
-                if (name.length() < 1) {
-                    codeNTIL.setError("לא רשמת שם!");
-                } else if (name.length() >= 1) {
+                if (name.length() < 1)
+                    codeNTIL.setError(getApplicationContext().getResources().getString(R.string.emailNameNone));
+                else
                     codeNTIL.setErrorEnabled(false);
-                }
-                if (message.length() < 1) {
-                    codeTTIL.setError("לא רשמת תוכן בהודעה!");
-                } else if (message.length() >= 1) {
+                if(message.length() < 1)
+                    codeTTIL.setError(getApplicationContext().getResources().getString(R.string.emailMsgNone));
+                else
                     codeTTIL.setErrorEnabled(false);
-                }
                 if (!email.isEmpty() && isEmailValid(email) && !name.isEmpty() && !message.isEmpty()) {
                     sms(email, name, message);
                 }
@@ -177,7 +207,6 @@ public class codeRequest extends AppCompatActivity {
     public boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
-
     public void sendMailNew(String codeA, String codeN, String codeT) {
         String randomLetters = "0123456789";
         String res = "", mPhoneNumber = "";
@@ -190,16 +219,16 @@ public class codeRequest extends AppCompatActivity {
                 if(ActivityCompat.shouldShowRequestPermissionRationale(codeRequest.this,permissionsRequired[0]) || ActivityCompat.shouldShowRequestPermissionRationale(codeRequest.this,permissionsRequired[1])){
                     //Show Information about why you need the permission
                     AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
-                    builder.setTitle("נדרשות לאפלקציה הרשאות מסוימות");
-                    builder.setMessage("האפליקציה זקוקה להרשאות מסוימות כדי שנאמת שאתה רשאי להשתמש באפליקציה.");
-                    builder.setPositiveButton("אישור הרשאות", new DialogInterface.OnClickListener() {
+                    builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
+                    builder.setMessage(getApplicationContext().getResources().getString(R.string.permDes));
+                    builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                             ActivityCompat.requestPermissions(codeRequest.this,permissionsRequired,PERMISSION_CALLBACK_CONSTANT);
                         }
                     });
-                    builder.setNegativeButton("דחה", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
@@ -208,9 +237,9 @@ public class codeRequest extends AppCompatActivity {
                     builder.show();
                 } else if (permissionStatus.getBoolean(permissionsRequired[0],false) || permissionStatus.getBoolean(permissionsRequired[1],false)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
-                    builder.setTitle("נדרשות לאפלקציה הרשאות מסוימות");
-                    builder.setMessage("האפליקציה זקוקה להרשאות מסוימות כדי שנאמת שאתה רשאי להשתמש באפליקציה.");
-                    builder.setPositiveButton("אישור הרשאות", new DialogInterface.OnClickListener() {
+                    builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
+                    builder.setMessage(getApplicationContext().getResources().getString(R.string.permDes));
+                    builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
@@ -221,7 +250,7 @@ public class codeRequest extends AppCompatActivity {
                             startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
                         }
                     });
-                    builder.setNegativeButton("דחה", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
@@ -234,65 +263,76 @@ public class codeRequest extends AppCompatActivity {
                 }
             return;
         }
-        mPhoneNumber = tMgr.getLine1Number();
+        try {
+            mPhoneNumber = tMgr != null ? tMgr.getLine1Number() : "";
+        } catch (Exception e) {
+            Crashlytics.log(e.getMessage());
+        }
         Long tsLong = System.currentTimeMillis()/1000;
-        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        Map<String, Object> codeReq = new HashMap<>();
-        codeReq.put("email", codeA);
-        codeReq.put("name", codeN);
-        codeReq.put("reason", codeT);
-        codeReq.put("code", res);
-        codeReq.put("token", token);
-        codeReq.put("allowed", false);
-        codeReq.put("used", false);
-        codeReq.put("Pnum", mPhoneNumber);
-        codeReq.put("time", tsLong.toString());
-        mFirebaseDatabase = mFirebaseDatabase.child("codes");
-        mFirebaseDatabase = mFirebaseDatabase.push();
-        mFirebaseDatabase.setValue(codeReq);
-        pdialog.cancel();
-        gooddi("הבקשה נרשמה אצלינו והמנהלים יבדקו אותה בהקדם!");
-        SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("firebaseGenratedKey", mFirebaseDatabase.getKey());
-        editor.apply();
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager != null) {
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            if (info == null || !info.isConnectedOrConnecting())
+                isConnected = false;
+        }
+        if (isConnected) {
+            mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+            Map<String, Object> codeReq = new HashMap<>();
+            codeReq.put("email", codeA);
+            codeReq.put("name", codeN);
+            codeReq.put("reason", codeT);
+            codeReq.put("code", res);
+            codeReq.put("token", token);
+            codeReq.put("allowed", false);
+            codeReq.put("used", false);
+            codeReq.put("Pnum", mPhoneNumber);
+            codeReq.put("time", tsLong.toString());
+            mFirebaseDatabase = mFirebaseDatabase.child("codes");
+            mFirebaseDatabase = mFirebaseDatabase.push();
+            mFirebaseDatabase.setValue(codeReq);
+            pdialog.cancel();
+            gooddi(getApplicationContext().getResources().getString(R.string.requestGood));
+            SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("firebaseGenratedKey", mFirebaseDatabase.getKey());
+            editor.apply();
+        } else {
+            pdialog.cancel();
+            di(getApplicationContext().getResources().getString(R.string.emailBad));
+        }
     }
-
     private class MyTextWatcher implements TextWatcher {
         private View view;
         private MyTextWatcher(View view) {
             this.view = view;
         }
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
                 case R.id.codeA:
-                    if (codeA.getText().toString().trim().isEmpty())
-                        codeATIL.setError("לא רשמת כתובת אימייל שלך!");
-                    else if(!isEmailValid(codeA.getText().toString().trim()))
-                        codeATIL.setError("כתובת המייל שרשמת אינה תקינה!");
-                    else
-                        codeATIL.setErrorEnabled(false);
+                    if (codeA.getText().toString().isEmpty())
+                    codeATIL.setError(getApplicationContext().getResources().getString(R.string.emailNone));
+                else if(!isEmailValid(codeA.getText().toString()))
+                    codeATIL.setError(getApplicationContext().getResources().getString(R.string.emailInvalid));
+                else if(isEmailValid(codeA.getText().toString()))
+                    codeATIL.setErrorEnabled(false);
                     break;
                 case R.id.codeN:
                     if(codeN.getText().toString().isEmpty())
-                        codeNTIL.setError("לא רשמת מה שמך!");
+                        codeNTIL.setError(getApplicationContext().getResources().getString(R.string.emailNameNone));
                     else
                         codeNTIL.setErrorEnabled(false);
                     break;
                 case R.id.codeT:
                     if(codeT.getText().toString().isEmpty())
-                        codeTTIL.setError("לא רשמת את תוכן ההודעה");
+                        codeTTIL.setError(getApplicationContext().getResources().getString(R.string.emailMsgNone));
                     else
                         codeTTIL.setErrorEnabled(false);
                     break;
             }
         }
     }
-
     private void di(String err)   {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
         builder.setTitle(getResources().getString(R.string.err)).setMessage(err).setCancelable(false)
@@ -330,10 +370,10 @@ public class codeRequest extends AppCompatActivity {
                     }
                 }).setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        sendButton.setEnabled(false);
+                        sendCR.setEnabled(false);
                         pdialog = new ProgressDialog(codeRequest.this);
                         pdialog.setIndeterminate(true);
-                        pdialog.setMessage("טוען. אנא המתן...");
+                        pdialog.setMessage(getApplicationContext().getResources().getString(R.string.load));
                         pdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                         pdialog.setCancelable(false);
                         pdialog.show();
@@ -353,7 +393,7 @@ public class codeRequest extends AppCompatActivity {
                 Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
                 canc.setTypeface(myTypeface);
                 ok.setTypeface(myTypeface);
-                canc.setTextColor(codeRequest.this.getResources().getColor(R.color.ColorPrimary));
+                canc.setTextColor(codeRequest.this.getResources().getColor(R.color.OldPrimary));
             }
         });
         builder.show();
