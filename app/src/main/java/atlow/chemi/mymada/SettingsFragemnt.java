@@ -25,6 +25,7 @@ import android.preference.EditTextPreference;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Locale;
@@ -56,8 +57,22 @@ public class SettingsFragemnt extends PreferenceFragment {
             PreferenceCategory cut2 = (PreferenceCategory) findPreference("cut2");
             PreferenceCategory cut3 = (PreferenceCategory) findPreference("cut3");
             PreferenceCategory cut4 = (PreferenceCategory) findPreference("cut4");
+            //6 - sheirut
             CheckBoxPreference onOffT6 = (CheckBoxPreference) findPreference("T6");
             onOffT6.setOnPreferenceChangeListener(list2);
+            //4 - minhala
+            CheckBoxPreference onOffT4 = (CheckBoxPreference) findPreference("findT4");
+            onOffT4.setOnPreferenceChangeListener(list2);
+            CheckBoxPreference NvibT4 = (CheckBoxPreference) findPreference("NvibT4");
+            NvibT4.setOnPreferenceChangeListener(list2);
+            CheckBoxPreference NsouT4 = (CheckBoxPreference) findPreference("NsouT4");
+            NsouT4.setOnPreferenceChangeListener(list2);
+            CheckBoxPreference NappT4 = (CheckBoxPreference) findPreference("NappT4");
+            NappT4.setDependency("NsouT4");
+            NappT4.setOnPreferenceChangeListener(list2);
+            RingtonePreference NrinT4 = (RingtonePreference) findPreference("NrinT4");
+            NrinT4.setDependency("NappT4");
+            NrinT4.setOnPreferenceChangeListener(list2);
             if (cut) {
                 screen.removePreference(all);
                 //1
@@ -99,6 +114,27 @@ public class SettingsFragemnt extends PreferenceFragment {
                 NrinT3 = (RingtonePreference) findPreference("NrinT3");
                 NrinT3.setDependency("NappT3");
                 NrinT3.setOnPreferenceChangeListener(list2);
+                try {
+                    onOffT1.setWidgetLayoutResource(R.layout.switch_x);
+                    NvibT1.setWidgetLayoutResource(R.layout.switch_x);
+                    NsouT1.setWidgetLayoutResource(R.layout.switch_x);
+                    NappT1.setWidgetLayoutResource(R.layout.switch_x);
+                    onOffT2.setWidgetLayoutResource(R.layout.switch_x);
+                    NvibT2.setWidgetLayoutResource(R.layout.switch_x);
+                    NsouT2.setWidgetLayoutResource(R.layout.switch_x);
+                    NappT2.setWidgetLayoutResource(R.layout.switch_x);
+                    onOffT3.setWidgetLayoutResource(R.layout.switch_x);
+                    NvibT3.setWidgetLayoutResource(R.layout.switch_x);
+                    NsouT3.setWidgetLayoutResource(R.layout.switch_x);
+                    NappT3.setWidgetLayoutResource(R.layout.switch_x);
+                    onOffT4.setWidgetLayoutResource(R.layout.switch_x);
+                    NvibT4.setWidgetLayoutResource(R.layout.switch_x);
+                    NsouT4.setWidgetLayoutResource(R.layout.switch_x);
+                    NappT4.setWidgetLayoutResource(R.layout.switch_x);
+                    onOffT6.setWidgetLayoutResource(R.layout.switch_x);
+                }catch (Exception e){
+                    Crashlytics.log("not making switch! " + e.getMessage());
+                }
             }
             if (!cut) {
                 screen.removePreference(cut1);
@@ -114,20 +150,19 @@ public class SettingsFragemnt extends PreferenceFragment {
                 Nrin = (RingtonePreference) findPreference("NrinT");
                 Nrin.setDependency("NappT");
                 Nrin.setOnPreferenceChangeListener(list2);
+                try {
+                    Nvib.setWidgetLayoutResource(R.layout.switch_x);
+                    Nsou.setWidgetLayoutResource(R.layout.switch_x);
+                    Napp.setWidgetLayoutResource(R.layout.switch_x);
+                    onOffT4.setWidgetLayoutResource(R.layout.switch_x);
+                    NvibT4.setWidgetLayoutResource(R.layout.switch_x);
+                    NsouT4.setWidgetLayoutResource(R.layout.switch_x);
+                    NappT4.setWidgetLayoutResource(R.layout.switch_x);
+                    onOffT6.setWidgetLayoutResource(R.layout.switch_x);
+                }catch (Exception e){
+                    Crashlytics.log("not making switch! " + e.getMessage());
+                }
             }
-            //4 - minhala
-            CheckBoxPreference onOffT4 = (CheckBoxPreference) findPreference("findT4");
-            onOffT4.setOnPreferenceChangeListener(list2);
-            CheckBoxPreference NvibT4 = (CheckBoxPreference) findPreference("NvibT4");
-            NvibT4.setOnPreferenceChangeListener(list2);
-            CheckBoxPreference NsouT4 = (CheckBoxPreference) findPreference("NsouT4");
-            NsouT4.setOnPreferenceChangeListener(list2);
-            CheckBoxPreference NappT4 = (CheckBoxPreference) findPreference("NappT4");
-            NappT4.setDependency("NsouT4");
-            NappT4.setOnPreferenceChangeListener(list2);
-            RingtonePreference NrinT4 = (RingtonePreference) findPreference("NrinT4");
-            NrinT4.setDependency("NappT4");
-            NrinT4.setOnPreferenceChangeListener(list2);
         }else if ("ampm".equals(settings))  {
             addPreferencesFromResource(R.xml.pref_ampm);
             TimePreference nightStart = (TimePreference)findPreference("nightStart");
@@ -167,6 +202,14 @@ public class SettingsFragemnt extends PreferenceFragment {
             /*if (shabatT.getEditText().getText().toString().trim().isEmpty())
                 shabatT.setText("6");*/
             shabatT.setOnPreferenceChangeListener(list2);
+            not.setWidgetLayoutResource(R.layout.switch_x);
+            win.setWidgetLayoutResource(R.layout.switch_x);
+            cut.setWidgetLayoutResource(R.layout.switch_x);
+            ride.setWidgetLayoutResource(R.layout.switch_x);
+            stat.setWidgetLayoutResource(R.layout.switch_x);
+            statVib.setWidgetLayoutResource(R.layout.switch_x);
+            loop.setWidgetLayoutResource(R.layout.switch_x);
+            shabat.setWidgetLayoutResource(R.layout.switch_x);
         } else if ("lang".equals(settings)) {
             addPreferencesFromResource(R.xml.pref_lang);
             ListPreference lang = (ListPreference)findPreference("Lang");

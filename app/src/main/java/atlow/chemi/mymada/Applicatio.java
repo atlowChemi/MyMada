@@ -60,11 +60,6 @@ public class Applicatio extends MultiDexApplication {
         SharedPreferences.Editor spe = sharedPreferences.edit();
         spe.putString("fcm", FirebaseInstanceId.getInstance().getToken());
         spe.apply();
-        /*String lng = sharedPreferences.getString("lng","iw");
-        Resources resources = getApplicationContext().getResources();
-        Configuration configuration = resources.getConfiguration();
-        configuration.locale = new Locale(lng);
-        resources.updateConfiguration(configuration, resources.getDisplayMetrics());*/
         boolean mapp = sharedPreferences.getBoolean("Mapp", false);
         if (mapp) {
             Intent serviceIntent = new Intent(getApplicationContext(), SMSMonitorService.class);

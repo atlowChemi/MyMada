@@ -1,6 +1,5 @@
 package atlow.chemi.mymada;
 
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
@@ -15,16 +14,14 @@ class Metronome {
     private final int tick = 1000; // samples of tick
     private boolean play = true;
     private AudioGenerator audioGenerator = new AudioGenerator(8000);
-    private Handler mHandler;
     private double[] soundTickArray;
     private double[] soundTockArray;
     private double[] silenceSoundArray;
     private Message msg;
     private int currentBeat = 1;
 
-    Metronome(Handler handler) {
+    Metronome() {
         audioGenerator.createPlayer();
-        this.mHandler = handler;
     }
     void calcSilence() {
         silence = (int)(((60/bpm)*8000)-tick);
@@ -43,7 +40,7 @@ class Metronome {
         for(int i=0;i<silence;i++)
             silenceSoundArray[i] = 0;
     }
-    public void play() {
+    void play() {
         calcSilence();
         do {
             Log.e("Metronome", ""+currentBeat);

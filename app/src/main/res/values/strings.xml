@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">דיווחי מגן דוד אדום</string>
-    <string name="smsMoni" translatable="false">זיהוי סמסים ברקע</string>
-    <string name="notiMoni" translatable="false">זיהוי התראות ברקע</string>
+    <string name="smsMoni">זיהוי סמסים ברקע</string>
+    <string name="notiMoni">זיהוי התראות ברקע</string>
+    <string name="metroMoni">הפעלת מטרונום ברקע</string>
     <string name="hello_world">הכתבת טופס</string>
     <string name="ambN">מספר אמבולנס</string>
     <string name="visa">מספר ויזה</string>
@@ -30,7 +31,7 @@
     <string name="info">אודות האפליקציה</string>
     <string name="title_activity_info">אודות</string>
     <string name="title_activity_privacy">מדיניות פרטיות</string>
-    <string name="TversionNumber">גרסה מספר: %1$s.\nפותח על ידי צוות \"AtlowApps\". כל הזכויות על העיצוב, הרעיונות והביצוע שמורים לChemi@low ולאיתיאל אטלו.\nתודתינו מסורה ליוסי קסוטו, ליוחאי בניטה ולשלום סאקס על סיועם הרב.\n\nהאפליקציה פותחה על ידי מתנדבים במטרה להנגיש פעולות קיימות ובמטרה ליצור פעולות חדשות שיקלו על המתנדבים בפעילות חירום ושגרה.\n\nבכל שאלה, בקשה, בעיה או תקלה ניתן לפנות אלינו דרך עמוד יצירת קשר, ואנו נעשה כמיטב יכולתנו לתת מענה לכל הבקשות.\n\nאפליקציה זו איננה אפליקציה רשמית של מד\"א, ואיננה קשורה באופן כלשהוא למד\"א. המשתמש בה נושא באחריות המלאה בהשלכות השימוש.</string>
+    <string name="TversionNumber">גרסה מספר: %1$s.\nפותח על ידי צוות \"AtlowApps\". כל הזכויות על העיצוב, הרעיונות והביצוע שמורים לChemi@low ולאיתיאל אטלו.\nתודתינו מסורה ליוסי קסוטו, ליוחאי בניטה ולשלום סאקס על סיועם הרב, וכן לזוהר ממן על \"קונטרס הגישה לנפטר\".\n\nהאפליקציה פותחה על ידי מתנדבים במטרה להנגיש פעולות קיימות ובמטרה ליצור פעולות חדשות שיקלו על המתנדבים בפעילות חירום ושגרה.\n\nבכל שאלה, בקשה, בעיה או תקלה ניתן לפנות אלינו דרך עמוד יצירת קשר, ואנו נעשה כמיטב יכולתנו לתת מענה לכל הבקשות.\n\nאפליקציה זו איננה אפליקציה רשמית של מד\"א, ואיננה קשורה באופן כלשהוא למד\"א. המשתמש בה נושא באחריות המלאה בהשלכות השימוש.</string>
     <string name="title_activity_main2">דיווח אנשי צוות</string>
     <string name="enjoy">משמרת מהנה!</string>
     <string name="Nteam">הוספת איש צוות</string>
@@ -349,4 +350,15 @@
     <string name="section_format" translatable="false">Hello World from section: %1$d</string>
 
     <string name="title_mda">הורדת יישומון מד\"א</string>
+    <string name="BGServiceTtl">מאזין ברקע להודעות</string>
+    <string name="BGServiceTicker">מזהה הודעות חדשות ממד\"א</string>
+    <string name="BGServiceTxt">מזהה הודעות חדשות שנשלחות ממוקד מד\"א ברקע</string>
+    <string name="MetroServiceTtl">מטרונום פעיל ברקע</string>
+    <string name="MetroServiceTxt">התראה זו מונעת כיבוי המטרונום באופן אוטומטי במטרת חיסכון בסוללה.</string>
+    <string name="MetroStop">עצור</string>
+    <string name="ContracLength">אורך הציר: %s</string>
+    <string name="ContracBetween">הפרש מציר קודם: %s</string>
+    <string name="ContracMinutes">%1$d דקות ו%2$d שניות</string>
+    <string name="ContracSecondes">%d שניות</string>
+    <string name="ContracRecover">שחזר נתונים קודמים?</string>
 </resources>

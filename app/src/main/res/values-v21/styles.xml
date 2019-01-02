@@ -14,6 +14,12 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+    <style name="MyMaterialTheme.SmsRes" parent="MyMaterialTheme.Base">
+        <item name="colorPrimary">@color/OldPrimary</item>
+        <item name="colorPrimaryDark">@color/OldPrimary</item>
+        <item name="colorAccent">@color/OldPrimary</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 
     <style name="Theme.Preferences.Dialog" parent="@style/Base.V7.Theme.AppCompat.Light.Dialog">
         <item name="android:windowBackground">@android:color/white</item>

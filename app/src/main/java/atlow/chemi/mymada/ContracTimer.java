@@ -71,7 +71,7 @@ public class ContracTimer extends Fragment {
         boolean leesT20M = (no - ol) <= (20*60*1000);
         if (!sp.getString("contractList", "").isEmpty() && leesT20M) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
-            dialog.setMessage("שחזר נתונים קודמים?").setCancelable(false).setPositiveButton("אישור", new DialogInterface.OnClickListener() {
+            dialog.setMessage(getActivity().getResources().getString(R.string.ContracRecover)).setCancelable(false).setPositiveButton(getActivity().getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     /*****/
@@ -88,7 +88,7 @@ public class ContracTimer extends Fragment {
                     adapter = new ContractionAdapter(albumList, getActivity());
                     recyclerView.setAdapter(adapter);
                 }
-            }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
+            }).setNegativeButton(getActivity().getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.dismiss();
@@ -113,7 +113,7 @@ public class ContracTimer extends Fragment {
                     Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                     Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
                     canc.setTypeface(myTypeface);
-                    canc.setTextColor(getActivity().getResources().getColor(R.color.ColorPrimary));
+                    canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
                 }
             });
             alert.show();

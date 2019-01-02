@@ -40,8 +40,7 @@ class ContractionAdapter extends RecyclerView.Adapter<ContractionAdapter.MyViewH
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.contraction_layout, parent, false);
-
-        return new MyViewHolder(itemView);
+            return new MyViewHolder(itemView);
     }
 
     @Override
@@ -51,10 +50,10 @@ class ContractionAdapter extends RecyclerView.Adapter<ContractionAdapter.MyViewH
         Date start = album.getStart();
         Date end = album.getEnd();
         String ContractionLength = printDifference(start, end);
-        holder.title.setText("אורך הציר: " + ContractionLength);
+        holder.title.setText(this.context.getResources().getString(R.string.ContracLength, ContractionLength));
         String TimeBetweenContractions = "";
         try {
-            TimeBetweenContractions = "הפרש מציר קודם: " + printDifference(oldEnd, start);
+            TimeBetweenContractions = this.context.getResources().getString(R.string.ContracBetween, printDifference(oldEnd, start));
         }catch (Exception e)    {
             e.printStackTrace();
         }
@@ -82,6 +81,6 @@ class ContractionAdapter extends RecyclerView.Adapter<ContractionAdapter.MyViewH
         different = different % minutesInMilli;
 
         long elapsedSeconds = different / secondsInMilli;
-        return elapsedMinutes > 0 ? (elapsedMinutes + " דקות ו" + elapsedSeconds + " שניות") : (elapsedSeconds + " שניות");
+        return elapsedMinutes > 0 ? (this.context.getResources().getString(R.string.ContracMinutes, elapsedMinutes, elapsedSeconds)) : (this.context.getResources().getString(R.string.ContracSecondes, elapsedSeconds));
     }
 }
