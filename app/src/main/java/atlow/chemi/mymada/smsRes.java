@@ -3,6 +3,7 @@ package atlow.chemi.mymada;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -30,11 +31,13 @@ import android.text.style.StyleSpan;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -54,6 +57,9 @@ public class smsRes extends AppCompatActivity {
     private static String Stxt = "מקרה חדש";
     public Context context;
     public static float vo = 0;
+    private float oldX1, oldY1;
+    private boolean isMove1 = false;
+    @SuppressLint("ClickableViewAccessibility")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,15 +69,13 @@ public class smsRes extends AppCompatActivity {
             if(Build.VERSION_CODES.JELLY_BEAN <= Build.VERSION.SDK_INT) {
                 if (getSupportActionBar()!=null)
                     getSupportActionBar().hide();
-                getWindow().addFlags(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                //getWindow().addFlags(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             }
         }catch (OutOfMemoryError e) {
             e.printStackTrace();
         }
         setContentView(R.layout.activity_sms_res);
         findViewById(R.id.home).setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-        if (SettingsActivity.isRTL()) {
-        }
         Bundle extras = getIntent().getExtras();
         int callT = extras.getInt("callT");
         switch (callT)  {
@@ -350,13 +354,15 @@ public class smsRes extends AppCompatActivity {
             colorAnim.start();
         }
         //wakeLock.acquire();
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        Button closeBtn = findViewById(R.id.button);
+        Button infBtn = findViewById(R.id.buttonI);
+        closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        findViewById(R.id.buttonI).setOnClickListener(new View.OnClickListener() {
+        infBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (pi != null) {
@@ -369,6 +375,9 @@ public class smsRes extends AppCompatActivity {
                 finish();
             }
         });
+
+        infBtn.setOnTouchListener(new MyTouchListener());
+        closeBtn.setOnTouchListener(new MyTouchListener());
     }
     public static String getBetweenStrings(String text, String textFrom, String textTo) {
         String result = "";
@@ -482,5 +491,32 @@ public class smsRes extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+    }
+    private class MyTouchListener implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    boolean x = oldX1 - event.getX() > 140 || event.getX() - oldX1 > 140;
+                    boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                    if (x || y) {
+                        isMove1 = true;
+                        v.setAlpha(1f);
+                    }
+                    return true;
+                case MotionEvent.ACTION_DOWN:
+                    oldY1 = event.getY();
+                    oldX1 = event.getX();
+                    isMove1 = false;
+                    v.setAlpha(0.4f);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    v.setAlpha(1f);
+                    if (!isMove1)
+                        v.performClick();
+                    return true;
+            }
+            return false;
+        }
     }
 }

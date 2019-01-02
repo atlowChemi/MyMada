@@ -1,32 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:key="Sheirut" android:title="@string/callTS">
-        <CheckBoxPreference
-            android:key="T6"
-            android:widgetLayout="@layout/switch_x"
-            android:title="@string/findT6"
-            android:summaryOn="@string/findT6_on"
-            android:summaryOff="@string/findT6_off"
-            android:defaultValue="true"/>
-    </PreferenceCategory>
     <PreferenceCategory android:key="all" android:title="@string/callT">
         <CheckBoxPreference
             android:key="NvibT"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_vibrate"
             android:summaryOn="@string/pref_description_vibrate_on"
             android:summaryOff="@string/pref_description_vibrate_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NsouT"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_ringtone"
             android:summaryOn="@string/pref_description_ringtone_on"
             android:summaryOff="@string/pref_description_ringtone_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NappT"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_app"
             android:summaryOn="@string/pref_description_app_on"
             android:summaryOff="@string/pref_description_app_off"/>
@@ -41,28 +29,24 @@
     <PreferenceCategory android:key="cut1" android:title="@string/callT1">
         <CheckBoxPreference
             android:key="findT1"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/findT1"
             android:summaryOn="@string/findT1_on"
             android:summaryOff="@string/findT1_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NvibT1"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_vibrate"
             android:summaryOn="@string/pref_description_vibrate_on"
             android:summaryOff="@string/pref_description_vibrate_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NsouT1"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_ringtone"
             android:summaryOn="@string/pref_description_ringtone_on"
             android:summaryOff="@string/pref_description_ringtone_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NappT1"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_app"
             android:summaryOn="@string/pref_description_app_on"
             android:summaryOff="@string/pref_description_app_off"/>
@@ -77,28 +61,24 @@
     <PreferenceCategory android:key="cut2" android:title="@string/callT2">
         <CheckBoxPreference
             android:key="findT2"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/findT2"
             android:summaryOn="@string/findT2_on"
             android:summaryOff="@string/findT2_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NvibT2"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_vibrate"
             android:summaryOn="@string/pref_description_vibrate_on"
             android:summaryOff="@string/pref_description_vibrate_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NsouT2"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_ringtone"
             android:summaryOn="@string/pref_description_ringtone_on"
             android:summaryOff="@string/pref_description_ringtone_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NappT2"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_app"
             android:summaryOn="@string/pref_description_app_on"
             android:summaryOff="@string/pref_description_app_off"/>
@@ -113,28 +93,24 @@
     <PreferenceCategory android:key="cut3" android:title="@string/callT3">
         <CheckBoxPreference
             android:key="findT3"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/findT3"
             android:summaryOn="@string/findT3_on"
             android:summaryOff="@string/findT3_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NvibT3"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_vibrate"
             android:summaryOn="@string/pref_description_vibrate_on"
             android:summaryOff="@string/pref_description_vibrate_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NsouT3"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_ringtone"
             android:summaryOn="@string/pref_description_ringtone_on"
             android:summaryOff="@string/pref_description_ringtone_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NappT3"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_app"
             android:summaryOn="@string/pref_description_app_on"
             android:summaryOff="@string/pref_description_app_off"/>
@@ -146,31 +122,35 @@
             android:ringtoneType="all"
             android:defaultValue="content://settings/system/notification_sound" />
     </PreferenceCategory>
+    <PreferenceCategory android:key="Sheirut" android:title="@string/callTS">
+        <CheckBoxPreference
+            android:key="T6"
+            android:title="@string/findT6"
+            android:summaryOn="@string/findT6_on"
+            android:summaryOff="@string/findT6_off"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
     <PreferenceCategory android:key="cut4" android:title="@string/callT4">
         <CheckBoxPreference
             android:key="findT4"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/findT4"
             android:summaryOn="@string/findT4_on"
             android:summaryOff="@string/findT4_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NvibT4"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_vibrate"
             android:summaryOn="@string/pref_description_vibrate_on"
             android:summaryOff="@string/pref_description_vibrate_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NsouT4"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_ringtone"
             android:summaryOn="@string/pref_description_ringtone_on"
             android:summaryOff="@string/pref_description_ringtone_off"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="NappT4"
-            android:widgetLayout="@layout/switch_x"
             android:title="@string/pref_title_app"
             android:summaryOn="@string/pref_description_app_on"
             android:summaryOff="@string/pref_description_app_off"/>

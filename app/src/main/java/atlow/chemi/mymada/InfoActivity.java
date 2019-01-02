@@ -1,5 +1,6 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -35,16 +36,17 @@ public class InfoActivity extends AppCompatActivity {
     private float oldX1, oldY1;
     private boolean isMove1 = false;
     private static final int REQUEST_PERMISSION_SETTING = 101;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         resetTitle();
         setContentView(R.layout.activity_info);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        final TextView textView = (TextView)findViewById(R.id.textView10);
+        final TextView textView = findViewById(R.id.textView10);
         Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         textView.setTypeface(myTypeface);
         textView.setMovementMethod(new ScrollingMovementMethod());

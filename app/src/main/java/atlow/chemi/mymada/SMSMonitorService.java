@@ -68,9 +68,9 @@ public class SMSMonitorService extends Service {
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, callSNI, 0);
 
             NotificationCompat.Builder buil = new NotificationCompat.Builder(this, CnlBg)
-                    .setContentTitle("מאזין ברקע להודעות")
-                    .setTicker("מזהה הודעות חדשות ממד\"א")
-                    .setContentText("מזהה הודעות חדשות שנשלחות ממוקד מד\"א ברקע")
+                    .setContentTitle(getApplicationContext().getResources().getString(R.string.BGServiceTtl))
+                    .setTicker(getApplicationContext().getResources().getString(R.string.BGServiceTicker))
+                    .setContentText(getApplicationContext().getResources().getString(R.string.BGServiceTxt))
                     .setContentIntent(pendingIntent)
                     .setColorized(true)
                     .setSmallIcon(R.drawable.ic_noti)
@@ -110,7 +110,7 @@ public class SMSMonitorService extends Service {
                     final SharedPreferences sp = context.getSharedPreferences("Settings", 0);
                     SharedPreferences notSP = context.getSharedPreferences("notifications", 0);
                     Log.v("number is:", smsSender);
-                    if (smsSender.equals("MADA") || smsSender.equals("101") || smsSender.equals("Mada") || smsSender.contains("7931329")) {
+                    if (smsSender.equals("MADA") || smsSender.equals("101") || smsSender.equals("Mada")) {
                         Log.v("succ number:", smsSender);
                         if ((smsBody.contains("אירוע חדש") || smsBody.contains("הודעת קבוצת") || smsBody.contains("הודעת צוות"))) {
                             if (smsBody.contains("שירות") || smsBody.contains("כלכלה") || smsBody.contains("תפילה")) {
@@ -218,7 +218,7 @@ public class SMSMonitorService extends Service {
                         }
                     }
                     //this will update the UI with message
-                    if (smsSender.equals("MADA") || smsSender.equals("101") || smsSender.equals("Mada") || smsSender.contains("7931329") && callType) {
+                    if (smsSender.equals("MADA") || smsSender.equals("101") || smsSender.equals("Mada") && callType) {
                         Intent intent2 = new Intent(Intent.ACTION_SENDTO);
                         intent2.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                         intent2.setData(Uri.parse("smsto:"));  // This ensures only SMS apps respond

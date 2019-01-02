@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">דיווחי מגן דוד אדום</string>
+    <string name="smsMoni">זיהוי סמסים ברקע</string>
+    <string name="notiMoni">זיהוי התראות ברקע</string>
+    <string name="metroMoni">הפעלת מטרונום ברקע</string>
     <string name="Fna">שם פרטי</string>
     <string name="HN">חולה נפגע</string>
     <string name="HT">התחייבות</string>
@@ -238,6 +241,9 @@
     <string name="findT4">זהה הודעות מנהלתיות</string>
     <string name="findT4_on">זיהוי הודעות מנהלתיות פועל</string>
     <string name="findT4_off">זיהוי הודעות מנהלתיות כבוי</string>
+    <string name="findT6">זהה הודעות שירות</string>
+    <string name="findT6_on">זיהוי הודעות שירות פועל</string>
+    <string name="findT6_off">זיהוי הודעות שירות כבוי</string>
     <string name="button_a">הכתבת טפסים</string>
     <string name="button_b">דיווח צוות</string>
     <string name="button_c">שעון דופק</string>
@@ -269,7 +275,7 @@
     <string name="pref_title_cutA">הפרדת הגדרות התראה</string>
     <string name="pref_description_cutA_off">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בלי הבדלים</string>
     <string name="pref_description_cutA_on">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בנפרד</string>
-    <string name="TversionNumber">גרסה מספר: %1$s.\nפותח על ידי צוות \"AtlowApps\". כל הזכויות על העיצוב, הרעיונות והביצוע שמורים לChemi@low ולאיתיאל אטלו.\nתודתינו מסורה ליוסי קסוטו, ליוחאי בניטה ולשלום סאקס על סיועם הרב.\n\nהאפליקציה פותחה על ידי מתנדבים במטרה להנגיש פעולות קיימות ובמטרה ליצור פעולות חדשות שיקלו על המתנדבים בפעילות חירום ושגרה.\n\nבכל שאלה, בקשה, בעיה או תקלה ניתן לפנות אלינו דרך עמוד יצירת קשר, ואנו נעשה כמיטב יכולתנו לתת מענה לכל הבקשות.\n\nאפליקציה זו איננה אפליקציה רשמית של מד\"א, ואיננה קשורה באופן כלשהוא למד\"א. המשתמש בה נושא באחריות המלאה בהשלכות השימוש.</string>
+    <string name="TversionNumber">גרסה מספר: %1$s.\nפותח על ידי צוות \"AtlowApps\". כל הזכויות על העיצוב, הרעיונות והביצוע שמורים לChemi@low ולאיתיאל אטלו.\nתודתינו מסורה ליוסי קסוטו, ליוחאי בניטה ולשלום סאקס על סיועם הרב, וכן לזוהר ממן על \"קונטרס הגישה לנפטר\".\n\nהאפליקציה פותחה על ידי מתנדבים במטרה להנגיש פעולות קיימות ובמטרה ליצור פעולות חדשות שיקלו על המתנדבים בפעילות חירום ושגרה.\n\nבכל שאלה, בקשה, בעיה או תקלה ניתן לפנות אלינו דרך עמוד יצירת קשר, ואנו נעשה כמיטב יכולתנו לתת מענה לכל הבקשות.\n\nאפליקציה זו איננה אפליקציה רשמית של מד\"א, ואיננה קשורה באופן כלשהוא למד\"א. המשתמש בה נושא באחריות המלאה בהשלכות השימוש.</string>
     <string name="pref_title_state">התראה לפי סטטוס מכשיר</string>
     <string name="pref_description_state_on">התראה תצפצף רק כאשר המכשיר לא במצב רטט/שקט. רטט יפעל כרגיל.</string>
     <string name="pref_description_state_off">התראה תצפצף גם כשהמכשיר במצב רטט/שקט.</string>
@@ -404,4 +410,16 @@
     <string name="title_activity_utills_and_tools">כלי עזר</string>
     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
     <string name="title_mda">הורדת יישומון מד\"א</string>
+
+    <string name="BGServiceTtl">מאזין ברקע להודעות</string>
+    <string name="BGServiceTicker">מזהה הודעות חדשות ממד\"א</string>
+    <string name="BGServiceTxt">מזהה הודעות חדשות שנשלחות ממוקד מד\"א ברקע</string>
+    <string name="MetroServiceTtl">מטרונום פעיל ברקע</string>
+    <string name="MetroServiceTxt">התראה זו מונעת כיבוי המטרונום באופן אוטומטי במטרת חיסכון בסוללה.</string>
+    <string name="MetroStop">עצור</string>
+    <string name="ContracLength">אורך הציר: %s</string>
+    <string name="ContracBetween">הפרש מציר קודם: %s</string>
+    <string name="ContracMinutes">%1$d דקות ו%2$d שניות</string>
+    <string name="ContracSecondes">%d שניות</string>
+    <string name="ContracRecover">שחזר נתונים קודמים?</string>
 </resources>
