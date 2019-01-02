@@ -414,8 +414,8 @@
     <string name="MetroServiceTtl">Metronome running in Background</string>
     <string name="MetroServiceTxt">This notification avoids the metronome shutting down for battery saving</string>
     <string name="MetroStop">stop</string>
-    <string name="ContracLength">Contraction length: %s</string>
-    <string name="ContracBetween">הפרש מציר קודם: %s</string>
+    <string name="ContracLength">Duration: %s</string>
+    <string name="ContracBetween">Time between contractions: %s</string>
     <string name="ContracMinutes">%1$d minutes and %2$d seconds</string>
     <string name="ContracSecondes">%d seconds</string>
     <string name="ContracRecover">Recover previous data?</string>

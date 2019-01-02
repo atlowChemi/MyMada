@@ -1,5 +1,6 @@
 package atlow.chemi.mymada;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -13,10 +14,13 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AlertDialog;
@@ -26,6 +30,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -46,6 +51,7 @@ import com.crashlytics.android.Crashlytics;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -147,9 +153,9 @@ public class contactActivity extends AppCompatActivity {
                 String message = emailT.getText().toString().trim();
                 if (email.length() < 1)
                     emailATIL.setError(getApplicationContext().getResources().getString(R.string.emailNone));
-                else if(!isEmailValid(email))
+                else if (!isEmailValid(email))
                     emailATIL.setError(getApplicationContext().getResources().getString(R.string.emailInvalid));
-                else if(isEmailValid(email))
+                else if (isEmailValid(email))
                     emailATIL.setErrorEnabled(false);
                 if (name.length() < 1)
                     emailNTIL.setError(getApplicationContext().getResources().getString(R.string.emailNameNone));
@@ -159,20 +165,22 @@ public class contactActivity extends AppCompatActivity {
                     emailSTIL.setError(getApplicationContext().getResources().getString(R.string.emailSubjNone));
                 else
                     emailSTIL.setErrorEnabled(false);
-                if(message.length() < 1)
+                if (message.length() < 1)
                     emailTTIL.setError(getApplicationContext().getResources().getString(R.string.emailMsgNone));
                 else
                     emailTTIL.setErrorEnabled(false);
-                if(!email.isEmpty() && isEmailValid(email) && !name.isEmpty() && !subject.isEmpty() && !message.isEmpty()) {
+                if (!email.isEmpty() && isEmailValid(email) && !name.isEmpty() && !subject.isEmpty() && !message.isEmpty()) {
                     sms(email, name, subject, message);
                 }
             }
         });
     }
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(LocalHelper.onAttach(base));
     }
+
     private void resetTitle() {
         try {
             int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
@@ -182,10 +190,22 @@ public class contactActivity extends AppCompatActivity {
             Crashlytics.log(e.getMessage());
         }
     }
+
     public boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
+
     public void sendMail(String emailA, String emailN, String emailS, String emailT) {
+        String mPhoneNumber = "";
+        TelephonyManager tMgr = (TelephonyManager) getApplication().getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                mPhoneNumber = tMgr != null ? tMgr.getLine1Number() : "";
+            }
+        } catch (Exception e) {
+            Crashlytics.log(e.getMessage());
+        }
+        emailA = emailA + "\nנשלח מטלפון: " + mPhoneNumber;
         RequestBody body = new FormBody.Builder().add("email", emailA).add("name",emailN).add("subject", emailS).add("message",emailT).build();
         Request request = new Request.Builder().url(BASE_URL).post(body).build();
         Call call = client.newCall(request);
