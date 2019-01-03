@@ -49,7 +49,7 @@ public class MetroService extends Service {
                 .setContentText(getApplicationContext().getResources().getString(R.string.MetroServiceTxt))
                 .setContentIntent(pendingIntent)
                 .setColorized(true)
-                .setSmallIcon(R.drawable.ic_noti)
+                .setSmallIcon(R.drawable.ic_metronome)
                 .setShowWhen(false)
                 .setColor(Color.argb(50, 255, 57, 50))
                 .addAction(R.drawable.ic_close, action, pBtn)

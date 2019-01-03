@@ -3,6 +3,7 @@ package atlow.chemi.mymada;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ public class ContracTimer extends Fragment {
     private static Date start, end;
     private static boolean running = false;
     private Button contractionButton;
+    private CircularProgressButton contractBtn;
     private LinearLayoutManager mLayoutManager;
     private RecyclerView recyclerView;
     SharedPreferences sp;
@@ -147,24 +149,28 @@ public class ContracTimer extends Fragment {
                 recyclerView.setAdapter(adapter);
             }
         }
-        contractionButton = (Button) view.findViewById(R.id.contra_btn);
+        contractBtn = view.findViewById(R.id.contra_btn);
         Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
-        contractionButton.setTypeface(myTypeface);
-        contractionButton.setOnClickListener(new View.OnClickListener() {
+        contractBtn.setTypeface(myTypeface);
+        contractBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 running = !running;
                 if (running) {
                     start = Calendar.getInstance().getTime();
-                    contractionButton.setText(getActivity().getResources().getString(R.string.endContract));
-                    contractionButton.setBackground(getActivity().getResources().getDrawable(R.drawable.round_button_stop));
+                    contractBtn.setText(getActivity().getResources().getString(R.string.endContract));
+                    contractBtn.startAnimation();
+                    contractBtn.setBackgroundColor(Color.argb(255,218,218,218));
                 }else   {
                     Date oldEnd = null;
                     if (end!=null)
                         oldEnd = end;
                     end = Calendar.getInstance().getTime();
-                    contractionButton.setText(getActivity().getResources().getString(R.string.startContract));
-                    contractionButton.setBackground(getActivity().getResources().getDrawable(R.drawable.round_button));
+                    contractBtn.setText(getActivity().getResources().getString(R.string.startContract));
+                    contractBtn.stopAnimation();
+                    contractBtn.revertAnimation();
+                    contractBtn.setBackgroundColor(Color.rgb(255,255,255));
+                    //contractBtn.revertAnimation();
                     //Contraction a = new Contraction(num++, printDifference(start, end), hefresh);
                     Contraction b = new Contraction(++num, start, end, oldEnd);
                     albumList.add(b);

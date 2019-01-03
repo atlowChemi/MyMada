@@ -64,7 +64,7 @@ public class NotificationService extends NotificationListenerService {
             intent.putExtra("title", title);
             intent.putExtra("text", text);
             if (title != null) {
-                if (title.equals("מגן דוד אדום")) {
+                if (title.equals("מגן דוד אדום") || title.equals("מערך הכוננים הלאומי")) {
                     return;
                 }
                 //conan, group, mishmeret, minhala, oldType, sherut.

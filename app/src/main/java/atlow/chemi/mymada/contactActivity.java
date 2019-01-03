@@ -48,6 +48,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.IOException;
 import java.util.List;
@@ -196,16 +197,21 @@ public class contactActivity extends AppCompatActivity {
     }
 
     public void sendMail(String emailA, String emailN, String emailS, String emailT) {
-        String mPhoneNumber = "";
+        String mPhoneNumber = "unknown";
         TelephonyManager tMgr = (TelephonyManager) getApplication().getSystemService(Context.TELEPHONY_SERVICE);
         try {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                mPhoneNumber = tMgr != null ? tMgr.getLine1Number() : "";
+                mPhoneNumber = tMgr != null ? tMgr.getLine1Number() : "err";
             }
         } catch (Exception e) {
             Crashlytics.log(e.getMessage());
         }
-        emailA = emailA + "\nנשלח מטלפון: " + mPhoneNumber;
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "sent from phone: " + mPhoneNumber);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "sent from: " + emailA);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Email");
+        FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
         RequestBody body = new FormBody.Builder().add("email", emailA).add("name",emailN).add("subject", emailS).add("message",emailT).build();
         Request request = new Request.Builder().url(BASE_URL).post(body).build();
         Call call = client.newCall(request);

@@ -64,16 +64,19 @@ public class smsRes extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        super.onCreate(savedInstanceState);
         try {
             if(Build.VERSION_CODES.JELLY_BEAN <= Build.VERSION.SDK_INT) {
                 if (getSupportActionBar()!=null)
                     getSupportActionBar().hide();
+                View decorView = getWindow().getDecorView();
+                int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+                decorView.setSystemUiVisibility(uiOptions | View.SYSTEM_UI_FLAG_FULLSCREEN);
                 //getWindow().addFlags(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             }
         }catch (OutOfMemoryError e) {
             e.printStackTrace();
         }
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_res);
         findViewById(R.id.home).setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         Bundle extras = getIntent().getExtras();
@@ -457,6 +460,21 @@ public class smsRes extends AppCompatActivity {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(res, resId, options);
+    }
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus)  {
+        try {
+            if(Build.VERSION_CODES.JELLY_BEAN <= Build.VERSION.SDK_INT) {
+                if (getSupportActionBar()!=null)
+                    getSupportActionBar().hide();
+                View decorView = getWindow().getDecorView();
+                int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+                decorView.setSystemUiVisibility(uiOptions | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                ///getWindow().addFlags(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            }
+        }catch (OutOfMemoryError e) {
+            e.printStackTrace();
+        }
     }
     @Override
     public void onDestroy() {
