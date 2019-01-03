@@ -1,5 +1,8 @@
 <resources>
 
+    <style name="Tabs" parent="Widget.Design.TabLayout">
+        <item name="tabBackground">@drawable/tab_background</item>
+    </style>
     <!-- Base application theme. -->
     <style name="CKS" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorControlActivated">@color/ColorAqua</item>

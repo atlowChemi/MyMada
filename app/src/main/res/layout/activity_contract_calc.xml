@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -16,7 +18,7 @@
         android:background="@color/buttonMaterialDark"
         android:layout_alignParentBottom="true"
         android:id="@+id/contractBtn">
-        <Button
+        <atlow.chemi.mymada.CircularProgressButton
             android:layout_centerHorizontal="true"
             android:id="@+id/contra_btn"
             android:text="@string/startContract"
@@ -29,6 +31,11 @@
             android:gravity="center"
             android:layout_width="180dp"
             android:layout_height="180dp"
-            android:background="@drawable/round_button" />
+            android:background="@drawable/round_button"
+            app:spinning_bar_width="4dp"
+            app:finalCornerAngle="100dp"
+            app:initialCornerAngle="100dp"
+            app:spinning_bar_color="@color/OldPrimary"
+            app:spinning_bar_padding="0dp"/>
     </RelativeLayout>
 </RelativeLayout>
