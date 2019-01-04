@@ -28,9 +28,8 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Tabs"
             app:tabIndicatorColor="@color/White"
-            app:tabBackground="@drawable/tab_background"
+            app:tabIndicatorHeight="4dp"
             app:tabMode="scrollable"/>
 
     </android.support.design.widget.AppBarLayout>

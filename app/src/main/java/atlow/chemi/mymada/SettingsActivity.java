@@ -41,8 +41,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     protected boolean isValidFragment(String fragmentName)  {
-        if (fragmentName.contains("LangFragment"))
-            return LangFragment.class.getName().equals(fragmentName);
         return SettingsFragemnt.class.getName().equals(fragmentName);
     }
 

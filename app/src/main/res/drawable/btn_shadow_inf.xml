@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:top="18dp">
         <shape android:shape="rectangle">
-            <gradient android:gradientRadius="120%"
+            <gradient android:gradientRadius="120"
             android:type="radial"
             android:useLevel="true"
             android:startColor="@color/Shadow"
