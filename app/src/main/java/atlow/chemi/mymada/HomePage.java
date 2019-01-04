@@ -330,9 +330,9 @@ public class HomePage extends AppCompatActivity {
         try {
             Uri mSmsinboxQueryUri = Uri.parse("content://sms/inbox");
             Cursor cursor1 = getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
-            startManagingCursor(cursor1);
-            String[] columns = new String[]{"address", "person", "date", "body", "type"};
             if (cursor1 != null && cursor1.getCount() > 0) {
+                startManagingCursor(cursor1);
+                String[] columns = new String[]{"address", "person", "date", "body", "type"};
                 while (cursor1.moveToNext()) {
                     String address = cursor1.getString(cursor1.getColumnIndex(columns[0]));
                     if (address.equalsIgnoreCase("MADA")) {

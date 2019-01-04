@@ -133,7 +133,12 @@ public class NotificationService extends NotificationListenerService {
     @TargetApi(Build.VERSION_CODES.N)
     public void onListenerConnected() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            getActiveNotifications();
+            try {
+                getActiveNotifications();
+            } catch (Exception e) {
+                Log.e("getActiveNotification", e.getMessage());
+                Crashlytics.logException(e);
+            }
         }
     }
 

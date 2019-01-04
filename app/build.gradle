@@ -19,6 +19,7 @@ android {
         versionCode 12010
         versionName '3.0.1'
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
         signingConfig signingConfigs.config
     }
     buildTypes {

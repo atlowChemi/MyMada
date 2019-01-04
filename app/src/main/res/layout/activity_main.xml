@@ -29,7 +29,7 @@
         android:id="@+id/M1ambulanceNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-            <android.support.design.widget.TextInputEditText
+            <android.support.design.widget.FixedTextInputEditText
                 android:id="@+id/M1txt1E"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
             android:layout_below="@+id/M1ambulanceNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <android.support.design.widget.TextInputEditText
+            <android.support.design.widget.FixedTextInputEditText
                 android:id="@+id/M1visaT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <android.support.design.widget.FixedTextInputEditText
                 android:id="@+id/M1addressT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <android.support.design.widget.FixedTextInputEditText
                 android:id="@+id/M1txt2E"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputEditText
+        <android.support.design.widget.FixedTextInputEditText
             android:id="@+id/M1txt3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <android.support.design.widget.FixedTextInputEditText
                 android:id="@+id/M1txt6E"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -121,7 +121,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <android.support.design.widget.FixedTextInputEditText
                 android:id="@+id/M1txt4E"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,7 +136,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <android.support.design.widget.FixedTextInputEditText
                 android:id="@+id/M1txt5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <android.support.design.widget.FixedTextInputEditText
                 android:id="@+id/M1button2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -25,6 +25,8 @@ import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -72,8 +74,8 @@ public class SMSMonitorService extends Service {
                     .setTicker(getApplicationContext().getResources().getString(R.string.BGServiceTicker))
                     .setContentText(getApplicationContext().getResources().getString(R.string.BGServiceTxt))
                     .setContentIntent(pendingIntent)
-                    .setColorized(true)
-                    .setSmallIcon(R.drawable.ic_noti)
+                    //.setColorized(true)
+                    .setSmallIcon(R.drawable.ic_notif)
                     .setShowWhen(false)
                     .setColor(Color.argb(50, 76, 119, 247))
                     .setSound(null)
@@ -374,7 +376,12 @@ public class SMSMonitorService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(callExplicitReceiver);
+        try {
+            unregisterReceiver(callExplicitReceiver);
+        } catch (IllegalArgumentException e) {
+            Log.e("SMSMonitorService", e.getMessage());
+            Crashlytics.log(e.getMessage());
+        }
     }
     @Override
     public IBinder onBind(Intent intent) {

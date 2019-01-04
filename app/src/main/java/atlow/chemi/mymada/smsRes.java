@@ -28,6 +28,7 @@ import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +42,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.crashlytics.android.Crashlytics;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -261,7 +264,12 @@ public class smsRes extends AppCompatActivity {
         String mikre;
         String Address;
         if (callT == 5) {
-            Stxt = Stxt.substring(0, Stxt.indexOf("//"));
+            try {
+                Stxt = Stxt.substring(0, Stxt.indexOf("//"));
+            } catch (StringIndexOutOfBoundsException e) {
+                Log.e("smsRes OldSMS", e.getMessage());
+                Crashlytics.logException(e);
+            }
             try {
                     time = getBetweenStrings(Stxt, "בשעה ", " ");
             }catch (Exception e1) {
