@@ -104,4 +104,7 @@
     <string name="pref_head_description_moked">בחירת מוקד אליו ישלחו ההודעות</string>
     <string name="pref_head_description_advanced">בחירת אופן ההתראה בעת קבלת מקרה - משך פעולה ואופן פעולה</string>
     <string name="pref_head_description_lang">בחירת שפה להצגת האפליקציה</string>
+
+    <string name="pref_title_tools">בחירת כלי עזר</string>
+    <string name="pref_description_tools">בחר איזה כלים יוצגו בכלי עזר</string>
 </resources>

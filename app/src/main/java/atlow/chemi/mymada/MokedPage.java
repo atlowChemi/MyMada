@@ -80,15 +80,15 @@ public class MokedPage extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         if (!sp.getBoolean("pickedMoked", false)) {
             final AlertDialog build = new AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                    .setTitle(getApplicationContext().getResources().getString(R.string.pickMokTtl))
-                    .setMessage(getApplicationContext().getResources().getString(R.string.pickMokTxt))
-                    .setPositiveButton(getApplicationContext().getResources().getString(R.string.goToSet), new DialogInterface.OnClickListener() {
+                    .setTitle(MokedPage.this.getResources().getString(R.string.pickMokTtl))
+                    .setMessage(MokedPage.this.getResources().getString(R.string.pickMokTxt))
+                    .setPositiveButton(MokedPage.this.getResources().getString(R.string.goToSet), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                    Intent intent = new Intent(MokedPage.this, SettingsActivity.class);
                     startActivity(intent);
                 }
-            }).setNegativeButton(getApplicationContext().getResources().getString(R.string.skip), new DialogInterface.OnClickListener() {
+            }).setNegativeButton(MokedPage.this.getResources().getString(R.string.skip), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.dismiss();
@@ -98,7 +98,7 @@ public class MokedPage extends AppCompatActivity {
                 @Override
                 public void onShow(DialogInterface dialogInterface) {
                     Button canc = build.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                    canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
                 }
             });
             build.show();
@@ -128,10 +128,11 @@ public class MokedPage extends AppCompatActivity {
                             isSMST = true;
                     }
                 }
+                cursor1.close();
             }
-        }catch (Exception e)    {
+        }catch (NullPointerException e)    {
             isSMST = false;
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
     @Override
@@ -149,9 +150,9 @@ public class MokedPage extends AppCompatActivity {
     }
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new MainActivity1(), getApplicationContext().getResources().getString(R.string.button_a));
-        adapter.addFragment(new MainActivity2(), getApplicationContext().getResources().getString(R.string.button_b));
-        adapter.addFragment(new MainActivity3(), getApplicationContext().getResources().getString(R.string.button_i));
+        adapter.addFragment(new MainActivity1(), MokedPage.this.getResources().getString(R.string.button_a));
+        adapter.addFragment(new MainActivity2(), MokedPage.this.getResources().getString(R.string.button_b));
+        adapter.addFragment(new MainActivity3(), MokedPage.this.getResources().getString(R.string.button_i));
         viewPager.setAdapter(adapter);
     }
 
@@ -207,9 +208,9 @@ public class MokedPage extends AppCompatActivity {
                 return true;
             case R.id.one:
                 SharedPreferences.Editor s = sp.edit();
-                ContentResolver contentResolver = getApplicationContext().getContentResolver();
+                ContentResolver contentResolver = MokedPage.this.getContentResolver();
                 String enabledNotificationListeners = android.provider.Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
-                String packageName = getApplicationContext().getPackageName();
+                String packageName = MokedPage.this.getPackageName();
                 if (!item.isChecked()) {
                     item.setChecked(true);
                     /*new*/
@@ -241,7 +242,7 @@ public class MokedPage extends AppCompatActivity {
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
 
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                                            canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
                                         }
                                     });
                                     alert.show();
@@ -252,7 +253,7 @@ public class MokedPage extends AppCompatActivity {
                                 Intent old = new Intent(this, NotificationServiceOld.class);
                                 stopService(intent);
                                 startService(old);
-                                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
+                                if (!NotificationServiceOld.isAccessibilitySettingsOn(MokedPage.this)) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
                                             .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
@@ -271,7 +272,7 @@ public class MokedPage extends AppCompatActivity {
                                         @Override
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                                            canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
                                         }
                                     });
                                     alert.show();
@@ -283,7 +284,7 @@ public class MokedPage extends AppCompatActivity {
                             Intent old = new Intent(this, NotificationServiceOld.class);
                             stopService(intent);
                             startService(old);
-                            if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
+                            if (!NotificationServiceOld.isAccessibilitySettingsOn(MokedPage.this)) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                 builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
                                         .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
@@ -302,7 +303,7 @@ public class MokedPage extends AppCompatActivity {
                                     @Override
                                     public void onShow(DialogInterface dialogInterface) {
                                         Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                                        canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
                                     }
                                 });
                                 alert.show();

@@ -3,10 +3,16 @@ apply plugin: 'io.fabric'
 
 android {
     signingConfigs {
-        config {
+        release {
             keyAlias 'hi'
             keyPassword 'REMOVED_SIGNING_PASSWORD'
             storeFile file('C:/Users/Ayelet PC/AndroidStudioProjects/cert.jks')
+            storePassword 'REMOVED_SIGNING_PASSWORD'
+        }
+        debug {
+            keyAlias 'hi'
+            keyPassword 'REMOVED_SIGNING_PASSWORD'
+            storeFile file('C:/Users/Ayelet PC/AndroidStudioProjects/certDebug.jks')
             storePassword 'REMOVED_SIGNING_PASSWORD'
         }
     }
@@ -16,22 +22,26 @@ android {
         applicationId "atlow.chemi.mymada"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 12010
-        versionName '3.0.1'
+        versionCode 12020
+        versionName '3.1'
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
-        signingConfig signingConfigs.config
+        signingConfig signingConfigs.release
     }
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+            signingConfig signingConfigs.release
         }
         debug {
-            signingConfig signingConfigs.config
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-DEBUG"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
             minifyEnabled true
+            debuggable true
             useProguard true
         }
     }

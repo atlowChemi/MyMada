@@ -1,10 +1,15 @@
 package atlow.chemi.mymada;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +22,8 @@ import android.widget.TextView;
 public class GlazgoCalc extends Fragment {
     private TextView a;
     private Spinner eye, verb, motor;
+    private int old, newer;
+    private AnimatedColor color;
     public GlazgoCalc()    {
 
     }
@@ -42,6 +49,11 @@ public class GlazgoCalc extends Fragment {
         LinearLayout glazgoInfBG = view.findViewById(R.id.GLZInfBG);
         a = view.findViewById(R.id.GLZGrade);
         a.setTypeface(myTypeface);
+        GradientDrawable draw = (GradientDrawable) a.getBackground();
+        draw.mutate();
+        draw.setColor(ContextCompat.getColor(getActivity(), R.color.calcB));
+        a.setBackground(draw);
+        old = 3;
         glazgoInf.setTypeface(myTypeface);
         glazgo1.setTypeface(myTypeface, Typeface.BOLD);
         glazgo2.setTypeface(myTypeface, Typeface.BOLD);
@@ -98,25 +110,54 @@ public class GlazgoCalc extends Fragment {
         glazgoInf.setText(getActivity().getResources().getString(R.string.GlasgowInfo));
     }
     private void calc(){
-        int i = 0;
-        i += (eye.getSelectedItemPosition()+1);
-        i += (verb.getSelectedItemPosition()+1);
-        i += (motor.getSelectedItemPosition()+1);
-        GradientDrawable drawable = (GradientDrawable) a.getBackground();
+        newer = 0;
+        newer += (eye.getSelectedItemPosition()+1);
+        newer += (verb.getSelectedItemPosition()+1);
+        newer += (motor.getSelectedItemPosition()+1);
+        final GradientDrawable drawable = (GradientDrawable) a.getBackground();
         drawable.mutate();
         String c = " (";
-        if (i < 9) {
-            drawable.setColor(Color.rgb(191,23,22));
+        if (newer < 9) {
+            Animate(old, newer);
+            //drawable.setColor(Color.rgb(191,23,22));
             c += getActivity().getResources().getString(R.string.GlasgowHigh) + ")";
-        } else if (i > 12) {
-            drawable.setColor(Color.rgb(70, 178, 58));
+        } else if (newer > 12) {
+            Animate(old, newer);
+            //drawable.setColor(Color.rgb(70, 178, 58));a.setBackground(drawable);
             c += getActivity().getResources().getString(R.string.GlasgowLow) + ")";
         } else {
-            drawable.setColor(Color.rgb(221, 190, 66));
+            Animate(old, newer);
+            //drawable.setColor(Color.rgb(221, 190, 66));a.setBackground(drawable);
             c += getActivity().getResources().getString(R.string.GlasgowMed) + ")";
         }
-        a.setBackground(drawable);
-        String s = getActivity().getResources().getString(R.string.Glasgow, i + c);
+        String s = getActivity().getResources().getString(R.string.Glasgow, newer + c);
         a.setText(s);
+    }
+    private void Animate(int start, int end) {
+        old = newer;
+        Log.e("COLORS", "start: " + start + " end: " + end);
+        int from = Color.rgb(193,21,22), to = Color.rgb(193,21,22);
+        if (start >= 9)
+            from = Color.rgb(221,190,66);
+        if (start > 12)
+            from = Color.rgb(70,178,58);
+        if (end >= 9)
+            to = Color.rgb(221,190,66);
+        if (end > 12)
+            to = Color.rgb(70,178,58);
+        color = new AnimatedColor(from, to);
+        ValueAnimator animator = ObjectAnimator.ofFloat(0f, 1f).setDuration(1000);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float v = (float) animation.getAnimatedValue();
+               Log.e("COLOR::", "r " + Color.red(color.with(0.4555f)));
+                GradientDrawable gradientDrawable = (GradientDrawable)a.getBackground();
+                gradientDrawable.mutate();
+                gradientDrawable.setColor(color.with(v));
+                a.setBackground(gradientDrawable);
+            }
+        });
+        animator.start();
     }
 }

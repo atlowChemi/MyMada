@@ -30,4 +30,7 @@
     <color name="hovesh">#ff757575</color>
     <color name="noar">#FFD40202</color>
     <color name="para">#FFFD7F00</color>
+    <color name="calcB">#c11516</color>
+    <color name="calcM">#ddbe42</color>
+    <color name="calcG">#46b23a</color>
 </resources>

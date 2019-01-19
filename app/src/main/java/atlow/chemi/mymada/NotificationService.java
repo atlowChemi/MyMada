@@ -3,6 +3,7 @@ package atlow.chemi.mymada;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -14,13 +15,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.util.Objects;
 
-import static atlow.chemi.mymada.Applicatio.manager;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class NotificationService extends NotificationListenerService {
@@ -30,11 +31,13 @@ public class NotificationService extends NotificationListenerService {
     @Override
     public void onCreate() {
         super.onCreate();
+        context = getApplicationContext();
     }
     @Override
     public void onNotificationPosted(StatusBarNotification statusBarNotification) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         Boolean Mapp = sp.getBoolean("Mapp", false);
+        Log.e("Mapp is!", Mapp.toString());
         if (Mapp && (statusBarNotification.getPackageName().contains("mdaemergency")
                 || statusBarNotification.getPackageName().contains("mda.health")
                 || statusBarNotification.getPackageName().equals("atlow.mymadaadmin"))) {
@@ -111,12 +114,13 @@ public class NotificationService extends NotificationListenerService {
     }
     @Override
     public void onNotificationRemoved(StatusBarNotification statusBarNotification)  {
-        //nothing yet;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && statusBarNotification.getPackageName().equals("atlow.chemi.mymada")) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && statusBarNotification.getPackageName().contains("atlow.chemi.mymada")) {
+            NotificationManager manager = context.getSystemService(NotificationManager.class);
             Notification notification = statusBarNotification.getNotification();
             if (notification.getChannelId().contains("generated")) {
-                manager.deleteNotificationChannel(notification.getChannelId());
-                Log.v("searchable", notification.getChannelId());
+                if (manager != null) {
+                    manager.deleteNotificationChannel(notification.getChannelId());
+                }
             }
         }
     }
@@ -124,7 +128,7 @@ public class NotificationService extends NotificationListenerService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("REBIND", "NotificationListenerService onStartCommand begin");
         if (intent != null)
-            Applicatio.tryConnectService();
+            Applicatio.tryConnectService(context);
         return START_STICKY;
     }
 

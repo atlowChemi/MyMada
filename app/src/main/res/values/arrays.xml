@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="toolsVal">
+        <item>contrac</item>
+        <item>pulse</item>
+        <item>metro</item>
+        <item>vital</item>
+        <item>oxy</item>
+        <item>apgar</item>
+        <item>glaz</item>
+        <item>prot</item>
+    </array>
+    <array name="toolsEntrie">
+        <item>@string/button_f</item>
+        <item>@string/button_c</item>
+        <item>@string/button_d</item>
+        <item>@string/button_e</item>
+        <item>@string/button_g</item>
+        <item>@string/button_ag</item>
+        <item>@string/button_gl</item>
+        <item>@string/button_p</item>
+    </array>
+</resources>

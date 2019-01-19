@@ -22,9 +22,6 @@ import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import static atlow.chemi.mymada.Applicatio.CnlBg;
-import static atlow.chemi.mymada.MetroActivity.MetroRun;
-
 @TargetApi(Build.VERSION_CODES.N)
 public class MyTileService extends TileService {
 

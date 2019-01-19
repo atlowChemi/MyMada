@@ -1,61 +1,29 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/homeCon"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/MyMaterialTheme.SmsRes"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
-    tools:context=".smsRes"
-    android:id="@+id/home">
-    <!--android:background="@drawable/rbg"-->
-    <!--android:src="@mipmap/background"-->
-    <View android:id="@+id/strut"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerHorizontal="true"/>
-    <Button
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="16dp"
-        android:layout_alignRight="@id/strut"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="3dp"
-        android:layout_alignParentLeft="true"
-        android:text="@string/Minf"
-        android:id="@+id/buttonI"
-        android:textSize="20sp"
-        android:textColor="@color/White"
-        android:gravity="center"
-        android:background="@drawable/btns_new"
-        android:layout_alignParentBottom="true"/>
-    <Button
-        android:layout_width="0dp"
-        android:layout_marginStart="3dp"
-        android:layout_marginEnd="16dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/Mrec2"
-        android:layout_alignLeft="@id/strut"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/btns_new"
-        android:textSize="20sp"
-        android:textColor="@color/White"
-        android:gravity="center"
-        android:id="@+id/button"
-        android:layout_alignParentBottom="true" />
+    android:theme="@style/MyMaterialTheme.SmsRes"
+    tools:context=".smsRes">
+
     <TextView
+        android:id="@+id/newC"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:textColor="@color/White"
-        android:text="@string/newCall"
-        android:id="@+id/newC"
+        android:layout_alignParentTop="true"
+        android:background="@color/OldPrimary"
+        android:gravity="center|top"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:background="@color/OldPrimary"
-        android:layout_alignParentTop="true"
-        android:gravity="center|top"
-        android:textStyle="bold" />
+        android:text="@string/newCall"
+        android:textColor="@color/White"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,6 +35,7 @@
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:layout_below="@+id/newC"
+        app:layout_constraintTop_toBottomOf="@id/newC"
         android:gravity="center|top"
         android:textStyle="bold" />
     <TextView
@@ -83,18 +52,20 @@
         android:scrollbarSize="4dp"
         android:scrollbarTrackVertical="@color/ColorPrimary"
         android:scrollbars="vertical"
-        android:layout_below="@+id/msgType"
+        app:layout_constraintTop_toBottomOf="@id/msgType"
         android:gravity="center|top"
         android:textStyle="bold" />
     <TextView
+        android:id="@+id/KodR"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center|top"
         android:text=""
         android:textSize="27sp"
-        android:id="@+id/KodR"
-        android:layout_marginTop="20dp"
-        android:gravity="center|top"
-        android:layout_below="@+id/Address"/>
+        app:layout_constraintBottom_toTopOf="@+id/SMS"
+        app:layout_constraintTop_toBottomOf="@id/Address" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -103,31 +74,54 @@
         android:text=""
         android:id="@+id/SMS"
         android:gravity="center|top"
-        android:layout_above="@+id/bg" />
-
-
-
+        app:layout_constraintBottom_toTopOf="@+id/bg" />
     <ImageView
         android:layout_width="match_parent"
         android:contentDescription="@string/hello_world"
         android:layout_height="60dp"
         android:id="@+id/bg"
-        android:src="@drawable/ic_mda"
-        android:layout_above="@+id/name"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        app:srcCompat="@drawable/ic_mda"
+        app:layout_constraintBottom_toTopOf="@+id/name"
         android:layout_marginBottom="20dp" />
-
     <TextView
+        android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_marginTop="20dp"
-        android:id="@+id/name"
-        android:text="@string/app_name"
         android:layout_marginBottom="20dp"
-        android:textColor="@color/materialGrey600"
         android:gravity="center|top"
-        android:layout_above="@+id/buttonI" />
+        android:text="@string/app_name"
+        android:textColor="@color/materialGrey600"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonI" />
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/buttonI"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/btns_new"
+        android:gravity="center"
+        android:text="@string/Minf"
+        android:textColor="@color/White"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button" />
+    <Button
+        android:id="@+id/button"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/btns_new"
+        android:gravity="center"
+        android:text="@string/Mrec2"
+        android:textColor="@color/White"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonI" />
+</android.support.constraint.ConstraintLayout>

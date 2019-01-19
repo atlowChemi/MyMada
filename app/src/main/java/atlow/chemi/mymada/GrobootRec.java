@@ -26,17 +26,9 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import static atlow.chemi.mymada.Applicatio.Cnl101;
-import static atlow.chemi.mymada.Applicatio.CnlConan;
-import static atlow.chemi.mymada.Applicatio.CnlGroup;
-import static atlow.chemi.mymada.Applicatio.CnlMinhala;
-import static atlow.chemi.mymada.Applicatio.CnlMishmeret;
-import static atlow.chemi.mymada.Applicatio.CnlWin;
-import static atlow.chemi.mymada.Applicatio.Grp3;
-import static atlow.chemi.mymada.Applicatio.manager;
 
 public class GrobootRec extends BroadcastReceiver {
-    protected String title, text, CNL;
+    protected String title, text, Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
     protected static String string = "T1";
     protected static PendingIntent madasApp;
     protected Context context;
@@ -99,37 +91,30 @@ public class GrobootRec extends BroadcastReceiver {
                 case 1:
                     callType = sp.getBoolean("callT1", true);
                     string = "T1";
-                    CNL = CnlConan + notSP.getInt(CnlConan, 0);
                     break;
                 case 2:
                     callType = sp.getBoolean("callT2", true);
                     string = "T2";
-                    CNL = CnlGroup + notSP.getInt(CnlGroup, 0);
                     break;
                 case 3:
                     callType = sp.getBoolean("callT3", true);
                     string = "T3";
-                    CNL = CnlMishmeret + notSP.getInt(CnlMishmeret, 0);
                     break;
                 case 4:
                     callType = sp.getBoolean("callT4", true);
                     string = "T4";
-                    CNL = CnlMinhala + notSP.getInt(CnlMinhala, 0);
                     break;
                 case 5:
                     callType = sp.getBoolean("callT3", true);
                     string = "T3";
-                    CNL = CnlMishmeret + notSP.getInt(CnlMishmeret, 0);
                     break;
                 case 6:
                     callType = sp.getBoolean("callT6", true);
                     string = "T6";
-                    CNL = CnlMinhala + notSP.getInt(CnlMinhala, 0);
                     break;
                 default:
                     callType = sp.getBoolean("callT1", true);
                     string = "T1";
-                    CNL = CnlConan + notSP.getInt(CnlConan, 0);
                     break;
             }
             Log.d("callT", "t6 is: " + callType);
@@ -157,7 +142,6 @@ public class GrobootRec extends BroadcastReceiver {
             sou = sp.getBoolean("Nsou", true);
             app = sp.getBoolean("Napp", false);
             uri = Uri.parse(sp.getString("NuRi", ""));
-            CNL = Cnl101 + notSP.getInt(Cnl101, 0);
         }
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
         int hour = now.get(Calendar.HOUR_OF_DAY);
@@ -269,6 +253,7 @@ public class GrobootRec extends BroadcastReceiver {
                     AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
                     NotificationChannel serviceChannel = new NotificationChannel(cnlId, "ערוץ זמני מותאם אישית", NotificationManager.IMPORTANCE_HIGH);
                     serviceChannel.enableVibration(OreoVib);
+                    serviceChannel.setVibrationPattern(lng2);
                     serviceChannel.setBypassDnd(true);
                     serviceChannel.setDescription("התראות עבור אירועי חירום");
                     serviceChannel.enableLights(true);
@@ -282,10 +267,15 @@ public class GrobootRec extends BroadcastReceiver {
                     }else
                         serviceChannel.setSound(null, attributes);
                     serviceChannel.setGroup(Grp3);
-                    manager.createNotificationChannel(serviceChannel);
+                    notifManager = context.getSystemService(NotificationManager.class);
+                    if (notifManager != null){
+                        notifManager.createNotificationChannel(serviceChannel);
+                    }
                     builder.setChannelId(cnlId);
                 }
             }
+            builder.setGroup("Calls");
+            builder.setGroupSummary(true);
             Notification mNotification = builder.build();
             if (sp.getBoolean("loop", false)) {
                 mNotification.flags |= Notification.FLAG_INSISTENT;

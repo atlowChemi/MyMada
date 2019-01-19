@@ -8,10 +8,14 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.MultiSelectListPreference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -28,15 +32,11 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
-import static atlow.chemi.mymada.Applicatio.Cnl101;
-import static atlow.chemi.mymada.Applicatio.CnlConan;
-import static atlow.chemi.mymada.Applicatio.CnlGroup;
-import static atlow.chemi.mymada.Applicatio.CnlMinhala;
-import static atlow.chemi.mymada.Applicatio.CnlMishmeret;
-import static atlow.chemi.mymada.Applicatio.Grp1;
-import static atlow.chemi.mymada.Applicatio.manager;
 
 public class SettingsFragemnt extends PreferenceFragment {
     String oldI = "6";
@@ -134,6 +134,7 @@ public class SettingsFragemnt extends PreferenceFragment {
                     onOffT6.setWidgetLayoutResource(R.layout.switch_x);
                 }catch (Exception e){
                     Crashlytics.log("not making switch! " + e.getMessage());
+                    Crashlytics.logException(e);
                 }
             }
             if (!cut) {
@@ -161,6 +162,7 @@ public class SettingsFragemnt extends PreferenceFragment {
                     onOffT6.setWidgetLayoutResource(R.layout.switch_x);
                 }catch (Exception e){
                     Crashlytics.log("not making switch! " + e.getMessage());
+                    Crashlytics.logException(e);
                 }
             }
         }else if ("ampm".equals(settings))  {
@@ -179,7 +181,8 @@ public class SettingsFragemnt extends PreferenceFragment {
             region.setOnPreferenceChangeListener(list2);
         }else if ("adva".equals(settings)) {
             addPreferencesFromResource(R.xml.pref_advanced);
-
+            MultiSelectListPreference toolList = (MultiSelectListPreference)findPreference("Tools");
+            toolList.setOnPreferenceChangeListener(list2);
             CheckBoxPreference not = (CheckBoxPreference)findPreference("not");
             not.setOnPreferenceChangeListener(list2);
             CheckBoxPreference win = (CheckBoxPreference)findPreference("newWin");
@@ -202,14 +205,19 @@ public class SettingsFragemnt extends PreferenceFragment {
             /*if (shabatT.getEditText().getText().toString().trim().isEmpty())
                 shabatT.setText("6");*/
             shabatT.setOnPreferenceChangeListener(list2);
-            not.setWidgetLayoutResource(R.layout.switch_x);
-            win.setWidgetLayoutResource(R.layout.switch_x);
-            cut.setWidgetLayoutResource(R.layout.switch_x);
-            ride.setWidgetLayoutResource(R.layout.switch_x);
-            stat.setWidgetLayoutResource(R.layout.switch_x);
-            statVib.setWidgetLayoutResource(R.layout.switch_x);
-            loop.setWidgetLayoutResource(R.layout.switch_x);
-            shabat.setWidgetLayoutResource(R.layout.switch_x);
+            try {
+                not.setWidgetLayoutResource(R.layout.switch_x);
+                win.setWidgetLayoutResource(R.layout.switch_x);
+                cut.setWidgetLayoutResource(R.layout.switch_x);
+                ride.setWidgetLayoutResource(R.layout.switch_x);
+                stat.setWidgetLayoutResource(R.layout.switch_x);
+                statVib.setWidgetLayoutResource(R.layout.switch_x);
+                loop.setWidgetLayoutResource(R.layout.switch_x);
+                shabat.setWidgetLayoutResource(R.layout.switch_x);
+            } catch (Exception e) {
+                Crashlytics.log("not working Switch");
+                Crashlytics.logException(e);
+            }
         } else if ("lang".equals(settings)) {
             addPreferencesFromResource(R.xml.pref_lang);
             ListPreference lang = (ListPreference)findPreference("Lang");
@@ -217,6 +225,7 @@ public class SettingsFragemnt extends PreferenceFragment {
         }
     }
 
+    @SuppressWarnings("unchecked")
     Preference.OnPreferenceChangeListener list2 = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -339,6 +348,17 @@ public class SettingsFragemnt extends PreferenceFragment {
                 case "Lang":
                     OLangC(newValue);
                     break;
+                case "Tools":
+                    MultiSelectListPreference ml = (MultiSelectListPreference)preference;
+                    Set<String> t = (Set<String>) newValue;
+                    if(t.size() < 1) {
+                        //Log.e("UTILLL", "nothing picked");
+                        //Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), getResources().getString(R.string.NoPicked), Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), getResources().getString(R.string.NoPicked), Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                    tools(t);
+                    break;
             }
             return true;
         }
@@ -360,6 +380,13 @@ public class SettingsFragemnt extends PreferenceFragment {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(sett, newValue.toString());
         editor.apply();
+    }
+    public void tools(Set<String> newValue) {
+        SharedPreferences preferences = getActivity().getSharedPreferences("Settings", 0);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putStringSet("Tools", newValue);
+        editor.apply();
+        Log.e("UTILLL2", "is " + preferences.getStringSet("Tools", null));
     }
     public void OSTT(Object newValue)   {
         EditTextPreference shabatT = (EditTextPreference)findPreference("shabatTime");

@@ -65,7 +65,13 @@ public class PrivacyActivity extends AppCompatActivity {
         webview.setWebViewClient(new CustomWebViewClient());
         webview.clearHistory();
         webview.getSettings().setBuiltInZoomControls(false);
-        webview.loadUrl("https://www.freeprivacypolicy.com/privacy/view/29c6571350f6b515af9691bbccbce669");
+        String url, heb, en;
+        heb = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/privacy.html?alt=media&token=a758a10d-14d0-431f-a9bc-4b61b6e25ee0";
+        en = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/privacy-en.html?alt=media&token=20a59b60-69e2-45b5-b274-4b311442aa0d";
+        if(Locale.getDefault().getLanguage().toLowerCase().contains("en"))
+            url = en;
+        else url = heb;
+        webview.loadUrl(url);
     }
     @Override
     protected void attachBaseContext(Context base) {
@@ -105,7 +111,7 @@ public class PrivacyActivity extends AppCompatActivity {
                 return false;
             else {
                 String er = "file:///android_asset/err.html";
-                if(Locale.getDefault().getLanguage().equals("en"))
+                if(Locale.getDefault().getLanguage().toLowerCase().contains("en"))
                     er += "?lng=en";
                 view.loadUrl(er);
                 return true;
