@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".lockPage">
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -17,111 +19,121 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="130dp"
             android:background="@drawable/curve_toolbar_bg"
-            android:contentDescription="@string/app_name"
-            android:clickable="false"/>
+            android:clickable="false"
+            android:contentDescription="@string/app_name" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@+id/b9"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="22dp"
             android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_above="@+id/b9"
-            android:paddingBottom="13dp"
+            android:layout_marginBottom="25dp"
             android:background="@drawable/text_white_cornered"
-            android:layout_marginBottom="25dp">
+            android:paddingBottom="13dp">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="13dp"
                 android:paddingBottom="13dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:gravity="center"
-            android:textSize="21sp"
-            android:textColor="@color/ColorRedDark"
-            android:text="@string/notMada"
-            android:id="@+id/textView11"
-            android:layout_gravity="center_horizontal" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:gravity="center"
-            android:textSize="25sp"
-            android:layout_marginTop="15dp"
-            android:textStyle="bold"
-            android:textColor="@color/Black"
-            android:text="@string/notM"
-            android:id="@+id/textView150"
-            android:layout_gravity="center_horizontal"
-            android:layout_below="@+id/textView11"
-            android:layout_centerHorizontal="true" />
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:text="@string/notMada"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/ColorRedDark"
+                    android:textSize="21sp" />
+
+                <TextView
+                    android:id="@+id/textView150"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textView11"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:text="@string/notM"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/Black"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
             </RelativeLayout>
         </ScrollView>
+
         <Button
+            android:id="@+id/b9"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/b9"
             android:layout_above="@+id/lin"
-            android:text="@string/title_mda"
-            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_centerHorizontal="true"
             android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
             android:layout_marginBottom="8dp"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:textColor="#FFF"
             android:background="@drawable/btns_new"
-            android:onClick="TZapp"/>
+            android:gravity="center"
+            android:onClick="TZapp"
+            android:text="@string/title_mda"
+            android:textColor="#FFF"
+            android:textSize="20sp" />
+
         <LinearLayout
+            android:id="@+id/lin"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:paddingBottom="16dp"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:id="@+id/lin"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="16dp">
+
             <Button
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/title_code"
-                android:gravity="center"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
-                android:textSize="20sp"
-                android:textColor="#FFF"
-                android:layout_marginEnd="4dp"
                 android:id="@+id/b6"
-                android:background="@drawable/btns_new"
-                android:onClick="cod"/>
-            <Button
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="4dp"
                 android:layout_weight="1"
-                android:text="@string/title_activity_code"
-                android:layout_marginStart="4dp"
-                android:gravity="center"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
-                android:textSize="20sp"
-                android:textColor="#FFF"
-                android:id="@+id/b4"
                 android:background="@drawable/btns_new"
-                android:onClick="cond"/>
+                android:gravity="center"
+                android:onClick="cod"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="@string/title_code"
+                android:textColor="#FFF"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/b4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/btns_new"
+                android:gravity="center"
+                android:onClick="cond"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="@string/title_activity_code"
+                android:textColor="#FFF"
+                android:textSize="20sp" />
         </LinearLayout>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

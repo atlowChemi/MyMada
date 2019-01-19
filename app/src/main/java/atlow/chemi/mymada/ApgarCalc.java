@@ -1,5 +1,7 @@
 package atlow.chemi.mymada;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -14,6 +16,7 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +31,8 @@ import android.widget.TextView;
 public class ApgarCalc extends Fragment {
     private TextView a;
     private Spinner Apperence, Pulse, Grimace, Activity, Respirations;
+    private int old,newer;
+    private AnimatedColor color;
     public ApgarCalc()    {
 
     }
@@ -143,22 +148,53 @@ public class ApgarCalc extends Fragment {
         apgarInfi.setText(getActivity().getResources().getString(R.string.ApgarInfo));
     }
     private void calc() {
-        int i = 0;
-        i += Apperence.getSelectedItemPosition();
-        i += Pulse.getSelectedItemPosition();
-        i += Grimace.getSelectedItemPosition();
-        i += Activity.getSelectedItemPosition();
-        i += Respirations.getSelectedItemPosition();
-        String s = getActivity().getResources().getString(R.string.Apgar, i);
+        newer = 0;
+        newer += Apperence.getSelectedItemPosition();
+        newer += Pulse.getSelectedItemPosition();
+        newer += Grimace.getSelectedItemPosition();
+        newer += Activity.getSelectedItemPosition();
+        newer += Respirations.getSelectedItemPosition();
+        String s = getActivity().getResources().getString(R.string.Apgar, newer);
         GradientDrawable drawable = (GradientDrawable) a.getBackground();
         drawable.mutate();
-        if (i < 4)
-            drawable.setColor(Color.rgb(191,23,22));
-        else if (i > 6)
-            drawable.setColor(Color.rgb(70,178,58));
+        if (newer < 4)
+            Animate(old, newer);
+        else if (newer > 6)
+            Animate(old, newer);
         else
-            drawable.setColor(Color.rgb(221, 190, 66));
+            Animate(old, newer);
         a.setBackground(drawable);
         a.setText(s);
+    }
+    private void Animate(int start, int end) {
+        old = newer;
+        Log.e("COLORS", "start: " + start + " end: " + end);
+        int from = Color.rgb(191,21,22), to = Color.rgb(191,21,22);
+        //starts at middle
+        if (start > 3)
+            from = Color.rgb(221,190,66);
+        //starts at good
+        if (start > 6)
+            from = Color.rgb(70,178,58);
+        //ends at  middle
+        if (end > 3)
+            to = Color.rgb(221,190,66);
+        //ends at good
+        if (end > 6)
+            to = Color.rgb(70,178,58);
+        color = new AnimatedColor(from, to);
+        ValueAnimator animator = ObjectAnimator.ofFloat(0f, 1f).setDuration(1000);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float v = (float) animation.getAnimatedValue();
+                Log.e("COLOR::", "r " + Color.red(color.with(0.4555f)));
+                GradientDrawable gradientDrawable = (GradientDrawable)a.getBackground();
+                gradientDrawable.mutate();
+                gradientDrawable.setColor(color.with(v));
+                a.setBackground(gradientDrawable);
+            }
+        });
+        animator.start();
     }
 }

@@ -1,14 +1,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--Preference android:summary="@string/pref_description_notifictzia" android:selectable="false"/-->
-        <!--Preference
-            android:key="callT1"
-            android:title="@string/callT1"/>
-        <Preference
-            android:key="callT2"
-            android:title="@string/callT2"/>
-        <Preference
-            android:key="callT3"
-            android:title="@string/callT3"/-->
+    <PreferenceCategory android:title="@string/button_h">
+        <MultiSelectListPreference
+            android:key="Tools"
+            android:title="@string/pref_title_tools"
+            android:dialogTitle="@string/pref_title_tools"
+            android:summary="@string/pref_description_tools"
+            android:entryValues="@array/toolsVal"
+            android:entries="@array/toolsEntrie"
+            android:defaultValue="@array/toolsVal"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_header_notifications">
         <CheckBoxPreference
             android:key="not"

@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -67,5 +68,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         int c = Integer.parseInt(code.replaceAll("[\\D]",""));
         notificationManager.notify(c, notificationBuilder.build());
+    }
+
+    @Override
+    public void onNewToken(String s) {
+        super.onNewToken(s);
+        getSharedPreferences("Settings", 0).edit().putString("fcm", s).apply();
+    }
+    public static String getToken(Context context) {
+        return context.getSharedPreferences("Settings", 0).getString("fcm", "empty");
     }
 }

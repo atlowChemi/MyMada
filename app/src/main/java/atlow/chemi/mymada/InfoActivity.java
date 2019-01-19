@@ -50,7 +50,7 @@ public class InfoActivity extends AppCompatActivity {
         Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         textView.setTypeface(myTypeface);
         textView.setMovementMethod(new ScrollingMovementMethod());
-        textView.setText(getApplicationContext().getResources().getString(R.string.TversionNumber, BuildConfig.VERSION_NAME));
+        textView.setText(getResources().getString(R.string.TversionNumber, BuildConfig.VERSION_NAME));
         final Button privBtn = (Button) findViewById(R.id.privB);
         privBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override

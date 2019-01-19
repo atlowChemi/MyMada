@@ -6,13 +6,19 @@ import com.google.android.gms.ads.AdView;
 
 import android.*;
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -66,28 +72,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static atlow.chemi.mymada.Applicatio.CnlBg;
-import static atlow.chemi.mymada.Applicatio.manager;
-
 
 public class HomePage extends AppCompatActivity {
     private Boolean isSMST = false;
     private Context context;
     private Typeface myTypeface;
-    private static final int PERMISSION_CALLBACK_CONSTANT = 100;
-    private static final int REQUEST_PERMISSION_SETTING = 101;
+    private static final int PERMISSION_CALLBACK_CONSTANT = 100, REQUEST_PERMISSION_SETTING = 101;
     String[] permissionsRequired = new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE,android.Manifest.permission.READ_SMS, Manifest.permission.READ_PHONE_STATE};
     private SharedPreferences permissionStatus;
     private boolean sentToSettings = false;
     private homeBAdapter adapter;
     private static List<HomeB> albumList;
-
+    public NotificationManager manager;
+    public final String Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
+    private Cursor cursor1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         resetTitle();
         setContentView(R.layout.activity_home_page);
-        context = this;
+        setNotifChannels();
+        rateUs.app_launched(HomePage.this);
+        context = HomePage.this;
+        Crashlytics.setUserIdentifier(MyFirebaseMessagingService.getToken(context));
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
         boolean realM = sharedPreferences.getBoolean("realM", false);
@@ -274,7 +281,12 @@ public class HomePage extends AppCompatActivity {
             alert.show();
         }
         if(Mapp && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            int importance = manager.getNotificationChannel(CnlBg).getImportance();
+            manager = context.getSystemService(NotificationManager.class);
+            int importance = 1;
+            if (manager != null) {
+                Log.e("importance", "is" + manager.getNotificationChannel(CnlBg).getImportance());
+                importance = manager.getNotificationChannel(CnlBg).getImportance();
+            }
             Log.d("importance", "is " + importance);
             if (importance != NotificationManager.IMPORTANCE_MIN) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
@@ -329,7 +341,7 @@ public class HomePage extends AppCompatActivity {
     private void smsGot() {
         try {
             Uri mSmsinboxQueryUri = Uri.parse("content://sms/inbox");
-            Cursor cursor1 = getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
+            cursor1 = getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
             if (cursor1 != null && cursor1.getCount() > 0) {
                 startManagingCursor(cursor1);
                 String[] columns = new String[]{"address", "person", "date", "body", "type"};
@@ -342,9 +354,9 @@ public class HomePage extends AppCompatActivity {
                     }
                 }
             }
-        }catch (Exception e)    {
+        }catch (NullPointerException e)    {
             isSMST = false;
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
     private class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
@@ -421,6 +433,12 @@ public class HomePage extends AppCompatActivity {
                 ed.apply();
             }
         }
+    }
+    @Override
+    protected void onDestroy() {
+        if (cursor1 != null)
+            cursor1.close();
+        super.onDestroy();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -565,6 +583,47 @@ public class HomePage extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+    private void setNotifChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            SharedPreferences notSP = getSharedPreferences("notifications", 0);
+            AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
+            NotificationChannelGroup group3 = new NotificationChannelGroup(Grp3, "התראות מקרים");
+            NotificationChannelGroup group2 = new NotificationChannelGroup(Grp2, "התראות שונות");
+            NotificationChannel serviceChannel = new NotificationChannel(CnlBg, "פעילות ברקע", NotificationManager.IMPORTANCE_MIN);
+            serviceChannel.enableVibration(false);
+            serviceChannel.enableLights(false);
+            serviceChannel.setShowBadge(false);
+            serviceChannel.setImportance(NotificationManager.IMPORTANCE_MIN);
+            serviceChannel.setDescription("חיוני כדי לאפשר זיהוי מקרים");
+            serviceChannel.setGroup(Grp2);
+            NotificationChannel serviceChannel2 = new NotificationChannel("Push", "הודעות פוש", NotificationManager.IMPORTANCE_HIGH);
+            serviceChannel2.enableVibration(true);
+            serviceChannel2.setBypassDnd(true);
+            serviceChannel2.setDescription("התראות להודעות פוש שישלחו כגון בקשות קוד וכדו'");
+            serviceChannel2.enableLights(true);
+            serviceChannel2.setShowBadge(true);
+            serviceChannel2.setLightColor(Color.RED);
+            serviceChannel2.setGroup(Grp2);
+
+            NotificationChannel serviceChannel4 = new NotificationChannel(CnlWin, "זיהוי הודעות", NotificationManager.IMPORTANCE_LOW);
+            serviceChannel4.enableVibration(false);
+            serviceChannel4.setBypassDnd(false);
+            serviceChannel4.setDescription("התראות עבור הודעות כאשר מוגדר להקפיץ גם חלון");
+            serviceChannel4.enableLights(false);
+            serviceChannel4.setShowBadge(true);
+            serviceChannel4.setLightColor(Color.RED);
+            serviceChannel4.setGroup(Grp3);
+
+            manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannelGroup(group3);
+                manager.createNotificationChannelGroup(group2);
+                manager.createNotificationChannel(serviceChannel);
+                manager.createNotificationChannel(serviceChannel2);
+                manager.createNotificationChannel(serviceChannel4);
+            }
         }
     }
 }

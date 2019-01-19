@@ -17,9 +17,9 @@ import android.support.v4.app.NotificationCompat;
 import android.view.animation.Animation;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import static atlow.chemi.mymada.Applicatio.CnlBg;
 import static atlow.chemi.mymada.MetroActivity.MetroRun;
 import static atlow.chemi.mymada.MetroActivity.startAnim;
 import static atlow.chemi.mymada.MetroActivity.stopAnim;
@@ -44,9 +44,10 @@ public class MetroService extends Service {
         PendingIntent pBtn = PendingIntent.getBroadcast(MetroService.this, 9, btn, PendingIntent.FLAG_UPDATE_CURRENT);
         String action = MetroService.this.getResources().getString(R.string.MetroStop);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CnlBg)
-                .setContentTitle(getApplicationContext().getResources().getString(R.string.MetroServiceTtl))
-                .setContentText(getApplicationContext().getResources().getString(R.string.MetroServiceTxt))
+        Crashlytics.log("Starting Metro Notif");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "runInBg")
+                .setContentTitle(MetroService.this.getResources().getString(R.string.MetroServiceTtl))
+                .setContentText(MetroService.this.getResources().getString(R.string.MetroServiceTxt))
                 .setContentIntent(pendingIntent)
                 //.setColorized(true)
                 .setSmallIcon(R.drawable.ic_metronome_tile)

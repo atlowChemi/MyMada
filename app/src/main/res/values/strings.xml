@@ -361,4 +361,5 @@
     <string name="ContracMinutes">%1$d דקות ו%2$d שניות</string>
     <string name="ContracSecondes">%d שניות</string>
     <string name="ContracRecover">שחזר נתונים קודמים?</string>
+    <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
 </resources>

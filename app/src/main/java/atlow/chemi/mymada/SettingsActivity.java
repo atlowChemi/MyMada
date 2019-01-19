@@ -16,16 +16,20 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.util.List;
 import java.util.Locale;
+
+import javax.annotation.Nullable;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
     private static int type = 0;
@@ -46,20 +50,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs) {
-        String settings = getApplicationContext().getResources().getString(R.string.title_activity_settings);
-        String notification = getApplicationContext().getResources().getString(R.string.pref_header_notifications);
-        String ampm = getApplicationContext().getResources().getString(R.string.pref_header_ampm);
-        String moked = getApplicationContext().getResources().getString(R.string.pref_header_moked);
-        String advanced = getApplicationContext().getResources().getString(R.string.pref_header_advanced);
-        String lang = getApplicationContext().getResources().getString(R.string.pref_header_language);
-        types[0] = settings;
-        types[1] = notification;
-        types[2] = ampm;
-        types[3] = moked;
-        types[4] = advanced;
-        types[5] = lang;
         // Allow super to try and create a view first
         final View result = super.onCreateView(name, context, attrs);
+        int ho = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (int)context.getResources().getDimension(R.dimen.activity_horizontal_margin)+90, context.getResources().getDisplayMetrics());
+
         if (result != null) {
             return result;
         }
@@ -69,10 +63,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
+
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         SharedPreferences.Editor sp1 = sp.edit();
         sp1.putBoolean("oldU", true);
         sp1.apply();
+        String settings = SettingsActivity.this.getResources().getString(R.string.title_activity_settings);
+        String notification = SettingsActivity.this.getResources().getString(R.string.pref_header_notifications);
+        String ampm = SettingsActivity.this.getResources().getString(R.string.pref_header_ampm);
+        String moked = SettingsActivity.this.getResources().getString(R.string.pref_header_moked);
+        String advanced = SettingsActivity.this.getResources().getString(R.string.pref_header_advanced);
+        String lang = SettingsActivity.this.getResources().getString(R.string.pref_header_language);
+        types[0] = settings;
+        types[1] = notification;
+        types[2] = ampm;
+        types[3] = moked;
+        types[4] = advanced;
+        types[5] = lang;
         Log.d("title is", getSupportActionBar().getTitle().toString());
         getSupportActionBar().setTitle(types[type]);
         getSupportActionBar().setHomeButtonEnabled(true);

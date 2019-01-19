@@ -26,6 +26,7 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,10 +38,15 @@ import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class UtillTools extends AppCompatActivity {
 
+    private final String[] toolsS = {"contrac", "pulse", "metro", "vital", "oxy", "apgar", "glaz", "prot"};
+    private int pageNum = 8, metroLocation = 2;
     private ContracTimer contracTimer = new ContracTimer();
     private PulseCalc pulseCalc = new PulseCalc();
     private MetroActivity metroActivity = new MetroActivity();
@@ -49,6 +55,8 @@ public class UtillTools extends AppCompatActivity {
     private ApgarCalc apgarCalc = new ApgarCalc();
     private GlazgoCalc glazgoCalc = new GlazgoCalc();
     private BlsProtocoles blsProtocoles = new BlsProtocoles();
+    private Fragment[] toolsF = {contracTimer, pulseCalc, metroActivity, vitalsChecker, oxyCalc, apgarCalc, glazgoCalc, blsProtocoles};
+    private String[] toolsT = new String[8];
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -74,19 +82,64 @@ public class UtillTools extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        SharedPreferences preferences = getSharedPreferences("Settings", 0);
+        Set<String> toolsToShow = preferences.getStringSet("Tools", new HashSet<String>(Arrays.asList(toolsS)));
+        pageNum = toolsToShow.size();
+        int i=0;
+        for (String s : toolsToShow) {
+            if (i < pageNum) {
+                Log.e("I is:", "" + i);
+                switch (s){
+                    case "contrac":
+                        toolsT[i] = getResources().getString(R.string.button_f);
+                        toolsF[i] = contracTimer;
+                        break;
+                    case "pulse":
+                        toolsT[i] = getResources().getString(R.string.button_c);
+                        toolsF[i] = pulseCalc;
+                        break;
+                    case "metro":
+                        toolsT[i] = getResources().getString(R.string.button_d);
+                        toolsF[i] = metroActivity;
+                        metroLocation = i;
+                        break;
+                    case "vital":
+                        toolsT[i] = getResources().getString(R.string.button_e);
+                        toolsF[i] = vitalsChecker;
+                        break;
+                    case "oxy":
+                        toolsT[i] = getResources().getString(R.string.button_g);
+                        toolsF[i] = oxyCalc;
+                        break;
+                    case "apgar":
+                        toolsT[i] = getResources().getString(R.string.button_ag);
+                        toolsF[i] = apgarCalc;
+                        break;
+                    case "glaz":
+                        toolsT[i] = getResources().getString(R.string.button_gl);
+                        toolsF[i] = glazgoCalc;
+                        break;
+                    case "prot":
+                        toolsT[i] = getResources().getString(R.string.button_p);
+                        toolsF[i] = blsProtocoles;
+                        break;
+                }
+            }
+            i++;
+        }
+
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setCurrentItem(2);
+        mViewPager.setCurrentItem(metroLocation);
         if (SettingsActivity.isRTL())
             mViewPager.setRotationY(180);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        if (pageNum < 4)
+            tabLayout.setTabMode(TabLayout.MODE_FIXED);
 
     }
     @Override
@@ -114,52 +167,34 @@ public class UtillTools extends AppCompatActivity {
         }
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            if (position == 0)
-                return contracTimer;
-            if (position == 1)
-                return pulseCalc;
-            if (position == 2)
-                return metroActivity;
-            if (position == 3)
-                return vitalsChecker;
-            if (position == 4)
-                return oxyCalc;
-            if (position == 5)
-                return apgarCalc;
-            if (position == 6)
-                return glazgoCalc;
-            if (position == 7)
-                return blsProtocoles;
-            return metroActivity;
+            return toolsF[position];
         }
         @Override
         public int getCount() {
             // Show 8 total pages.
-            return 8;
+            return pageNum;
         }
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
+            return  toolsT[position];
+            /*switch (position) {
                 case 0:
-                    return getApplicationContext().getResources().getString(R.string.button_f);
+                    return UtillTools.this.getResources().getString(R.string.button_f);
                 case 1:
-                    return getApplicationContext().getResources().getString(R.string.button_c);
+                    return UtillTools.this.getResources().getString(R.string.button_c);
                 case 2:
-                    return getApplicationContext().getResources().getString(R.string.button_d);
+                    return UtillTools.this.getResources().getString(R.string.button_d);
                 case 3:
-                    return getApplicationContext().getResources().getString(R.string.button_e);
+                    return UtillTools.this.getResources().getString(R.string.button_e);
                 case 4:
-                    return getApplicationContext().getResources().getString(R.string.button_g);
+                    return UtillTools.this.getResources().getString(R.string.button_g);
                 case 5:
-                    return getApplicationContext().getResources().getString(R.string.button_ag);
+                    return UtillTools.this.getResources().getString(R.string.button_ag);
                 case 6:
-                    return getApplicationContext().getResources().getString(R.string.button_gl);
+                    return UtillTools.this.getResources().getString(R.string.button_gl);
                 case 7:
-                    return getApplicationContext().getResources().getString(R.string.button_p);
-            }
-            return null;
+                    return UtillTools.this.getResources().getString(R.string.button_p);
+            }*/
         }
     }
 

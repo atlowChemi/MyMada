@@ -109,6 +109,7 @@
         </service>
         <service
             android:name=".MyFirebaseMessagingService"
+            android:stopWithTask="false"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -175,16 +176,6 @@
             android:parentActivityName=".HomePage"
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
-        <activity
-            android:name=".UtilsTools"
-            android:label="@string/button_h"
-            android:parentActivityName=".HomePage"
-            android:screenOrientation="portrait"
-            android:theme="@style/MyMaterialTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="atlow.chemi.mymada.HomePage" />
-        </activity>
 
         <service
             android:name=".MyTileService"
@@ -195,6 +186,7 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
+            <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="false" />
         </service>
 
         <activity

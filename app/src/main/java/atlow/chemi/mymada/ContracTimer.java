@@ -234,7 +234,6 @@ public class ContracTimer extends Fragment {
         long elapsedSeconds = different / secondsInMilli;
         return elapsedMinutes + " דקות ו" + elapsedSeconds + " שניות";
     }
-
     @Override
     public void onDestroy() {
         if (albumList.size() > 0) {

@@ -153,21 +153,21 @@ public class contactActivity extends AppCompatActivity {
                 String subject = emailS.getText().toString().trim();
                 String message = emailT.getText().toString().trim();
                 if (email.length() < 1)
-                    emailATIL.setError(getApplicationContext().getResources().getString(R.string.emailNone));
+                    emailATIL.setError(getResources().getString(R.string.emailNone));
                 else if (!isEmailValid(email))
-                    emailATIL.setError(getApplicationContext().getResources().getString(R.string.emailInvalid));
+                    emailATIL.setError(getResources().getString(R.string.emailInvalid));
                 else if (isEmailValid(email))
                     emailATIL.setErrorEnabled(false);
                 if (name.length() < 1)
-                    emailNTIL.setError(getApplicationContext().getResources().getString(R.string.emailNameNone));
+                    emailNTIL.setError(getResources().getString(R.string.emailNameNone));
                 else
                     emailNTIL.setErrorEnabled(false);
                 if (subject.length() < 1)
-                    emailSTIL.setError(getApplicationContext().getResources().getString(R.string.emailSubjNone));
+                    emailSTIL.setError(getResources().getString(R.string.emailSubjNone));
                 else
                     emailSTIL.setErrorEnabled(false);
                 if (message.length() < 1)
-                    emailTTIL.setError(getApplicationContext().getResources().getString(R.string.emailMsgNone));
+                    emailTTIL.setError(getResources().getString(R.string.emailMsgNone));
                 else
                     emailTTIL.setErrorEnabled(false);
                 if (!email.isEmpty() && isEmailValid(email) && !name.isEmpty() && !subject.isEmpty() && !message.isEmpty()) {
@@ -330,19 +330,19 @@ public class contactActivity extends AppCompatActivity {
         alert.show();
     }
     private void sms(final String emailA, final String emailN, final String emailS, final String emailT)   {
-        String alert = getApplicationContext().getResources().getString(R.string.emailAlert) + "\n\n";
-        String sender = alert + getApplicationContext().getResources().getString(R.string.sender) + emailN + " - " + emailA + "\n";
-        String sub = sender + getApplicationContext().getResources().getString(R.string.subject) +  emailS;
-        int sendI = getApplicationContext().getResources().getString(R.string.sender).length();
-        int subI = getApplicationContext().getResources().getString(R.string.subject).length();
-        int msgI = getApplicationContext().getResources().getString(R.string.msg).length();
-        SpannableString subj = new SpannableString(sub + "\n" + getApplicationContext().getResources().getString(R.string.msg) + "\n" + emailT);
+        String alert = contactActivity.this.getResources().getString(R.string.emailAlert) + "\n\n";
+        String sender = alert + contactActivity.this.getResources().getString(R.string.sender) + emailN + " - " + emailA + "\n";
+        String sub = sender + getResources().getString(R.string.subject) +  emailS;
+        int sendI = getResources().getString(R.string.sender).length();
+        int subI = getResources().getString(R.string.subject).length();
+        int msgI = getResources().getString(R.string.msg).length();
+        SpannableString subj = new SpannableString(sub + "\n" + getResources().getString(R.string.msg) + "\n" + emailT);
         subj.setSpan(new ForegroundColorSpan(Color.RED), 0, alert.length(), 0);
         subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), alert.length(), alert.length()+sendI, 0);
         subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), sender.length(), sender.length()+subI, 0);
         subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), sub.length(), sub.length()+msgI, 0);
         subj.setSpan(myTypeface, 0, subj.length(), 0);
-        final AlertDialog builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle).setTitle(getApplicationContext().getResources().getString(R.string.suc)).setMessage(subj)
+        final AlertDialog builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle).setTitle(getResources().getString(R.string.suc)).setMessage(subj)
                 .setCancelable(false)
                 .setNegativeButton(getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

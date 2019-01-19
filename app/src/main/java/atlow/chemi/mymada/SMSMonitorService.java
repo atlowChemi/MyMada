@@ -30,16 +30,12 @@ import com.crashlytics.android.Crashlytics;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import static atlow.chemi.mymada.Applicatio.Cnl101;
-import static atlow.chemi.mymada.Applicatio.CnlBg;
-import static atlow.chemi.mymada.Applicatio.CnlWin;
-import static atlow.chemi.mymada.Applicatio.Grp3;
-import static atlow.chemi.mymada.Applicatio.manager;
 
 public class SMSMonitorService extends Service {
     private BroadcastReceiver callExplicitReceiver;
     protected static String txtS = "";
-    protected String smsSender = "", string, smsBody = "";
+    protected String smsSender = "", string, smsBody = "", Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
+    public NotificationManager manager;
     final protected int NOTIF_ID = 1;
     protected static int numMessages = 0;
     protected PendingIntent piR;
@@ -68,19 +64,24 @@ public class SMSMonitorService extends Service {
             Intent callSNI = new Intent(this, HomePage.class);
             callSNI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, callSNI, 0);
-
+            Crashlytics.log("sending SmsMonitor notif");
             NotificationCompat.Builder buil = new NotificationCompat.Builder(this, CnlBg)
                     .setContentTitle(getApplicationContext().getResources().getString(R.string.BGServiceTtl))
                     .setTicker(getApplicationContext().getResources().getString(R.string.BGServiceTicker))
                     .setContentText(getApplicationContext().getResources().getString(R.string.BGServiceTxt))
                     .setContentIntent(pendingIntent)
+                    .setGroup("BG")
                     //.setColorized(true)
-                    .setSmallIcon(R.drawable.ic_notif)
                     .setShowWhen(false)
                     .setColor(Color.argb(50, 76, 119, 247))
                     .setSound(null)
                     .setVibrate(null)
                     .setOngoing(true);
+            try {
+                buil.setSmallIcon(R.drawable.ic_notif);
+            }catch (Exception e) {
+                Crashlytics.logException(e);
+            }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             buil.setPriority(NotificationManager.IMPORTANCE_MIN);
         }
@@ -330,6 +331,7 @@ public class SMSMonitorService extends Service {
                                     AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
                                     NotificationChannel serviceChannel = new NotificationChannel(cnlId, "ערוץ זמני מותאם אישית", NotificationManager.IMPORTANCE_HIGH);
                                     serviceChannel.enableVibration(OreoVib);
+                                    serviceChannel.setVibrationPattern(lng2);
                                     serviceChannel.setBypassDnd(true);
                                     serviceChannel.setDescription("התראות עבור אירועי חירום");
                                     serviceChannel.enableLights(true);
@@ -347,6 +349,7 @@ public class SMSMonitorService extends Service {
                                     builder.setChannelId(cnlId);
                                 }
                             }
+                            builder.setGroup("Calls");
                             Notification mNotification = builder.build();
                             if (lop) {
                                 mNotification.flags |= Notification.FLAG_INSISTENT;

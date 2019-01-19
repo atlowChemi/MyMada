@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.Vibrator;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
@@ -65,23 +66,20 @@ public class smsRes extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocalHelper.onAttach(base));
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        try {
-            if(Build.VERSION_CODES.JELLY_BEAN <= Build.VERSION.SDK_INT) {
-                if (getSupportActionBar()!=null)
-                    getSupportActionBar().hide();
-                View decorView = getWindow().getDecorView();
-                int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-                decorView.setSystemUiVisibility(uiOptions | View.SYSTEM_UI_FLAG_FULLSCREEN);
-                //getWindow().addFlags(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-            }
-        }catch (OutOfMemoryError e) {
-            e.printStackTrace();
+        if (getSupportActionBar()!=null)
+            getSupportActionBar().hide();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(smsRes.this, R.color.OldPrimary));
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_res);
-        findViewById(R.id.home).setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        //findViewById(R.id.home).setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         Bundle extras = getIntent().getExtras();
         int callT = extras.getInt("callT");
         switch (callT)  {
@@ -209,7 +207,7 @@ public class smsRes extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     vibe.cancel();
-                    getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     try {
                         if (sou && mMediaPlayer.isPlaying()) {
                             mMediaPlayer.setVolume(vo, vo);
@@ -471,7 +469,7 @@ public class smsRes extends AppCompatActivity {
     }
     @Override
     public void onWindowFocusChanged(boolean hasFocus)  {
-        try {
+        /*try {
             if(Build.VERSION_CODES.JELLY_BEAN <= Build.VERSION.SDK_INT) {
                 if (getSupportActionBar()!=null)
                     getSupportActionBar().hide();
@@ -482,7 +480,7 @@ public class smsRes extends AppCompatActivity {
             }
         }catch (OutOfMemoryError e) {
             e.printStackTrace();
-        }
+        }*/
     }
     @Override
     public void onDestroy() {
