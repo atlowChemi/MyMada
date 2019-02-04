@@ -146,6 +146,7 @@ public class ApgarCalc extends Fragment {
         drawable.setColor(getActivity().getResources().getColor(R.color.White));
         apgarInfBG.setBackground(drawable);
         apgarInfi.setText(getActivity().getResources().getString(R.string.ApgarInfo));
+        apgarInfi.setMovementMethod(new ScrollingMovementMethod());
     }
     private void calc() {
         newer = 0;

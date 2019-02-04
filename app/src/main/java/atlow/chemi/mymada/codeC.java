@@ -160,7 +160,7 @@ public class codeC extends AppCompatActivity {
                     }
                 });
         final AlertDialog alert = builder.create();
-        TextView textView = (TextView) alert.findViewById(android.R.id.message);
+        TextView textView = alert.findViewById(android.R.id.message);
         final Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         if (textView!= null)
             textView.setTypeface(myTypeface);
@@ -238,7 +238,6 @@ public class codeC extends AppCompatActivity {
                     }
                     pdialog.cancel();
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     pdialog.cancel();

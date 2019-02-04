@@ -20,6 +20,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 @TargetApi(Build.VERSION_CODES.N)
@@ -67,20 +68,25 @@ public class MyTileService extends TileService {
         }catch (Exception e)    {
             e.printStackTrace();
         }
-        switch (state){
-            case Tile.STATE_ACTIVE:
-                tile.setIcon(tile.getIcon().setTint(Color.WHITE));
-                break;
-            case Tile.STATE_INACTIVE:
-                tile.setIcon(tile.getIcon().setTint(Color.GRAY));
-                break;
-            case Tile.STATE_UNAVAILABLE:
-                tile.setIcon(tile.getIcon().setTint(Color.GRAY));
-                break;
-            default:
-                tile.setIcon(tile.getIcon().setTint(Color.GRAY));
-                break;
+        try {
+            switch (state) {
+                case Tile.STATE_ACTIVE:
+                    tile.setIcon(tile.getIcon().setTint(Color.WHITE));
+                    break;
+                case Tile.STATE_INACTIVE:
+                    tile.setIcon(tile.getIcon().setTint(Color.GRAY));
+                    break;
+                case Tile.STATE_UNAVAILABLE:
+                    tile.setIcon(tile.getIcon().setTint(Color.GRAY));
+                    break;
+                default:
+                    tile.setIcon(tile.getIcon().setTint(Color.GRAY));
+                    break;
 
+            }
+        } catch (NullPointerException e) {
+            Crashlytics.log("Cant get tile icon!");
+            Crashlytics.logException(e);
         }
 
         tile.updateTile();

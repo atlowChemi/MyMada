@@ -2,6 +2,7 @@ package atlow.chemi.mymada;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -21,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -65,12 +67,15 @@ public class SMSMonitorService extends Service {
             callSNI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, callSNI, 0);
             Crashlytics.log("sending SmsMonitor notif");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                setNotifChannels();
             NotificationCompat.Builder buil = new NotificationCompat.Builder(this, CnlBg)
                     .setContentTitle(getApplicationContext().getResources().getString(R.string.BGServiceTtl))
                     .setTicker(getApplicationContext().getResources().getString(R.string.BGServiceTicker))
                     .setContentText(getApplicationContext().getResources().getString(R.string.BGServiceTxt))
                     .setContentIntent(pendingIntent)
                     .setGroup("BG")
+                    .setPriority(NotificationManagerCompat.IMPORTANCE_MIN)
                     //.setColorized(true)
                     .setShowWhen(false)
                     .setColor(Color.argb(50, 76, 119, 247))
@@ -78,8 +83,9 @@ public class SMSMonitorService extends Service {
                     .setVibrate(null)
                     .setOngoing(true);
             try {
-                buil.setSmallIcon(R.drawable.ic_notif);
+                buil.setSmallIcon(R.drawable.ic_noti);
             }catch (Exception e) {
+                Crashlytics.log("Error SmsMonitor Notificaion!");
                 Crashlytics.logException(e);
             }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -89,9 +95,9 @@ public class SMSMonitorService extends Service {
         startForeground(78, notification);
 
 
-            final IntentFilter intentFilter = new IntentFilter();
-            intentFilter.setPriority(9999);
-            intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.setPriority(9999);
+        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
         this.callExplicitReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {
@@ -345,7 +351,10 @@ public class SMSMonitorService extends Service {
                                     }else
                                         serviceChannel.setSound(null, attributes);
                                     serviceChannel.setGroup(Grp3);
-                                    manager.createNotificationChannel(serviceChannel);
+                                    manager = getSystemService(NotificationManager.class);
+                                    if (manager != null) {
+                                        manager.createNotificationChannel(serviceChannel);
+                                    }
                                     builder.setChannelId(cnlId);
                                 }
                             }
@@ -389,5 +398,23 @@ public class SMSMonitorService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void setNotifChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannelGroup group2 = new NotificationChannelGroup(Grp2, "התראות שונות");
+            NotificationChannel serviceChannel = new NotificationChannel(CnlBg, "פעילות ברקע", NotificationManager.IMPORTANCE_MIN);
+            serviceChannel.enableVibration(false);
+            serviceChannel.enableLights(false);
+            serviceChannel.setShowBadge(false);
+            serviceChannel.setImportance(NotificationManager.IMPORTANCE_MIN);
+            serviceChannel.setDescription("חיוני כדי לאפשר זיהוי מקרים");
+            serviceChannel.setGroup(Grp2);
+            manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannelGroup(group2);
+                manager.createNotificationChannel(serviceChannel);
+            }
+        }
     }
 }

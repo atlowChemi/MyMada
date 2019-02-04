@@ -40,6 +40,7 @@ public class MokedPage extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private boolean isSMST, isMADA, realM;
+    private Cursor cursor1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +117,7 @@ public class MokedPage extends AppCompatActivity {
     private void smsGot() {
         try {
             Uri mSmsinboxQueryUri = Uri.parse("content://sms/inbox");
-            Cursor cursor1 = getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
+            cursor1 = getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
             startManagingCursor(cursor1);
             String[] columns = new String[]{"address", "person", "date", "body", "type"};
             if (cursor1 != null && cursor1.getCount() > 0) {
@@ -128,12 +129,17 @@ public class MokedPage extends AppCompatActivity {
                             isSMST = true;
                     }
                 }
-                cursor1.close();
             }
         }catch (NullPointerException e)    {
             isSMST = false;
             Crashlytics.logException(e);
         }
+    }
+    @Override
+    public void onDestroy() {
+        if (cursor1 != null)
+            cursor1.close();
+        super.onDestroy();
     }
     @Override
     protected void attachBaseContext(Context base) {

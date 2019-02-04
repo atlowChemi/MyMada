@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,6 +109,7 @@ public class GlazgoCalc extends Fragment {
         drawable.setColor(getActivity().getResources().getColor(R.color.White));
         glazgoInfBG.setBackground(drawable);
         glazgoInf.setText(getActivity().getResources().getString(R.string.GlasgowInfo));
+        glazgoInf.setMovementMethod(new ScrollingMovementMethod());
     }
     private void calc(){
         newer = 0;

@@ -113,9 +113,14 @@ public class ContracTimer extends Fragment {
                 @Override
                 public void onShow(DialogInterface dialogInterface) {
                     Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
-                    canc.setTypeface(myTypeface);
-                    canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
+                    try {
+                        Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
+                        canc.setTypeface(myTypeface);
+                        canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
+                    } catch (NullPointerException e) {
+                        Crashlytics.log("Contractions remake defect");
+                        Crashlytics.logException(e);
+                    }
                 }
             });
             alert.show();
