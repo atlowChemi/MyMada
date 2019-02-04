@@ -1,13 +1,17 @@
 package atlow.chemi.mymada;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -35,7 +39,7 @@ import com.google.firebase.database.ValueEventListener;
 public class VitalsChecker extends Fragment {
     private int ageRank = 0, topP, lowP, topB, lowB, topSYS, lowSYS, topDIA, lowDIA;
     private EditText pulsa, breathing, systolic, diastolic;
-    private TextInputLayout systolicTIL;
+    private TextInputLayout pulsaTIL, breathingTIL, systolicTIL, diastolicTIL;
     private TextView vitalR, vitalInf, vitalMsg;
     private LinearLayout vitalInfBG, vitalMsgBG;
     private boolean goodP, goodB, goodSYS, goodDIA, goodLD;
@@ -133,19 +137,19 @@ public class VitalsChecker extends Fragment {
             }
         });
         //txt
-        pulsa = (EditText) view.findViewById(R.id.pulsa);
-        breathing = (EditText) view.findViewById(R.id.breathing);
-        systolic = (EditText) view.findViewById(R.id.systolic);
-        diastolic = (EditText) view.findViewById(R.id.diastolic);
+        pulsa =  view.findViewById(R.id.pulsa);
+        breathing = view.findViewById(R.id.breathing);
+        systolic = view.findViewById(R.id.systolic);
+        diastolic = view.findViewById(R.id.diastolic);
         pulsa.setTypeface(myTypeface);
         breathing.setTypeface(myTypeface);
         systolic.setTypeface(myTypeface);
         diastolic.setTypeface(myTypeface);
         //TIL
-        TextInputLayout pulsaTIL = (TextInputLayout) view.findViewById(R.id.pulsaTIL);
-        TextInputLayout breathingTIL = (TextInputLayout) view.findViewById(R.id.breathingTIL);
-        systolicTIL = (TextInputLayout) view.findViewById(R.id.systolicTIL);
-        TextInputLayout diastolicTIL = (TextInputLayout) view.findViewById(R.id.diastolicTIL);
+        pulsaTIL = view.findViewById(R.id.pulsaTIL);
+        breathingTIL = view.findViewById(R.id.breathingTIL);
+        systolicTIL = view.findViewById(R.id.systolicTIL);
+        diastolicTIL = view.findViewById(R.id.diastolicTIL);
         pulsaTIL.setTypeface(myTypeface);
         breathingTIL.setTypeface(myTypeface);
         systolicTIL.setTypeface(myTypeface);
@@ -183,6 +187,8 @@ public class VitalsChecker extends Fragment {
         String goodVitalsNew = getActivity().getResources().getString(R.string.goodVitalsOLD, lowP, topP, lowB, topB, lowSYS, topSYS, lowDIA, topDIA, goodVitalsAge[ageRank]);
         vitalInf.setText(goodVitalsNew);
         vitalMsg.setText(getActivity().getResources().getString(R.string.vitalsAlert));
+        vitalInf.setMovementMethod(new ScrollingMovementMethod());
+        vitalMsg.setMovementMethod(new ScrollingMovementMethod());
     }
 
     private class MyTextWatcher implements TextWatcher {
@@ -261,40 +267,105 @@ public class VitalsChecker extends Fragment {
         //calc
         String goodVitalsAge[] = getActivity().getResources().getStringArray(R.array.goodVitals);
         String goodVitalsNew = getActivity().getResources().getString(R.string.goodVitalsOLD, lowP, topP, lowB, topB, lowSYS, topSYS, lowDIA, topDIA, goodVitalsAge[ageRank]);
-        //Log.d("tagit",goodVitalsNew.indexOf(":") + "");
-        //SpannableString Bolder = new SpannableString(goodVitalsNew);
         vitalInf.setText(goodVitalsNew);
-        String Pulse = null, Breathing = null, BP = null;
-        if (!pulsa.getText().toString().trim().isEmpty())
-            Pulse = pulseS + (goodP ? goodS : bad);
-        if (!breathing.getText().toString().trim().isEmpty())
-            Breathing = breathingS + (goodB ? goodS : bad);
-        if (!systolic.getText().toString().trim().isEmpty() && !diastolic.getText().toString().trim().isEmpty())
-            BP = bpS + (goodSYS && goodDIA && goodLD ? goodS : bad);
-        else if (!systolic.getText().toString().trim().isEmpty() && diastolic.getText().toString().trim().isEmpty())
-            BP = bpS + (goodSYS ? goodS : bad);
-        String toSpan = (Pulse != null ? Pulse + "\n" : "") + (Breathing != null ? Breathing + "\n" : "") + (BP != null ? BP + "\n" : "");
-        SpannableString s = new SpannableString(toSpan);
-        int where = 0;
-        if (!pulsa.getText().toString().trim().isEmpty()) {
-            int till = goodP ? goodS.length() : bad.length();
-            s.setSpan(new ForegroundColorSpan(goodP ? Color.GREEN : Color.RED), pulseS.length(), pulseS.length()+till, 0);
-            where += pulseS.length()+till+1;
+        int green = Color.rgb(70,178,58);
+        int red = Color.rgb(191,21,22);
+        int aqua = Color.rgb(50,167,195);
+        /*pulse**/
+        if (!pulsa.getText().toString().trim().isEmpty() && goodP) {
+            //green
+            pulsa.setTextColor(green);
+            pulsaTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {green}));
+            Drawable bg = pulsaTIL.getEditText().getBackground();
+            DrawableCompat.setTint(bg, green);
+            pulsaTIL.getEditText().setBackground(bg);
+        }else if (!pulsa.getText().toString().trim().isEmpty() && !goodP) {
+            //red
+            pulsa.setTextColor(red);
+            pulsaTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {red}));
+            Drawable bg = pulsaTIL.getEditText().getBackground();
+            DrawableCompat.setTint(bg, red);
+            pulsaTIL.getEditText().setBackground(bg);
+        } else {
+            //blue
+            pulsa.setTextColor(aqua);
+            pulsaTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {aqua}));
+            Drawable bg = pulsaTIL.getEditText().getBackground();
+            DrawableCompat.setTint(bg, aqua);
+            pulsaTIL.getEditText().setBackground(bg);
         }
-        if (!breathing.getText().toString().trim().isEmpty()) {
-            int till = goodB ? goodS.length() : bad.length();
-            s.setSpan(new ForegroundColorSpan(goodB ? Color.GREEN : Color.RED), where+breathingS.length(), where+breathingS.length()+till, 0);
-            where += breathingS.length()+till+1;
+        /*breathing**/
+        if (!breathing.getText().toString().trim().isEmpty() && goodB) {
+            //green
+            breathing.setTextColor(green);
+            breathingTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {green}));
+            Drawable bgB = breathingTIL.getEditText().getBackground();
+            DrawableCompat.setTint(bgB, green);
+            breathingTIL.getEditText().setBackground(bgB);
+        }else if (!breathing.getText().toString().trim().isEmpty() && !goodB) {
+            //red
+            breathing.setTextColor(red);
+            breathingTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {red}));
+            Drawable bgB = breathingTIL.getEditText().getBackground();
+            DrawableCompat.setTint(bgB, red);
+            breathingTIL.getEditText().setBackground(bgB);
+        } else {
+            //blue
+            breathing.setTextColor(aqua);
+            breathingTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {aqua}));
+            Drawable bgB = breathingTIL.getEditText().getBackground();
+            DrawableCompat.setTint(bgB, aqua);
+            breathingTIL.getEditText().setBackground(bgB);
         }
+        /*blood pressure**/
         if (!systolic.getText().toString().trim().isEmpty() && !diastolic.getText().toString().trim().isEmpty()) {
-            int till = goodSYS && goodDIA && goodLD ? goodS.length() : bad.length();
-            s.setSpan(new ForegroundColorSpan(goodSYS && goodDIA && goodLD ? Color.GREEN : Color.RED), where+bpS.length(), where+bpS.length()+till, 0);
-            where += bpS.length()+till+1;
+            if (goodSYS && goodDIA && goodLD) {
+                //green
+                systolic.setTextColor(green);
+                diastolic.setTextColor(green);
+                systolicTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[]{green}));
+                diastolicTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[]{green}));
+                Drawable bgBP1 = systolicTIL.getEditText().getBackground();
+                DrawableCompat.setTint(bgBP1, green);
+                systolicTIL.getEditText().setBackground(bgBP1);
+                diastolicTIL.getEditText().setBackground(bgBP1);
+            } else {
+                //red
+                systolic.setTextColor(red);
+                diastolic.setTextColor(red);
+                systolicTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {red}));
+                diastolicTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {red}));
+                Drawable bgBP1 = systolicTIL.getEditText().getBackground();
+                DrawableCompat.setTint(bgBP1, red);
+                systolicTIL.getEditText().setBackground(bgBP1);
+                diastolicTIL.getEditText().setBackground(bgBP1);
+            }
         }else if (!systolic.getText().toString().trim().isEmpty() && diastolic.getText().toString().trim().isEmpty()) {
-            int till = goodSYS ? goodS.length() : bad.length();
-            s.setSpan(new ForegroundColorSpan(goodSYS ? Color.GREEN : Color.RED), where+bpS.length(), where+bpS.length()+till, 0);
-            where += bpS.length()+till+1;
+            if (goodSYS) {
+                //green
+                systolic.setTextColor(green);
+                systolicTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[]{green}));
+                Drawable bgBP1 = systolicTIL.getEditText().getBackground();
+                DrawableCompat.setTint(bgBP1, green);
+                systolicTIL.getEditText().setBackground(bgBP1);
+            } else {
+                //red
+                systolic.setTextColor(red);
+                systolicTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {red}));
+                Drawable bgBP1 = systolicTIL.getEditText().getBackground();
+                DrawableCompat.setTint(bgBP1, red);
+                systolicTIL.getEditText().setBackground(bgBP1);
+            }
+        } else {
+            //blue
+            systolic.setTextColor(aqua);
+            diastolic.setTextColor(aqua);
+            systolicTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {aqua}));
+            diastolicTIL.setDefaultHintTextColor(new ColorStateList(new int[][]{{0}}, new int[] {aqua}));
+            Drawable bgBP1 = systolicTIL.getEditText().getBackground();
+            DrawableCompat.setTint(bgBP1, aqua);
+            systolicTIL.getEditText().setBackground(bgBP1);
+            diastolicTIL.getEditText().setBackground(bgBP1);
         }
-        vitalR.setText(s);
     }
 }

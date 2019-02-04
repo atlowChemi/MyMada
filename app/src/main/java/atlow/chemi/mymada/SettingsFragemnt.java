@@ -33,6 +33,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -115,6 +116,7 @@ public class SettingsFragemnt extends PreferenceFragment {
                 NrinT3.setDependency("NappT3");
                 NrinT3.setOnPreferenceChangeListener(list2);
                 try {
+                    Crashlytics.log("trying Switch");
                     onOffT1.setWidgetLayoutResource(R.layout.switch_x);
                     NvibT1.setWidgetLayoutResource(R.layout.switch_x);
                     NsouT1.setWidgetLayoutResource(R.layout.switch_x);
@@ -152,6 +154,7 @@ public class SettingsFragemnt extends PreferenceFragment {
                 Nrin.setDependency("NappT");
                 Nrin.setOnPreferenceChangeListener(list2);
                 try {
+                    Crashlytics.log("trying Switch");
                     Nvib.setWidgetLayoutResource(R.layout.switch_x);
                     Nsou.setWidgetLayoutResource(R.layout.switch_x);
                     Napp.setWidgetLayoutResource(R.layout.switch_x);
@@ -206,6 +209,7 @@ public class SettingsFragemnt extends PreferenceFragment {
                 shabatT.setText("6");*/
             shabatT.setOnPreferenceChangeListener(list2);
             try {
+                Crashlytics.log("trying Switch");
                 not.setWidgetLayoutResource(R.layout.switch_x);
                 win.setWidgetLayoutResource(R.layout.switch_x);
                 cut.setWidgetLayoutResource(R.layout.switch_x);
@@ -349,13 +353,13 @@ public class SettingsFragemnt extends PreferenceFragment {
                     OLangC(newValue);
                     break;
                 case "Tools":
-                    MultiSelectListPreference ml = (MultiSelectListPreference)preference;
                     Set<String> t = (Set<String>) newValue;
                     if(t.size() < 1) {
-                        //Log.e("UTILLL", "nothing picked");
-                        //Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), getResources().getString(R.string.NoPicked), Snackbar.LENGTH_LONG).show();
-                        Toast.makeText(getActivity(), getResources().getString(R.string.NoPicked), Toast.LENGTH_SHORT).show();
+                        AppCompatPreferenceActivity p = (AppCompatPreferenceActivity) getActivity();
+                        Snackbar.make(p.getListView(), getResources().getString(R.string.NoPicked), Snackbar.LENGTH_LONG).show();
                         return false;
+                    } else {
+
                     }
                     tools(t);
                     break;

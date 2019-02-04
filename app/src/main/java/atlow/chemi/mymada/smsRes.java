@@ -80,6 +80,7 @@ public class smsRes extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_res);
         //findViewById(R.id.home).setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        Crashlytics.log("SmsRes Has Been Opened!");
         Bundle extras = getIntent().getExtras();
         int callT = extras.getInt("callT");
         switch (callT)  {
@@ -220,11 +221,11 @@ public class smsRes extends AppCompatActivity {
                 }
             }, finishTime * 1000);
         }
-        TextView m = (TextView)findViewById(R.id.msgType);
-        TextView a = (TextView)findViewById(R.id.Address);
-        TextView k = (TextView)findViewById(R.id.KodR);
-        TextView t = (TextView)findViewById(R.id.SMS);
-        TextView one = (TextView)findViewById(R.id.newC), two = (TextView)findViewById(R.id.name);
+        TextView m = findViewById(R.id.msgType);
+        TextView a = findViewById(R.id.Address);
+        TextView k = findViewById(R.id.KodR);
+        TextView t = findViewById(R.id.SMS);
+        TextView one = findViewById(R.id.newC), two = findViewById(R.id.name);
         Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         m.setTypeface(myTypeface);
         a.setTypeface(myTypeface);

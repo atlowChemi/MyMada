@@ -34,13 +34,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
     private void sendNotification(int type, String msg, String title, String code) {
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder)new NotificationCompat.Builder(getApplicationContext(), "Push").setContentTitle("בקשת קוד חדשה!")
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), "Push").setContentTitle("בקשת קוד חדשה!")
                 .setContentText(title).setSmallIcon(R.drawable.ic_siren)
                 .setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(), R.mipmap.ic_launcher))
                 .setContentIntent(null).setAutoCancel(true).addAction(R.drawable.ic_edit, "אשר קוד", null)
                 .setTicker("בקשה חדשה לקוד הפעלה!").setStyle(new NotificationCompat.BigTextStyle().bigText(msg));
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify((int)System.currentTimeMillis(), notificationBuilder.build());
+        if (notificationManager != null) {
+            notificationManager.notify((int)System.currentTimeMillis(), notificationBuilder.build());
+        }
     }
     private void sendNotification(String msg, String title) {
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -49,7 +51,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentText(title).setStyle(new NotificationCompat.BigTextStyle().bigText(msg)
                         .setSummaryText("לחץ כאן להפעלת הקוד")).setAutoCancel(true).setSound(defaultSoundUri).setContentIntent(null);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify((int)System.currentTimeMillis(), notificationBuilder.build());
+        if (notificationManager != null) {
+            notificationManager.notify((int)System.currentTimeMillis(), notificationBuilder.build());
+        }
     }
     private void sendNotification(String code, String fireKey, int differ) {
         Intent intent = new Intent(this, codeC.class);
@@ -67,7 +71,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setSummaryText("לחץ כאן להפעלת הקוד")).setAutoCancel(true).setSound(defaultSoundUri).setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         int c = Integer.parseInt(code.replaceAll("[\\D]",""));
-        notificationManager.notify(c, notificationBuilder.build());
+        if (notificationManager != null) {
+            notificationManager.notify(c, notificationBuilder.build());
+        }
     }
 
     @Override

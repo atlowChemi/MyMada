@@ -92,9 +92,9 @@ public class codeRequest extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
-        builder.setTitle(getApplicationContext().getResources().getString(R.string.plsNote))
-                .setMessage(getApplicationContext().getResources().getString(R.string.plsNoteT)).setCancelable(false);
-        builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+        builder.setTitle(getResources().getString(R.string.plsNote))
+                .setMessage(getResources().getString(R.string.plsNoteT)).setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
@@ -104,13 +104,13 @@ public class codeRequest extends AppCompatActivity {
         token = FirebaseInstanceId.getInstance().getToken();
         pdialog = new ProgressDialog(codeRequest.this);
         pdialog.setIndeterminate(true);
-        pdialog.setMessage(getApplicationContext().getResources().getString(R.string.load));
+        pdialog.setMessage(getResources().getString(R.string.load));
         pdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pdialog.setCancelable(false);
         final Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
-        TextView dd = (TextView) findViewById(R.id.declare);
+        TextView dd = findViewById(R.id.declare);
         try {
-            TextView d = (TextView) pdialog.findViewById(android.R.id.message);
+            TextView d = pdialog.findViewById(android.R.id.message);
             if (d != null)
                 d.setTypeface(myTypeface);
         } catch (Exception e) {
@@ -172,17 +172,17 @@ public class codeRequest extends AppCompatActivity {
                 String name = codeN.getText().toString().trim();
                 String message = codeT.getText().toString().trim();
                 if (email.length() < 1)
-                    codeATIL.setError(getApplicationContext().getResources().getString(R.string.emailNone));
+                    codeATIL.setError(getResources().getString(R.string.emailNone));
                 else if(!isEmailValid(email))
-                    codeATIL.setError(getApplicationContext().getResources().getString(R.string.emailInvalid));
+                    codeATIL.setError(getResources().getString(R.string.emailInvalid));
                 else if(isEmailValid(email))
                     codeATIL.setErrorEnabled(false);
                 if (name.length() < 1)
-                    codeNTIL.setError(getApplicationContext().getResources().getString(R.string.emailNameNone));
+                    codeNTIL.setError(getResources().getString(R.string.emailNameNone));
                 else
                     codeNTIL.setErrorEnabled(false);
                 if(message.length() < 1)
-                    codeTTIL.setError(getApplicationContext().getResources().getString(R.string.emailMsgNone));
+                    codeTTIL.setError(getResources().getString(R.string.emailMsgNone));
                 else
                     codeTTIL.setErrorEnabled(false);
                 if (!email.isEmpty() && isEmailValid(email) && !name.isEmpty() && !message.isEmpty()) {
@@ -219,16 +219,16 @@ public class codeRequest extends AppCompatActivity {
                 if(ActivityCompat.shouldShowRequestPermissionRationale(codeRequest.this,permissionsRequired[0]) || ActivityCompat.shouldShowRequestPermissionRationale(codeRequest.this,permissionsRequired[1])){
                     //Show Information about why you need the permission
                     AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
-                    builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
-                    builder.setMessage(getApplicationContext().getResources().getString(R.string.permDes));
-                    builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
+                    builder.setTitle(getResources().getString(R.string.permTitle));
+                    builder.setMessage(getResources().getString(R.string.permDes));
+                    builder.setPositiveButton(getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                             ActivityCompat.requestPermissions(codeRequest.this,permissionsRequired,PERMISSION_CALLBACK_CONSTANT);
                         }
                     });
-                    builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
@@ -237,9 +237,9 @@ public class codeRequest extends AppCompatActivity {
                     builder.show();
                 } else if (permissionStatus.getBoolean(permissionsRequired[0],false) || permissionStatus.getBoolean(permissionsRequired[1],false)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
-                    builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
-                    builder.setMessage(getApplicationContext().getResources().getString(R.string.permDes));
-                    builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
+                    builder.setTitle(getResources().getString(R.string.permTitle));
+                    builder.setMessage(getResources().getString(R.string.permDes));
+                    builder.setPositiveButton(getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
@@ -250,7 +250,7 @@ public class codeRequest extends AppCompatActivity {
                             startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
                         }
                     });
-                    builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
@@ -291,14 +291,14 @@ public class codeRequest extends AppCompatActivity {
             mFirebaseDatabase = mFirebaseDatabase.push();
             mFirebaseDatabase.setValue(codeReq);
             pdialog.cancel();
-            gooddi(getApplicationContext().getResources().getString(R.string.requestGood));
+            gooddi(getResources().getString(R.string.requestGood));
             SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString("firebaseGenratedKey", mFirebaseDatabase.getKey());
             editor.apply();
         } else {
             pdialog.cancel();
-            di(getApplicationContext().getResources().getString(R.string.emailBad));
+            di(getResources().getString(R.string.emailBad));
         }
     }
     private class MyTextWatcher implements TextWatcher {
@@ -312,21 +312,21 @@ public class codeRequest extends AppCompatActivity {
             switch (view.getId()) {
                 case R.id.codeA:
                     if (codeA.getText().toString().isEmpty())
-                    codeATIL.setError(getApplicationContext().getResources().getString(R.string.emailNone));
+                    codeATIL.setError(getResources().getString(R.string.emailNone));
                 else if(!isEmailValid(codeA.getText().toString()))
-                    codeATIL.setError(getApplicationContext().getResources().getString(R.string.emailInvalid));
+                    codeATIL.setError(getResources().getString(R.string.emailInvalid));
                 else if(isEmailValid(codeA.getText().toString()))
                     codeATIL.setErrorEnabled(false);
                     break;
                 case R.id.codeN:
                     if(codeN.getText().toString().isEmpty())
-                        codeNTIL.setError(getApplicationContext().getResources().getString(R.string.emailNameNone));
+                        codeNTIL.setError(getResources().getString(R.string.emailNameNone));
                     else
                         codeNTIL.setErrorEnabled(false);
                     break;
                 case R.id.codeT:
                     if(codeT.getText().toString().isEmpty())
-                        codeTTIL.setError(getApplicationContext().getResources().getString(R.string.emailMsgNone));
+                        codeTTIL.setError(getResources().getString(R.string.emailMsgNone));
                     else
                         codeTTIL.setErrorEnabled(false);
                     break;
@@ -356,13 +356,13 @@ public class codeRequest extends AppCompatActivity {
         alert.show();
     }
     private void sms(final String codeA, final String codeN, final String codeT)   {
-        String alert = getApplicationContext().getResources().getString(R.string.emailAlert) + "\n\n";
-        String sender = alert + getApplicationContext().getResources().getString(R.string.sender) + codeN + " - " + codeA + "\n";
-        SpannableString subj = new SpannableString(sender + "\n" + getApplicationContext().getResources().getString(R.string.msg) + "\n" + codeT);
+        String alert = getResources().getString(R.string.emailAlert) + "\n\n";
+        String sender = alert + getResources().getString(R.string.sender) + codeN + " - " + codeA + "\n";
+        SpannableString subj = new SpannableString(sender + "\n" + getResources().getString(R.string.msg) + "\n" + codeT);
         subj.setSpan(new ForegroundColorSpan(Color.RED), 0, alert.length(), 0);
         subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), alert.length(), alert.length()+5, 0);
         subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), sender.length(), sender.length()+7, 0);
-        final AlertDialog builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle).setTitle(getApplicationContext().getResources().getString(R.string.suc)).setMessage(subj)
+        final AlertDialog builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle).setTitle(getResources().getString(R.string.suc)).setMessage(subj)
                 .setCancelable(false)
                 .setNegativeButton(getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -373,7 +373,7 @@ public class codeRequest extends AppCompatActivity {
                         sendCR.setEnabled(false);
                         pdialog = new ProgressDialog(codeRequest.this);
                         pdialog.setIndeterminate(true);
-                        pdialog.setMessage(getApplicationContext().getResources().getString(R.string.load));
+                        pdialog.setMessage(getResources().getString(R.string.load));
                         pdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                         pdialog.setCancelable(false);
                         pdialog.show();
@@ -382,7 +382,7 @@ public class codeRequest extends AppCompatActivity {
                         dialog.cancel();
                     }
                 }).create();
-        TextView textView = (TextView) builder.findViewById(android.R.id.message);
+        TextView textView = builder.findViewById(android.R.id.message);
         final Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         if (textView!= null)
             textView.setTypeface(myTypeface);

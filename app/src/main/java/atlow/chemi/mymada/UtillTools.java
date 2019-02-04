@@ -40,6 +40,7 @@ import com.crashlytics.android.Crashlytics;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -84,51 +85,49 @@ public class UtillTools extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences preferences = getSharedPreferences("Settings", 0);
-        Set<String> toolsToShow = preferences.getStringSet("Tools", new HashSet<String>(Arrays.asList(toolsS)));
+        Set<String> toolsToShow = preferences.getStringSet("Tools", new LinkedHashSet<>(Arrays.asList(toolsS)));
         pageNum = toolsToShow.size();
         int i=0;
-        for (String s : toolsToShow) {
-            if (i < pageNum) {
-                Log.e("I is:", "" + i);
-                switch (s){
-                    case "contrac":
-                        toolsT[i] = getResources().getString(R.string.button_f);
-                        toolsF[i] = contracTimer;
-                        break;
-                    case "pulse":
-                        toolsT[i] = getResources().getString(R.string.button_c);
-                        toolsF[i] = pulseCalc;
-                        break;
-                    case "metro":
-                        toolsT[i] = getResources().getString(R.string.button_d);
-                        toolsF[i] = metroActivity;
-                        metroLocation = i;
-                        break;
-                    case "vital":
-                        toolsT[i] = getResources().getString(R.string.button_e);
-                        toolsF[i] = vitalsChecker;
-                        break;
-                    case "oxy":
-                        toolsT[i] = getResources().getString(R.string.button_g);
-                        toolsF[i] = oxyCalc;
-                        break;
-                    case "apgar":
-                        toolsT[i] = getResources().getString(R.string.button_ag);
-                        toolsF[i] = apgarCalc;
-                        break;
-                    case "glaz":
-                        toolsT[i] = getResources().getString(R.string.button_gl);
-                        toolsF[i] = glazgoCalc;
-                        break;
-                    case "prot":
-                        toolsT[i] = getResources().getString(R.string.button_p);
-                        toolsF[i] = blsProtocoles;
-                        break;
-                }
-            }
+        if (toolsToShow.contains("contrac")) {
+            toolsT[i] = getResources().getString(R.string.button_f);
+            toolsF[i] = contracTimer;
             i++;
         }
-
+        if (toolsToShow.contains("pulse")) {
+            toolsT[i] = getResources().getString(R.string.button_c);
+            toolsF[i] = pulseCalc;
+            i++;
+        }
+        if (toolsToShow.contains("metro")) {
+            toolsT[i] = getResources().getString(R.string.button_d);
+            toolsF[i] = metroActivity;
+            metroLocation = i;
+            i++;
+        }
+        if (toolsToShow.contains("vital")) {
+            toolsT[i] = getResources().getString(R.string.button_e);
+            toolsF[i] = vitalsChecker;
+            i++;
+        }
+        if (toolsToShow.contains("oxy")) {
+            toolsT[i] = getResources().getString(R.string.button_g);
+            toolsF[i] = oxyCalc;
+            i++;
+        }
+        if (toolsToShow.contains("apgar")) {
+            toolsT[i] = getResources().getString(R.string.button_ag);
+            toolsF[i] = apgarCalc;
+            i++;
+        }
+        if (toolsToShow.contains("glaz")) {
+            toolsT[i] = getResources().getString(R.string.button_gl);
+            toolsF[i] = glazgoCalc;
+            i++;
+        }
+        if (toolsToShow.contains("prot")) {
+            toolsT[i] = getResources().getString(R.string.button_p);
+            toolsF[i] = blsProtocoles;
+        }
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);

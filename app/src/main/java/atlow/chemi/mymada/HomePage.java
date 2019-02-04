@@ -108,12 +108,18 @@ public class HomePage extends AppCompatActivity {
         }
         FirebaseMessaging.getInstance().subscribeToTopic("news");
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-7600269766434003/5732229370");
-        mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        try {
+            MobileAds.initialize(getApplicationContext(), "ca-app-pub-7600269766434003/5732229370");
+            mAdView = findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+            Crashlytics.log("Ads Loaded");
+        } catch (Exception e) {
+            Crashlytics.log("Ads Not Loaded");
+            Crashlytics.logException(e);
+        }
 
-        RecyclerView rv = (RecyclerView)findViewById(R.id.rv);
+        RecyclerView rv = findViewById(R.id.rv);
         GridLayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 2);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -129,16 +135,22 @@ public class HomePage extends AppCompatActivity {
         rv.setItemAnimator(new DefaultItemAnimator());
         rv.setAdapter(adapter);
 
-        HomeB Tool = new HomeB("tol", R.drawable.btn_shadow_tol);
-        albumList.add(Tool);
-        HomeB Moked = new HomeB("mok", R.drawable.btn_shadow_mok);
-        albumList.add(Moked);
-        HomeB Test = new HomeB("tes", R.drawable.btn_shadow_tes);
-        albumList.add(Test);
-        HomeB Contact = new HomeB("con", R.drawable.btn_shadow_con);
-        albumList.add(Contact);
-        HomeB Info = new HomeB("inf", R.drawable.btn_shadow_inf);
-        albumList.add(Info);
+        try {
+            HomeB Tool = new HomeB("tol", R.drawable.btn_shadow_tol);
+            albumList.add(Tool);
+            HomeB Moked = new HomeB("mok", R.drawable.btn_shadow_mok);
+            albumList.add(Moked);
+            HomeB Test = new HomeB("tes", R.drawable.btn_shadow_tes);
+            albumList.add(Test);
+            HomeB Contact = new HomeB("con", R.drawable.btn_shadow_con);
+            albumList.add(Contact);
+            HomeB Info = new HomeB("inf", R.drawable.btn_shadow_inf);
+            albumList.add(Info);
+            Crashlytics.log("HomeBtns Loaded properly!");
+        } catch (Exception e) {
+            Crashlytics.log("HomeBtns caused crash!");
+            Crashlytics.logException(e);
+        }
 
         adapter.notifyDataSetChanged();
         rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -208,7 +220,7 @@ public class HomePage extends AppCompatActivity {
         } else {
             smsGot();
         }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -229,10 +241,10 @@ public class HomePage extends AppCompatActivity {
                         }
                     });
             final AlertDialog alert = builder.create();
-            TextView textView = (TextView) alert.findViewById(android.R.id.message);
+            TextView textView = alert.findViewById(android.R.id.message);
             if (textView != null)
                 textView.setTypeface(myTypeface);
-            textView = (TextView) alert.findViewById(android.R.id.title);
+            textView = alert.findViewById(android.R.id.title);
             if (textView != null)
                 textView.setTypeface(myTypeface);
             alert.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -262,10 +274,10 @@ public class HomePage extends AppCompatActivity {
                         }
                     });
             final AlertDialog alert = builder.create();
-            TextView textView = (TextView) alert.findViewById(android.R.id.message);
+            TextView textView = alert.findViewById(android.R.id.message);
             if (textView != null)
                 textView.setTypeface(myTypeface);
-            textView = (TextView) alert.findViewById(android.R.id.title);
+            textView = alert.findViewById(android.R.id.title);
             if (textView != null)
                 textView.setTypeface(myTypeface);
             alert.setOnShowListener(new DialogInterface.OnShowListener() {

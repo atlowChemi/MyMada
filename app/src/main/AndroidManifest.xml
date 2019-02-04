@@ -193,7 +193,6 @@
             android:name=".UtillTools"
             android:label="@string/button_h"
             android:parentActivityName=".HomePage"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
