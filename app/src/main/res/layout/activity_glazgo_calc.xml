@@ -11,8 +11,7 @@
         android:layout_height="match_parent">
     <RelativeLayout
         android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layoutDirection="ltr">
+        android:layout_height="wrap_content">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,10 +30,9 @@
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
-                android:layoutDirection="rtl"
                 android:id="@+id/EyeS"
                 style="@style/Widget.AppCompat.Spinner.Underlined"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:spinnerMode="dropdown" />
         </android.support.design.widget.TextInputLayout>
         <TextView
@@ -57,9 +55,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:id="@+id/VerbalS"
-                android:layoutDirection="rtl"
                 style="@style/Widget.AppCompat.Spinner.Underlined"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:spinnerMode="dropdown" />
         </android.support.design.widget.TextInputLayout>
         <TextView
@@ -81,9 +78,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:id="@+id/MotorS"
-                android:layoutDirection="rtl"
                 style="@style/Widget.AppCompat.Spinner.Underlined"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:spinnerMode="dropdown" />
         </android.support.design.widget.TextInputLayout>
         <TextView
@@ -116,10 +112,11 @@
         android:gravity="center_horizontal|top"
         android:layout_alignParentBottom="true">
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
+            android:contentDescription="@string/app_name"
             android:tint="@color/Black"
             app:srcCompat="@drawable/ic_info"/>
         <View

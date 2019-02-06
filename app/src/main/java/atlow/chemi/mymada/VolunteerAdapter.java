@@ -2,8 +2,10 @@ package atlow.chemi.mymada;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,14 +23,16 @@ class VolunteerAdapter extends RecyclerView.Adapter<VolunteerAdapter.MyViewHolde
     class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView title, count;
         private ImageView thumbnail, overflow;
+        private CardView cardView;
 
         private MyViewHolder(View view) {
             super(view);
             view.setRotationY(180);
-            title = (TextView) view.findViewById(R.id.title);
-            count = (TextView) view.findViewById(R.id.count);
-            thumbnail = (ImageView) view.findViewById(R.id.thumbnail);
-            overflow = (ImageView) view.findViewById(R.id.overflow);
+            title = view.findViewById(R.id.title);
+            count = view.findViewById(R.id.count);
+            thumbnail = view.findViewById(R.id.thumbnail);
+            overflow = view.findViewById(R.id.overflow);
+            cardView = view.findViewById(R.id.vol_card_view);
         }
     }
 
@@ -76,6 +80,7 @@ class VolunteerAdapter extends RecyclerView.Adapter<VolunteerAdapter.MyViewHolde
         PopupMenu popup = new PopupMenu(mContext, view);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.menu2, popup.getMenu());
+        popup.setGravity(Gravity.START);
         popup.setOnMenuItemClickListener(new MyMenuItemClickListener(position, mContext));
         popup.show();
     }

@@ -1,7 +1,6 @@
 package atlow.chemi.mymada;
 
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,9 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -36,39 +33,28 @@ import java.util.List;
 
 public class MokedPage extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-    private boolean isSMST, isMADA, realM;
-    private Cursor cursor1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         resetTitle();
         setContentView(R.layout.activity_moked_page);
         SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
-        realM = sharedPreferences.getBoolean("realM", false);
-        isMADA = false;
+        boolean realM = sharedPreferences.getBoolean("realM", false);
+        boolean isMADA = false;
         if (!realM) {
-            isMADA = isPI(MokedPage.this, "com.groboot.mdaemergency");
-            try {
-                smsGot();
-            } catch (Exception e) {
-                isSMST = false;
-            }
-            if (!(isMADA && isSMST)) {
+            isMADA = isPI(MokedPage.this);
+            if (!isMADA) {
                 Intent intent = new Intent(MokedPage.this, lockPage.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
                 startActivity(intent);
             }
         }
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         if (SettingsActivity.isRTL())
             viewPager.setRotationY(180);
@@ -76,7 +62,7 @@ public class MokedPage extends AppCompatActivity {
         if(!msg)
             viewPager.setCurrentItem(1);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         if (!sp.getBoolean("pickedMoked", false)) {
@@ -105,41 +91,14 @@ public class MokedPage extends AppCompatActivity {
             build.show();
         }
     }
-    private static boolean isPI(Context context, String packageName) {
+    private static boolean isPI(Context context) {
         final PackageManager packageManager = context.getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+        Intent intent = packageManager.getLaunchIntentForPackage("com.groboot.mdaemergency");
         if (intent == null) {
             return false;
         }
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
-    }
-    private void smsGot() {
-        try {
-            Uri mSmsinboxQueryUri = Uri.parse("content://sms/inbox");
-            cursor1 = getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
-            startManagingCursor(cursor1);
-            String[] columns = new String[]{"address", "person", "date", "body", "type"};
-            if (cursor1 != null && cursor1.getCount() > 0) {
-                while (cursor1.moveToNext()) {
-                    String address = cursor1.getString(cursor1.getColumnIndex(columns[0]));
-                    if (address.equalsIgnoreCase("MADA")) {
-                        String body = cursor1.getString(cursor1.getColumnIndex(columns[3]));
-                        if (body.contains("רישום נקלט בהצלחה"))
-                            isSMST = true;
-                    }
-                }
-            }
-        }catch (NullPointerException e)    {
-            isSMST = false;
-            Crashlytics.logException(e);
-        }
-    }
-    @Override
-    public void onDestroy() {
-        if (cursor1 != null)
-            cursor1.close();
-        super.onDestroy();
     }
     @Override
     protected void attachBaseContext(Context base) {

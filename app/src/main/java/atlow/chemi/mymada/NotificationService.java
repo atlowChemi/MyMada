@@ -27,7 +27,7 @@ import java.util.Objects;
 public class NotificationService extends NotificationListenerService {
     protected String text;
     Context context;
-    public static boolean isNotificationAccessEnabled = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -38,7 +38,7 @@ public class NotificationService extends NotificationListenerService {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         Boolean Mapp = sp.getBoolean("Mapp", false);
         Log.e("Mapp is!", Mapp.toString());
-        if (Mapp && (statusBarNotification.getPackageName().contains("mdaemergency")
+        if (Mapp && statusBarNotification.getPackageName() != null && (statusBarNotification.getPackageName().contains("mdaemergency")
                 || statusBarNotification.getPackageName().contains("mda.health")
                 || statusBarNotification.getPackageName().equals("atlow.mymadaadmin"))) {
             Bundle extras = statusBarNotification.getNotification().extras;

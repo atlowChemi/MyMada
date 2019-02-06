@@ -2,6 +2,7 @@ package atlow.chemi.mymada;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -34,6 +36,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
 
 public class MainActivity3 extends Fragment {
     private TextInputLayout freeMsg;
@@ -60,9 +64,7 @@ public class MainActivity3 extends Fragment {
         final EditText editText = (EditText) view.findViewById(R.id.yourMsg);
         freeMsg = (TextInputLayout) view.findViewById(R.id.freeMsg);
         newSendButton = view.findViewById(R.id.yourMsgBtnNew);
-        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send_flip);
-        if (!SettingsActivity.isRTL())
-            img = getActivity().getResources().getDrawable(R.drawable.ic_send);
+        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send);
         newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         newSendButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -124,14 +126,13 @@ public class MainActivity3 extends Fragment {
                     }
                 }).setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        final PendingIntent deliveredIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent("SMS_DELIVERED"), 0);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + phones[merhav]));
+                        intent.putExtra("sms_body", msg);
                         try {
-                            SmsManager smsManager = SmsManager.getDefault();
-                            smsManager.sendTextMessage(phones[merhav], null, msg, null, deliveredIntent);
-                            Toast.makeText(getActivity(), getResources().getString(R.string.msgSent), Toast.LENGTH_LONG).show();
-                        } catch (Exception e) {
-                            Toast.makeText(getActivity(), getResources().getString(R.string.msgNotSent), Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
+                            startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            Crashlytics.log("sms not sent!");
+                            Crashlytics.logException(e);
                         }
                         dialog.cancel();
                     }

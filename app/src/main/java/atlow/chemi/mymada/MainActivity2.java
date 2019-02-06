@@ -2,6 +2,7 @@ package atlow.chemi.mymada;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -40,6 +42,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,12 +90,11 @@ public class MainActivity2 extends Fragment {
         drawable.setColor(getActivity().getResources().getColor(R.color.White));
         newPplBtn.setBackground(drawable);
         newPplBtn.setTextColor(getActivity().getResources().getColor(R.color.ColorNice));
-        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send_flip);
         if (!SettingsActivity.isRTL()) {
-            img = getActivity().getResources().getDrawable(R.drawable.ic_send);
             LinearLayout l = view.findViewById(R.id.LinBtns);
             l.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         }
+        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send);
         newSendButtonM2.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
         albumList = new ArrayList<>();
@@ -173,7 +176,7 @@ public class MainActivity2 extends Fragment {
                                     addManTIL.setError(getActivity().getResources().getString(R.string.emailNameNone));
                                 if (addManName.getText().toString().trim().length() > 0) {
                                     addManTIL.setErrorEnabled(false);
-                                    Volunteer a = new Volunteer(addManName.getText().toString(), addManSppiner.getSelectedItemPosition(), R.drawable.ic_arrow);
+                                    Volunteer a = new Volunteer(addManName.getText().toString(), addManSppiner.getSelectedItemPosition(), R.drawable.ic_person);
                                     albumList.add(a);
                                     adapter.notifyDataSetChanged();
                                     int size = albumList.size();
@@ -404,14 +407,13 @@ public class MainActivity2 extends Fragment {
                     }
                 }).setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                final PendingIntent deliveredIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent("SMS_DELIVERED"), 0);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + phones[merhav]));
+                intent.putExtra("sms_body", msg);
                 try {
-                    SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage(phones[merhav], null, msg, null, deliveredIntent);
-                    Toast.makeText(getActivity(), getResources().getString(R.string.msgSent), Toast.LENGTH_LONG).show();
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), getResources().getString(R.string.msgNotSent), Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
+                    startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Crashlytics.log("sms not sent!");
+                    Crashlytics.logException(e);
                 }
                 dialog.cancel();
             }

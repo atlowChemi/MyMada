@@ -50,7 +50,6 @@ public class SMSMonitorService extends Service {
     protected boolean callType, cut, vib, sou, app, timeLegal = true, OreoVib, OreoSou;
     public static float vo = 0;
     private Uri uri, url;
-    final SmsManager sms = SmsManager.getDefault();
 
 
     @Override
@@ -70,9 +69,9 @@ public class SMSMonitorService extends Service {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 setNotifChannels();
             NotificationCompat.Builder buil = new NotificationCompat.Builder(this, CnlBg)
-                    .setContentTitle(getApplicationContext().getResources().getString(R.string.BGServiceTtl))
-                    .setTicker(getApplicationContext().getResources().getString(R.string.BGServiceTicker))
-                    .setContentText(getApplicationContext().getResources().getString(R.string.BGServiceTxt))
+                    .setContentTitle(getResources().getString(R.string.BGServiceTtl))
+                    .setTicker(getResources().getString(R.string.BGServiceTicker))
+                    .setContentText(getResources().getString(R.string.BGServiceTxt))
                     .setContentIntent(pendingIntent)
                     .setGroup("BG")
                     .setPriority(NotificationManagerCompat.IMPORTANCE_MIN)
@@ -84,6 +83,7 @@ public class SMSMonitorService extends Service {
                     .setOngoing(true);
             try {
                 buil.setSmallIcon(R.drawable.ic_noti);
+                Crashlytics.log("Loaded small icon");
             }catch (Exception e) {
                 Crashlytics.log("Error SmsMonitor Notificaion!");
                 Crashlytics.logException(e);
@@ -93,9 +93,10 @@ public class SMSMonitorService extends Service {
         }
         Notification notification = buil.build();
         startForeground(78, notification);
+        Crashlytics.log("started foreground");
 
 
-        final IntentFilter intentFilter = new IntentFilter();
+        /*final IntentFilter intentFilter = new IntentFilter();
         intentFilter.setPriority(9999);
         intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
         this.callExplicitReceiver = new BroadcastReceiver() {
@@ -369,7 +370,7 @@ public class SMSMonitorService extends Service {
                             } else
                                 notifManager.notify(++numMessages, mNotification);
                         }
-                        /**/
+
                         if (win && callType) {
                             Intent i = new Intent(context, smsRes.class);
                             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -382,18 +383,18 @@ public class SMSMonitorService extends Service {
                 }
             }
         };
-        registerReceiver(callExplicitReceiver, intentFilter);
+        registerReceiver(callExplicitReceiver, intentFilter);*/
         return START_STICKY;
     }
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try {
+        /*try {
             unregisterReceiver(callExplicitReceiver);
         } catch (IllegalArgumentException e) {
             Log.e("SMSMonitorService", e.getMessage());
             Crashlytics.log(e.getMessage());
-        }
+        }*/
     }
     @Override
     public IBinder onBind(Intent intent) {

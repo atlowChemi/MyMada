@@ -24,7 +24,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layoutDirection="ltr"
             android:orientation="vertical">
 
             <TextView
@@ -49,8 +48,7 @@
                     style="@style/Widget.AppCompat.Spinner.Underlined"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:layout_gravity="left"
-                    android:layoutDirection="rtl"
+                    android:layout_gravity="start"
                     android:spinnerMode="dropdown" />
             </android.support.design.widget.TextInputLayout>
 
@@ -77,8 +75,7 @@
                     style="@style/Widget.AppCompat.Spinner.Underlined"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:layout_gravity="left"
-                    android:layoutDirection="rtl"
+                    android:layout_gravity="start"
                     android:spinnerMode="dropdown" />
             </android.support.design.widget.TextInputLayout>
 
@@ -104,8 +101,7 @@
                     style="@style/Widget.AppCompat.Spinner.Underlined"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:layout_gravity="left"
-                    android:layoutDirection="rtl"
+                    android:layout_gravity="start"
                     android:spinnerMode="dropdown" />
             </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
@@ -150,8 +146,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/GLZGrade">
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
                 android:contentDescription="@string/app_name"

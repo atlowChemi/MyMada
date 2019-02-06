@@ -133,9 +133,7 @@ public class codeRequest extends AppCompatActivity {
         codeNTIL.setTypeface(myTypeface);
         codeTTIL.setTypeface(myTypeface);
         sendCR = findViewById(R.id.sendCR);
-        Drawable img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send_flip);
-        if (!SettingsActivity.isRTL())
-            img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send);
+        Drawable img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send);
         sendCR.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         sendCR.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -289,15 +287,27 @@ public class codeRequest extends AppCompatActivity {
             codeReq.put("time", tsLong.toString());
             mFirebaseDatabase = mFirebaseDatabase.child("codes");
             mFirebaseDatabase = mFirebaseDatabase.push();
-            mFirebaseDatabase.setValue(codeReq);
+            mFirebaseDatabase.setValue(codeReq).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    gooddi(getResources().getString(R.string.requestGood));
+                    SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("firebaseGenratedKey", mFirebaseDatabase.getKey());
+                    editor.apply();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    sendCR.setEnabled(false);
+                    di(getResources().getString(R.string.emailBad));
+                }
+            });
             pdialog.cancel();
-            gooddi(getResources().getString(R.string.requestGood));
-            SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("firebaseGenratedKey", mFirebaseDatabase.getKey());
-            editor.apply();
+
         } else {
             pdialog.cancel();
+            sendCR.setEnabled(false);
             di(getResources().getString(R.string.emailBad));
         }
     }
