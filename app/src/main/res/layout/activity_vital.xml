@@ -126,12 +126,12 @@
         android:gravity="center_horizontal|top"
         android:layout_above="@+id/VitalMsgBG">
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
             android:tint="@color/Black"
-            android:src="@drawable/ic_info"/>
+            app:srcCompat="@drawable/ic_info"/>
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
@@ -154,12 +154,12 @@
         android:gravity="center_horizontal|top"
         android:layout_alignParentBottom="true">
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
             android:tint="@color/Black"
-            android:src="@drawable/ic_info"/>
+            app:srcCompat="@drawable/ic_info"/>
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"

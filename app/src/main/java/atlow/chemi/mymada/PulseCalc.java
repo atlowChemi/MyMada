@@ -18,6 +18,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 public class PulseCalc extends Fragment {
     private boolean running = false;
     private EditText pulse, fullPulse;
@@ -41,14 +43,14 @@ public class PulseCalc extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        pulse = (EditText)view.findViewById(R.id.fifteenPulseA);
-        fullPulse = (EditText)view.findViewById(R.id.fullPulseA);
-        pulseTIL = (TextInputLayout)view.findViewById(R.id.shortPulseATIL);
-        TextInputLayout fullPulseTIL = (TextInputLayout)view.findViewById(R.id.fullPulseATIL);
+        pulse = view.findViewById(R.id.fifteenPulseA);
+        fullPulse = view.findViewById(R.id.fullPulseA);
+        pulseTIL = view.findViewById(R.id.shortPulseATIL);
+        TextInputLayout fullPulseTIL =view.findViewById(R.id.fullPulseATIL);
         fullPulse.setInputType(InputType.TYPE_NULL);
         pulse.addTextChangedListener(new MyTextWatcher(pulse));
-        final TextView seconds = (TextView)view.findViewById(R.id.txtTimerSecond);
-        TextView one = (TextView)view.findViewById(R.id.txt_TimerSecond), two = (TextView)view.findViewById(R.id.txt_nothing);
+        final TextView seconds = view.findViewById(R.id.txtTimerSecond);
+        TextView one = view.findViewById(R.id.txt_TimerSecond), two = view.findViewById(R.id.txt_nothing);
         Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
         pulseTIL.setTypeface(myTypeface);
         fullPulseTIL.setTypeface(myTypeface);
@@ -88,7 +90,7 @@ public class PulseCalc extends Fragment {
                 }
             }
         };
-        RelativeLayout rl = (RelativeLayout)view.findViewById(R.id.clickableTimer);
+        RelativeLayout rl = view.findViewById(R.id.clickableTimer);
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,17 +109,11 @@ public class PulseCalc extends Fragment {
 
     private class MyTextWatcher implements TextWatcher {
         private View view;
-
         private MyTextWatcher(View view) {
             this.view = view;
         }
-
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
                 case R.id.fifteenPulseA:
@@ -127,7 +123,13 @@ public class PulseCalc extends Fragment {
                         pulseTIL.setErrorEnabled(false);
                         String shortPulse = pulse.getText().toString().trim();
                         int pulse2c = Integer.parseInt(shortPulse.replaceAll("[\\D]",""));
-                        fullPulse.setText("" + pulse2c*4);
+                        try {
+                            String toShow = "" + pulse2c*4;
+                            fullPulse.setText(toShow);
+                        } catch (IndexOutOfBoundsException e) {
+                            Crashlytics.log("error with pulse calculation");
+                            Crashlytics.logException(e);
+                        }
                     }
                     break;
             }

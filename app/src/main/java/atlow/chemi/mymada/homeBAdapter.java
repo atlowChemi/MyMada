@@ -1,5 +1,6 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -23,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +64,7 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
         return new MyViewHolder(itemView);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final HomeB album = albumList.get(holder.getAdapterPosition());
@@ -76,9 +79,9 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
         int width = display.getWidth()/2;
         int heightAll = (int) (width * 0.8);
         int heightTol = (int) ((width*2) * 0.409);
-        holder.homeB.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightAll));
+        holder.homeB.setLayoutParams(new FrameLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightAll));
         if (album.getIntent().equals("tol"))
-            holder.homeB.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightTol));
+            holder.homeB.setLayoutParams(new FrameLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightTol));
         holder.homeB.setBackgroundResource(album.getBg());
         holder.homeB.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -116,23 +119,60 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                     case "mok":
                         realM = sharedPreferences.getBoolean("realM", false);
                         isMADA = false;
-                        if (!realM) {
-                            isMADA = isPI(mContext, "com.groboot.mdaemergency");
-                            try {
-                                smsGot();
-                            } catch (Exception e) {
-                                isSMST = false;
+                        if (mContext.getApplication().getPackageName().contains("debug")) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
+                            builder.setMessage("זוהי גרסה לבדיקה. עמוד חסימה או עמוד דיווחים?").setCancelable(true)
+                                    .setPositiveButton("עמוד חסימה", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            Intent intent = new Intent(mContext, lockPage.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            SharedPreferences.Editor sp1 = sharedPreferences.edit();
+                                            sp1.putBoolean("realM", false);
+                                            sp1.apply();
+                                            mContext.startActivity(intent);
+                                        }
+                                    })
+                                    .setNegativeButton("עמוד דיווחים", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            Intent intent = new Intent(mContext, MokedPage.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            SharedPreferences.Editor sp1 = sharedPreferences.edit();
+                                            sp1.putBoolean("realM", true);
+                                            sp1.apply();
+                                            mContext.startActivity(intent);
+                                        }
+                                    });
+                            final AlertDialog alert = builder.create();
+                            TextView textView = alert.findViewById(android.R.id.message);
+                            if (textView != null)
+                                textView.setTypeface(myTypeface);
+                            textView = alert.findViewById(android.R.id.title);
+                            if (textView != null)
+                                textView.setTypeface(myTypeface);
+                            alert.setOnShowListener(new DialogInterface.OnShowListener() {
+                                @Override
+                                public void onShow(DialogInterface dialogInterface) {
+                                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                    Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                                    ok.setTypeface(myTypeface);
+                                    canc.setTypeface(myTypeface);
+                                }
+                            });
+                            alert.show();
+                        } else {
+                            if (!realM) {
+                                isMADA = isPI(mContext, "com.groboot.mdaemergency");
                             }
+                            if (realM || isMADA) {
+                                intent = new Intent(mContext, MokedPage.class);
+                                SharedPreferences.Editor sp1 = sharedPreferences.edit();
+                                sp1.putBoolean("realM", true);
+                                sp1.apply();
+                            } else
+                                intent = new Intent(mContext, lockPage.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(intent);
                         }
-                        if (realM || (isMADA && isSMST)) {
-                            intent = new Intent(mContext, MokedPage.class);
-                            SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                            sp1.putBoolean("realM", true);
-                            sp1.apply();
-                        }else
-                            intent = new Intent(mContext, lockPage.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
                         break;
                     case "tol":
                         intent = new Intent(mContext, UtillTools.class);
@@ -218,17 +258,12 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                         isMADA = false;
                         if (!realM) {
                             isMADA = isPI(mContext, "com.groboot.mdaemergency");
-                            try {
-                                smsGot();
-                            } catch (Exception e) {
-                                isSMST = false;
-                            }
                         }
-                        if (realM || (isMADA && isSMST)) {
+                        if (realM || isMADA) {
                             intent = new Intent(mContext, contactActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mContext.startActivity(intent);
-                        }else   {
+                        } else   {
                             AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
                             builder2.setTitle(mContext.getResources().getString(R.string.plsNote)).setMessage(mContext.getResources().getString(R.string.plsNoteCon)).setCancelable(true)
                                     .setNegativeButton(mContext.getResources().getString(R.string.plsNoteConCode), new DialogInterface.OnClickListener() {
@@ -275,26 +310,5 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
         }
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
-    }
-    private void smsGot() {
-        try {
-            Uri mSmsinboxQueryUri = Uri.parse("content://sms/inbox");
-            Cursor cursor1 = mContext.getContentResolver().query(mSmsinboxQueryUri, new String[]{"_id", "thread_id", "address", "person", "date", "body", "type"}, null, null, null);
-            mContext.startManagingCursor(cursor1);
-            String[] columns = new String[]{"address", "person", "date", "body", "type"};
-            if (cursor1 != null && cursor1.getCount() > 0) {
-                while (cursor1.moveToNext()) {
-                    String address = cursor1.getString(cursor1.getColumnIndex(columns[0]));
-                    if (address.equalsIgnoreCase("MADA")) {
-                        String body = cursor1.getString(cursor1.getColumnIndex(columns[3]));
-                        if (body.contains("רישום נקלט בהצלחה"))
-                            isSMST = true;
-                    }
-                }
-            }
-        }catch (Exception e)    {
-            isSMST = false;
-            e.printStackTrace();
-        }
     }
 }

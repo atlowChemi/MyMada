@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">דיווחי מגן דוד אדום</string>
-    <string name="smsMoni">זיהוי סמסים ברקע</string>
+    <string name="smsMoni">הפעלת האפליקציה ברקע</string>
     <string name="notiMoni">זיהוי התראות ברקע</string>
     <string name="metroMoni">הפעלת מטרונום ברקע</string>
     <string name="Fna">שם פרטי</string>
@@ -23,6 +23,8 @@
     <string name="contactUs">צור קשר</string>
     <string name="dialog_help">כדי לאפשר לאפליקציה לזהות מקרים באפליקציית מדא, יש לאפשר לה גישה להתראות.\nכדי לאשר גישה, יש ללחוץ אישור ובעמוד שיפתח לבחור ב\"דיווחי מגן דוד אדום\", ולאפשר את האפשרות הזו.</string>
     <string name="dialog_no">לא כרגע</string>
+    <string name="dialog_rate_yes">דרג כעת</string>
+    <string name="dialog_never">לא תודה</string>
     <string name="dialog_yes">איפשור גישה להתראות</string>
     <string name="driverQ">נהג</string>
     <string name="enjoy">משמרת מהנה!</string>

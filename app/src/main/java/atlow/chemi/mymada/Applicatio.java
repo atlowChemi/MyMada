@@ -67,9 +67,11 @@ public class Applicatio extends MultiDexApplication {
         }
     }
     public static void toggleNotificationListenerService(Context mContext) {
-        PackageManager pm = mContext.getPackageManager();
-        pm.setComponentEnabledSetting(new ComponentName(mContext, NotificationService.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-        pm.setComponentEnabledSetting(new ComponentName(mContext, NotificationService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            PackageManager pm = mContext.getPackageManager();
+            pm.setComponentEnabledSetting(new ComponentName(mContext, NotificationService.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(new ComponentName(mContext, NotificationService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        }
     }
     private void makeRec() {
         BroadcastReceiver receiver;

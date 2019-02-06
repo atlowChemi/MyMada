@@ -13,17 +13,16 @@
                       <PersistentState>
                         <option name="children">
                           <map>
-                            <entry key="launcher">
+                            <entry key="actionbar">
                               <value>
                                 <PersistentState>
                                   <option name="children">
                                     <map>
-                                      <entry key="foregroundImage">
+                                      <entry key="image">
                                         <value>
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="102" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -34,11 +33,39 @@
                                   </option>
                                   <option name="values">
                                     <map>
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="imageAsset" value="C:\Users\Ayelet PC\AndroidStudioProjects\MyMada\app\src\main\res\drawable\ic_translate.png" />
+                                      <entry key="outputName" value="ic_translate" />
+                                      <entry key="theme" value="CUSTOM" />
+                                      <entry key="themeColor" value="000000" />
+                                    </map>
+                                  </option>
+                                </PersistentState>
+                              </value>
+                            </entry>
+                            <entry key="launcher">
+                              <value>
+                                <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="foregroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="87" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                    </map>
+                                  </option>
+                                  <option name="values">
+                                    <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="foregroundImage" value="C:\Users\Ayelet PC\Desktop\MDA_no_bg.png" />
-                                      <entry key="generateLegacyIcon" value="false" />
-                                      <entry key="generateRoundIcon" value="false" />
-                                      <entry key="generateWebIcon" value="false" />
+                                      <entry key="backgroundImage" value="C:\Users\Ayelet PC\AndroidStudioProjects\MyMada\app\src\main\res\mipmap-xxxhdpi\ic_launcher_background.png" />
+                                      <entry key="foregroundImage" value="C:\Users\Ayelet PC\AndroidStudioProjects\MyMada\app\src\main\res\mipmap-xxxhdpi\ic_launcher_foreground.png" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -50,7 +77,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="C:\Users\Ayelet PC\Desktop\MDA_no_bg.png" />
+                                      <entry key="imageAsset" value="C:\Users\Ayelet PC\AndroidStudioProjects\MyMada\app\src\main\res\drawable\ic_send.png" />
                                       <entry key="outputName" value="ic_noti" />
                                     </map>
                                   </option>
@@ -61,7 +88,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputIconType" value="NOTIFICATION" />
+                            <entry key="outputIconType" value="ACTIONBAR" />
                           </map>
                         </option>
                       </PersistentState>
@@ -74,7 +101,26 @@
         </entry>
         <entry key="vectorWizard">
           <value>
-            <PersistentState />
+            <PersistentState>
+              <option name="children">
+                <map>
+                  <entry key="vectorAssetStep">
+                    <value>
+                      <PersistentState>
+                        <option name="values">
+                          <map>
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="autoMirrored" value="true" />
+                            <entry key="outputName" value="ic_image2vector" />
+                            <entry key="sourceFile" value="C:\Users\Ayelet PC\Desktop\svgs\image2vector.svg" />
+                          </map>
+                        </option>
+                      </PersistentState>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </PersistentState>
           </value>
         </entry>
       </map>

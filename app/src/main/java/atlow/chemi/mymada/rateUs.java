@@ -58,7 +58,7 @@ class rateUs {
                 .setTitle("דרג את " + APP_TITLE)
                 .setIcon(context.getApplicationInfo().icon)
                 .setCancelable(false)
-                .setPositiveButton("דרג כעת", new DialogInterface.OnClickListener() {
+                .setPositiveButton(context.getResources().getString(R.string.dialog_rate_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         editor.putBoolean("dontshowagain", true);
@@ -79,7 +79,7 @@ class rateUs {
                         dialog.dismiss();
                     }
                 })
-                .setNegativeButton("לא תודה", new DialogInterface.OnClickListener() {
+                .setNegativeButton(context.getResources().getString(R.string.dialog_never), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(editor != null) {

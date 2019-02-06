@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -51,7 +52,7 @@ public class InfoActivity extends AppCompatActivity {
         textView.setTypeface(myTypeface);
         textView.setMovementMethod(new ScrollingMovementMethod());
         textView.setText(getResources().getString(R.string.TversionNumber, BuildConfig.VERSION_NAME));
-        final Button privBtn = (Button) findViewById(R.id.privB);
+        final Button privBtn = findViewById(R.id.privB);
         privBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

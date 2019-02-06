@@ -17,7 +17,6 @@
     <style name="PreferenceListHeader" parent="Theme.AppCompat.Light">
         <item name="android:textColor">@color/s_text</item>
     </style>
-
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="android:textColor">@color/Black</item>

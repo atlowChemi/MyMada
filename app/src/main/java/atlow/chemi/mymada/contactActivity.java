@@ -114,9 +114,7 @@ public class contactActivity extends AppCompatActivity {
         emailTTIL.setTypeface(myTypeface);
         emailS.setTypeface(myTypeface);
         emailSTIL.setTypeface(myTypeface);
-        Drawable img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send_flip);
-        if (!SettingsActivity.isRTL())
-            img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send);
+        Drawable img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send);
         sendEM.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         sendEM.setOnTouchListener(new View.OnTouchListener() {
             @Override

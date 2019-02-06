@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MADA reports</string>
-    <string name="smsMoni">Detect SMS in background</string>
+    <string name="smsMoni">Keep app running in background</string>
     <string name="notiMoni">Detect MADA notifications in background</string>
     <string name="metroMoni">Metronome running in background</string>
     <string name="Fna">First name</string>
@@ -24,6 +24,8 @@
     <string name="Mhac">Dictate forms</string>
     <string name="dialog_help">In order for the app to recognize emergency calls from the official MADA app, it needs permission to read the notifications.\nTo do that, you need to click \"ok\" and in the window that will open, find the \"mada reports\" and enable it.</string>
     <string name="dialog_no">Not now</string>
+    <string name="dialog_rate_yes">Rate now</string>
+    <string name="dialog_never">Never</string>
     <string name="dialog_yes">Allow notification reading</string>
     <string name="driverQ">Driver</string>
     <string name="enjoy">Enjoy the shift!</string>

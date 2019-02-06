@@ -1,10 +1,12 @@
 package atlow.chemi.mymada;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
+import android.net.Uri;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
@@ -41,6 +43,8 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -131,9 +135,7 @@ public class MainActivity1 extends Fragment {
         final Button newSendButton = view.findViewById(R.id.M1btnN);
         final EditText family = (EditText)view.findViewById(R.id.M1txt5);
         assert family != null;
-        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send_flip);
-        if (!SettingsActivity.isRTL())
-            img = getActivity().getResources().getDrawable(R.drawable.ic_send);
+        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send);
         newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         sp.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
@@ -236,21 +238,21 @@ public class MainActivity1 extends Fragment {
             @Override
             public void onClick(View v) {
                 bool = true;
-                ambulance = (TextInputLayout) getActivity().findViewById(R.id.M1ambulanceNumber);
-                hn = (TextInputLayout) getActivity().findViewById(R.id.M1HoleNifga);
-                ht = (TextInputLayout) getActivity().findViewById(R.id.M1Hitchayvut);
-                first = (TextInputLayout) getActivity().findViewById(R.id.M1firstName);
-                last = (TextInputLayout) getActivity().findViewById(R.id.M1familyName);
-                sum = (TextInputLayout) getActivity().findViewById(R.id.M1Schum);
-                code = (TextInputLayout) getActivity().findViewById(R.id.M1MedicalCode);
-                edit1 = (EditText) getActivity().findViewById(R.id.M1txt1E);
-                editv = (EditText) getActivity().findViewById(R.id.M1visaT);
-                edita = (EditText) getActivity().findViewById(R.id.M1addressT);
-                edit2 = (EditText) getActivity().findViewById(R.id.M1txt2E);
-                edit3 = (EditText) getActivity().findViewById(R.id.M1txt3);
-                edit4 = (EditText) getActivity().findViewById(R.id.M1txt4E);
-                edit5 = (EditText) getActivity().findViewById(R.id.M1txt5);
-                edit6 = (EditText) getActivity().findViewById(R.id.M1txt6E);
+                ambulance = getActivity().findViewById(R.id.M1ambulanceNumber);
+                hn = getActivity().findViewById(R.id.M1HoleNifga);
+                ht = getActivity().findViewById(R.id.M1Hitchayvut);
+                first = getActivity().findViewById(R.id.M1firstName);
+                last = getActivity().findViewById(R.id.M1familyName);
+                sum = getActivity().findViewById(R.id.M1Schum);
+                code = getActivity().findViewById(R.id.M1MedicalCode);
+                edit1 = getActivity().findViewById(R.id.M1txt1E);
+                editv = getActivity().findViewById(R.id.M1visaT);
+                edita = getActivity().findViewById(R.id.M1addressT);
+                edit2 = getActivity().findViewById(R.id.M1txt2E);
+                edit3 = getActivity().findViewById(R.id.M1txt3);
+                edit4 = getActivity().findViewById(R.id.M1txt4E);
+                edit5 = getActivity().findViewById(R.id.M1txt5);
+                edit6 = getActivity().findViewById(R.id.M1txt6E);
                 assert edit1 != null;
                 assert editv != null;
                 assert edita != null;
@@ -431,14 +433,13 @@ public class MainActivity1 extends Fragment {
                     }
                 }).setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        final PendingIntent deliveredIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent("SMS_DELIVERED"), 0);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + phones[merhav]));
+                        intent.putExtra("sms_body", msg);
                         try {
-                            SmsManager smsManager = SmsManager.getDefault();
-                            smsManager.sendTextMessage(phones[merhav], null, msg, null, deliveredIntent);
-                            Toast.makeText(getActivity(), getResources().getString(R.string.msgSent), Toast.LENGTH_LONG).show();
-                        } catch (Exception e) {
-                            Toast.makeText(getActivity(), getResources().getString(R.string.msgNotSent), Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
+                            startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            Crashlytics.log("sms not sent!");
+                            Crashlytics.logException(e);
                         }
                         dialog.cancel();
                     }

@@ -33,4 +33,5 @@
     <color name="calcB">#c11516</color>
     <color name="calcM">#ddbe42</color>
     <color name="calcG">#46b23a</color>
+    <color name="bgShadowEnd">#aeadad</color>
 </resources>
