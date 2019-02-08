@@ -25,7 +25,7 @@ import java.util.Locale;
 public class BlsProtocoles extends Fragment {
     private ProgressBar spinner;
     private WebView webview;
-    private String ShowOrHideWebViewInitialUse = "show";
+    private String ShowOrHideWebViewInitialUse = "show", ALS, BLS, Dead;
     private boolean isConnected = true;
     private int current = 0;
     public BlsProtocoles()    {
@@ -34,6 +34,15 @@ public class BlsProtocoles extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        BLS = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/bls%5B1%5D.pdf?alt=media&token=7da40564-fe83-4254-a929-f8b2ec67ca41";
+        ALS = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/als%5B1%5D.pdf?alt=media&token=49d9e5f1-03d5-49d5-a951-b58dce094ca6";
+        Dead = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/kuntres.pdf?alt=media&token=2b7c5ce5-e5e5-4fae-9b27-fb2ba4d7e826";
+        ConnectivityManager manager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager != null) {
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            if (info == null || !info.isConnectedOrConnecting())
+                isConnected = false;
+        }
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
@@ -46,23 +55,12 @@ public class BlsProtocoles extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        ConnectivityManager manager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (manager != null) {
-            NetworkInfo info = manager.getActiveNetworkInfo();
-            if (info == null || !info.isConnectedOrConnecting())
-                isConnected = false;
-        }
-        webview = (WebView) view.findViewById(R.id.webview);
-        spinner = (ProgressBar)view.findViewById(R.id.progressBar2);
+        webview = view.findViewById(R.id.webview);
+        spinner = view.findViewById(R.id.progressBar2);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new BlsProtocoles.CustomWebViewClient());
-
-        final String BLS = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/bls%5B1%5D.pdf?alt=media&token=7da40564-fe83-4254-a929-f8b2ec67ca41";
-        final String ALS = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/als%5B1%5D.pdf?alt=media&token=49d9e5f1-03d5-49d5-a951-b58dce094ca6";
-        final String Dead = "https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/kuntres.pdf?alt=media&token=2b7c5ce5-e5e5-4fae-9b27-fb2ba4d7e826";
-        webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o/bls%5B1%5D.pdf?alt=media&token=7da40564-fe83-4254-a929-f8b2ec67ca41");
-        FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.typeProtocole);
+        webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + BLS);
+        FloatingActionButton fab = view.findViewById(R.id.typeProtocole);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

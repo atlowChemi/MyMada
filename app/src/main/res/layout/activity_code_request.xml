@@ -31,7 +31,7 @@
             android:layout_height="match_parent"
             android:layoutDirection="ltr"
             android:layout_alignParentTop="true"
-            android:layout_above="@+id/sendCR"
+            android:layout_above="@+id/code_req_send_card_view"
             android:layout_marginBottom="8dp"
             android:id="@+id/scM">
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -96,13 +96,24 @@
                 </android.support.design.widget.TextInputLayout>
             </RelativeLayout>
         </ScrollView>
+        <android.support.v7.widget.CardView
+            android:id="@+id/code_req_send_card_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="4dp"
+            app:cardUseCompatPadding="true"
+            app:cardBackgroundColor="@color/ColorNice"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="4dp">
         <Button
             android:id="@+id/sendCR"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/btns_new"
             android:gravity="center|center_horizontal|center_vertical"
             android:paddingStart="@dimen/activity_horizontal_margin"
@@ -110,5 +121,6 @@
             android:text="@string/succ"
             android:textColor="#FFF"
             android:textSize="20sp" />
+        </android.support.v7.widget.CardView>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

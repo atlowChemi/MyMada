@@ -24,6 +24,7 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Locale;
@@ -55,7 +56,12 @@ public class Applicatio extends MultiDexApplication {
         if (mapp) {
             Intent serviceIntent = new Intent(getApplicationContext(), SMSMonitorService.class);
             ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
-            tryConnectService(getApplicationContext());
+            try {
+                tryConnectService(getApplicationContext());
+            } catch (NoClassDefFoundError e) {
+                Crashlytics.log("Connecting service failed");
+                Crashlytics.logException(e);
+            }
         }
         makeRec();
     }

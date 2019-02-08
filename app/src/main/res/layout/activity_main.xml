@@ -15,7 +15,7 @@
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:layout_marginBottom="10dp"
         android:layoutDirection="ltr"
-        android:layout_above="@id/M1btnN"
+        android:layout_above="@id/tofes_card_view"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/rap">
             <android.support.v4.widget.NestedScrollView
@@ -167,15 +167,24 @@
     </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
     </RelativeLayout>
-
+    <android.support.v7.widget.CardView
+        android:id="@+id/tofes_card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:cardBackgroundColor="@color/ColorNice"
+        app:cardCornerRadius="15dp"
+        app:cardUseCompatPadding="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        app:cardElevation="4dp">
     <Button
         android:id="@+id/M1btnN"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="@dimen/activity_vertical_margin"
-        android:layout_marginEnd="@dimen/activity_vertical_margin"
         android:paddingEnd="@dimen/activity_horizontal_margin"
         android:paddingStart="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="8dp"
@@ -184,4 +193,5 @@
         android:text="@string/succ"
         android:textColor="#FFF"
         android:textSize="20sp" />
+    </android.support.v7.widget.CardView>
 </RelativeLayout>

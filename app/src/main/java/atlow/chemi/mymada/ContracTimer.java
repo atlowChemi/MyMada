@@ -39,35 +39,13 @@ public class ContracTimer extends Fragment {
     private LinearLayoutManager mLayoutManager;
     private RecyclerView recyclerView;
     SharedPreferences sp;
-    public ContracTimer()    {
-
-    }
+    public ContracTimer()    {}
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sp = getActivity().getSharedPreferences("Settings", 0);
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
-        View v= inflater.inflate(R.layout.activity_contract_calc, container, false);
-        if (SettingsActivity.isRTL())
-            v.setRotationY(180);
-        return v;
-    }
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mLayoutManager.setReverseLayout(true);
-        mLayoutManager.setStackFromEnd(true);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         albumList = new ArrayList<>();
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setRotationY(180);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(4), true));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        adapter = new ContractionAdapter(albumList, getActivity());
-        recyclerView.setAdapter(adapter);
+        adapter = new ContractionAdapter(albumList, getContext());
         long no = Calendar.getInstance().getTime().getTime();
         long ol = sp.getLong("contractLong", 0);
         boolean leesT20M = (no - ol) <= (20*60*1000);
@@ -88,7 +66,9 @@ public class ContracTimer extends Fragment {
                     }
                     /******/
                     adapter = new ContractionAdapter(albumList, getActivity());
-                    recyclerView.setAdapter(adapter);
+                    if (recyclerView != null) {
+                        recyclerView.setAdapter(adapter);
+                    }
                 }
             }).setNegativeButton(getActivity().getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
                 @Override
@@ -105,7 +85,9 @@ public class ContracTimer extends Fragment {
                     num = 0;
                     end = null;
                     adapter = new ContractionAdapter(albumList, getActivity());
-                    recyclerView.setAdapter(adapter);
+                    if (recyclerView != null) {
+                        recyclerView.setAdapter(adapter);
+                    }
                 }
             });
             final AlertDialog alert = dialog.create();
@@ -137,7 +119,9 @@ public class ContracTimer extends Fragment {
                 num = 0;
                 end = null;
                 adapter = new ContractionAdapter(albumList, getActivity());
-                recyclerView.setAdapter(adapter);
+                if (recyclerView != null) {
+                    recyclerView.setAdapter(adapter);
+                }
             }catch (Exception e)    {
                 e.printStackTrace();
                 SharedPreferences.Editor spe;
@@ -151,9 +135,31 @@ public class ContracTimer extends Fragment {
                 num = 0;
                 end = null;
                 adapter = new ContractionAdapter(albumList, getActivity());
-                recyclerView.setAdapter(adapter);
+                if (recyclerView != null) {
+                    recyclerView.setAdapter(adapter);
+                }
             }
         }
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
+        View v= inflater.inflate(R.layout.activity_contract_calc, container, false);
+        if (SettingsActivity.isRTL())
+            v.setRotationY(180);
+        return v;
+    }
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager.setReverseLayout(true);
+        mLayoutManager.setStackFromEnd(true);
+        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setRotationY(180);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(4), true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
         contractBtn = view.findViewById(R.id.contra_btn);
         Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
         contractBtn.setTypeface(myTypeface);
@@ -225,19 +231,6 @@ public class ContracTimer extends Fragment {
     private int dpToPx(int dp) {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
-    }
-    public String printDifference(Date startDate, Date endDate){
-        //milliseconds
-        long different = endDate.getTime() - startDate.getTime();
-
-        long secondsInMilli = 1000;
-        long minutesInMilli = secondsInMilli * 60;
-
-        long elapsedMinutes = different / minutesInMilli;
-        different = different % minutesInMilli;
-
-        long elapsedSeconds = different / secondsInMilli;
-        return elapsedMinutes + " דקות ו" + elapsedSeconds + " שניות";
     }
     @Override
     public void onDestroy() {
