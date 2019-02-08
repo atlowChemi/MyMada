@@ -49,36 +49,54 @@
             android:layout_alignParentBottom="true"
             android:layoutDirection="rtl"
             android:id="@+id/LinBtns">
+            <android.support.v7.widget.CardView
+                android:id="@+id/new_mem_card_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6"
+                android:layout_gravity="center"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="@color/White"
+                app:cardUseCompatPadding="true"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="4dp">
             <Button
                 android:id="@+id/newManNew"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_weight="0.6"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
                 android:paddingEnd="@dimen/activity_horizontal_margin"
                 android:paddingStart="@dimen/activity_horizontal_margin"
-                android:layout_marginBottom="8dp"
                 android:background="@drawable/btns_new"
                 android:gravity="center|center_horizontal|center_vertical"
                 android:text="@string/Nteam"
                 android:textColor="#FFF"
                 android:textSize="16sp" />
+            </android.support.v7.widget.CardView>
+            <android.support.v7.widget.CardView
+                android:id="@+id/team_send_card_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:layout_gravity="center"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="8dp"
+                app:cardUseCompatPadding="true"
+                app:cardBackgroundColor="@color/ColorNice"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="4dp">
             <Button
                 android:id="@+id/M2btn1ENew"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_weight="0.4"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
                 android:paddingEnd="@dimen/activity_horizontal_margin"
                 android:paddingStart="@dimen/activity_horizontal_margin"
-                android:layout_marginBottom="8dp"
                 android:background="@drawable/btns_new"
                 android:gravity="center|center_horizontal|center_vertical"
                 android:text="@string/succ"
                 android:textColor="#FFF"
                 android:textSize="16sp" />
+            </android.support.v7.widget.CardView>
         </LinearLayout>
     </RelativeLayout>
 
