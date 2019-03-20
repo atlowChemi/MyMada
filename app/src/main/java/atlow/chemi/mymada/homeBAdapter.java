@@ -36,7 +36,7 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
 
     private Activity mContext;
     private Typeface myTypeface;
-    private boolean isSMST, isMADA, realM, isMove1 = false;
+    private boolean isMADA, realM, isMove1 = false;
     private List<HomeB> albumList;
     private ArrayList<Button> btns = new ArrayList<>();
     private float oldX1, oldY1;

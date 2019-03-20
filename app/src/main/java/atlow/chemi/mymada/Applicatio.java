@@ -32,6 +32,9 @@ import java.util.Locale;
 import static android.service.notification.NotificationListenerService.requestRebind;
 
 public class Applicatio extends MultiDexApplication {
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(LocalHelper.onAttach(base));
@@ -40,7 +43,6 @@ public class Applicatio extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         try {
             FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
         }catch (Exception e)    {

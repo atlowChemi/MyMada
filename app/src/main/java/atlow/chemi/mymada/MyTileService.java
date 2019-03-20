@@ -2,11 +2,15 @@ package atlow.chemi.mymada;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -34,7 +38,12 @@ public class MyTileService extends TileService {
 
     @Override
     public void onTileRemoved() {
-        setCurrentState(Tile.STATE_INACTIVE);
+        try {
+            setCurrentState(Tile.STATE_INACTIVE);
+        } catch (NullPointerException e) {
+            Crashlytics.log("removing tile error");
+            Crashlytics.logException(e);
+        }
         super.onTileRemoved();
     }
 
@@ -52,6 +61,19 @@ public class MyTileService extends TileService {
                 break;
             case Tile.STATE_INACTIVE:
                 Intent serviceIntent = new Intent(MyTileService.this, MetroService.class);
+                NotificationManager manager = getSystemService(NotificationManager.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&manager != null && manager.getNotificationChannel("runInBg") == null) {
+                    NotificationChannelGroup group2 = new NotificationChannelGroup("grpOthers", "התראות שונות");
+                    NotificationChannel serviceChannel = new NotificationChannel("runInBg", "פעילות ברקע", NotificationManager.IMPORTANCE_MIN);
+                    serviceChannel.enableVibration(false);
+                    serviceChannel.enableLights(false);
+                    serviceChannel.setShowBadge(false);
+                    serviceChannel.setImportance(NotificationManager.IMPORTANCE_MIN);
+                    serviceChannel.setDescription("חיוני כדי לאפשר זיהוי מקרים");
+                    serviceChannel.setGroup("grpOthers");
+                    manager.createNotificationChannelGroup(group2);
+                    manager.createNotificationChannel(serviceChannel);
+                }
                 ContextCompat.startForegroundService(MyTileService.this, serviceIntent);
                 /*****/
                 setCurrentState(Tile.STATE_ACTIVE);

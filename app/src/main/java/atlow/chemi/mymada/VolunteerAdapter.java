@@ -60,8 +60,6 @@ class VolunteerAdapter extends RecyclerView.Adapter<VolunteerAdapter.MyViewHolde
         Typeface myTypeface = Typeface.createFromAsset(this.mContext.getAssets(), "fonts/opensanshebrew.ttf");
         holder.title.setTypeface(myTypeface);
         holder.count.setTypeface(myTypeface);
-        // loading album cover using Glide library
-        //Glide.with(mContext).load(album.getThumbnail()).into(holder.thumbnail);
         holder.thumbnail.setColorFilter(mContext.getResources().getColor(colors[album.getJob()]));
 
         holder.overflow.setOnClickListener(new View.OnClickListener() {
