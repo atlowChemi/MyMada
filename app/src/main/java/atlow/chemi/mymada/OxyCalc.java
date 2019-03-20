@@ -89,8 +89,8 @@ public class OxyCalc extends Fragment {
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
                 case R.id.ATM:
-                    if (!atm.getText().toString().trim().isEmpty() || atm.getText().toString().trim().matches("[0-9]+"))  {
-                        String ATM = atm.getText().toString().trim();
+                    String ATM = atm.getText().toString().trim();
+                    if (!ATM.isEmpty() && ATM.matches("[0-9]+"))  {
                         double pulse2c = Integer.parseInt(ATM.replaceAll("[\\D]",""));
                         double oxy = oxyType.getSelectedItemPosition() == 0 ? 2.4 : 20;
                         time.setText("" + (int)((pulse2c*oxy)/10));
@@ -98,9 +98,9 @@ public class OxyCalc extends Fragment {
                         time.setText("0");
                     break;
                 case R.id.PSI:
-                    if (!psi.getText().toString().trim().isEmpty() || psi.getText().toString().trim().matches("[0-9]+"))  {
-                        String ATM = psi.getText().toString().trim();
-                        double pulse2c = Integer.parseInt(ATM.replaceAll("[\\D]",""));
+                    String PSI = psi.getText().toString().trim();
+                    if (!PSI.isEmpty() && PSI.matches("[0-9]+"))  {
+                        double pulse2c = Integer.parseInt(PSI.replaceAll("[\\D]",""));
                         atm.setText("" + (int)(pulse2c/15));
                         //time.setText("" + pulse2c*4);
                     }

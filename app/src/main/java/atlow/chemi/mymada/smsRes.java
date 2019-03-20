@@ -71,11 +71,16 @@ public class smsRes extends AppCompatActivity {
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        if (getSupportActionBar()!=null)
-            getSupportActionBar().hide();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(smsRes.this, R.color.OldPrimary));
+        try {
+            getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+            if (getSupportActionBar() != null)
+                getSupportActionBar().hide();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(ContextCompat.getColor(smsRes.this, R.color.OldPrimary));
+            }
+        }catch (OutOfMemoryError e) {
+            Crashlytics.log("error hiding action bar smsRes");
+            Crashlytics.logException(e);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_res);
@@ -431,7 +436,11 @@ public class smsRes extends AppCompatActivity {
             mMediaPlayer.start();
 
         } catch (IOException e) {
-            System.out.println("OOPS");
+            Crashlytics.log("error with play number 1");
+            Crashlytics.logException(e);
+        } catch (RuntimeException e) {
+            Crashlytics.log("error with play number 2");
+            Crashlytics.logException(e);
         }
     }
     public static void newC(String C)  {

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,9 @@ public class GlazgoCalc extends Fragment {
     private AnimatedColor color;
     public GlazgoCalc()    {
 
+    }
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {

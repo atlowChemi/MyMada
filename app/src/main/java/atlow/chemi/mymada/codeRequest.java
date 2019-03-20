@@ -41,6 +41,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -87,7 +88,7 @@ public class codeRequest extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         resetTitle();
         setContentView(R.layout.activity_code_request);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -290,7 +291,12 @@ public class codeRequest extends AppCompatActivity {
             mFirebaseDatabase.setValue(codeReq).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    gooddi(getResources().getString(R.string.requestGood));
+                    try {
+                        gooddi(getResources().getString(R.string.requestGood));
+                    } catch (WindowManager.BadTokenException e) {
+                        Crashlytics.log("gooddi called after window closed.");
+                        Crashlytics.logException(e);
+                    }
                     SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("firebaseGenratedKey", mFirebaseDatabase.getKey());

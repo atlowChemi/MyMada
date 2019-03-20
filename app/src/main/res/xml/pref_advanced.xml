@@ -31,43 +31,43 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_header_more">
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="stat"
-            android:title="@string/pref_title_state"
-            android:summaryOn="@string/pref_description_state_on"
             android:summaryOff="@string/pref_description_state_off"
-            android:defaultValue="false"/>
+            android:summaryOn="@string/pref_description_state_on"
+            android:title="@string/pref_title_state" />
         <CheckBoxPreference
+            android:layout_height="wrap_content"
+            android:defaultValue="false"
             android:key="statVib"
-            android:title="@string/pref_title_stateVib"
-            android:summaryOn="@string/pref_description_stateVib_on"
             android:summaryOff="@string/pref_description_stateVib_off"
-            android:defaultValue="false"/>
+            android:summaryOn="@string/pref_description_stateVib_on"
+            android:title="@string/pref_title_stateVib" />
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="ride"
-            android:title="@string/pref_title_ride"
-            android:summaryOn="@string/pref_description_ride_on"
             android:summaryOff="@string/pref_description_ride_off"
-            android:defaultValue="false"/>
+            android:summaryOn="@string/pref_description_ride_on"
+            android:title="@string/pref_title_ride" />
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="loop"
-            android:title="@string/pref_title_loop"
-            android:summaryOn="@string/pref_description_loop_on"
             android:summaryOff="@string/pref_description_loop_off"
-            android:defaultValue="false"/>
+            android:summaryOn="@string/pref_description_loop_on"
+            android:title="@string/pref_title_loop" />
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="shabat"
-            android:title="@string/pref_title_shabat"
-            android:summaryOn="@string/pref_description_shabat_on"
             android:summaryOff="@string/pref_description_shabat_off"
-            android:defaultValue="false"/>
+            android:summaryOn="@string/pref_description_shabat_on"
+            android:title="@string/pref_title_shabat" />
         <atlow.chemi.mymada.IntPre
-            android:key="shabatTime"
-            android:title="@string/pref_title_shabatT"
             android:inputType="number"
-            android:numeric="integer"
+            android:key="shabatTime"
             android:maxLength="2"
             android:negativeButtonText="@string/ret"
+            android:numeric="integer"
             android:positiveButtonText="@string/ok"
-            />
+            android:title="@string/pref_title_shabatT" />
     </PreferenceCategory>
 </PreferenceScreen>

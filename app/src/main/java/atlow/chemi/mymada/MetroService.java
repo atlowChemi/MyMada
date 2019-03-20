@@ -97,7 +97,12 @@ public class MetroService extends Service {
     private void metroStop() {
         stopAnim();
         MetroRun = false;
-        metroTask.stop();
+        try {
+            metroTask.stop();
+        } catch (NullPointerException e) {
+            Crashlytics.log("failde stopping metronome");
+            Crashlytics.logException(e);
+        }
         audioManager.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
     }
     private static class MetronomeAsyncTask extends AsyncTask<Void,Void,String> {
