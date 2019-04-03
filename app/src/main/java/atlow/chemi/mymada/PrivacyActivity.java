@@ -49,7 +49,7 @@ public class PrivacyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         resetTitle();
         setContentView(R.layout.activity_privacy);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -86,7 +86,6 @@ public class PrivacyActivity extends AppCompatActivity {
             Crashlytics.log(e.getMessage());
         }
     }
-
     private class CustomWebViewClient extends WebViewClient {
         @Override
         public void onPageStarted(WebView webview, String url, Bitmap favicon) {
@@ -125,17 +124,12 @@ public class PrivacyActivity extends AppCompatActivity {
             view.loadUrl(er);
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        getDelegate().getMenuInflater().inflate(R.menu.popup_menu, menu);
-        SpannableString reco = new SpannableString(getResources().getString(R.string.pref_title_enable));
-        reco.setSpan(new ForegroundColorSpan(Color.BLACK), 0, reco.length(), 0);
-        SpannableString sett = new SpannableString(getResources().getString(R.string.action_settings));
-        sett.setSpan(new ForegroundColorSpan(Color.BLACK), 0, sett.length(), 0);
-        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setTitle(reco);
-        menu.findItem(R.id.action_settings).setTitle(sett);
+        getMenuInflater().inflate(R.menu.popup_menu, menu);
+        int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }
     private static final int REQUEST_PERMISSION_SETTING = 101;
@@ -153,6 +147,7 @@ public class PrivacyActivity extends AppCompatActivity {
                 String packageName = getApplicationContext().getPackageName();
                 if (!item.isChecked()) {
                     item.setChecked(true);
+                    item.setIcon(R.drawable.ic_detect_on);
                     /*new*/
                     Intent serviceIntent = new Intent(this, SMSMonitorService.class);
                     ContextCompat.startForegroundService(this, serviceIntent);
@@ -258,6 +253,7 @@ public class PrivacyActivity extends AppCompatActivity {
                     stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
+                    item.setIcon(R.drawable.ic_detect_off);
                 }
                 s.apply();
                 return true;

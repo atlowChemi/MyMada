@@ -41,10 +41,10 @@
         <service
             android:name=".SMSMonitorService"
             android:label="@string/smsMoni" />
-
         <service
             android:name=".MetroService"
             android:label="@string/metroMoni" />
+
         <receiver android:name=".ActionReciver" />
 
         <activity
@@ -97,8 +97,8 @@
         </service>
         <service
             android:name=".MyFirebaseMessagingService"
-            android:stopWithTask="false"
-            android:exported="true">
+            android:exported="true"
+            android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -174,7 +174,10 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
-            <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="false" />
+
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="false" />
         </service>
 
         <activity
@@ -211,6 +214,7 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".SettingsDesigned"></activity>
     </application>
 
 </manifest>

@@ -8,6 +8,8 @@
         android:id="@+id/one"
         android:checkable="true"
         android:checked="false"
+        android:icon="@drawable/ic_detect_off"
+        app:showAsAction="always"
         android:title="@string/pref_title_enable"/>
 
     <item

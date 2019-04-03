@@ -2,10 +2,8 @@ package atlow.chemi.mymada;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,58 +12,43 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
-import android.provider.Settings;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.TypefaceSpan;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import java.util.Map;
 
 public class contactActivity extends AppCompatActivity {
-    private static final String BASE_URL = "https://us-central1-project-3918384647339420127.cloudfunctions.net/date";
-    private OkHttpClient client = new OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS).writeTimeout(60, TimeUnit.SECONDS).readTimeout(60, TimeUnit.SECONDS).build();
     private ProgressDialog pdialog;
     private EditText emailA, emailN, emailS, emailT;
     private Typeface myTypeface;
@@ -74,6 +57,7 @@ public class contactActivity extends AppCompatActivity {
     private Button sendEM;
     private boolean isMove = false;
     private float oldX1, oldY1;
+    private FirebaseFunctions functions;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -81,10 +65,11 @@ public class contactActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         resetTitle();
         setContentView(R.layout.activity_contact);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        functions = FirebaseFunctions.getInstance();
         pdialog = new ProgressDialog(contactActivity.this);
         pdialog.setIndeterminate(true);
         pdialog.setMessage(getApplicationContext().getResources().getString(R.string.load));
@@ -174,12 +159,10 @@ public class contactActivity extends AppCompatActivity {
             }
         });
     }
-
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(LocalHelper.onAttach(base));
     }
-
     private void resetTitle() {
         try {
             int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
@@ -189,12 +172,10 @@ public class contactActivity extends AppCompatActivity {
             Crashlytics.log(e.getMessage());
         }
     }
-
     public boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
-
-    public void sendMail(String emailA, String emailN, String emailS, String emailT) {
+    private Task<String> newMail(String emailA, String emailN, String emailS, String emailT) {
         String mPhoneNumber = "unknown";
         TelephonyManager tMgr = (TelephonyManager) getApplication().getSystemService(Context.TELEPHONY_SERVICE);
         try {
@@ -204,64 +185,16 @@ public class contactActivity extends AppCompatActivity {
         } catch (Exception e) {
             Crashlytics.log(e.getMessage());
         }
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "sent from phone: " + mPhoneNumber);
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "sent from: " + emailA);
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Email");
-        FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-        RequestBody body = new FormBody.Builder().add("email", emailA).add("name",emailN).add("subject", emailS).add("message",emailT).build();
-        Request request = new Request.Builder().url(BASE_URL).post(body).build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("email", emailA);
+        data.put("name", emailN);
+        data.put("subject", emailS);
+        data.put("message", emailT);
+        data.put("pNum", mPhoneNumber);
+        return functions.getHttpsCallable("sendMail").call(data).continueWith(new Continuation<HttpsCallableResult, String>() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                contactActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        pdialog.cancel();
-                        sendEM.setEnabled(true);
-                        di(getResources().getString(R.string.emailBad));
-                    }
-                });
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    final String resp = response.body().string();
-                    if (response.isSuccessful()) {
-                        contactActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                sendEM.setEnabled(true);
-                                pdialog.cancel();
-                                //gooddi('"' + resp + '"');
-                                if (resp.trim().equals("true"))
-                                    gooddi(getResources().getString(R.string.emailGood));
-                                else
-                                    di(getResources().getString(R.string.emailBad));
-                            }
-                        });
-                    } else {
-                        contactActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                sendEM.setEnabled(true);
-                                pdialog.cancel();
-                                di(getResources().getString(R.string.emailBad));
-                            }
-                        });
-                    }
-                } catch (IOException e) {
-                    contactActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            sendEM.setEnabled(true);
-                            pdialog.cancel();
-                            di(getResources().getString(R.string.emailBad));
-                        }
-                    });
-                }
+            public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                return (String)task.getResult().getData();
             }
         });
     }
@@ -304,7 +237,6 @@ public class contactActivity extends AppCompatActivity {
             }
         }
     }
-
     private void di(String err)   {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
         builder.setTitle(getResources().getString(R.string.err)).setMessage(err).setCancelable(false)
@@ -350,14 +282,28 @@ public class contactActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         sendEM.setEnabled(false);
                         pdialog.show();
-                        sendMail(emailA, emailN, emailS, emailT);
+                        //sendMail(emailA, emailN, emailS, emailT);
+                        newMail(emailA, emailN, emailS, emailT).addOnCompleteListener(new OnCompleteListener<String>() {
+                            @Override
+                            public void onComplete(@NonNull Task<String> task) {
+                                pdialog.cancel();
+                                sendEM.setEnabled(true);
+                                if (!task.isSuccessful()) {
+                                    Exception e = task.getException();
+                                    Log.e("result!!!"," fail: " + e);
+                                    di(getResources().getString(R.string.emailBad));
+                                    return;
+                                }
+                                gooddi(getResources().getString(R.string.emailGood));
+                            }
+                        });
                         dialog.cancel();
                     }
                 }).create();
         TextView textView = builder.findViewById(android.R.id.message);
         if (textView!= null)
             textView.setTypeface(myTypeface);
-        textView = (TextView) builder.findViewById(android.R.id.title);
+        textView = builder.findViewById(android.R.id.title);
         if (textView!= null)
             textView.setTypeface(myTypeface);
         builder.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -375,13 +321,9 @@ public class contactActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        getDelegate().getMenuInflater().inflate(R.menu.popup_menu, menu);
-        SpannableString reco = new SpannableString(getResources().getString(R.string.pref_title_enable));
-        reco.setSpan(new ForegroundColorSpan(Color.BLACK), 0, reco.length(), 0);
-        SpannableString sett = new SpannableString(getResources().getString(R.string.action_settings));
-        sett.setSpan(new ForegroundColorSpan(Color.BLACK), 0, sett.length(), 0);
-        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setTitle(reco);
-        menu.findItem(R.id.action_settings).setTitle(sett);
+        getMenuInflater().inflate(R.menu.popup_menu, menu);
+        int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }
     @Override
@@ -398,6 +340,7 @@ public class contactActivity extends AppCompatActivity {
                 String packageName = getApplicationContext().getPackageName();
                 if (!item.isChecked()) {
                     item.setChecked(true);
+                    item.setIcon(R.drawable.ic_detect_on);
                     /*new*/
                     Intent serviceIntent = new Intent(this, SMSMonitorService.class);
                     ContextCompat.startForegroundService(this, serviceIntent);
@@ -427,7 +370,7 @@ public class contactActivity extends AppCompatActivity {
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
 
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.OldPrimary));
+                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                         }
                                     });
                                     alert.show();
@@ -457,7 +400,7 @@ public class contactActivity extends AppCompatActivity {
                                         @Override
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.OldPrimary));
+                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                         }
                                     });
                                     alert.show();
@@ -488,7 +431,7 @@ public class contactActivity extends AppCompatActivity {
                                     @Override
                                     public void onShow(DialogInterface dialogInterface) {
                                         Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.OldPrimary));
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     }
                                 });
                                 alert.show();
@@ -503,6 +446,7 @@ public class contactActivity extends AppCompatActivity {
                     stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
+                    item.setIcon(R.drawable.ic_detect_off);
                 }
                 s.apply();
                 return true;

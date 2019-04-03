@@ -154,13 +154,9 @@ public class MokedPage extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        getDelegate().getMenuInflater().inflate(R.menu.popup_menu, menu);
-        SpannableString reco = new SpannableString(getResources().getString(R.string.pref_title_enable));
-        reco.setSpan(new ForegroundColorSpan(Color.BLACK), 0, reco.length(), 0);
-        SpannableString sett = new SpannableString(getResources().getString(R.string.action_settings));
-        sett.setSpan(new ForegroundColorSpan(Color.BLACK), 0, sett.length(), 0);
-        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setTitle(reco);
-        menu.findItem(R.id.action_settings).setTitle(sett);
+        getMenuInflater().inflate(R.menu.popup_menu, menu);
+        int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }
     private static final int REQUEST_PERMISSION_SETTING = 101;
@@ -173,11 +169,12 @@ public class MokedPage extends AppCompatActivity {
                 return true;
             case R.id.one:
                 SharedPreferences.Editor s = sp.edit();
-                ContentResolver contentResolver = MokedPage.this.getContentResolver();
+                ContentResolver contentResolver = getApplicationContext().getContentResolver();
                 String enabledNotificationListeners = android.provider.Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
-                String packageName = MokedPage.this.getPackageName();
+                String packageName = getApplicationContext().getPackageName();
                 if (!item.isChecked()) {
                     item.setChecked(true);
+                    item.setIcon(R.drawable.ic_detect_on);
                     /*new*/
                     Intent serviceIntent = new Intent(this, SMSMonitorService.class);
                     ContextCompat.startForegroundService(this, serviceIntent);
@@ -207,7 +204,7 @@ public class MokedPage extends AppCompatActivity {
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
 
-                                            canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
+                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                         }
                                     });
                                     alert.show();
@@ -218,7 +215,7 @@ public class MokedPage extends AppCompatActivity {
                                 Intent old = new Intent(this, NotificationServiceOld.class);
                                 stopService(intent);
                                 startService(old);
-                                if (!NotificationServiceOld.isAccessibilitySettingsOn(MokedPage.this)) {
+                                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
                                             .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
@@ -237,7 +234,7 @@ public class MokedPage extends AppCompatActivity {
                                         @Override
                                         public void onShow(DialogInterface dialogInterface) {
                                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
+                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                         }
                                     });
                                     alert.show();
@@ -249,7 +246,7 @@ public class MokedPage extends AppCompatActivity {
                             Intent old = new Intent(this, NotificationServiceOld.class);
                             stopService(intent);
                             startService(old);
-                            if (!NotificationServiceOld.isAccessibilitySettingsOn(MokedPage.this)) {
+                            if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                 builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
                                         .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
@@ -268,7 +265,7 @@ public class MokedPage extends AppCompatActivity {
                                     @Override
                                     public void onShow(DialogInterface dialogInterface) {
                                         Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     }
                                 });
                                 alert.show();
@@ -283,6 +280,7 @@ public class MokedPage extends AppCompatActivity {
                     stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
+                    item.setIcon(R.drawable.ic_detect_off);
                 }
                 s.apply();
                 return true;

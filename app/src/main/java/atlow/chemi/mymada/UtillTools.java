@@ -58,7 +58,6 @@ public class UtillTools extends AppCompatActivity {
     private BlsProtocoles blsProtocoles = new BlsProtocoles();
     private Fragment[] toolsF = {contracTimer, pulseCalc, metroActivity, vitalsChecker, oxyCalc, apgarCalc, glazgoCalc, blsProtocoles};
     private String[] toolsT = new String[8];
-
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -68,12 +67,10 @@ public class UtillTools extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,8 +151,6 @@ public class UtillTools extends AppCompatActivity {
             Crashlytics.log(e.getMessage());
         }
     }
-
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -196,17 +191,12 @@ public class UtillTools extends AppCompatActivity {
             }*/
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        getDelegate().getMenuInflater().inflate(R.menu.popup_menu, menu);
-        SpannableString reco = new SpannableString(getResources().getString(R.string.pref_title_enable));
-        reco.setSpan(new ForegroundColorSpan(Color.BLACK), 0, reco.length(), 0);
-        SpannableString sett = new SpannableString(getResources().getString(R.string.action_settings));
-        sett.setSpan(new ForegroundColorSpan(Color.BLACK), 0, sett.length(), 0);
-        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setTitle(reco);
-        menu.findItem(R.id.action_settings).setTitle(sett);
+        getMenuInflater().inflate(R.menu.popup_menu, menu);
+        int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }
     private static final int REQUEST_PERMISSION_SETTING = 101;
@@ -224,6 +214,7 @@ public class UtillTools extends AppCompatActivity {
                 String packageName = getApplicationContext().getPackageName();
                 if (!item.isChecked()) {
                     item.setChecked(true);
+                    item.setIcon(R.drawable.ic_detect_on);
                     /*new*/
                     Intent serviceIntent = new Intent(this, SMSMonitorService.class);
                     ContextCompat.startForegroundService(this, serviceIntent);
@@ -329,6 +320,7 @@ public class UtillTools extends AppCompatActivity {
                     stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
+                    item.setIcon(R.drawable.ic_detect_off);
                 }
                 s.apply();
                 return true;
