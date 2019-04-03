@@ -1,5 +1,6 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ public class lockPage extends AppCompatActivity {
     private Button btn5, btn6, btn7;
     private boolean isMove5 = false, isMove6 = false, isMove7 = false;
     private float oldX5, oldY5, oldX6, oldY6, oldX7, oldY7;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

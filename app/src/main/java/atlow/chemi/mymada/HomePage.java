@@ -430,12 +430,8 @@ public class HomePage extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         getMenuInflater().inflate(R.menu.popup_menu, menu);
-        SpannableString reco = new SpannableString(getResources().getString(R.string.pref_title_enable));
-        reco.setSpan(new ForegroundColorSpan(Color.BLACK), 0, reco.length(), 0);
-        SpannableString sett = new SpannableString(getResources().getString(R.string.action_settings));
-        sett.setSpan(new ForegroundColorSpan(Color.BLACK), 0, sett.length(), 0);
-        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setTitle(reco);
-        menu.findItem(R.id.action_settings).setTitle(sett);
+        int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+        menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }
     @Override
@@ -452,6 +448,7 @@ public class HomePage extends AppCompatActivity {
                 String packageName = getApplicationContext().getPackageName();
                 if (!item.isChecked()) {
                     item.setChecked(true);
+                    item.setIcon(R.drawable.ic_detect_on);
                     /*new*/
                     Intent serviceIntent = new Intent(this, SMSMonitorService.class);
                     ContextCompat.startForegroundService(this, serviceIntent);
@@ -557,6 +554,7 @@ public class HomePage extends AppCompatActivity {
                     stopService(serviceIntent);
                     item.setChecked(false);
                     s.putBoolean("Mapp", false);
+                    item.setIcon(R.drawable.ic_detect_off);
                 }
                 s.apply();
                 return true;
