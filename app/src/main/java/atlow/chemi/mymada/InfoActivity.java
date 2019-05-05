@@ -37,6 +37,7 @@ public class InfoActivity extends AppCompatActivity {
     private float oldX1, oldY1;
     private boolean isMove1 = false;
     private static final int REQUEST_PERMISSION_SETTING = 101;
+    private MenuItem Detect;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,10 +101,20 @@ public class InfoActivity extends AppCompatActivity {
         startActivity(intent);
     }
     @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sp = getSharedPreferences("Settings", 0);
+        if (Detect != null) {
+            int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+            Detect.setIcon(icon);
+        }
+    }
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         getMenuInflater().inflate(R.menu.popup_menu, menu);
         int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+        Detect = menu.findItem(R.id.one);
         menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }
@@ -232,7 +243,7 @@ public class InfoActivity extends AppCompatActivity {
                 s.apply();
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
+                startActivity(new Intent(this, SettingsDesigned.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

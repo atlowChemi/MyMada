@@ -85,7 +85,7 @@ public class HomePage extends AppCompatActivity {
     private static List<HomeB> albumList;
     public NotificationManager manager;
     public final String Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
-    private Cursor cursor1;
+    private MenuItem Detect;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -393,6 +393,10 @@ public class HomePage extends AppCompatActivity {
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("WasLangChanged", false);
         editor.apply();
+        if (Detect != null) {
+            int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+            Detect.setIcon(icon);
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -422,8 +426,6 @@ public class HomePage extends AppCompatActivity {
     }
     @Override
     protected void onDestroy() {
-        if (cursor1 != null)
-            cursor1.close();
         super.onDestroy();
     }
     @Override
@@ -431,6 +433,7 @@ public class HomePage extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         getMenuInflater().inflate(R.menu.popup_menu, menu);
         int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+        Detect = menu.findItem(R.id.one);
         menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }

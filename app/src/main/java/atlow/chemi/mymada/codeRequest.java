@@ -81,6 +81,7 @@ public class codeRequest extends AppCompatActivity {
     private boolean sentToSettings = false, isMove = false, isConnected = true;
     private float oldX1, oldY1;
     private Button sendCR;
+    private MenuItem Detect;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -416,10 +417,20 @@ public class codeRequest extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sp = getSharedPreferences("Settings", 0);
+        if (Detect != null) {
+            int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+            Detect.setIcon(icon);
+        }
+    }
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         getMenuInflater().inflate(R.menu.popup_menu, menu);
         int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+        Detect = menu.findItem(R.id.one);
         menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }
