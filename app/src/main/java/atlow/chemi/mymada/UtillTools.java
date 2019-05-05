@@ -58,6 +58,7 @@ public class UtillTools extends AppCompatActivity {
     private BlsProtocoles blsProtocoles = new BlsProtocoles();
     private Fragment[] toolsF = {contracTimer, pulseCalc, metroActivity, vitalsChecker, oxyCalc, apgarCalc, glazgoCalc, blsProtocoles};
     private String[] toolsT = new String[8];
+    private MenuItem Detect;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -192,10 +193,20 @@ public class UtillTools extends AppCompatActivity {
         }
     }
     @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sp = getSharedPreferences("Settings", 0);
+        if (Detect != null) {
+            int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+            Detect.setIcon(icon);
+        }
+    }
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         getMenuInflater().inflate(R.menu.popup_menu, menu);
         int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+        Detect = menu.findItem(R.id.one);
         menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }

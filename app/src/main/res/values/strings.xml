@@ -364,5 +364,5 @@
     <string name="ContracSecondes">%d שניות</string>
     <string name="ContracRecover">שחזר נתונים קודמים?</string>
     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
-    <string name="title_activity_new_settings">NewSettings</string>
+    <string name="title_low_calls">הודעות לא קריטיות</string>
 </resources>

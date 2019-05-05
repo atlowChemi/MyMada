@@ -12,9 +12,11 @@
     <string name="pref_header_ampm">הגדרות יום ולילה</string>
     <string name="pref_header_moked">הגדרות הכתבה</string>
     <string name="pref_header_advanced">הגדרות מתקדמות</string>
+    <string name="pref_header_tools">הגדרות כלי עזר</string>
+    <string name="pref_header_sound_and_vib">הגדרות צליל ורטט</string>
 
     <string name="pref_title_enable">התראה על מקרים</string>
-    <string name="pref_description_enable_off">זיהוי מקרים בסמס כבוי.</string>
+    <string name="pref_description_enable_off">זיהוי מקרים כבוי.</string>
 
     <string name="pref_title_region">בחירת מרחב ברירת מחדל</string>
 
@@ -22,8 +24,8 @@
     <string name="pref_description_lang">בחר באיזו שפה תוצג האפליקציה</string>
 
     <string name="pref_title_Maenable">אפשר זיהוי מקרים באפליקצייה</string>
-    <string name="pref_description_Maenable_on">זיהוי מקרים באפליקצייה פועל.</string>
-    <string name="pref_description_Maenable_off">זיהוי מקרים באפליקצייה כבוי.</string>
+    <string name="pref_description_Maenable_on">זיהוי מקרים באפליקצייה פועל</string>
+    <string name="pref_description_Maenable_off">זיהוי מקרים באפליקצייה כבוי</string>
 
     <string name="pref_title_not">יצירת התראה במקרה חדש</string>
     <string name="pref_description_not_on">כשיגיע מקרה חדש, תיווצר התראה.</string>

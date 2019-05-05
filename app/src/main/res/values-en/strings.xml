@@ -62,6 +62,8 @@
     <string name="pref_header_notifications">Notification settings</string>
     <string name="pref_header_notifictzia">Emergency call notifications</string>
     <string name="pref_header_sending">Dictation settings</string>
+    <string name="pref_header_tools">Utilities &amp; tools settings</string>
+    <string name="pref_header_sound_and_vib">Sound &amp; vibration settings</string>
     <string name="pref_ringtone_silent">Silent</string>
     <string name="pref_title_Maenable">Recognize calls through MADA app</string>
     <string name="pref_title_app">Pick a custom sound</string>
@@ -424,4 +426,5 @@
     <string name="pref_title_tools">Pick tools</string>
     <string name="pref_description_tools">Pick tools to show on tools page</string>
     <string name="NoPicked">Pick at least one tool!</string>
+    <string name="title_low_calls">Non emergency calls</string>
 </resources>

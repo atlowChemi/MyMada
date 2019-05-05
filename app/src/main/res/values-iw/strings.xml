@@ -37,8 +37,8 @@
     <string name="notMada">נראה לנו שאתה לא מתנדב מד"א.\nבכדי שהאפליקציה תפעל כראוי צריכה להיות מותקנת אצלך אפליקציית צוותי מגן דוד אדום.\nבאם האפליקציה מותקנת אצלך ובכל זאת אתה רואה מסך זה, התנתק מאפליקציית הצוותים והתחבר שנית.\nשימוש מהנה ומועיל!</string>
     <string name="passH">הזן כאן את הקוד</string>
     <string name="pref_default_shabatT">6</string>
-    <string name="pref_description_Maenable_off">זיהוי מקרים באפליקצייה כבוי.</string>
-    <string name="pref_description_Maenable_on">זיהוי מקרים באפליקצייה פועל.</string>
+    <string name="pref_description_Maenable_off">זיהוי מקרים באפליקצייה כבוי</string>
+    <string name="pref_description_Maenable_on">זיהוי מקרים באפליקצייה פועל</string>
     <string name="pref_description_app_off">הצליל שיושמע בקבלת מקרה הינו הצליל שהוגדר ביישום.</string>
     <string name="pref_description_app_on">הצליל שיושמע בקבלת מקרה הינו הצליל שתגדיר.</string>
     <string name="pref_description_apr_off">כאשר תלחץ לשלוח את ההודעה, היא תישלח מיידית בלא אפשרות לאישור.</string>
@@ -64,6 +64,8 @@
     <string name="pref_header_notifications">הגדרות התראות</string>
     <string name="pref_header_notifictzia">הגדרות התראה</string>
     <string name="pref_header_sending">הגדרות הכתבה</string>
+    <string name="pref_header_tools">הגדרות כלי עזר</string>
+    <string name="pref_header_sound_and_vib">הגדרות צליל ורטט</string>
     <string name="pref_ringtone_silent">שקט</string>
     <string name="pref_title_Maenable">אפשר זיהוי מקרים באפליקצייה</string>
     <string name="pref_title_app">בחר צליל התראה מותאם אישית</string>
@@ -427,4 +429,5 @@
     <string name="pref_title_tools">בחירת כלי עזר</string>
     <string name="pref_description_tools">בחר איזה כלים יוצגו בכלי עזר</string>
     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
+    <string name="title_low_calls">הודעות לא קריטיות</string>
 </resources>
