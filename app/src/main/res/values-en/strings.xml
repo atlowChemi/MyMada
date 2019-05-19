@@ -427,4 +427,5 @@
     <string name="pref_description_tools">Pick tools to show on tools page</string>
     <string name="NoPicked">Pick at least one tool!</string>
     <string name="title_low_calls">Non emergency calls</string>
+    <string name="pick_sound">Pick ringtone</string>
 </resources>

@@ -87,13 +87,11 @@ public class SettingsDesignedNotifications extends AppCompatActivity implements 
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
     @Override
     public void onClick(View view) {
@@ -134,8 +132,8 @@ public class SettingsDesignedNotifications extends AppCompatActivity implements 
                 break;
             case R.id.sound_vib_card:
                 sc = null;
-                /*Intent intent = new Intent(SettingsDesignedNotifications.this, SettingsDesignedNotifications.class);
-                startActivity(intent);*/
+                Intent intent = new Intent(SettingsDesignedNotifications.this, SettingsDesignedNotificationsSounds.class);
+                startActivity(intent);
                 break;
         }
         editor.apply();
@@ -152,32 +150,32 @@ public class SettingsDesignedNotifications extends AppCompatActivity implements 
         switch (id) {
             case R.id.cutA_pref:
                 sc = cutA;
-                desc = set ? getResources().getString(R.string.pref_description_cutA_off) : getResources().getString(R.string.pref_description_cutA_on);
+                desc = !set ? getResources().getString(R.string.pref_description_cutA_off) : getResources().getString(R.string.pref_description_cutA_on);
                 editor.putBoolean("cut", set);
                 tv = cutADesc;
                 break;
             case R.id.stat_pref:
                 sc = stat;
-                desc = set ? getResources().getString(R.string.pref_description_state_off) : getResources().getString(R.string.pref_description_state_on);
+                desc = !set ? getResources().getString(R.string.pref_description_state_off) : getResources().getString(R.string.pref_description_state_on);
                 editor.putBoolean("stat", set);
                 tv = statDesc;
                 break;
             case R.id.statVib_pref:
                 sc = statVib;
-                desc = set ? getResources().getString(R.string.pref_description_stateVib_off) : getResources().getString(R.string.pref_description_stateVib_on);
+                desc = !set ? getResources().getString(R.string.pref_description_stateVib_off) : getResources().getString(R.string.pref_description_stateVib_on);
                 editor.putBoolean("statVib", set);
                 tv = statVibDesc;
                 break;
 
             case R.id.T6_pref:
                 sc = T6;
-                desc = set ? getResources().getString(R.string.findT6_off) : getResources().getString(R.string.findT6_on);
+                desc = !set ? getResources().getString(R.string.findT6_off) : getResources().getString(R.string.findT6_on);
                 editor.putBoolean("callT6", set);
                 tv = T6Desc;
                 break;
             case R.id.findT4_pref:
                 sc = findT4;
-                desc = set ? getResources().getString(R.string.findT4_off) : getResources().getString(R.string.findT4_on);
+                desc = !set ? getResources().getString(R.string.findT4_off) : getResources().getString(R.string.findT4_on);
                 editor.putBoolean("callT4", set);
                 tv = findT4Desc;
                 break;
