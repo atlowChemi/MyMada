@@ -31,6 +31,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7600269766434003~4255496174"/>
+
+
         <activity
             android:name=".smsRes"
             android:label="@string/title_activity_sms_res"
@@ -219,6 +225,9 @@
             android:label="@string/title_activity_settings"
             android:theme="@style/MyMaterialTheme" />
         <activity android:name=".SettingsDesignedNotifications"
+            android:label="@string/pref_header_notifications"
+            android:theme="@style/MyMaterialTheme" />
+        <activity android:name=".SettingsDesignedNotificationsSounds"
             android:label="@string/pref_header_notifications"
             android:theme="@style/MyMaterialTheme" />
         <activity android:name=".SettingsDesignedTools"

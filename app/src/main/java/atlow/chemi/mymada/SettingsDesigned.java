@@ -19,7 +19,11 @@ import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -27,9 +31,10 @@ import java.util.List;
 
 public class SettingsDesigned extends AppCompatActivity implements View.OnClickListener {
     private SwitchCompat MappSwitch;
-    private CardView MappCard;
     private SharedPreferences sp;
     private static final int REQUEST_PERMISSION_SETTING = 101;
+    private String[] Langs = new String[] {"עברית", "English"};
+    AlertDialog langPicker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,15 +46,17 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         CardView notifications = findViewById(R.id.notif_card);
         CardView advanced = findViewById(R.id.advanced_card);
         CardView tools = findViewById(R.id.tools_card);
+        CardView lang = findViewById(R.id.lang_card);
         notifications.setOnClickListener(this);
         advanced.setOnClickListener(this);
         tools.setOnClickListener(this);
+        lang.setOnClickListener(this);
         sp = getSharedPreferences("Settings", 0);
         boolean MappBool = sp.getBoolean("Mapp", false);
         MappSwitch = findViewById(R.id.detect_switch);
         MappSwitch.setChecked(MappBool);
-        MappCard = findViewById(R.id.detect_card);
-        MappCard.setOnClickListener(this);
+        CardView mappCard = findViewById(R.id.detect_card);
+        mappCard.setOnClickListener(this);
     }
     @Override
     protected void attachBaseContext(Context base) {
@@ -66,7 +73,7 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
     }
     @Override
     public void onClick(View view) {
-        Intent intent = new Intent();
+        Intent intent = null;
         switch (view.getId()) {
             case R.id.notif_card:
                 intent = new Intent(SettingsDesigned.this, SettingsDesignedNotifications.class);
@@ -193,6 +200,10 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
                     s.putBoolean("Mapp", false);
                 }
                 s.apply();
+                break;
+            case R.id.lang_card:
+                CreateAlertDialog();
+                break;
         }
         if (intent != null)
             nextPageMover(intent);
@@ -202,15 +213,36 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         if (intent!=null)
             startActivity(intent);
     }
+    private void CreateAlertDialog() {
+        final int langToPick = LocalHelper.getLanguage(SettingsDesigned.this).equals("iw") ? 0 : 1;
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesigned.this);
+        builder.setTitle(getString(R.string.pref_title_lang));
+        builder.setNegativeButton(getString(R.string.ret), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setSingleChoiceItems(Langs, langToPick, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String locale = which == 0 ? "iw" : "en";
+                if (langToPick != which) {
+                    LocalHelper.setLocale(getApplicationContext(), locale);
+                    recreate();
+                }
+            }
+        });
+        langPicker = builder.create();
+        langPicker.show();
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
     private boolean isCallable(Intent intent) {
         try {

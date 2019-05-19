@@ -17,6 +17,9 @@
     <style name="PreferenceListHeader" parent="Theme.AppCompat.Light">
         <item name="android:textColor">@color/s_text</item>
     </style>
+    <style name="SpinnerNoArrow" parent="Widget.AppCompat.Spinner"><!--@android:style/Widget.Spinner-->
+        <item name="android:background">@android:drawable/edit_text</item>
+    </style>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->

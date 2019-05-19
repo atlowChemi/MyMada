@@ -365,4 +365,5 @@
     <string name="ContracRecover">שחזר נתונים קודמים?</string>
     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
     <string name="title_low_calls">הודעות לא קריטיות</string>
+    <string name="pick_sound">בחר צליל</string>
 </resources>
