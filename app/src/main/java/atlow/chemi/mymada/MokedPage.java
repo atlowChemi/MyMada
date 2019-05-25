@@ -8,20 +8,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -57,7 +55,7 @@ public class MokedPage extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ViewPager viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
-        if (SettingsActivity.isRTL())
+        if (SettingsDesigned.isRTL())
             viewPager.setRotationY(180);
         boolean msg = getIntent().getBooleanExtra("msg", false);
         if(!msg)
@@ -73,7 +71,7 @@ public class MokedPage extends AppCompatActivity {
                     .setPositiveButton(MokedPage.this.getResources().getString(R.string.goToSet), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent(MokedPage.this, SettingsActivity.class);
+                    Intent intent = new Intent(MokedPage.this, SettingsDesignedAdvanced.class);
                     startActivity(intent);
                 }
             }).setNegativeButton(MokedPage.this.getResources().getString(R.string.skip), new DialogInterface.OnClickListener() {
@@ -296,7 +294,7 @@ public class MokedPage extends AppCompatActivity {
                 s.apply();
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
+                startActivity(new Intent(this, SettingsDesigned.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

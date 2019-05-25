@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="atlow.chemi.mymada.MainActivity1">
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -19,7 +19,7 @@
             android:inputType="text|textAutoComplete|textAutoCorrect"
             android:singleLine="true"
             android:hint="@string/search" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

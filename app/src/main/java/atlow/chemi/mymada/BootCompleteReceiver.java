@@ -1,13 +1,11 @@
 package atlow.chemi.mymada;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.support.v4.content.ContextCompat;
+
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 
 public class BootCompleteReceiver extends BroadcastReceiver {

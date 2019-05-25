@@ -23,7 +23,7 @@
             android:textStyle="bold"
             android:gravity="center"
             android:textSize="21sp"/>
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/Apperence"
@@ -36,7 +36,7 @@
                 style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_gravity="start"
                 android:spinnerMode="dropdown" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
             android:gravity="center"
             android:layout_marginTop="4dp"
             android:layout_below="@id/Apperence"/>
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/Pulse"
@@ -60,7 +60,7 @@
                 style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_gravity="start"
                 android:spinnerMode="dropdown" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             android:textStyle="bold"
             android:gravity="center"
             android:textSize="21sp"/>
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/Grimace"
@@ -83,7 +83,7 @@
                 style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_gravity="start"
                 android:spinnerMode="dropdown" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
             android:textStyle="bold"
             android:gravity="center"
             android:layout_below="@id/Grimace"/>
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/Activity"
@@ -106,7 +106,7 @@
                 style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_gravity="start"
                 android:spinnerMode="dropdown" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -117,7 +117,7 @@
             android:textStyle="bold"
             android:gravity="center"
             android:textSize="21sp"/>
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/Respirations"
@@ -129,7 +129,7 @@
                 style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_gravity="start"
                 android:spinnerMode="dropdown" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
     </RelativeLayout>
     </ScrollView>
     <TextView

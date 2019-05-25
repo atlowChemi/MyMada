@@ -6,9 +6,9 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.graphics.drawable.DrawableCompat;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.fragment.app.Fragment;
+import androidx.core.graphics.drawable.DrawableCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
@@ -99,7 +99,7 @@ public class VitalsChecker extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View v = inflater.inflate(R.layout.activity_vital, container, false);
-        if (SettingsActivity.isRTL())
+        if (SettingsDesigned.isRTL())
             v.setRotationY(180);
         return v;
     }
@@ -117,7 +117,7 @@ public class VitalsChecker extends Fragment {
         b.setTypeface(myTypeface);
         c.setTypeface(myTypeface);
         final RadioGroup group = (RadioGroup) view.findViewById(R.id.radioAge);
-        if (!SettingsActivity.isRTL())
+        if (!SettingsDesigned.isRTL())
             group.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -161,7 +161,7 @@ public class VitalsChecker extends Fragment {
         vitalMsg.setTypeface(myTypeface);
         vitalInfBG = view.findViewById(R.id.VitalInfBG);
         vitalMsgBG = view.findViewById(R.id.VitalMsgBG);
-        if (SettingsActivity.isRTL()) {
+        if (SettingsDesigned.isRTL()) {
             vitalInfBG.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
             vitalMsgBG.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         }

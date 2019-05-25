@@ -52,6 +52,9 @@
 
     <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
 
+        <item name="android:dialogTheme">@style/Theme.Preferences.Dialog</item>
+        <item name="android:alertDialogTheme">@style/Theme.Preferences.Dialog</item>
+        <item name="android:alertDialogStyle">@style/Theme.Preferences.Dialog</item>
     </style>
 
     <style name="MyMaterialTheme.Base" parent="AppTheme">
@@ -121,19 +124,26 @@
 
     <style name="CheckBox" parent="AppTheme">
         <item name="colorAccent">@color/ColorBlue</item>
-        <item name="colorControlNormal">#32a7c3</item>
+        <item name="colorControlNormal">@color/ColorAqua</item>
         <item name="colorControlActivated">@color/ColorAqua</item>
     </style>
 
     <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!-- Used for the buttons -->
-        <item name="colorAccent">#32a7c3</item>
+        <item name="colorAccent">@color/ColorAqua</item>
+        <item name="colorControlNormal">@color/Ocean</item>
+        <item name="colorControlActivated">@color/ColorAqua</item>
+        <item name="android:buttonStyle">@style/ADButton</item>
         <!-- Used for the title and text -->
         <item name="android:textColorPrimary">#000</item>
         <!-- Used for the background -->
         <item name="android:background">#ececec</item>
     </style>
 
+    <style name="ADButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/ColorBlue</item>
+        <item name="android:textColor">@color/ColorAqua</item>
+    </style>
     <style name="FButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/ColorBlue</item>
         <item name="android:textColor">@color/ColorAqua</item>

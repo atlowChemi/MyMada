@@ -2,11 +2,10 @@ package atlow.chemi.mymada;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
+
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.fragment.app.Fragment;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +13,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class OxyCalc extends Fragment {
     private EditText psi, atm;
@@ -31,7 +28,7 @@ public class OxyCalc extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View v = inflater.inflate(R.layout.activity_oxy_calc, container, false);
-        if (SettingsActivity.isRTL())
+        if (SettingsDesigned.isRTL())
             v.setRotationY(180);
         oxyType = v.findViewById(R.id.OxyTypeS);
         psi = v.findViewById(R.id.PSI);

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:clickable="true">
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ballonType"
@@ -21,8 +21,8 @@
             style="@style/Widget.AppCompat.Spinner.Underlined"
             android:layout_gravity="start"
             android:spinnerMode="dropdown" />
-    </android.support.design.widget.TextInputLayout>
-    <android.support.design.widget.TextInputLayout
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ballonType"
@@ -38,8 +38,8 @@
             android:id="@+id/ATM"
             android:maxLength="3"
             android:hint="@string/atm"/>
-    </android.support.design.widget.TextInputLayout>
-    <android.support.design.widget.TextInputLayout
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -54,7 +54,7 @@
             android:inputType="number"
             android:maxLength="5"
             android:hint="@string/psi"/>
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

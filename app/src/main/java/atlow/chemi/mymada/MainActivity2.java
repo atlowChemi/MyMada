@@ -1,7 +1,6 @@
 package atlow.chemi.mymada;
 
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -13,24 +12,23 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
+
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.appcompat.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.telephony.SmsManager;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,7 +39,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -73,7 +70,7 @@ public class MainActivity2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View view = inflater.inflate(R.layout.activity_main2, container, false);
-        if (SettingsActivity.isRTL())
+        if (SettingsDesigned.isRTL())
             view.setRotationY(180);
         return view;
     }
@@ -90,7 +87,7 @@ public class MainActivity2 extends Fragment {
         drawable.setColor(getActivity().getResources().getColor(R.color.White));
         newPplBtn.setBackground(drawable);
         newPplBtn.setTextColor(getActivity().getResources().getColor(R.color.ColorNice));
-        if (!SettingsActivity.isRTL()) {
+        if (!SettingsDesigned.isRTL()) {
             LinearLayout l = view.findViewById(R.id.LinBtns);
             l.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         }

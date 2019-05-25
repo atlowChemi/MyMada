@@ -5,15 +5,14 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -164,7 +163,7 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
                     !apgar.isChecked() && !glazgo.isChecked() && !proto.isChecked()) {
                 Snackbar snk = Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.NoPicked), Snackbar.LENGTH_LONG);
                 View viewSnk = snk.getView();
-                TextView tv = viewSnk.findViewById(android.support.design.R.id.snackbar_text);
+                TextView tv = viewSnk.findViewById(com.google.android.material.R.id.snackbar_text);
                 tv.setTextColor(Color.WHITE);
                 snk.show();
                 sc.setChecked(true);

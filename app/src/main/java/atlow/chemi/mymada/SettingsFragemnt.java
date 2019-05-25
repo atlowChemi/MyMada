@@ -1,41 +1,23 @@
 package atlow.chemi.mymada;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.graphics.Color;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.net.Uri;
-import android.os.Build;
 import android.preference.MultiSelectListPreference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import com.google.android.material.snackbar.Snackbar;
+
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.CheckBoxPreference;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 
@@ -205,8 +187,8 @@ public class SettingsFragemnt extends PreferenceFragment {
             shabat.setOnPreferenceChangeListener(list2);
             IntPre shabatT = (IntPre) findPreference("shabatTime");
             shabatT.setDependency("shabat");
-            /*if (shabatT.getEditText().getText().toString().trim().isEmpty())
-                shabatT.setText("6");*/
+            /*if (shabat_t.getEditText().getText().toString().trim().isEmpty())
+                shabat_t.setText("6");*/
             shabatT.setOnPreferenceChangeListener(list2);
             try {
                 Crashlytics.log("trying Switch");
