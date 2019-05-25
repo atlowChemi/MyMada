@@ -198,7 +198,6 @@ public class contactActivity extends AppCompatActivity {
             }
         });
     }
-    private void NewSendChat() {}
 
     private class MyTextWatcher implements TextWatcher {
         private View view;
