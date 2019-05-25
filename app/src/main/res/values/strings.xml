@@ -144,6 +144,9 @@
     <string name="ok">אישור</string>
     <string name="codeGood">קוד הפעלה נקלט בהצלחה!\nהאפליקציה תופעל כעת!</string>
     <string name="codeBad">קוד הפעלה\nשגוי או לא קיים. נסה שנית!</string>
+    <string name="codeNotExist">נראה כי מעולם לא שלחת לנו בקשת קוד.\nבמידה ושלחת כבר פעם, אנא נסה לשלוח בקשת קוד שוב, ופרט על התקלה.</string>
+    <string name="codeUsed">הקוד כבר נוצל בעבר.\nלא ניתן להשתמש בקוד יותר מפעם אחת!\nייתכן והייתה תקלה. נסו להזין ידנית את הקוד: %s</string>
+    <string name="codeNotAllowed">קוד לא אושר לשימוש!\nייתכן ואירעה תקלה. נסה להזין קוד ידנית: %s</string>
     <string name="emailGood">האימייל הגיע אלינו\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
     <string name="emailBad">שליחה הופסקה בשל תקלה. נסה שוב!</string>
     <string name="emailInvalid">כתובת המייל שהזנת אינה תקינה!</string>
@@ -154,6 +157,7 @@
     <string name="load">טוען. אנא המתן…</string>
     <string name="permTitle">נדרשות לאפלקציה הרשאות מסוימות</string>
     <string name="permDes">האפליקציה זקוקה להרשאות מסוימות כדי לפעול כראוי.</string>
+    <string name="permDesSD">האפליקציה זקוקה לגישה לקבצים בטלפון כדי להפעיל צלצולים כראוי.</string>
     <string name="permYes">אישור הרשאות</string>
     <string name="requestGood">הבקשה הגיעה אלינו ונרשמה.\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
     <string name="plsNote">שים לב!</string>
@@ -161,7 +165,7 @@
     <string name="plsNoteCon">האפליקציה לא מזהה אותך כמתנדב. האם אתה מעוניין בקוד הפעלה או ביצירת קשר רגילה?</string>
     <string name="plsNoteConCode">אני רוצה קוד הפעלה</string>
     <string name="pickMokTtl">מוקד ברירת מחדל</string>
-    <string name="pickMokTxt">בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. אנא עבור להגדרות והגדר מרחב ברירת מחדל דרך עמוד \"הגדרות הכתבה\"</string>
+    <string name="pickMokTxt">בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. אנא עבור להגדרות והגדר מרחב ברירת מחדל</string>
     <string name="goToSet">עבור להגדרות</string>
     <string name="skip">דלג</string>
     <string name="SendNoNames">לא ניתן לשלוח ללא אנשי צוות!</string>
@@ -365,5 +369,7 @@
     <string name="ContracRecover">שחזר נתונים קודמים?</string>
     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
     <string name="title_low_calls">הודעות לא קריטיות</string>
+    <string name="title_notif">התראה</string>
     <string name="pick_sound">בחר צליל</string>
+    <string name="numberNone">לא רשמת מספר!</string>
 </resources>

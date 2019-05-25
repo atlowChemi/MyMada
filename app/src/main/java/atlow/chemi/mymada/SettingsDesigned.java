@@ -9,32 +9,29 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.util.List;
+import java.util.Locale;
 
 public class SettingsDesigned extends AppCompatActivity implements View.OnClickListener {
     private SwitchCompat MappSwitch;
     private SharedPreferences sp;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     private String[] Langs = new String[] {"עברית", "English"};
-    AlertDialog langPicker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,16 +44,25 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         CardView advanced = findViewById(R.id.advanced_card);
         CardView tools = findViewById(R.id.tools_card);
         CardView lang = findViewById(R.id.lang_card);
+        CardView info = findViewById(R.id.info_card);
         notifications.setOnClickListener(this);
         advanced.setOnClickListener(this);
         tools.setOnClickListener(this);
         lang.setOnClickListener(this);
+        info.setOnClickListener(this);
         sp = getSharedPreferences("Settings", 0);
         boolean MappBool = sp.getBoolean("Mapp", false);
         MappSwitch = findViewById(R.id.detect_switch);
         MappSwitch.setChecked(MappBool);
         CardView mappCard = findViewById(R.id.detect_card);
         mappCard.setOnClickListener(this);
+    }
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        SharedPreferences.Editor sp1 = sp.edit();
+        sp1.putBoolean("oldU", true);
+        sp1.apply();
     }
     @Override
     protected void attachBaseContext(Context base) {
@@ -79,7 +85,7 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
                 intent = new Intent(SettingsDesigned.this, SettingsDesignedNotifications.class);
                 break;
             case R.id.advanced_card:
-                intent = null;
+                intent = new Intent(SettingsDesigned.this, SettingsDesignedAdvanced.class);
                 break;
             case R.id.tools_card:
                 intent = new Intent(SettingsDesigned.this, SettingsDesignedTools.class);
@@ -202,7 +208,10 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
                 s.apply();
                 break;
             case R.id.lang_card:
-                CreateAlertDialog();
+                CreateLangDialog();
+                break;
+            case R.id.info_card:
+                CreateInfoDialog();
                 break;
         }
         if (intent != null)
@@ -213,9 +222,9 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         if (intent!=null)
             startActivity(intent);
     }
-    private void CreateAlertDialog() {
+    private void CreateLangDialog() {
         final int langToPick = LocalHelper.getLanguage(SettingsDesigned.this).equals("iw") ? 0 : 1;
-        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesigned.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesigned.this, R.style.AlertDialogStyle);
         builder.setTitle(getString(R.string.pref_title_lang));
         builder.setNegativeButton(getString(R.string.ret), new DialogInterface.OnClickListener() {
             @Override
@@ -233,8 +242,20 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
                 }
             }
         });
-        langPicker = builder.create();
+        AlertDialog langPicker = builder.create();
         langPicker.show();
+    }
+    private void CreateInfoDialog() {
+        String text = getString(R.string.pref_notifictions_explain_content);
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesigned.this, R.style.AlertDialogStyle);
+        builder.setTitle(getString(R.string.pref_notifictions_explain)).setMessage(text);
+        builder.setNegativeButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).create();
+        builder.show();
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -252,5 +273,12 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
             e.printStackTrace();
             return false;
         }
+    }
+    public static boolean isRTL() {
+        return isRTL(Locale.getDefault());
+    }
+    public static boolean isRTL(Locale locale) {
+        final int directionality = Character.getDirectionality(locale.getDisplayName().charAt(0));
+        return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT || directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
     }
 }

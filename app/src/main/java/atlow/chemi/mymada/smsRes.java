@@ -8,11 +8,7 @@ import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -20,17 +16,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.os.Vibrator;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -40,8 +33,6 @@ import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
@@ -60,6 +51,7 @@ public class smsRes extends AppCompatActivity {
     private Vibrator vibe;
     private static String Stxt = "מקרה חדש";
     public Context context;
+    private AudioManager am;
     public static float vo = 0;
     private float oldX1, oldY1;
     private boolean isMove1 = false;
@@ -69,6 +61,7 @@ public class smsRes extends AppCompatActivity {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(LocalHelper.onAttach(base));
     }
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
@@ -84,10 +77,9 @@ public class smsRes extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_res);
-        //findViewById(R.id.home).setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         Crashlytics.log("SmsRes Has Been Opened!");
         Bundle extras = getIntent().getExtras();
-        int callT = extras.getInt("callT");
+        int callT = extras != null ? extras.getInt("callT") : 1;
         switch (callT)  {
             case 1:
                 string = "T1";
@@ -120,7 +112,6 @@ public class smsRes extends AppCompatActivity {
         Uri url = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.alert);
         long[] length = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
-        boolean not = SP.getBoolean("not", true);
         boolean cut = SP.getBoolean("cut", false);
         boolean vib;
         boolean soun;
@@ -131,12 +122,14 @@ public class smsRes extends AppCompatActivity {
             soun = SP.getBoolean("NsouT4", true);
             app = SP.getBoolean("NappT4",false);
             uri = Uri.parse(SP.getString("NuRiT4", ""));
-        }   else if (cut) {
+        }
+        else if (cut) {
             vib = SP.getBoolean("Nvib" + string, true);
             soun = SP.getBoolean("Nsou" + string, true);
             app = SP.getBoolean("Napp" + string,false);
             uri = Uri.parse(SP.getString("NuRi" + string, ""));
-        }   else {
+        }
+        else {
             vib = SP.getBoolean("Nvib", true);
             soun = SP.getBoolean("Nsou", true);
             app = SP.getBoolean("Napp", false);
@@ -147,8 +140,7 @@ public class smsRes extends AppCompatActivity {
         int sleep = SP.getInt("sleep", 0);
         int nightStart = SP.getInt("nightStart", 23);
         int nightEnd = SP.getInt("nightEnd", 7);
-        if ((hour <= nightEnd || hour >= nightStart) || (hour <= nightEnd && hour >= nightStart)) {
-            //Toast.makeText(getApplicationContext(), "night!!", Toast.LENGTH_SHORT).show();
+        if (hour <= nightEnd || hour >= nightStart) {
             switch (sleep)  {
                 case 1:
                 case 4:
@@ -163,7 +155,7 @@ public class smsRes extends AppCompatActivity {
                     break;
             }
         }
-        else/* if (hour > nightEnd || hour < nightStart)*/  {
+        else {
             //Toast.makeText(getApplicationContext(), "day!!", Toast.LENGTH_SHORT).show();
             switch (sleep)  {
                 case 3:
@@ -186,10 +178,10 @@ public class smsRes extends AppCompatActivity {
         boolean statVib = SP.getBoolean("statVib",false);
         boolean silent = true;
         boolean silentVib = true;
-        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
+        am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        if(am != null && am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
             silent = false;
-        if(am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
+        if(am != null && am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
             silentVib = false;
         if (!statVib || silentVib) {
             if (vib && !loop) {
@@ -210,20 +202,18 @@ public class smsRes extends AppCompatActivity {
         if(ShabbatM)    {
             int finishTime = Integer.parseInt(SP.getString("timeK", "6")); //6 secs
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    vibe.cancel();
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                    try {
-                        if (sou && mMediaPlayer.isPlaying()) {
-                            mMediaPlayer.setVolume(vo, vo);
-                            mMediaPlayer.release();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            handler.postDelayed(() -> {
+                vibe.cancel();
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                try {
+                    if (sou && mMediaPlayer.isPlaying()) {
+                        mMediaPlayer.setVolume(vo, vo);
+                        mMediaPlayer.release();
                     }
-                    smsRes.this.finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                smsRes.this.finish();
             }, finishTime * 1000);
         }
         TextView m = findViewById(R.id.msgType);
@@ -285,7 +275,8 @@ public class smsRes extends AppCompatActivity {
             a.setText(Stxt);
             a.setMaxLines(5);
             a.setMovementMethod(new ScrollingMovementMethod());
-        } else if (!Stxt.contains("אירוע חדש") && !Stxt.contains("הודעת קבוצת התראה צוות") && !Stxt.contains("הודעת צוות"))    {
+        }
+        else if (!Stxt.contains("אירוע חדש") && !Stxt.contains("הודעת קבוצת התראה צוות") && !Stxt.contains("הודעת צוות"))    {
             try {
                 time = getBetweenStrings(Stxt, "", "מונה:");
             } catch (Exception e) {
@@ -301,7 +292,8 @@ public class smsRes extends AppCompatActivity {
             a.setText(Stxt);
             a.setMaxLines(5);
             a.setMovementMethod(new ScrollingMovementMethod());
-        } else {
+        }
+        else {
             try {
                 Address = getBetweenStrings(Stxt, "כתובת: ", " קוד");
             } catch (Exception e) {
@@ -320,7 +312,6 @@ public class smsRes extends AppCompatActivity {
                     KodH = "";
                 }
             }
-
             try {
                 KodR = getBetweenStrings(Stxt, "קוד רפואי: ", ".");
             } catch (Exception e) {
@@ -368,65 +359,55 @@ public class smsRes extends AppCompatActivity {
             colorAnim.setEvaluator(new ArgbEvaluator());
             colorAnim.start();
         }
-        //wakeLock.acquire();
         Button closeBtn = findViewById(R.id.button);
         Button infBtn = findViewById(R.id.buttonI);
-        closeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        infBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (pi != null) {
-                    try {
-                        pi.send();
-                    } catch (PendingIntent.CanceledException e) {
-                        e.printStackTrace();
-                    }
+        closeBtn.setOnClickListener(v -> finish());
+        infBtn.setOnClickListener(v -> {
+            if (pi != null) {
+                try {
+                    pi.send();
+                } catch (PendingIntent.CanceledException e) {
+                    e.printStackTrace();
                 }
-                finish();
             }
+            finish();
         });
 
         infBtn.setOnTouchListener(new MyTouchListener());
         closeBtn.setOnTouchListener(new MyTouchListener());
     }
     public static String getBetweenStrings(String text, String textFrom, String textTo) {
-        String result = "";
-        // Cut the beginning of the text to not occasionally meet a
-        // 'textTo' value in it:
-        result = text.substring(text.indexOf(textFrom) + textFrom.length(), text.length());
+        String result;
+        //Cut the beginning of the text to meet a 'textFrom' value in it:
+        result = text.substring(text.indexOf(textFrom) + textFrom.length());
         // Cut the excessive ending of the text:
         result = result.substring(0,result.indexOf(textTo));
         return result;
     }
     public static String getStartStrings(String text, String textTo) {
-        String result = "";
+        String result;
         // Cut the excessive ending of the text:
         result = text.substring(0,text.indexOf(textTo));
         return result;
     }
     public static String getEndStrings(String text, String textFrom) {
-        String result = "";
-        // Cut the beginning of the text to not occasionally meet a
-        // 'textTo' value in it:
-        result = text.substring(text.indexOf(textFrom) + textFrom.length(), text.length());
-        // Cut the excessive ending of the text:
-        /*Not needed because that it is at the end of the text*/
-        //result = result.substring(0,result.length());
+        String result;
+        // Cut the beginning of the text to find 'textFeom' value in it:
+        result = text.substring(text.indexOf(textFrom) + textFrom.length());
         return result;
     }
-    private void playSound(Context context, Uri alert, Boolean loop) {
+    private void playSound(Context context, Uri alert, boolean loop) {
         try {
-            final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-            int vol = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-            currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-            vo = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, vol, 0);
-            mMediaPlayer.setVolume(vol, vol);
+            int vol = am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+            currentVolume = am.getStreamVolume(AudioManager.STREAM_ALARM);
+            vo = am.getStreamVolume(AudioManager.STREAM_ALARM);
+            SharedPreferences SP = getSharedPreferences("Settings",0);
+            boolean volumeApp = SP.getBoolean("volumeApp", true);
+            if (volumeApp) {
+                int volumeAppNum = SP.getInt("volumeAppNum", vol);
+                am.setStreamVolume(AudioManager.STREAM_ALARM, volumeAppNum, 0);
+                mMediaPlayer.setVolume(volumeAppNum, volumeAppNum);
+            }
             mMediaPlayer.setDataSource(context, alert);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
             if(loop) {
@@ -449,34 +430,6 @@ public class smsRes extends AppCompatActivity {
     public static void alerT(PendingIntent pendingIntent)  {
             pi = pendingIntent;
     }
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-        if (height > reqHeight || width > reqWidth) {
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-        return inSampleSize;
-    }
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(res, resId, options);
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeResource(res, resId, options);
-    }
     @Override
     public void onWindowFocusChanged(boolean hasFocus)  {
         /*try {
@@ -495,20 +448,16 @@ public class smsRes extends AppCompatActivity {
     @Override
     public void onDestroy() {
         SharedPreferences SP = getSharedPreferences("settings",0);
-        final Boolean sou = SP.getBoolean("Nsou" + string, true);
+        final boolean sou = SP.getBoolean("Nsou" + string, true);
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
-        vibe.cancel();
+        if (vibe != null) {
+            vibe.cancel();
+        }
         getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        /*if (wakeLock != null && wakeLock.isHeld()) {
-            wakeLock.release();
-        }*/
         try {
             boolean isp = mMediaPlayer.isPlaying();
             if (sou && isp) {
-                final AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-                //int a = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-                //Toast.makeText(getApplicationContext(),"maxVol: " + a + "\noldVol: " + currentVolume,Toast.LENGTH_LONG).show();
-                audioManager.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
+                am.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
                 mMediaPlayer.setVolume(vo, vo);
                 mMediaPlayer.release();
             }

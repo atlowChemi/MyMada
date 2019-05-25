@@ -40,7 +40,7 @@
                 android:text="@string/radio_baby"
                 android:id="@+id/baby"/>
         </RadioGroup>
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pulsaTIL">
@@ -51,8 +51,8 @@
                 android:id="@+id/pulsa"
                 android:maxLength="3"
                 android:inputType="number"/>
-        </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/breathingTIL">
@@ -65,12 +65,12 @@
                 android:nextFocusRight="@+id/systolic"
                 android:nextFocusDown="@+id/systolic"
                 android:inputType="number"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.95"
@@ -84,14 +84,14 @@
                     android:maxLength="3"
                     android:inputType="number"
                     android:id="@+id/systolic"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:text="/"
                 android:textSize="40sp"/>
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.95"
@@ -105,7 +105,7 @@
                     android:inputType="number"
                     android:imeOptions="actionDone"
                     android:id="@+id/diastolic" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
         <TextView
             android:layout_width="match_parent"

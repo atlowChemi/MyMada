@@ -1,29 +1,33 @@
 package atlow.chemi.mymada;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
+import android.provider.Settings;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
 public class SettingsDesignedNotificationsSounds extends AppCompatActivity implements View.OnClickListener {
-    private SharedPreferences sp;
+    private SharedPreferences sp, permissionStatus;
+    private static final int PERMISSION_T = 100, PERMISSION_T1 = 101, PERMISSION_T2 = 102, PERMISSION_T3 = 103, PERMISSION_T4 = 104;
+    private String[] permissionsRequired = {android.Manifest.permission.READ_EXTERNAL_STORAGE};
+    private int retPer = PERMISSION_T;
+    private boolean sentToSettings = false;
     //T
     private ConstraintLayout NappT_Pref, NrinT_Pref;
     private TextView NvibT_Desc, NsouT_Desc, NappT_Desc;
@@ -52,6 +56,7 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        permissionStatus = getSharedPreferences("permissionStatus",MODE_PRIVATE);
 
         //set view of T's we Might hide soon.
         ConstraintLayout trueCut = findViewById(R.id.true_cut);
@@ -130,19 +135,19 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
             NrinT3_Pref.setOnClickListener(this);
             //get shared preferences
             /*T1*/
-            boolean findT1B = sp.getBoolean("callT1", false);
-            boolean NvibT1B = sp.getBoolean("NvibT1", false);
-            boolean NsouT1B = sp.getBoolean("NsouT1", false);
+            boolean findT1B = sp.getBoolean("callT1", true);
+            boolean NvibT1B = sp.getBoolean("NvibT1", true);
+            boolean NsouT1B = sp.getBoolean("NsouT1", true);
             boolean NappT1B = sp.getBoolean("NappT1", false);
             /*T2*/
-            boolean findT2B = sp.getBoolean("callT2", false);
-            boolean NvibT2B = sp.getBoolean("NvibT2", false);
-            boolean NsouT2B = sp.getBoolean("NsouT2", false);
+            boolean findT2B = sp.getBoolean("callT2", true);
+            boolean NvibT2B = sp.getBoolean("NvibT2", true);
+            boolean NsouT2B = sp.getBoolean("NsouT2", true);
             boolean NappT2B = sp.getBoolean("NappT2", false);
             /*T2*/
-            boolean findT3B = sp.getBoolean("callT3", false);
-            boolean NvibT3B = sp.getBoolean("NvibT3", false);
-            boolean NsouT3B = sp.getBoolean("NsouT3", false);
+            boolean findT3B = sp.getBoolean("callT3", true);
+            boolean NvibT3B = sp.getBoolean("NvibT3", true);
+            boolean NsouT3B = sp.getBoolean("NsouT3", true);
             boolean NappT3B = sp.getBoolean("NappT3", false);
             //set the switches
             /*T1*/
@@ -160,7 +165,8 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
             setTrueOrFalse(NvibT3B, NvibT3_Pref.getId());
             setTrueOrFalse(NsouT3B, NsouT3_Pref.getId());
             setTrueOrFalse(NappT3B, NappT3_Pref.getId());
-        } else {
+        }
+        else {
             trueCut.setVisibility(View.GONE);
             falseCut.setVisibility(View.VISIBLE);
             //set all views relevant
@@ -180,8 +186,8 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
             NappT_Pref.setOnClickListener(this);
             NrinT_Pref.setOnClickListener(this);
             //get shared preferences
-            boolean NvibTB = sp.getBoolean("Nvib", false);
-            boolean NsouTB = sp.getBoolean("Nsou", false);
+            boolean NvibTB = sp.getBoolean("Nvib", true);
+            boolean NsouTB = sp.getBoolean("Nsou", true);
             boolean NappTB = sp.getBoolean("Napp", false);
             //set the switches
             setTrueOrFalse(NvibTB, NvibT_Pref.getId());
@@ -211,8 +217,8 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
             NappT4_Pref.setOnClickListener(this);
             NrinT4_Pref.setOnClickListener(this);
             //get shared preferences
-            boolean NvibT4B = sp.getBoolean("NvibT4", false);
-            boolean NsouT4B = sp.getBoolean("NsouT4", false);
+            boolean NvibT4B = sp.getBoolean("NvibT4", true);
+            boolean NsouT4B = sp.getBoolean("NsouT4", true);
             boolean NappT4B = sp.getBoolean("NappT4", false);
             //set the switches
             setTrueOrFalse(NvibT4B, NvibT4_Pref.getId());
@@ -246,7 +252,7 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
         SwitchCompat sc = null;
         String desc = null;
         TextView tv = null;
-        boolean newB = false;
+        boolean newB;
         SharedPreferences.Editor editor = sp.edit();
         switch (view.getId()) {
             /*T***/
@@ -286,14 +292,10 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 newB = !sc.isChecked();
                 desc = findT1.isChecked() ? getResources().getString(R.string.findT1_off) : getResources().getString(R.string.findT1_on);
                 editor.putBoolean("callT1", !sc.isChecked());
-                NvibT1_Pref.setClickable(newB);
-                NvibT1_Pref.setAlpha(newB ? 1 : 0.4f);
-                NsouT1_Pref.setClickable(newB);
-                NsouT1_Pref.setAlpha(newB ? 1 : 0.4f);
-                NappT1_Pref.setClickable(newB && NsouT1.isChecked());
-                NappT1_Pref.setAlpha(newB && NsouT1.isChecked() ? 1 : 0.4f);
-                NrinT1_Pref.setClickable(newB && NappT1.isChecked());
-                NrinT1_Pref.setAlpha(newB && NappT1.isChecked() ? 1 : 0.4f);
+                NvibT1_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
+                NsouT1_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
+                NappT1_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
+                NrinT1_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
                 tv = findT1_Desc;
                 break;
             case R.id.NvibT1_pref:
@@ -332,14 +334,10 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 newB = !sc.isChecked();
                 desc = findT2.isChecked() ? getResources().getString(R.string.findT2_off) : getResources().getString(R.string.findT2_on);
                 editor.putBoolean("callT2", !sc.isChecked());
-                NvibT2_Pref.setClickable(newB);
-                NvibT2_Pref.setAlpha(newB ? 1 : 0.4f);
-                NsouT2_Pref.setClickable(newB);
-                NsouT2_Pref.setAlpha(newB ? 1 : 0.4f);
-                NappT2_Pref.setClickable(newB && NsouT2.isChecked());
-                NappT2_Pref.setAlpha(newB && NsouT2.isChecked() ? 1 : 0.4f);
-                NrinT2_Pref.setClickable(newB && NappT2.isChecked());
-                NrinT2_Pref.setAlpha(newB && NappT2.isChecked() ? 1 : 0.4f);
+                NvibT2_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
+                NsouT2_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
+                NappT2_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
+                NrinT2_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
                 tv = findT2_Desc;
                 break;
             case R.id.NvibT2_pref:
@@ -378,14 +376,10 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 newB = !sc.isChecked();
                 desc = findT3.isChecked() ? getResources().getString(R.string.findT3_off) : getResources().getString(R.string.findT3_on);
                 editor.putBoolean("callT3", !sc.isChecked());
-                NvibT3_Pref.setClickable(newB);
-                NvibT3_Pref.setAlpha(newB ? 1 : 0.4f);
-                NsouT3_Pref.setClickable(newB);
-                NsouT3_Pref.setAlpha(newB ? 1 : 0.4f);
-                NappT3_Pref.setClickable(newB && NsouT3.isChecked());
-                NappT3_Pref.setAlpha(newB && NsouT3.isChecked() ? 1 : 0.4f);
-                NrinT3_Pref.setClickable(newB && NappT3.isChecked());
-                NrinT3_Pref.setAlpha(newB && NappT3.isChecked() ? 1 : 0.4f);
+                NvibT3_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
+                NsouT3_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
+                NappT3_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
+                NrinT3_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
                 tv = findT3_Desc;
                 break;
             case R.id.NvibT3_pref:
@@ -483,8 +477,8 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 sc = NappT;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("Napp", set);
-                NrinT_Pref.setClickable(set);
-                NrinT_Pref.setAlpha(set ? 1 : 0.4f);
+                NrinT_Pref.setClickable(set && NsouT.isChecked());
+                NrinT_Pref.setAlpha(set && NsouT.isChecked() ? 1 : 0.4f);
                 tv = NappT_Desc;
                 break;
             /*T1***/
@@ -493,14 +487,10 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 desc = !set ? getResources().getString(R.string.findT1_off) : getResources().getString(R.string.findT1_on);
                 editor.putBoolean("callT1", set);
                 tv = findT1_Desc;
-                NvibT1_Pref.setClickable(set);
-                NvibT1_Pref.setAlpha(set ? 1 : 0.4f);
-                NsouT1_Pref.setClickable(set);
-                NsouT1_Pref.setAlpha(set ? 1 : 0.4f);
-                NappT1_Pref.setClickable(set);
-                NappT1_Pref.setAlpha(set ? 1 : 0.4f);
-                NrinT1_Pref.setClickable(set && NappT1.isChecked());
-                NrinT1_Pref.setAlpha(set && NappT1.isChecked() ? 1 : 0.4f);
+                NvibT1_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
+                NsouT1_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
+                NappT1_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
+                NrinT1_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
                 break;
             case R.id.NvibT1_pref:
                 sc = NvibT1;
@@ -522,8 +512,8 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 sc = NappT1;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("NappT1", set);
-                NrinT1_Pref.setClickable(set);
-                NrinT1_Pref.setAlpha(set ? 1 : 0.4f);
+                NrinT1_Pref.setClickable(set && NsouT1.isChecked());
+                NrinT1_Pref.setAlpha(set && NsouT1.isChecked() ? 1 : 0.4f);
                 tv = NappT1_Desc;
                 break;
             /*T2***/
@@ -532,14 +522,10 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 desc = !set ? getResources().getString(R.string.findT2_off) : getResources().getString(R.string.findT2_on);
                 editor.putBoolean("callT2", set);
                 tv = findT2_Desc;
-                NvibT2_Pref.setClickable(set);
-                NvibT2_Pref.setAlpha(set ? 1 : 0.4f);
-                NsouT2_Pref.setClickable(set);
-                NsouT2_Pref.setAlpha(set ? 1 : 0.4f);
-                NappT2_Pref.setClickable(set);
-                NappT2_Pref.setAlpha(set ? 1 : 0.4f);
-                NrinT2_Pref.setClickable(set && NappT2.isChecked());
-                NrinT2_Pref.setAlpha(set && NappT2.isChecked() ? 1 : 0.4f);
+                NvibT2_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
+                NsouT2_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
+                NappT2_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
+                NrinT2_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
                 break;
             case R.id.NvibT2_pref:
                 sc = NvibT2;
@@ -561,8 +547,8 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 sc = NappT2;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("NappT2", set);
-                NrinT2_Pref.setClickable(set);
-                NrinT2_Pref.setAlpha(set ? 1 : 0.4f);
+                NrinT2_Pref.setClickable(set && NsouT2.isChecked());
+                NrinT2_Pref.setAlpha(set && NsouT2.isChecked() ? 1 : 0.4f);
                 tv = NappT2_Desc;
                 break;
             /*T3***/
@@ -571,14 +557,10 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 desc = !set ? getResources().getString(R.string.findT3_off) : getResources().getString(R.string.findT3_on);
                 editor.putBoolean("callT3", set);
                 tv = findT3_Desc;
-                NvibT3_Pref.setClickable(set);
-                NvibT3_Pref.setAlpha(set ? 1 : 0.4f);
-                NsouT3_Pref.setClickable(set);
-                NsouT3_Pref.setAlpha(set ? 1 : 0.4f);
-                NappT3_Pref.setClickable(set);
-                NappT3_Pref.setAlpha(set ? 1 : 0.4f);
-                NrinT3_Pref.setClickable(set && NappT3.isChecked());
-                NrinT3_Pref.setAlpha(set && NappT3.isChecked() ? 1 : 0.4f);
+                NvibT3_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
+                NsouT3_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
+                NappT3_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
+                NrinT3_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
                 break;
             case R.id.NvibT3_pref:
                 sc = NvibT3;
@@ -600,8 +582,8 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 sc = NappT3;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("NappT3", set);
-                NrinT3_Pref.setClickable(set);
-                NrinT3_Pref.setAlpha(set ? 1 : 0.4f);
+                NrinT3_Pref.setClickable(set && NsouT3.isChecked());
+                NrinT3_Pref.setAlpha(set && NsouT3.isChecked() ? 1 : 0.4f);
                 tv = NappT3_Desc;
                 break;
             /*T4***/
@@ -625,8 +607,8 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 sc = NappT4;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("NappT4", set);
-                NrinT4_Pref.setClickable(set);
-                NrinT4_Pref.setAlpha(set ? 1 : 0.4f);
+                NrinT4_Pref.setClickable(set && NsouT4.isChecked());
+                NrinT4_Pref.setAlpha(set && NsouT4.isChecked() ? 1 : 0.4f);
                 tv = NappT4_Desc;
                 break;
         }
@@ -637,39 +619,106 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
         }
     }
     private void ringtoner(int T) {
-        String uri = T > 0 ? "NuRiT" + T : "NuRi";
-        Toast.makeText(this, uri, Toast.LENGTH_SHORT).show();
-        Intent picker = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-        picker.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, getString(R.string.pick_sound));
-        picker.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
-        picker.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-        picker.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
-        picker.putExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, Uri.parse(sp.getString(uri, "")));
-        SettingsDesignedNotificationsSounds.this.startActivityForResult(picker, T);
+        retPer = T == 0 ? PERMISSION_T : T == 1 ? PERMISSION_T1 : T == 2 ? PERMISSION_T2 : T == 3 ? PERMISSION_T3 : PERMISSION_T4;
+        if(ActivityCompat.checkSelfPermission(SettingsDesignedNotificationsSounds.this, permissionsRequired[0]) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(SettingsDesignedNotificationsSounds.this, permissionsRequired[0])) {
+                //Show Information about why you need the permission
+                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesignedNotificationsSounds.this, R.style.AlertDialogStyle);
+                builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
+                builder.setMessage(getApplicationContext().getResources().getString(R.string.permDesSD));
+                builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        ActivityCompat.requestPermissions(SettingsDesignedNotificationsSounds.this, permissionsRequired, retPer);
+                    }
+                });
+                builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+            }
+            else if (permissionStatus.getBoolean(permissionsRequired[0], false)) {
+                //Previously Permission Request was cancelled with 'Dont Ask Again',
+                // Redirect to Settings after showing Information about why you need the permission
+                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesignedNotificationsSounds.this, R.style.AlertDialogStyle);
+                builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
+                builder.setMessage(getApplicationContext().getResources().getString(R.string.permDesSD));
+                builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        sentToSettings = true;
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivityForResult(intent, retPer);
+                    }
+                });
+                builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+            }
+            else {
+                //just request the permission
+                ActivityCompat.requestPermissions(SettingsDesignedNotificationsSounds.this, permissionsRequired, retPer);
+            }
+            SharedPreferences.Editor editor = permissionStatus.edit();
+            editor.putBoolean(permissionsRequired[0],true);
+            editor.apply();
+        }
+        else {
+            String uri = T > 0 ? "NuRiT" + T : "NuRi";
+            Intent picker = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, getString(R.string.pick_sound));
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, Uri.parse(sp.getString(uri, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString())));
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(sp.getString(uri, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString())));
+            SettingsDesignedNotificationsSounds.this.startActivityForResult(picker, T);
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Uri ringUri = null;
-        String f;
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri ringUri;
+        if (requestCode >99 && requestCode < 105) {
+            if (ActivityCompat.checkSelfPermission(SettingsDesignedNotificationsSounds.this, permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED) {
+                //Got Permission
+                SharedPreferences.Editor ed = sp.edit();
+                ed.putBoolean("allowed", true);
+                ed.apply();
+                ringtoner(requestCode-100);
+            }
+        }
         if (resultCode == RESULT_OK) {
             ringUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-            f = ringUri.toString();
-            switch (requestCode) {
-                case 0:
-                    Toast.makeText(this, f, Toast.LENGTH_SHORT).show();
-                    break;
-                case 1:
-                    Toast.makeText(this, f, Toast.LENGTH_SHORT).show();
-                    break;
-                case 2:
-                    Toast.makeText(this, f, Toast.LENGTH_SHORT).show();
-                    break;
-                case 3:
-                    Toast.makeText(this, f, Toast.LENGTH_SHORT).show();
-                    break;
-                case 4:
-                    Toast.makeText(this, f, Toast.LENGTH_SHORT).show();
-                    break;
+            SharedPreferences.Editor spe = sp.edit();
+            if (requestCode == 0) {
+                spe.putString("NuRi", ringUri.toString());
+            } else if (requestCode == 1 || requestCode == 2 || requestCode == 3 || requestCode == 4) {
+                spe.putString("NuRiT" + requestCode, ringUri.toString());
+            }
+            spe.apply();
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode >99 && requestCode < 105) {
+            if (ActivityCompat.checkSelfPermission(SettingsDesignedNotificationsSounds.this, permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED) {
+                //Got Permission
+                SharedPreferences.Editor ed = sp.edit();
+                ed.putBoolean("allowed", true);
+                ed.apply();
+                ringtoner(requestCode-100);
             }
         }
     }

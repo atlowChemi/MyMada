@@ -4,11 +4,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.support.v7.app.AlertDialog;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,7 +22,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.database.DataSnapshot;
@@ -29,17 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class codeC extends AppCompatActivity {
     private Button send;
@@ -154,36 +145,27 @@ public class codeC extends AppCompatActivity {
     private void di(String err)   {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
         builder.setTitle(getResources().getString(R.string.err)).setMessage(err).setCancelable(false)
-                .setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                .setNegativeButton(getResources().getString(R.string.ok), (dialog, id) -> dialog.cancel());
         final AlertDialog alert = builder.create();
         TextView textView = alert.findViewById(android.R.id.message);
         final Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         if (textView!= null)
             textView.setTypeface(myTypeface);
-        alert.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
+        alert.setOnShowListener((dialogInterface) -> {
                 Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                 canc.setTypeface(myTypeface);
-            }
         });
         alert.show();
     }
     private void gooddi(String good)   {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
         builder.setMessage(good).setCancelable(false)
-                .setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                .setNegativeButton(getResources().getString(R.string.ok), (dialog, id) -> {
                         Intent i2 = new Intent(getApplicationContext(), MokedPage.class);
                         i2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         finish();
                         startActivity(i2);
                         dialog.cancel();
-                    }
                 });
         AlertDialog alert = builder.create();
         alert.show();
@@ -194,15 +176,16 @@ public class codeC extends AppCompatActivity {
             key = preferences.getString("firebaseGenratedKey", "");
         }
         if (key.trim().length() == 0) {
-            di("נראה כי מעולם לא שלחת לנו בקשת קוד.\nבמידה ושלחת כבר פעם, אנא נסה לשלוח בקשת קוד שוב, ופרט על התקלה.");
-        } else {
+            di(getString(R.string.codeNotExist));
+        }
+        else {
             pdialog.show();
             mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
             mFirebaseDatabase = mFirebaseDatabase.child("codes");
             mFirebaseDatabase = mFirebaseDatabase.child(key);
             mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String name = dataSnapshot.child("name").getValue(String.class);
                     String reason = dataSnapshot.child("reason").getValue(String.class);
@@ -222,9 +205,9 @@ public class codeC extends AppCompatActivity {
                     }
                     if (myCode.equals(code)) {
                         if (used)
-                            di("הקוד כבר נוצל בעבר.\nלא ניתן להשתמש בקוד יותר מפעם אחת!\nייתכן והייתה תקלה. נסו להזין ידנית את הקוד:\n" + myCode);
+                            di(getString(R.string.codeUsed, myCode));
                         else if (!allowed)
-                            di("קוד לא אושר לשימוש!\nייתכן ואירעה תקלה. נסה להזין קוד ידנית:\n" + myCode);
+                            di(getString(R.string.codeNotAllowed, myCode));
                         else {
                             mFirebaseDatabase.child("used").setValue(true);
                             gooddi(getResources().getString(R.string.codeGood));
@@ -234,7 +217,7 @@ public class codeC extends AppCompatActivity {
                             sp1.apply();
                         }
                     } else {
-                        di("הקוד שהוזן שגוי!");
+                        di(getString(R.string.codeBad));
                     }
                     pdialog.cancel();
                 }

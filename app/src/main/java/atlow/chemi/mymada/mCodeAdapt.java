@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.v4.widget.CompoundButtonCompat;
+import androidx.annotation.NonNull;
+import androidx.core.widget.CompoundButtonCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.TreeSet;
 
 class mCodeAdapt extends ArrayAdapter<mCodeKid> {
     private Context mContext;

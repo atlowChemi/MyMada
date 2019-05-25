@@ -5,6 +5,8 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import java.lang.reflect.Field;
 
 public class FixedTextInputEditText extends TextInputEditText {

@@ -4,16 +4,12 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
-import android.*;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -21,47 +17,35 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.app.PendingIntent;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.AppCompatCheckBox;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.util.AttributeSet;
+
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
+
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -70,7 +54,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 
 public class HomePage extends AppCompatActivity {
@@ -78,7 +61,7 @@ public class HomePage extends AppCompatActivity {
     private Context context;
     private Typeface myTypeface;
     private static final int PERMISSION_CALLBACK_CONSTANT = 100, REQUEST_PERMISSION_SETTING = 101;
-    String[] permissionsRequired = new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE};
+    String[] permissionsRequired = new String[]{Manifest.permission.READ_PHONE_STATE};
     private SharedPreferences permissionStatus;
     private boolean sentToSettings = false;
     private homeBAdapter adapter;
@@ -161,9 +144,8 @@ public class HomePage extends AppCompatActivity {
             }
         });
         permissionStatus = getSharedPreferences("permissionStatus",MODE_PRIVATE);
-        if(ActivityCompat.checkSelfPermission(HomePage.this, permissionsRequired[0]) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(HomePage.this, permissionsRequired[1]) != PackageManager.PERMISSION_GRANTED)    {
-            if(ActivityCompat.shouldShowRequestPermissionRationale(HomePage.this,permissionsRequired[0]) || ActivityCompat.shouldShowRequestPermissionRationale(HomePage.this,permissionsRequired[1])){
+        if(ActivityCompat.checkSelfPermission(HomePage.this, permissionsRequired[0]) != PackageManager.PERMISSION_GRANTED)    {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(HomePage.this,permissionsRequired[0])){
                 //Show Information about why you need the permission
                 AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this, R.style.AlertDialogStyle);
                 builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
@@ -182,7 +164,7 @@ public class HomePage extends AppCompatActivity {
                     }
                 });
                 builder.show();
-            } else if (permissionStatus.getBoolean(permissionsRequired[0],false) || permissionStatus.getBoolean(permissionsRequired[1],false)) {
+            } else if (permissionStatus.getBoolean(permissionsRequired[0],false)) {
                 //Previously Permission Request was cancelled with 'Dont Ask Again',
                 // Redirect to Settings after showing Information about why you need the permission
                 AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this, R.style.AlertDialogStyle);
@@ -206,13 +188,13 @@ public class HomePage extends AppCompatActivity {
                     }
                 });
                 builder.show();
-            }  else {
+            }
+            else {
                 //just request the permission
                 ActivityCompat.requestPermissions(HomePage.this,permissionsRequired,PERMISSION_CALLBACK_CONSTANT);
             }
             SharedPreferences.Editor editor = permissionStatus.edit();
             editor.putBoolean(permissionsRequired[0],true);
-            editor.putBoolean(permissionsRequired[1],true);
             editor.apply();
         }
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -226,7 +208,7 @@ public class HomePage extends AppCompatActivity {
             builder.setMessage(getResources().getString(R.string.newSettings)).setCancelable(false)
                     .setPositiveButton(getResources().getString(R.string.title_activity_settings), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), SettingsDesigned.class);
                             startActivity(intent);
                         }
                     })
@@ -411,10 +393,8 @@ public class HomePage extends AppCompatActivity {
             }
         }
     }
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        if (sentToSettings) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_CALLBACK_CONSTANT) {
             if (ActivityCompat.checkSelfPermission(HomePage.this, permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED) {
                 //Got Permission
                 SharedPreferences sp = getSharedPreferences("Settings", 0);
@@ -562,7 +542,7 @@ public class HomePage extends AppCompatActivity {
                 s.apply();
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
+                startActivity(new Intent(this, SettingsDesigned.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

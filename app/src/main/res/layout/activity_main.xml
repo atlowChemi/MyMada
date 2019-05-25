@@ -18,14 +18,14 @@
         android:layout_above="@id/tofes_card_view"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/rap">
-            <android.support.v4.widget.NestedScrollView
+            <androidx.core.widget.NestedScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/scM">
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/M1ambulanceNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -38,8 +38,8 @@
                 android:maxLength="4"
                 android:inputType="numberDecimal"
                 android:hint="@string/ambN" />
-    </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/M1visaNumber"
             android:layout_below="@+id/M1ambulanceNumber"
             android:layout_width="match_parent"
@@ -53,8 +53,8 @@
                 android:maxLength="4"
                 android:inputType="numberDecimal"
                 android:hint="@string/visa" />
-        </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/M1address"
             android:layout_below="@+id/M1visaNumber"
             android:layout_width="match_parent"
@@ -68,8 +68,8 @@
                 android:gravity="start"
                 android:inputType="text"
                 android:hint="@string/address" />
-        </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/M1HoleNifga"
             android:layout_below="@+id/M1address"
             android:layout_width="match_parent"
@@ -83,8 +83,8 @@
                 android:gravity="start"
                 android:inputType="number"
                 android:hint="@string/HN" />
-        </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/M1Hitchayvut"
             android:layout_below="@+id/M1HoleNifga"
         android:layout_width="match_parent"
@@ -98,8 +98,8 @@
             android:gravity="start"
             android:inputType="numberDecimal"
             android:hint="@string/HT" />
-    </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/M1Schum"
             android:layout_below="@+id/M1Hitchayvut"
             android:layout_width="match_parent"
@@ -114,8 +114,8 @@
                 android:maxLength="4"
                 android:inputType="number"
                 android:hint="@string/SUM" />
-        </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/M1firstName"
             android:layout_below="@+id/M1Schum"
             android:layout_width="match_parent"
@@ -129,8 +129,8 @@
                 android:gravity="start"
                 android:inputType="text"
                 android:hint="@string/Fna" />
-        </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/M1familyName"
             android:layout_below="@+id/M1firstName"
             android:layout_width="match_parent"
@@ -145,9 +145,9 @@
                 android:imeOptions="actionNext"
                 android:inputType="text"
                 android:hint="@string/Lna" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/M1MedicalCode"
             android:layout_below="@+id/M1familyName"
             android:layout_width="match_parent"
@@ -163,11 +163,11 @@
                 android:inputType="number"
                 android:imeOptions="actionNext"
                 android:hint="@string/pickC" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
     </RelativeLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
     </RelativeLayout>
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/tofes_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -193,5 +193,5 @@
         android:text="@string/succ"
         android:textColor="#FFF"
         android:textSize="20sp" />
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </RelativeLayout>

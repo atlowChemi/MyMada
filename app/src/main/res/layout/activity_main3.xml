@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     android:id="@+id/main3"
     tools:context="atlow.chemi.mymada.MainActivity3">
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/freeMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,8 +27,8 @@
             android:lines="6"
             android:inputType="textMultiLine"
             android:hint="@string/toMoked" />
-    </android.support.design.widget.TextInputLayout>
-    <android.support.v7.widget.CardView
+    </com.google.android.material.textfield.TextInputLayout>
+    <androidx.cardview.widget.CardView
         android:id="@+id/free_send_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -53,5 +53,5 @@
         android:text="@string/succ"
         android:textColor="#FFF"
         android:textSize="20sp" />
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </RelativeLayout>

@@ -10,15 +10,11 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.support.v4.app.NotificationCompat;
-import android.view.animation.Animation;
-import android.widget.TextView;
+
+import androidx.core.app.NotificationCompat;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import static atlow.chemi.mymada.MetroActivity.MetroRun;
 import static atlow.chemi.mymada.MetroActivity.startAnim;

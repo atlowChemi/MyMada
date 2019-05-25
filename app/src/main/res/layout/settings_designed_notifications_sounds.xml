@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".SettingsDesignedNotifications">
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/ColorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
-    </android.support.design.widget.AppBarLayout>
-    <android.support.v4.widget.NestedScrollView
+    </com.google.android.material.appbar.AppBarLayout>
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <android.support.constraint.ConstraintLayout
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <android.support.constraint.ConstraintLayout
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp">
+            <!--mehubarot-->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/false_cut"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,20 +47,20 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/callTypeAll" />
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/callTypeAll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/callTypeAll_tv">
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NvibT_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         app:layout_constraintTop_toTopOf="parent">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NvibT"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -100,14 +102,14 @@
                             android:layout_marginTop="3dp"
                             android:background="@color/ColorBlueAlpha"
                             app:layout_constraintTop_toBottomOf="@+id/NvibT_Desc" />
-                </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NsouT_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@+id/NvibT_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NsouT"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -149,14 +151,14 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@+id/NsouT_Desc" />
-                </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NappT_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@+id/NsouT_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NappT"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -188,6 +190,7 @@
                             android:layout_marginEnd="8dp"
                             android:text="@string/pref_description_app_off"
                             android:textSize="16sp"
+                            android:minLines="2"
                             app:layout_constraintEnd_toStartOf="@+id/NappT"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/NappT_Title" />
@@ -198,8 +201,8 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@+id/NappT_Desc" />
-                </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NrinT_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -211,17 +214,19 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="2dp"
                             android:layout_marginEnd="8dp"
-                            android:paddingBottom="20dp"
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
                             android:text="@string/pref_title_ringtone"
                             android:textSize="21sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent" />
-                </android.support.constraint.ConstraintLayout>
-            </android.support.constraint.ConstraintLayout>
-            </android.support.constraint.ConstraintLayout>
-            <android.support.constraint.ConstraintLayout
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!--mefutzalot-->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/true_cut"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -239,20 +244,20 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toTopOf="@+id/callType1" />
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/callType1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cut1_tv">
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/findT1_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toTopOf="parent">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/findT1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -295,14 +300,14 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@+id/findT1_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/NvibT1_pref"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     app:layout_constraintTop_toBottomOf="@+id/findT1_pref">
-                    <android.support.v7.widget.SwitchCompat
+                    <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/NvibT1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -344,14 +349,14 @@
                         android:layout_marginTop="3dp"
                         android:background="@color/ColorBlueAlpha"
                         app:layout_constraintTop_toBottomOf="@+id/NvibT1_Desc" />
-                </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/NsouT1_pref"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
                     app:layout_constraintTop_toBottomOf="@+id/NvibT1_pref">
-                    <android.support.v7.widget.SwitchCompat
+                    <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/NsouT1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -393,14 +398,14 @@
                         android:background="@color/ColorBlueAlpha"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@+id/NsouT1_Desc" />
-                </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/NappT1_pref"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
                     app:layout_constraintTop_toBottomOf="@+id/NsouT1_pref">
-                    <android.support.v7.widget.SwitchCompat
+                    <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/NappT1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -432,6 +437,7 @@
                         android:layout_marginEnd="8dp"
                         android:text="@string/pref_description_app_off"
                         android:textSize="16sp"
+                        android:minLines="2"
                         app:layout_constraintEnd_toStartOf="@+id/NappT1"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/NappT1_Title" />
@@ -442,8 +448,8 @@
                         android:background="@color/ColorBlueAlpha"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@+id/NappT1_Desc" />
-                </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/NrinT1_pref"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -455,15 +461,16 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginEnd="8dp"
-                        android:paddingBottom="20dp"
+                        android:paddingBottom="15dp"
+                        android:paddingTop="15dp"
                         android:text="@string/pref_title_ringtone"
                         android:textSize="21sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />
-                </android.support.constraint.ConstraintLayout>
-                </android.support.constraint.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
                 <TextView
                     android:id="@+id/cut2_tv"
                     android:layout_width="0dp"
@@ -475,20 +482,20 @@
                     android:textColor="@color/Ocean"
                     app:layout_constraintTop_toBottomOf="@id/callType1"
                     app:layout_constraintStart_toStartOf="parent" />
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/callType2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cut2_tv">
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/findT2_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toTopOf="parent">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/findT2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -531,14 +538,14 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@id/findT2_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NvibT2_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         app:layout_constraintTop_toBottomOf="@+id/findT2_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NvibT2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -580,14 +587,14 @@
                             android:layout_marginTop="3dp"
                             android:background="@color/ColorBlueAlpha"
                             app:layout_constraintTop_toBottomOf="@+id/NvibT2_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NsouT2_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@+id/NvibT2_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NsouT2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -629,14 +636,14 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@+id/NsouT2_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NappT2_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@id/NsouT2_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NappT2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -668,6 +675,7 @@
                             android:layout_marginEnd="8dp"
                             android:text="@string/pref_description_app_off"
                             android:textSize="16sp"
+                            android:minLines="2"
                             app:layout_constraintEnd_toStartOf="@+id/NappT2"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/NappT2_Title" />
@@ -678,8 +686,8 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@+id/NappT2_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NrinT2_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -691,15 +699,16 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="2dp"
                             android:layout_marginEnd="8dp"
-                            android:paddingBottom="20dp"
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
                             android:text="@string/pref_title_ringtone"
                             android:textSize="21sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent" />
-                    </android.support.constraint.ConstraintLayout>
-                </android.support.constraint.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
                 <TextView
                     android:id="@+id/cut3_tv"
                     android:layout_width="0dp"
@@ -711,20 +720,20 @@
                     android:textColor="@color/Ocean"
                     app:layout_constraintTop_toBottomOf="@id/callType2"
                     app:layout_constraintStart_toStartOf="parent" />
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/callType3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cut3_tv">
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/findT3_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toTopOf="parent">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/findT3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -767,14 +776,14 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@id/findT3_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NvibT3_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         app:layout_constraintTop_toBottomOf="@+id/findT3_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NvibT3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -816,14 +825,14 @@
                             android:layout_marginTop="3dp"
                             android:background="@color/ColorBlueAlpha"
                             app:layout_constraintTop_toBottomOf="@+id/NvibT3_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NsouT3_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@+id/NvibT3_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NsouT3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -865,14 +874,14 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@+id/NsouT3_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NappT3_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@id/NsouT3_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NappT3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -904,6 +913,7 @@
                             android:layout_marginEnd="8dp"
                             android:text="@string/pref_description_app_off"
                             android:textSize="16sp"
+                            android:minLines="2"
                             app:layout_constraintEnd_toStartOf="@+id/NappT3"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/NappT3_Title" />
@@ -914,8 +924,8 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@+id/NappT3_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NrinT3_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -927,17 +937,19 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="2dp"
                             android:layout_marginEnd="8dp"
-                            android:paddingBottom="20dp"
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
                             android:text="@string/pref_title_ringtone"
                             android:textSize="21sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent" />
-                    </android.support.constraint.ConstraintLayout>
-                </android.support.constraint.ConstraintLayout>
-            </android.support.constraint.ConstraintLayout>
-            <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!--minhaltiot-->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/non_critical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -955,20 +967,20 @@
                     android:textColor="@color/Ocean"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/callTypeNonCritical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/callTypeNonCritical_tv">
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NvibT4_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         app:layout_constraintTop_toTopOf="parent">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NvibT4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -1010,14 +1022,14 @@
                             android:layout_marginTop="3dp"
                             android:background="@color/ColorBlueAlpha"
                             app:layout_constraintTop_toBottomOf="@+id/NvibT4_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NsouT4_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@+id/NvibT4_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NsouT4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -1059,14 +1071,14 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@+id/NsouT4_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NappT4_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         app:layout_constraintTop_toBottomOf="@+id/NsouT4_pref">
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/NappT4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -1098,6 +1110,7 @@
                             android:layout_marginEnd="8dp"
                             android:text="@string/pref_description_app_off"
                             android:textSize="16sp"
+                            android:minLines="2"
                             app:layout_constraintEnd_toStartOf="@+id/NappT4"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/NappT4_Title" />
@@ -1108,8 +1121,8 @@
                             android:background="@color/ColorBlueAlpha"
                             android:layout_marginTop="3dp"
                             app:layout_constraintTop_toBottomOf="@+id/NappT4_Desc" />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.constraint.ConstraintLayout
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/NrinT4_pref"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1121,16 +1134,17 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="2dp"
                             android:layout_marginEnd="8dp"
-                            android:paddingBottom="20dp"
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
                             android:text="@string/pref_title_ringtone"
                             android:textSize="21sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent" />
-                    </android.support.constraint.ConstraintLayout>
-                </android.support.constraint.ConstraintLayout>
-            </android.support.constraint.ConstraintLayout>
-        </android.support.constraint.ConstraintLayout>
-    </android.support.v4.widget.NestedScrollView>
-</android.support.design.widget.CoordinatorLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

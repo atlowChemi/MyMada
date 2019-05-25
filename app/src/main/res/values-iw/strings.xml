@@ -79,7 +79,12 @@
     <string name="pref_title_ringtone">צליל</string>
     <string name="pref_title_shabat">כיבוי עצמי</string>
     <string name="pref_title_shabatT">פרק הזמן עד סגירת התראה (בשניות)</string>
+    <string name="pref_title_volume">עוצמת ווליום בהתראה</string>
     <string name="pref_title_vibrate">רטט</string>
+    <string name="pref_title_volume_pick">בחר עוצמת התראה</string>
+    <string name="pref_title_volume_app">שנה ווליום בהתראה</string>
+    <string name="pref_description_volume_app_on">הווליום יותאם לפי מה שתגדיר באפליקציה</string>
+    <string name="pref_description_volume_app_off">הווליום ישאר כמו שהוא במכשיר</string>
     <string name="ret">ביטול</string>
     <string name="send">שלח</string>
     <string name="subjectT">נושא ההודעה</string>
@@ -109,6 +114,8 @@
     <string name="pickC">לחץ לבחירת קוד</string>
     <string name="pref_header_language">הגדרות שפה</string>
     <string name="pref_description_lang">בחר באיזו שפה תוצג האפליקציה</string>
+    <string name="pref_notifictions_explain">הסבר על הגדרות התראות</string>
+    <string name="pref_notifictions_explain_content">בעמוד "הגדרות צליל ורטט", תוכל להגדיר את הצורה הבסיסית בה האפליקציה תגיב למקרים.\nמעל הגדרות בסיסיות אלו, ניתן "להלביש" תגובות מתוחכמות יותר, בהתאם לשעה, סטטוס המכשיר ועוד.\nכל ההגדרות הנוספות, הן ההגדרות המשמעותיות. כלומר, אם תגדירו לרטוט לפי סטטוס המכשיר, והמכשיר על מצב שקט - לא יופעל רטט, למרות שהגדרתם רטט להתראות כונן.\nדוגמא נוספת, אם הגדרתם ב"הגדרות יום ולילה" שבלילה אתם רוצים רטט בלבד, על אף שסימנתם התראה עם צליל, ההתראה תרטוט בלבד, בשעות שהגדרתם כלילה.</string>
     <string name="pref_title_lang">בחירת שפה</string>
     <string-array name="languages_entry">
         <item>en</item>
@@ -188,6 +195,9 @@
     <string name="ok">אישור</string>
     <string name="codeGood">קוד הפעלה נקלט בהצלחה!\nהאפליקציה תופעל כעת!</string>
     <string name="codeBad">קוד הפעלה\nשגוי או לא קיים. נסה שנית!</string>
+    <string name="codeNotExist">נראה כי מעולם לא שלחת לנו בקשת קוד.\nבמידה ושלחת כבר פעם, אנא נסה לשלוח בקשת קוד שוב, ופרט על התקלה.</string>
+    <string name="codeUsed">הקוד כבר נוצל בעבר.\nלא ניתן להשתמש בקוד יותר מפעם אחת!\nייתכן והייתה תקלה. נסו להזין ידנית את הקוד: %s</string>
+    <string name="codeNotAllowed">קוד לא אושר לשימוש!\nייתכן ואירעה תקלה. נסה להזין קוד ידנית: %s</string>
     <string name="emailGood">האימייל הגיע אלינו\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
     <string name="emailBad">שליחה הופסקה בשל תקלה. נסה שוב!</string>
     <string name="emailInvalid">כתובת המייל שהזנת אינה תקינה!</string>
@@ -198,6 +208,7 @@
     <string name="load">טוען. אנא המתן…</string>
     <string name="permTitle">נדרשות לאפלקציה הרשאות מסוימות</string>
     <string name="permDes">האפליקציה זקוקה להרשאות מסוימות כדי לפעול כראוי.</string>
+    <string name="permDesSD">האפליקציה זקוקה לגישה לקבצים בטלפון כדי להפעיל צלצולים כראוי.</string>
     <string name="permYes">אישור הרשאות</string>
     <string name="importanceMsg">זיהינו כי התראה על זיהוי הודעות ברקע מופיעה במסך.\nלידיעתך, ניתן להעלים אותו על ידי העברה לדחיפות נמוכה.</string>
     <string name="Apgar">ציון אפגאר הוא: %d</string>
@@ -212,7 +223,7 @@
     <string name="plsNoteCon">האפליקציה לא מזהה אותך כמתנדב. האם אתה מעוניין בקוד הפעלה או ביצירת קשר רגילה?</string>
     <string name="plsNoteConCode">אני רוצה קוד הפעלה</string>
     <string name="pickMokTtl">מוקד ברירת מחדל</string>
-    <string name="pickMokTxt">בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. אנא עבור להגדרות והגדר מרחב ברירת מחדל דרך עמוד \"הגדרות הכתבה\"</string>
+    <string name="pickMokTxt">בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. אנא עבור להגדרות והגדר מרחב ברירת מחדל.</string>
     <string name="goToSet">עבור להגדרות</string>
     <string name="skip">דלג</string>
     <string name="SendNoNames">לא ניתן לשלוח ללא אנשי צוות!</string>
@@ -430,5 +441,7 @@
     <string name="pref_description_tools">בחר איזה כלים יוצגו בכלי עזר</string>
     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
     <string name="title_low_calls">הודעות לא קריטיות</string>
+    <string name="title_notif">התראה</string>
     <string name="pick_sound">בחר צליל</string>
+    <string name="numberNone">לא רשמת מספר!</string>
 </resources>

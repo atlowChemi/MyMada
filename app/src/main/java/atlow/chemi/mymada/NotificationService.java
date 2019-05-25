@@ -1,22 +1,19 @@
 package atlow.chemi.mymada;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -44,6 +41,7 @@ public class NotificationService extends NotificationListenerService {
             Bundle extras = statusBarNotification.getNotification().extras;
             String pack = statusBarNotification.getPackageName();
             String ticker;
+            LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(context);
             try {
                 ticker = statusBarNotification.getNotification().tickerText.toString();
             }catch (Exception e)    {
@@ -94,8 +92,9 @@ public class NotificationService extends NotificationListenerService {
                     String time = title.replace("*אירוע חדש*", "");
                     intent.putExtra("time", time);
                     GrobootRec.madasApp(statusBarNotification.getNotification().contentIntent);
-                    sendBroadcast(intent);
-                }else if (title.contains("*הודעה מנהלתית חדשה*"))   {
+                    broadcastManager.sendBroadcast(intent);
+                }
+                else if (title.contains("*הודעה מנהלתית חדשה*"))   {
                     intent.putExtra("callT", 4);
                     if (text.contains("שירות") || text.contains("כלכלה") || text.contains("תפילה"))
                         intent.putExtra("callT", 6);
@@ -104,11 +103,12 @@ public class NotificationService extends NotificationListenerService {
                     String time = title.replace("*הודעה מנהלתית חדשה*", "");
                     intent.putExtra("time", time);
                     GrobootRec.madasApp(statusBarNotification.getNotification().contentIntent);
-                    sendBroadcast(intent);
+                    broadcastManager.sendBroadcast(intent);
                 }
-            } else {
+            }
+            else {
                 GrobootRec.madasApp(statusBarNotification.getNotification().contentIntent);
-                sendBroadcast(intent);
+                broadcastManager.sendBroadcast(intent);
             }
         }
     }

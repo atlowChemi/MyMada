@@ -16,14 +16,12 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
 
@@ -36,6 +34,7 @@ public class GrobootRec extends BroadcastReceiver {
     public long[] lng = {0, 0, 0, 0, 0, 0, 0, 0, 0}, lng2 = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
     private static int NOTIF_ID = 5000;
     private MediaPlayer mMediaPlayer;
+    private AudioManager am;
     protected int currentVolume, callT, notNum = 0;
     public static float vo = 0;
     protected boolean callType, cut, vib, sou, app, OreoVib, OreoSou;
@@ -59,10 +58,10 @@ public class GrobootRec extends BroadcastReceiver {
         boolean silent = true;
         boolean silentVib = true;
         url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
-        AudioManager am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
+        am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+        if(am != null && am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
             silent = false;
-        if(am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
+        if(am != null && am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
             silentVib = false;
         Intent hachtava = new Intent(context,MokedPage.class);
         hachtava.putExtra("msg", true);
@@ -148,7 +147,7 @@ public class GrobootRec extends BroadcastReceiver {
         int sleep = sp.getInt("sleep", 0);
         int nightStart = sp.getInt("nightStart", 23);
         int nightEnd = sp.getInt("nightEnd", 7);
-        if ((hour <= nightEnd || hour >= nightStart) || (hour <= nightEnd && hour >= nightStart)) {
+        if (hour <= nightEnd || hour >= nightStart) {
             switch (sleep)  {
                 case 1:
                 case 4:
@@ -178,11 +177,11 @@ public class GrobootRec extends BroadcastReceiver {
                     break;
             }
         }
-        if (not && (callType)) {
+        if (not && callType) {
             String tick = string.equals("T4") || string.equals("T6") ? "התקבלה הודעה חדש באפליקציה!" : "התקבל אירוע חדש באפליקציה!";
             String titl = string.equals("T4") || string.equals("T6") ? "הודעה חדשה באפליקציה!" : "אירוע חדש באפליקציה!";
             notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context, CnlWin).setContentTitle(titl)
+            builder = new NotificationCompat.Builder(context, CnlWin).setContentTitle(titl)
                     .setContentText("לחץ כאן בכדי להכתיב טפסים.").setSmallIcon(R.drawable.ic_siren)
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                     .setVibrate(lng).setSound(null)
@@ -205,46 +204,45 @@ public class GrobootRec extends BroadcastReceiver {
                 }
                 if (sou && (!stat || !silent)) {
                     OreoSou = true;
-                    final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-                    int vol = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-                    currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-                    vo = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-                    audioManager.setStreamVolume(AudioManager.STREAM_ALARM, vol, 0);
+                    int vol = am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+                    currentVolume = am.getStreamVolume(AudioManager.STREAM_ALARM);
+                    vo = am.getStreamVolume(AudioManager.STREAM_ALARM);
+                    boolean volumeApp = sp.getBoolean("volumeApp", true);
+                    if (volumeApp) {
+                        int volumeAppNum = sp.getInt("volumeAppNum", vol);
+                        am.setStreamVolume(AudioManager.STREAM_ALARM, volumeAppNum, 0);
+                    }
                     if (app) {
                         builder.setSound(uri, AudioManager.STREAM_ALARM);
                     }
                     if (!app) {
                         builder.setSound(url, AudioManager.STREAM_ALARM);
                     }
-                }else {
+                }
+                else {
                     OreoSou = false;
                 }
                 if (ShabbatM) {
                     int finishTime = Integer.parseInt(sp.getString("timeK", "6")); //6 secs
                     Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            if (sp.getBoolean("ride", false)) {
-                                notifManager.cancelAll();
-                                builder.setVibrate(lng).setSound(null).setChannelId(CnlWin);
-                                Notification mNotification = builder.build();
-                                notifManager.notify(0, mNotification);
-                            } else {
-                                notifManager.cancel(NOTIF_ID);
-                                builder.setVibrate(lng).setSound(null).setChannelId(CnlWin);
-                                Notification mNotification = builder.build();
-                                notifManager.notify(++NOTIF_ID, mNotification);
-                            }
-                            final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-                            //int a = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-                            //Toast.makeText(getApplicationContext(),"maxVol: " + a + "\noldVol: " + currentVolume,Toast.LENGTH_LONG).show();
-                            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
-                            mMediaPlayer = new MediaPlayer();
-                            try {
-                                mMediaPlayer.setVolume(vo, vo);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                    handler.postDelayed(() -> {
+                        if (sp.getBoolean("ride", false)) {
+                            notifManager.cancelAll();
+                            builder.setVibrate(lng).setSound(null).setChannelId(CnlWin);
+                            Notification mNotification = builder.build();
+                            notifManager.notify(0, mNotification);
+                        } else {
+                            notifManager.cancel(NOTIF_ID);
+                            builder.setVibrate(lng).setSound(null).setChannelId(CnlWin);
+                            Notification mNotification = builder.build();
+                            notifManager.notify(++NOTIF_ID, mNotification);
+                        }
+                        //int a = am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+                        mMediaPlayer = new MediaPlayer();
+                        try {
+                            mMediaPlayer.setVolume(vo, vo);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }, finishTime * 1000);
                 }
@@ -264,7 +262,8 @@ public class GrobootRec extends BroadcastReceiver {
                             serviceChannel.setSound(uri, attributes);
                         else
                             serviceChannel.setSound(url, attributes);
-                    }else
+                    }
+                    else
                         serviceChannel.setSound(null, attributes);
                     serviceChannel.setGroup(Grp3);
                     notifManager = context.getSystemService(NotificationManager.class);
