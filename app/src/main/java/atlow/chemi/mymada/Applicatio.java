@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 import androidx.core.content.ContextCompat;
@@ -68,16 +70,17 @@ public class Applicatio extends MultiDexApplication {
         }
     }
     private void makeRec() {
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         BroadcastReceiver receiver;
         receiver = new GrobootRec();
         IntentFilter filter = new IntentFilter("MADA_APP");
         filter.addAction("atlow.chemi.MyMada.MADA_APP");
-        this.registerReceiver(receiver, filter);
+        broadcastManager.registerReceiver(receiver, filter);
         IntentFilter filter2 = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
         filter2.addAction(Intent.ACTION_PACKAGE_RESTARTED);
         filter2.addAction(Intent.ACTION_PACKAGE_ADDED);
         filter2.addAction(Intent.ACTION_PACKAGE_REPLACED);
         BroadcastReceiver bcr = new BootCompleteReceiver();
-        this.registerReceiver(bcr, filter2);
+        broadcastManager.registerReceiver(bcr, filter2);
     }
 }

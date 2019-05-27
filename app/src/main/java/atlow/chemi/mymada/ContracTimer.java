@@ -178,7 +178,12 @@ public class ContracTimer extends Fragment {
                         oldEnd = end;
                     end = Calendar.getInstance().getTime();
                     contractBtn.setText(getActivity().getResources().getString(R.string.startContract));
-                    contractBtn.stopAnimation();
+                    try {
+                        contractBtn.stopAnimation();
+                    } catch (NullPointerException e) {
+                        Crashlytics.log("error stoping circular btn");
+                        Crashlytics.logException(e);
+                    }
                     contractBtn.revertAnimation();
                     contractBtn.setBackgroundColor(Color.rgb(255,255,255));
                     //contractBtn.revertAnimation();

@@ -62,7 +62,7 @@ public class codeRequest extends AppCompatActivity {
     private DatabaseReference mFirebaseDatabase;
     private static final int PERMISSION_CALLBACK_CONSTANT = 100;
     private static final int REQUEST_PERMISSION_SETTING = 101;
-    String[] permissionsRequired = new String[]{android.Manifest.permission.READ_SMS, Manifest.permission.READ_PHONE_STATE};
+    String[] permissionsRequired = new String[]{Manifest.permission.READ_PHONE_STATE};
     private boolean sentToSettings = false, isMove = false, isConnected = true;
     private float oldX1, oldY1;
     private Button sendCR;
@@ -199,48 +199,32 @@ public class codeRequest extends AppCompatActivity {
             res += randomLetters.charAt(new Random().nextInt(randomLetters.length()));
         TelephonyManager tMgr = (TelephonyManager) getApplication().getSystemService(Context.TELEPHONY_SERVICE);
         SharedPreferences permissionStatus = getSharedPreferences("permissionStatus", MODE_PRIVATE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                if(ActivityCompat.shouldShowRequestPermissionRationale(codeRequest.this,permissionsRequired[0]) || ActivityCompat.shouldShowRequestPermissionRationale(codeRequest.this,permissionsRequired[1])){
+                if(ActivityCompat.shouldShowRequestPermissionRationale(codeRequest.this,permissionsRequired[0])){
                     //Show Information about why you need the permission
                     AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
                     builder.setTitle(getResources().getString(R.string.permTitle));
                     builder.setMessage(getResources().getString(R.string.permDes));
-                    builder.setPositiveButton(getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                            ActivityCompat.requestPermissions(codeRequest.this,permissionsRequired,PERMISSION_CALLBACK_CONSTANT);
-                        }
+                    builder.setPositiveButton(getResources().getString(R.string.permYes), (dialog, which) -> {
+                        dialog.cancel();
+                        ActivityCompat.requestPermissions(codeRequest.this,permissionsRequired,PERMISSION_CALLBACK_CONSTANT);
                     });
-                    builder.setNegativeButton(getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
+                    builder.setNegativeButton(getResources().getString(R.string.ret), (dialog, which) -> dialog.cancel());
                     builder.show();
-                } else if (permissionStatus.getBoolean(permissionsRequired[0],false) || permissionStatus.getBoolean(permissionsRequired[1],false)) {
+                } else if (permissionStatus.getBoolean(permissionsRequired[0],false)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
                     builder.setTitle(getResources().getString(R.string.permTitle));
                     builder.setMessage(getResources().getString(R.string.permDes));
-                    builder.setPositiveButton(getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                            sentToSettings = true;
-                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getPackageName(), null);
-                            intent.setData(uri);
-                            startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                        }
+                    builder.setPositiveButton(getResources().getString(R.string.permYes), (dialog, which) -> {
+                        dialog.cancel();
+                        sentToSettings = true;
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
                     });
-                    builder.setNegativeButton(getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
+                    builder.setNegativeButton(getResources().getString(R.string.ret), (dialog, which) -> dialog.cancel());
                     builder.show();
                 }  else {
                     //just request the permission

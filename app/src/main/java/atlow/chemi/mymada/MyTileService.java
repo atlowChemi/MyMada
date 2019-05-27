@@ -97,8 +97,8 @@ public class MyTileService extends TileService {
             Crashlytics.log("Cant get tile icon!");
             Crashlytics.logException(e);
         }
-
-        tile.updateTile();
+        if (tile != null)
+            tile.updateTile();
     }
 
     @Override
