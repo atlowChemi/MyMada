@@ -22,7 +22,7 @@ android {
         applicationId "atlow.chemi.mymada"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 12055
+        versionCode 12060
         versionName '3.3'
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
@@ -82,6 +82,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

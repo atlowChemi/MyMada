@@ -11,8 +11,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Display;
@@ -35,9 +36,8 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
     private Typeface myTypeface;
     private boolean isMADA, realM, isMove1 = false;
     private List<HomeB> albumList;
-    private ArrayList<Button> btns = new ArrayList<>();
+    private ArrayList<Button> btns;
     private float oldX1, oldY1;
-    private FragmentActivity fragmentActivity;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private Button homeB;
@@ -55,15 +55,16 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
         btns = new ArrayList<>();
     }
 
+    @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.button_change, parent, false);
         return new MyViewHolder(itemView);
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         final HomeB album = albumList.get(holder.getAdapterPosition());
         final SharedPreferences sharedPreferences = mContext.getSharedPreferences("Settings", 0);
         myTypeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/opensanshebrew.ttf");
@@ -80,213 +81,189 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
         if (album.getIntent().equals("tol"))
             holder.homeB.setLayoutParams(new FrameLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightTol));
         holder.homeB.setBackgroundResource(album.getBg());
-        holder.homeB.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        boolean x = oldX1 - event.getX() > 50 || event.getX() - oldX1 > 50;
-                        boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
-                        if (x || y) {
-                            isMove1 = true;
-                            holder.homeB.setAlpha(1f);
-                        }
-                        return true;
-                    case MotionEvent.ACTION_DOWN:
-                        oldY1 = event.getY();
-                        oldX1 = event.getX();
-                        isMove1 = false;
-                        holder.homeB.setAlpha(0.4f);
-                        return true;
-                    case MotionEvent.ACTION_UP:
+        holder.homeB.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    boolean x = oldX1 - event.getX() > 50 || event.getX() - oldX1 > 50;
+                    boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                    if (x || y) {
+                        isMove1 = true;
                         holder.homeB.setAlpha(1f);
-                        if (!isMove1)
-                            holder.homeB.performClick();
-                        return true;
-                }
-                return false;
+                    }
+                    return true;
+                case MotionEvent.ACTION_DOWN:
+                    oldY1 = event.getY();
+                    oldX1 = event.getX();
+                    isMove1 = false;
+                    holder.homeB.setAlpha(0.4f);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    holder.homeB.setAlpha(1f);
+                    if (!isMove1)
+                        holder.homeB.performClick();
+                    return true;
             }
+            return false;
         });
-        holder.homeB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String in = album.getIntent();
-                Intent intent;
-                switch (in) {
-                    case "mok":
-                        realM = sharedPreferences.getBoolean("realM", false);
-                        isMADA = false;
-                        if (mContext.getApplication().getPackageName().contains("debug")) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
-                            builder.setMessage("זוהי גרסה לבדיקה. עמוד חסימה או עמוד דיווחים?").setCancelable(true)
-                                    .setPositiveButton("עמוד חסימה", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            Intent intent = new Intent(mContext, lockPage.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                                            sp1.putBoolean("realM", false);
-                                            sp1.apply();
-                                            mContext.startActivity(intent);
-                                        }
-                                    })
-                                    .setNegativeButton("עמוד דיווחים", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            Intent intent = new Intent(mContext, MokedPage.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                                            sp1.putBoolean("realM", true);
-                                            sp1.apply();
-                                            mContext.startActivity(intent);
-                                        }
-                                    });
-                            final AlertDialog alert = builder.create();
-                            TextView textView = alert.findViewById(android.R.id.message);
-                            if (textView != null)
-                                textView.setTypeface(myTypeface);
-                            textView = alert.findViewById(android.R.id.title);
-                            if (textView != null)
-                                textView.setTypeface(myTypeface);
-                            alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                @Override
-                                public void onShow(DialogInterface dialogInterface) {
-                                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                    Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                                    ok.setTypeface(myTypeface);
-                                    canc.setTypeface(myTypeface);
-                                }
-                            });
-                            alert.show();
-                        } else {
-                            if (!realM) {
-                                isMADA = isPI(mContext, "com.groboot.mdaemergency");
-                            }
-                            if (realM || isMADA) {
-                                intent = new Intent(mContext, MokedPage.class);
-                                SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                                sp1.putBoolean("realM", true);
-                                sp1.apply();
-                            } else
-                                intent = new Intent(mContext, lockPage.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            mContext.startActivity(intent);
-                        }
-                        break;
-                    case "tol":
-                        intent = new Intent(mContext, UtillTools.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
-                        break;
-                    case "tes":
+        holder.homeB.setOnClickListener(view -> {
+            String in = album.getIntent();
+            Intent intent;
+            switch (in) {
+                case "mok":
+                    realM = sharedPreferences.getBoolean("realM", false);
+                    isMADA = false;
+                    if (mContext.getApplication().getPackageName().contains("debug")) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
-                        builder.setMessage(mContext.getResources().getString(R.string.TestCallMsg)).setCancelable(true)
-                                .setPositiveButton(mContext.getResources().getString(R.string.TestCallSMS), new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        if ((sharedPreferences.getBoolean("not", true) || sharedPreferences.getBoolean("win", true)) && sharedPreferences.getBoolean("Mapp", false)) {
-                                            if (sharedPreferences.getBoolean("cut", false) && !sharedPreferences.getBoolean("callT3", true)) {
-                                                Toast.makeText(mContext, mContext.getResources().getString(R.string.MISHM_reco_off), Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Intent launchIntent = mContext.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency");
-                                                PendingIntent testPI;
-                                                if (launchIntent != null) {
-                                                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                                                    testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0);
-                                                } else {
-                                                    testPI = null;
-                                                }
-                                                Intent intent = new Intent("atlow.chemi.MyMada.MADA_APP");
-                                                intent.setAction("atlow.chemi.MyMada.MADA_APP");
-                                                intent.putExtra("callT", 3);
-                                                intent.putExtra("text", mContext.getResources().getString(R.string.TEAMTest));
-                                                GrobootRec.madasApp(testPI);
-                                                mContext.sendBroadcast(intent);
-                                            }
-                                        } else {
-                                            Toast.makeText(mContext, mContext.getResources().getString(R.string.APP_reco_off), Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
+                        builder.setMessage("זוהי גרסה לבדיקה. עמוד חסימה או עמוד דיווחים?").setCancelable(true)
+                                .setPositiveButton("עמוד חסימה", (dialog, id) -> {
+                                    Intent intent16 = new Intent(mContext, lockPage.class);
+                                    intent16.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    SharedPreferences.Editor sp1 = sharedPreferences.edit();
+                                    sp1.putBoolean("realM", false);
+                                    sp1.apply();
+                                    mContext.startActivity(intent16);
                                 })
-                                .setNegativeButton(mContext.getResources().getString(R.string.TestCallApp), new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        if ((sharedPreferences.getBoolean("not", true) || sharedPreferences.getBoolean("win", true)) && sharedPreferences.getBoolean("Mapp", false)) {
-                                            if (sharedPreferences.getBoolean("cut", false) && !sharedPreferences.getBoolean("callT1", true)) {
-                                                Toast.makeText(mContext, mContext.getResources().getString(R.string.CONAN_reco_off), Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Intent launchIntent = mContext.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency");
-                                                PendingIntent testPI;
-                                                if (launchIntent != null) {
-                                                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                                                    testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0);
-                                                } else {
-                                                    testPI = null;
-                                                }
-                                                Intent intent = new Intent("atlow.chemi.MyMada.MADA_APP");
-                                                intent.setAction("atlow.chemi.MyMada.MADA_APP");
-                                                intent.putExtra("callT", 1);
-                                                intent.putExtra("text", mContext.getResources().getString(R.string.CONANTest));
-                                                GrobootRec.madasApp(testPI);
-                                                mContext.sendBroadcast(intent);
-                                            }
-                                        } else {
-                                            Toast.makeText(mContext, mContext.getResources().getString(R.string.APP_reco_off), Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
+                                .setNegativeButton("עמוד דיווחים", (dialog, id) -> {
+                                    Intent intent15 = new Intent(mContext, MokedPage.class);
+                                    intent15.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    SharedPreferences.Editor sp1 = sharedPreferences.edit();
+                                    sp1.putBoolean("realM", true);
+                                    sp1.apply();
+                                    mContext.startActivity(intent15);
                                 });
                         final AlertDialog alert = builder.create();
-                        TextView textView = (TextView) alert.findViewById(android.R.id.message);
+                        TextView textView = alert.findViewById(android.R.id.message);
                         if (textView != null)
                             textView.setTypeface(myTypeface);
-                        textView = (TextView) alert.findViewById(android.R.id.title);
+                        textView = alert.findViewById(android.R.id.title);
                         if (textView != null)
                             textView.setTypeface(myTypeface);
-                        alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                            @Override
-                            public void onShow(DialogInterface dialogInterface) {
-                                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                                ok.setTypeface(myTypeface);
-                                canc.setTypeface(myTypeface);
-                                canc.setTextColor(mContext.getResources().getColor(R.color.OldPrimary));
-                            }
+                        alert.setOnShowListener(dialogInterface -> {
+                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                            Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                            ok.setTypeface(myTypeface);
+                            canc.setTypeface(myTypeface);
                         });
                         alert.show();
-                        break;
-                    case "con":
-                        realM = sharedPreferences.getBoolean("realM", false);
-                        isMADA = false;
+                    } else {
                         if (!realM) {
-                            isMADA = isPI(mContext, "com.groboot.mdaemergency");
+                            isMADA = isPI(mContext);
                         }
                         if (realM || isMADA) {
-                            intent = new Intent(mContext, contactActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            mContext.startActivity(intent);
-                        } else   {
-                            AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
-                            builder2.setTitle(mContext.getResources().getString(R.string.plsNote)).setMessage(mContext.getResources().getString(R.string.plsNoteCon)).setCancelable(true)
-                                    .setNegativeButton(mContext.getResources().getString(R.string.plsNoteConCode), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            Intent intent = new Intent(mContext, codeRequest.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            mContext.startActivity(intent);
-                                        }
-                                    }).setPositiveButton(mContext.getResources().getString(R.string.title_activity_contact), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Intent intent = new Intent(mContext, contactActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    mContext.startActivity(intent);
-                                }
-                            });
-                            builder2.show();
-                        }
-                        break;
-                    case "inf":
-                        intent = new Intent(mContext, InfoActivity.class);
+                            intent = new Intent(mContext, MokedPage.class);
+                            SharedPreferences.Editor sp1 = sharedPreferences.edit();
+                            sp1.putBoolean("realM", true);
+                            sp1.apply();
+                        } else
+                            intent = new Intent(mContext, lockPage.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         mContext.startActivity(intent);
-                        break;
-                }
+                    }
+                    break;
+                case "tol":
+                    intent = new Intent(mContext, UtillTools.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                    break;
+                case "tes":
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
+                    builder.setMessage(mContext.getResources().getString(R.string.TestCallMsg)).setCancelable(true)
+                            .setPositiveButton(mContext.getResources().getString(R.string.TestCallSMS), (dialog, id) -> {
+                                if ((sharedPreferences.getBoolean("not", true) || sharedPreferences.getBoolean("win", true)) && sharedPreferences.getBoolean("Mapp", false)) {
+                                    if (sharedPreferences.getBoolean("cut", false) && !sharedPreferences.getBoolean("callT3", true)) {
+                                        Toast.makeText(mContext, mContext.getResources().getString(R.string.MISHM_reco_off), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Intent launchIntent = mContext.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency");
+                                        PendingIntent testPI;
+                                        if (launchIntent != null) {
+                                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                                            testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0);
+                                        } else {
+                                            testPI = null;
+                                        }
+                                        Intent intent1 = new Intent("atlow.chemi.MyMada.MADA_APP");
+                                        intent1.setAction("atlow.chemi.MyMada.MADA_APP");
+                                        intent1.putExtra("callT", 3);
+                                        intent1.putExtra("text", mContext.getResources().getString(R.string.TEAMTest));
+                                        GrobootRec.madasApp(testPI);
+                                        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(mContext);
+                                        manager.sendBroadcast(intent1);
+                                    }
+                                } else {
+                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.APP_reco_off), Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .setNegativeButton(mContext.getResources().getString(R.string.TestCallApp), (dialog, id) -> {
+                                if ((sharedPreferences.getBoolean("not", true) || sharedPreferences.getBoolean("win", true)) && sharedPreferences.getBoolean("Mapp", false)) {
+                                    if (sharedPreferences.getBoolean("cut", false) && !sharedPreferences.getBoolean("callT1", true)) {
+                                        Toast.makeText(mContext, mContext.getResources().getString(R.string.CONAN_reco_off), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Intent launchIntent = mContext.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency");
+                                        PendingIntent testPI;
+                                        if (launchIntent != null) {
+                                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                                            testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0);
+                                        } else {
+                                            testPI = null;
+                                        }
+                                        Intent intent12 = new Intent("atlow.chemi.MyMada.MADA_APP");
+                                        intent12.setAction("atlow.chemi.MyMada.MADA_APP");
+                                        intent12.putExtra("callT", 1);
+                                        intent12.putExtra("text", mContext.getResources().getString(R.string.CONANTest));
+                                        GrobootRec.madasApp(testPI);
+                                        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(mContext);
+                                        manager.sendBroadcast(intent12);
+                                    }
+                                } else {
+                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.APP_reco_off), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                    final AlertDialog alert = builder.create();
+                    TextView textView = alert.findViewById(android.R.id.message);
+                    if (textView != null)
+                        textView.setTypeface(myTypeface);
+                    textView = alert.findViewById(android.R.id.title);
+                    if (textView != null)
+                        textView.setTypeface(myTypeface);
+                    alert.setOnShowListener(dialogInterface -> {
+                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                        Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                        ok.setTypeface(myTypeface);
+                        canc.setTypeface(myTypeface);
+                        canc.setTextColor(mContext.getResources().getColor(R.color.OldPrimary));
+                    });
+                    alert.show();
+                    break;
+                case "con":
+                    realM = sharedPreferences.getBoolean("realM", false);
+                    isMADA = false;
+                    if (!realM) {
+                        isMADA = isPI(mContext);
+                    }
+                    if (realM || isMADA) {
+                        intent = new Intent(mContext, contactChatActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                    } else   {
+                        AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
+                        builder2.setTitle(mContext.getResources().getString(R.string.plsNote)).setMessage(mContext.getResources().getString(R.string.plsNoteCon)).setCancelable(true)
+                                .setNegativeButton(mContext.getResources().getString(R.string.plsNoteConCode), (dialogInterface, i) -> {
+                                    Intent intent13 = new Intent(mContext, codeRequest.class);
+                                    intent13.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    mContext.startActivity(intent13);
+                                }).setPositiveButton(mContext.getResources().getString(R.string.title_activity_contact), (dialogInterface, i) -> {
+                                    Intent intent14 = new Intent(mContext, contactChatActivity.class);
+                                    intent14.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    mContext.startActivity(intent14);
+                                });
+                        builder2.show();
+                    }
+                    break;
+                case "inf":
+                    intent = new Intent(mContext, InfoActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                    break;
             }
         });
     }
@@ -299,9 +276,9 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
             b.setAlpha(1f);
     }
 
-    private static boolean isPI(Context context, String packageName) {
+    private static boolean isPI(Context context) {
         final PackageManager packageManager = context.getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+        Intent intent = packageManager.getLaunchIntentForPackage("com.groboot.mdaemergency");
         if (intent == null) {
             return false;
         }

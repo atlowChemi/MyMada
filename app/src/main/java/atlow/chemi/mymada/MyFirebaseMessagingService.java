@@ -18,13 +18,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        String code, msg, title, type, fireKey;
+        String code, msg, title, type, fireKey, name;
         type = remoteMessage.getData().get("type");
         code = remoteMessage.getData().get("code");
         fireKey = remoteMessage.getData().get("key");
+        name = remoteMessage.getData().get("name");
         msg = remoteMessage.getData().get("msg");
         title = remoteMessage.getData().get("title");
-        if (type != null && type.equals("newC"))
+        if (type != null && type.equals("newChat"))
+            sendToChat(msg,name);
+        else if (type != null && type.equals("newC"))
             sendNotification(1,msg,title,code);
         else if (code.length() > 0)
             sendNotification(code, fireKey, 5);
@@ -73,6 +76,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (notificationManager != null) {
             notificationManager.notify(c, notificationBuilder.build());
         }
+    }
+
+    private void sendToChat(String msg, String name) {
+        Intent notificationIntent = new Intent(getApplicationContext(), contactChatActivity.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent content = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), "Push")
+                .setContentTitle("הודעת צ'אט חדשה!").setContentText("הודעה חדשה מאת ההנהלה").setSmallIcon(R.drawable.ic_siren)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(), R.mipmap.ic_launcher))
+                .setContentIntent(content).setAutoCancel(true).setTicker("הודעה חדשה מאת ההנהלה")
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(msg));
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify((int)System.currentTimeMillis(), notificationBuilder.build());
     }
 
     @Override

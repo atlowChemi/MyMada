@@ -52,6 +52,7 @@
     <string name="contactUs">צור קשר</string>
     <string name="from">כתובת המייל שלך</string>
     <string name="name">שם</string>
+    <string name="writeName">רשום את שמך</string>
     <string name="subjectT">נושא ההודעה</string>
     <string name="mailBT">כתוב הודעתך פה</string>
     <string name="codeNote">כתוב את פרטיך והוסף בהערות את פרטי ההתנדבות שלך (מרחב ותפקיד) ואנו נבחן את הפרטים ונשלח קוד הפעלה בהקדם.</string>
@@ -372,4 +373,9 @@
     <string name="title_notif">התראה</string>
     <string name="pick_sound">בחר צליל</string>
     <string name="numberNone">לא רשמת מספר!</string>
+    <string name="admin">מנהל:</string>
+    <string name="user">אתה:</string>
+    <string name="changeName">לחץ כאן לשינוי שם התצוגה שלך</string>
+    <string name="msgSeen">מנהל ראה את הודעתך</string>
+    <string name="msgNotSeen">מנהל טרם ראה את הודעתך</string>
 </resources>

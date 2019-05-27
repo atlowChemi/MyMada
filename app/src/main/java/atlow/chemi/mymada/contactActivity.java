@@ -88,7 +88,7 @@ public class contactActivity extends AppCompatActivity {
         emailS.addTextChangedListener(new MyTextWatcher(emailS));
         emailT.addTextChangedListener(new MyTextWatcher(emailT));
 
-        sendEM = findViewById(R.id.sendEM);
+        sendEM = findViewById(R.id.sendChat);
 
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         emailA.setTypeface(myTypeface);

@@ -14,7 +14,7 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d("started BCR", intent.getAction());
         String act = intent.getAction();
-        if (act.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED) || act.equalsIgnoreCase(Intent.ACTION_PACKAGE_ADDED) ||
+        if (act != null && act.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED) || act.equalsIgnoreCase(Intent.ACTION_PACKAGE_ADDED) ||
                 act.equalsIgnoreCase(Intent.ACTION_PACKAGE_RESTARTED) || act.equalsIgnoreCase(Intent.ACTION_MY_PACKAGE_REPLACED)) {
             SharedPreferences sp = context.getSharedPreferences("Settings", 0);
             boolean mapp = sp.getBoolean("Mapp", false);

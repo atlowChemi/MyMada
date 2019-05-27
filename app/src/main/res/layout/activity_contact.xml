@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layoutDirection="ltr"
         android:layout_alignParentTop="true"
-        android:layout_above="@+id/contact_card_view"
+        android:layout_above="@+id/chat_card_send"
         android:layout_marginBottom="8dp"
         android:id="@+id/scM">
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -106,7 +106,7 @@
 </RelativeLayout>
     </ScrollView>
         <androidx.cardview.widget.CardView
-            android:id="@+id/contact_card_view"
+            android:id="@+id/chat_card_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -118,7 +118,7 @@
             android:layout_marginBottom="8dp"
             app:cardElevation="4dp">
         <Button
-            android:id="@+id/sendEM"
+            android:id="@+id/sendChat"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@drawable/btns_new"

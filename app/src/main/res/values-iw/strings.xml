@@ -33,6 +33,8 @@
     <string name="info">אודות האפליקציה</string>
     <string name="mailBT">כתוב הודעתך פה</string>
     <string name="name">שם</string>
+    <string name="writeName">רשום את שמך</string>
+    <string name="changeName">לחץ כאן לשינוי שם התצוגה שלך</string>
     <string name="notM">מתנדב פעיל ונתקל בחלונית זו?\nצור עימנו קשר ונסייע לך.</string>
     <string name="notMada">נראה לנו שאתה לא מתנדב מד"א.\nבכדי שהאפליקציה תפעל כראוי צריכה להיות מותקנת אצלך אפליקציית צוותי מגן דוד אדום.\nבאם האפליקציה מותקנת אצלך ובכל זאת אתה רואה מסך זה, התנתק מאפליקציית הצוותים והתחבר שנית.\nשימוש מהנה ומועיל!</string>
     <string name="passH">הזן כאן את הקוד</string>
@@ -444,4 +446,8 @@
     <string name="title_notif">התראה</string>
     <string name="pick_sound">בחר צליל</string>
     <string name="numberNone">לא רשמת מספר!</string>
+    <string name="admin">מנהל:</string>
+    <string name="user">אתה:</string>
+    <string name="msgSeen">מנהל ראה את הודעתך</string>
+    <string name="msgNotSeen">מנהל טרם ראה את הודעתך</string>
 </resources>

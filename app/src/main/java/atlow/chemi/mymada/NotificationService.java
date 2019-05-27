@@ -114,13 +114,14 @@ public class NotificationService extends NotificationListenerService {
     }
     @Override
     public void onNotificationRemoved(StatusBarNotification statusBarNotification)  {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && statusBarNotification.getPackageName() != null &&
-                statusBarNotification.getPackageName().contains("atlow.chemi.mymada")) {
-            NotificationManager manager = context.getSystemService(NotificationManager.class);
-            Notification notification = statusBarNotification.getNotification();
-            if (notification.getChannelId().contains("generated")) {
-                if (manager != null) {
-                    manager.deleteNotificationChannel(notification.getChannelId());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && statusBarNotification.getPackageName() != null) {
+            if (statusBarNotification.getPackageName().contains("atlow.chemi.mymada")) {
+                NotificationManager manager = context.getSystemService(NotificationManager.class);
+                Notification notification = statusBarNotification.getNotification();
+                if (notification.getChannelId().contains("generated")) {
+                    if (manager != null) {
+                        manager.deleteNotificationChannel(notification.getChannelId());
+                    }
                 }
             }
         }

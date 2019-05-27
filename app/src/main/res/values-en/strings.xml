@@ -34,6 +34,8 @@
     <string name="info">About the app</string>
     <string name="mailBT">Write your message here</string>
     <string name="name">Name</string>
+    <string name="writeName">Write your name</string>
+    <string name="changeName">Click here to change your name</string>
     <string name="notM">You\'re an active volunteer and you see this window?\nContact us and we will solve the problem.</string>
     <string name="pref_default_shabatT">6</string>
     <string name="passH">Write the code here</string>
@@ -442,4 +444,8 @@
     <string name="title_notif">Notification</string>
     <string name="pick_sound">Pick ringtone</string>
     <string name="numberNone">Please provide number</string>
+    <string name="admin">Admin:</string>
+    <string name="user">You:</string>
+    <string name="msgSeen">Your message has been seen by a administrator</string>
+    <string name="msgNotSeen">Your message was\'nt seen yet</string>
 </resources>

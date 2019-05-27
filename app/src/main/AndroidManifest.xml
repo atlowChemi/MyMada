@@ -17,10 +17,6 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
-        android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission
-        android:name="android.permission.READ_PHONE_NUMBERS" />
-    <uses-permission
         android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-feature
@@ -40,7 +36,7 @@
 
         <uses-library
             android:name="org.apache.http.legacy"
-            android:required="true" />
+            android:required="false" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
@@ -93,6 +89,15 @@
             android:label="@string/title_activity_contact"
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomePage" />
+        </activity>
+        <activity
+            android:name=".contactChatActivity"
+            android:label="@string/title_activity_contact"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyMaterialTheme.Base">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".HomePage" />
@@ -213,7 +218,6 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
-
             <meta-data
                 android:name="android.service.quicksettings.ACTIVE_TILE"
                 android:value="false" />
@@ -247,7 +251,7 @@
         <receiver
             android:name=".GrobootRec"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
     </application>
 
 </manifest>

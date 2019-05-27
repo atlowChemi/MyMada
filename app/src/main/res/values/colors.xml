@@ -36,4 +36,5 @@
     <color name="calcM">#ddbe42</color>
     <color name="calcG">#46b23a</color>
     <color name="bgShadowEnd">#aeadad</color>
+    <color name="chatAdmin">#E2E2E2</color>
 </resources>
