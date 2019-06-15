@@ -205,6 +205,7 @@
     <string name="emailInvalid">Email address is invalid</string>
     <string name="emailNone">Please provide Email</string>
     <string name="emailNameNone">Please provide name</string>
+    <string name="chatNameNum">You provided only numerals!</string>
     <string name="emailSubjNone">Please provide Email Subject</string>
     <string name="emailMsgNone">Please write the Email</string>
     <string name="load">Loading. Please wait…</string>

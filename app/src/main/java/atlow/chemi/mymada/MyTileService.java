@@ -22,7 +22,6 @@ public class MyTileService extends TileService {
         super.onTileAdded();
         setCurrentState(Tile.STATE_INACTIVE);
     }
-
     @Override
     public void onTileRemoved() {
         try {
@@ -33,7 +32,6 @@ public class MyTileService extends TileService {
         }
         super.onTileRemoved();
     }
-
     @Override
     public void onClick() {
         super.onClick();
@@ -61,7 +59,12 @@ public class MyTileService extends TileService {
                     manager.createNotificationChannelGroup(group2);
                     manager.createNotificationChannel(serviceChannel);
                 }
-                ContextCompat.startForegroundService(MyTileService.this, serviceIntent);
+                try {
+                    ContextCompat.startForegroundService(MyTileService.this, serviceIntent);
+                } catch (Exception e) {
+                    Crashlytics.log("failed starting metronome tile");
+                    Crashlytics.logException(e);
+                }
                 /*****/
                 setCurrentState(Tile.STATE_ACTIVE);
                 break;
@@ -69,7 +72,6 @@ public class MyTileService extends TileService {
                 break;
         }
     }
-
     private void setCurrentState(int state){
         Tile tile = getQsTile();
         try {
@@ -100,12 +102,10 @@ public class MyTileService extends TileService {
         if (tile != null)
             tile.updateTile();
     }
-
     @Override
     public void onStartListening() {
         super.onStartListening();
     }
-
     @Override
     public void onStopListening() {
         super.onStopListening();

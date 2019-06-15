@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layoutDirection="ltr"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!--   Root container of Floating Widget View  -->
+    <RelativeLayout
+        android:id="@+id/root_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:ignore="UselessParent">
+
+        <!--  View while view is collapsed  -->
+
+        <RelativeLayout
+            android:id="@+id/collapse_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <!--   ImageView of floating widget  -->
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                app:srcCompat="@drawable/siren_head"/>
+
+            <!--   Close button to close Floating Widget View  -->
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/close_floating_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="0dp"
+                android:background="@drawable/circle_shape"
+                app:srcCompat="@drawable/ic_close_white_24dp"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <!--   View while view is expanded   -->
+        <LinearLayout
+            android:id="@+id/expanded_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:gravity="center"
+            android:layoutDirection="rtl"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/floating_widget_image_view"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                app:srcCompat="@drawable/siren_head"
+                tools:ignore="ContentDescription" />
+            <!--  ImageView to Close Expanded View  -->
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/close_expanded_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_close_black_24dp"
+                tools:ignore="ContentDescription" />
+            <!--  ImageView to Open Activity  -->
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/open_activity_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                app:tint="@color/Black"
+                app:srcCompat="@drawable/ic_edit"
+                tools:ignore="ContentDescription" />
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

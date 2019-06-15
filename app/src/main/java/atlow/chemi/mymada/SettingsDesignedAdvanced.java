@@ -59,7 +59,11 @@ public class SettingsDesignedAdvanced extends AppCompatActivity implements View.
         shabbatTimePref = findViewById(R.id.shabatTime_pref);
         ConstraintLayout volumePref = findViewById(R.id.volume_pref);
         CardView moked = findViewById(R.id.moked_card);
+        TextView mokedArrow = findViewById(R.id.moked_arrow_tv);
         CardView ampm = findViewById(R.id.ampm_card);
+
+        if (!SettingsDesigned.isRTL())
+            mokedArrow.setRotation(90);
 
         notPref.setOnClickListener(this);
         newWinPref.setOnClickListener(this);
@@ -295,13 +299,11 @@ public class SettingsDesignedAdvanced extends AppCompatActivity implements View.
         builder.setTitle(getString(R.string.pref_title_region));
         builder.setNegativeButton(getString(R.string.ret), (dialog, which) -> dialog.dismiss());
         builder.setSingleChoiceItems(Mokdim, MokedToPick, (dialog, which) -> {
-            if (MokedToPick != which) {
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putBoolean("pickedMoked", true);
-                editor.putInt("merhav", which);
-                editor.apply();
-                dialog.dismiss();
-            }
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("pickedMoked", true);
+            editor.putInt("merhav", which);
+            editor.apply();
+            dialog.dismiss();
         });
         AlertDialog langPicker = builder.create();
         langPicker.show();

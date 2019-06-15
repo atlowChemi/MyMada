@@ -1,6 +1,5 @@
 package atlow.chemi.mymada;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -16,19 +15,9 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -42,12 +31,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 import java.util.List;
@@ -60,10 +52,8 @@ public class codeRequest extends AppCompatActivity {
     private TextInputLayout codeATIL, codeNTIL, codeTTIL;
     private String token;
     private DatabaseReference mFirebaseDatabase;
-    private static final int PERMISSION_CALLBACK_CONSTANT = 100;
     private static final int REQUEST_PERMISSION_SETTING = 101;
-    String[] permissionsRequired = new String[]{Manifest.permission.READ_PHONE_STATE};
-    private boolean sentToSettings = false, isMove = false, isConnected = true;
+    private boolean isMove = false, isConnected = true;
     private float oldX1, oldY1;
     private Button sendCR;
     private MenuItem Detect;
@@ -79,16 +69,10 @@ public class codeRequest extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
-        builder.setTitle(getResources().getString(R.string.plsNote))
-                .setMessage(getResources().getString(R.string.plsNoteT)).setCancelable(false);
-        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+        builder.setTitle(getResources().getString(R.string.plsNote)).setMessage(getResources().getString(R.string.plsNoteT)).setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.ok), (dialogInterface, i) -> dialogInterface.dismiss());
         builder.show();
-        token = FirebaseInstanceId.getInstance().getToken();
+        token = MyFirebaseMessagingService.getToken(getApplicationContext());
         pdialog = new ProgressDialog(codeRequest.this);
         pdialog.setIndeterminate(true);
         pdialog.setMessage(getResources().getString(R.string.load));
@@ -122,57 +106,50 @@ public class codeRequest extends AppCompatActivity {
         sendCR = findViewById(R.id.sendCR);
         Drawable img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send);
         sendCR.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
-        sendCR.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        boolean x = oldX1 - event.getX() > 10 || event.getX() - oldX1 > 10;
-                        boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
-                        if (x || y) {
-                            isMove = true;
-                            sendCR.setAlpha(1f);
-                        }
-                        return true;
-                    case MotionEvent.ACTION_DOWN:
-                        oldY1 = event.getY();
-                        oldX1 = event.getX();
-                        isMove = false;
-                        sendCR.setAlpha(0.4f);
-                        return true;
-                    case MotionEvent.ACTION_UP:
+        sendCR.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    boolean x = oldX1 - event.getX() > 10 || event.getX() - oldX1 > 10;
+                    boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                    if (x || y) {
+                        isMove = true;
                         sendCR.setAlpha(1f);
-                        if (!isMove)
-                            sendCR.performClick();
-                        return true;
-                }
-                return false;
+                    }
+                    return true;
+                case MotionEvent.ACTION_DOWN:
+                    oldY1 = event.getY();
+                    oldX1 = event.getX();
+                    isMove = false;
+                    sendCR.setAlpha(0.4f);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    sendCR.setAlpha(1f);
+                    if (!isMove)
+                        sendCR.performClick();
+                    return true;
             }
+            return false;
         });
-
-        sendCR.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = codeA.getText().toString().trim();
-                String name = codeN.getText().toString().trim();
-                String message = codeT.getText().toString().trim();
-                if (email.length() < 1)
-                    codeATIL.setError(getResources().getString(R.string.emailNone));
-                else if(!isEmailValid(email))
-                    codeATIL.setError(getResources().getString(R.string.emailInvalid));
-                else if(isEmailValid(email))
-                    codeATIL.setErrorEnabled(false);
-                if (name.length() < 1)
-                    codeNTIL.setError(getResources().getString(R.string.emailNameNone));
-                else
-                    codeNTIL.setErrorEnabled(false);
-                if(message.length() < 1)
-                    codeTTIL.setError(getResources().getString(R.string.emailMsgNone));
-                else
-                    codeTTIL.setErrorEnabled(false);
-                if (!email.isEmpty() && isEmailValid(email) && !name.isEmpty() && !message.isEmpty()) {
-                    sms(email, name, message);
-                }
+        sendCR.setOnClickListener(view -> {
+            String email = codeA.getText().toString().trim();
+            String name = codeN.getText().toString().trim();
+            String message = codeT.getText().toString().trim();
+            if (email.length() < 1)
+                codeATIL.setError(getResources().getString(R.string.emailNone));
+            else if(!isEmailValid(email))
+                codeATIL.setError(getResources().getString(R.string.emailInvalid));
+            else if(isEmailValid(email))
+                codeATIL.setErrorEnabled(false);
+            if (name.length() < 1)
+                codeNTIL.setError(getResources().getString(R.string.emailNameNone));
+            else
+                codeNTIL.setErrorEnabled(false);
+            if(message.length() < 1)
+                codeTTIL.setError(getResources().getString(R.string.emailMsgNone));
+            else
+                codeTTIL.setErrorEnabled(false);
+            if (!email.isEmpty() && isEmailValid(email) && !name.isEmpty() && !message.isEmpty()) {
+                sms(email, name, message);
             }
         });
     }
@@ -194,50 +171,10 @@ public class codeRequest extends AppCompatActivity {
     }
     public void sendMailNew(String codeA, String codeN, String codeT) {
         String randomLetters = "0123456789";
-        String res = "", mPhoneNumber = "";
+        StringBuilder res = new StringBuilder();
         for (int n = 0; n < 4; n++)
-            res += randomLetters.charAt(new Random().nextInt(randomLetters.length()));
-        TelephonyManager tMgr = (TelephonyManager) getApplication().getSystemService(Context.TELEPHONY_SERVICE);
-        SharedPreferences permissionStatus = getSharedPreferences("permissionStatus", MODE_PRIVATE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                if(ActivityCompat.shouldShowRequestPermissionRationale(codeRequest.this,permissionsRequired[0])){
-                    //Show Information about why you need the permission
-                    AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
-                    builder.setTitle(getResources().getString(R.string.permTitle));
-                    builder.setMessage(getResources().getString(R.string.permDes));
-                    builder.setPositiveButton(getResources().getString(R.string.permYes), (dialog, which) -> {
-                        dialog.cancel();
-                        ActivityCompat.requestPermissions(codeRequest.this,permissionsRequired,PERMISSION_CALLBACK_CONSTANT);
-                    });
-                    builder.setNegativeButton(getResources().getString(R.string.ret), (dialog, which) -> dialog.cancel());
-                    builder.show();
-                } else if (permissionStatus.getBoolean(permissionsRequired[0],false)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(codeRequest.this, R.style.AlertDialogStyle);
-                    builder.setTitle(getResources().getString(R.string.permTitle));
-                    builder.setMessage(getResources().getString(R.string.permDes));
-                    builder.setPositiveButton(getResources().getString(R.string.permYes), (dialog, which) -> {
-                        dialog.cancel();
-                        sentToSettings = true;
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                        intent.setData(uri);
-                        startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                    });
-                    builder.setNegativeButton(getResources().getString(R.string.ret), (dialog, which) -> dialog.cancel());
-                    builder.show();
-                }  else {
-                    //just request the permission
-                    ActivityCompat.requestPermissions(codeRequest.this,permissionsRequired,PERMISSION_CALLBACK_CONSTANT);
-                }
-            return;
-        }
-        try {
-            mPhoneNumber = tMgr != null ? tMgr.getLine1Number() : "";
-        } catch (Exception e) {
-            Crashlytics.log(e.getMessage());
-        }
-        Long tsLong = System.currentTimeMillis()/1000;
+            res.append(randomLetters.charAt(new Random().nextInt(randomLetters.length())));
+        long tsLong = System.currentTimeMillis()/1000;
         ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (manager != null) {
             NetworkInfo info = manager.getActiveNetworkInfo();
@@ -250,37 +187,30 @@ public class codeRequest extends AppCompatActivity {
             codeReq.put("email", codeA);
             codeReq.put("name", codeN);
             codeReq.put("reason", codeT);
-            codeReq.put("code", res);
+            codeReq.put("code", res.toString());
             codeReq.put("token", token);
             codeReq.put("allowed", false);
             codeReq.put("used", false);
-            codeReq.put("Pnum", mPhoneNumber);
-            codeReq.put("time", tsLong.toString());
+            codeReq.put("time", ""+ tsLong);
             mFirebaseDatabase = mFirebaseDatabase.child("codes");
             mFirebaseDatabase = mFirebaseDatabase.push();
-            mFirebaseDatabase.setValue(codeReq).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
+            mFirebaseDatabase.setValue(codeReq).addOnSuccessListener((aVoid) -> {
                     try {
                         gooddi(getResources().getString(R.string.requestGood));
                     } catch (WindowManager.BadTokenException e) {
                         Crashlytics.log("gooddi called after window closed.");
                         Crashlytics.logException(e);
                     }
+                    pdialog.cancel();
                     SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("firebaseGenratedKey", mFirebaseDatabase.getKey());
                     editor.apply();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    sendCR.setEnabled(false);
-                    di(getResources().getString(R.string.emailBad));
-                }
+            }).addOnFailureListener(e -> {
+                sendCR.setEnabled(false);
+                pdialog.cancel();
+                di(getResources().getString(R.string.emailBad));
             });
-            pdialog.cancel();
-
         } else {
             pdialog.cancel();
             sendCR.setEnabled(false);
@@ -321,23 +251,13 @@ public class codeRequest extends AppCompatActivity {
     }
     private void di(String err)   {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-        builder.setTitle(getResources().getString(R.string.err)).setMessage(err).setCancelable(false)
-                .setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+        builder.setTitle(getResources().getString(R.string.err)).setMessage(err).setCancelable(false).setNegativeButton(getResources().getString(R.string.ok), (dialog, id) -> dialog.cancel());
         AlertDialog alert = builder.create();
         alert.show();
     }
     private void gooddi(String good)   {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-        builder.setMessage(good).setCancelable(false)
-                .setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+        builder.setMessage(good).setCancelable(false).setNegativeButton(getResources().getString(R.string.ok), (dialog, id) -> dialog.cancel());
         AlertDialog alert = builder.create();
         alert.show();
     }
@@ -350,37 +270,28 @@ public class codeRequest extends AppCompatActivity {
         subj.setSpan(new ForegroundColorSpan(Color.rgb(35, 139, 173)), sender.length(), sender.length()+7, 0);
         final AlertDialog builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle).setTitle(getResources().getString(R.string.suc)).setMessage(subj)
                 .setCancelable(false)
-                .setNegativeButton(getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                }).setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        sendCR.setEnabled(false);
-                        pdialog = new ProgressDialog(codeRequest.this);
-                        pdialog.setIndeterminate(true);
-                        pdialog.setMessage(getResources().getString(R.string.load));
-                        pdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        pdialog.setCancelable(false);
-                        pdialog.show();
-                        //sendMail(codeA, codeN, codeT);
-                        sendMailNew(codeA, codeN, codeT);
-                        dialog.cancel();
-                    }
+                .setNegativeButton(getResources().getString(R.string.ret), (dialog, id) -> dialog.cancel())
+                .setPositiveButton(getResources().getString(R.string.ok), (dialog, id) -> {
+                    sendCR.setEnabled(false);
+                    pdialog = new ProgressDialog(codeRequest.this);
+                    pdialog.setIndeterminate(true);
+                    pdialog.setMessage(getResources().getString(R.string.load));
+                    pdialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    pdialog.setCancelable(false);
+                    pdialog.show();
+                    sendMailNew(codeA, codeN, codeT);
+                    dialog.cancel();
                 }).create();
         TextView textView = builder.findViewById(android.R.id.message);
         final Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         if (textView!= null)
             textView.setTypeface(myTypeface);
-        builder.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                Button canc = builder.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
-                canc.setTypeface(myTypeface);
-                ok.setTypeface(myTypeface);
-                canc.setTextColor(codeRequest.this.getResources().getColor(R.color.OldPrimary));
-            }
+        builder.setOnShowListener(dialogInterface -> {
+            Button canc = builder.getButton(DialogInterface.BUTTON_NEGATIVE);
+            Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
+            canc.setTypeface(myTypeface);
+            ok.setTypeface(myTypeface);
+            canc.setTextColor(codeRequest.this.getResources().getColor(R.color.OldPrimary));
         });
         builder.show();
     }
@@ -430,25 +341,16 @@ public class codeRequest extends AppCompatActivity {
                                 if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                                                    startActivity(intent);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                                                startActivity(intent);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
 
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
@@ -461,24 +363,15 @@ public class codeRequest extends AppCompatActivity {
                                 if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                    startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent12 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                                startActivityForResult(intent12, REQUEST_PERMISSION_SETTING);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
@@ -492,24 +385,15 @@ public class codeRequest extends AppCompatActivity {
                             if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                 builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                            }
+                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                            Intent intent1 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                            startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
                                         })
-                                        .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-                                            }
-                                        });
+                                        .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                 final AlertDialog alert = builder.create();
-                                alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                    @Override
-                                    public void onShow(DialogInterface dialogInterface) {
-                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                    }
+                                alert.setOnShowListener(dialogInterface -> {
+                                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                    canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                 });
                                 alert.show();
                             }
@@ -541,34 +425,6 @@ public class codeRequest extends AppCompatActivity {
         }catch (Exception e)    {
             e.printStackTrace();
             return false;
-        }
-    }
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        if (sentToSettings) {
-            if (ActivityCompat.checkSelfPermission(codeRequest.this, permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(codeRequest.this, permissionsRequired[1]) == PackageManager.PERMISSION_GRANTED) {
-                //Got Permission
-                SharedPreferences sp = getSharedPreferences("Settings", 0);
-                SharedPreferences.Editor ed = sp.edit();
-                ed.putBoolean("allowed", true);
-                ed.apply();
-            }
-        }
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_PERMISSION_SETTING) {
-            if (ActivityCompat.checkSelfPermission(codeRequest.this, permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(codeRequest.this, permissionsRequired[1]) == PackageManager.PERMISSION_GRANTED) {
-                //Got Permission
-                SharedPreferences sp = getSharedPreferences("Settings", 0);
-                SharedPreferences.Editor ed = sp.edit();
-                ed.putBoolean("allowed", true);
-                ed.apply();
-            }
         }
     }
 }

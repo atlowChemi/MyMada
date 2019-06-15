@@ -8,6 +8,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioAttributes;
@@ -17,16 +19,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import androidx.core.app.NotificationCompat;
+
+import android.provider.Settings;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 
 public class GrobootRec extends BroadcastReceiver {
-    protected String title, text, Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
+    protected String title, text, Grp3 = "grpTog", CnlWin = "notWithWin";
     protected static String string = "T1";
     protected static PendingIntent madasApp;
     protected Context context;
@@ -34,45 +39,44 @@ public class GrobootRec extends BroadcastReceiver {
     public long[] lng = {0, 0, 0, 0, 0, 0, 0, 0, 0}, lng2 = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
     private static int NOTIF_ID = 5000;
     private MediaPlayer mMediaPlayer;
-    private AudioManager am;
     protected int currentVolume, callT, notNum = 0;
     public static float vo = 0;
     protected boolean callType, cut, vib, sou, app, OreoVib, OreoSou;
     private NotificationCompat.Builder builder;
-    private Uri uri, url;
     private NotificationManager notifManager;
+
     public GrobootRec() {
     }
-    public static void madasApp(PendingIntent pendingIntent)    {
+
+    public static void madasApp(PendingIntent pendingIntent) {
         madasApp = pendingIntent;
     }
+
     @Override
     public void onReceive(final Context context, Intent intent) {
         final SharedPreferences sp = context.getSharedPreferences("Settings", 0);
         SharedPreferences notSP = context.getSharedPreferences("notifications", 0);
         boolean win = sp.getBoolean("win", true);
         boolean not = sp.getBoolean("not", true);
-        boolean ShabbatM = sp.getBoolean("killS",false);
-        boolean stat = sp.getBoolean("stat",false);
-        boolean statVib = sp.getBoolean("statVib",false);
+        boolean ShabbatM = sp.getBoolean("killS", false);
+        boolean stat = sp.getBoolean("stat", false);
+        boolean statVib = sp.getBoolean("statVib", false);
         boolean silent = true;
         boolean silentVib = true;
-        url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
-        am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        if(am != null && am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
+        Uri url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (am != null && am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
             silent = false;
-        if(am != null && am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
+        if (am != null && am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
             silentVib = false;
-        Intent hachtava = new Intent(context,MokedPage.class);
+        Intent hachtava = new Intent(context, MokedPage.class);
         hachtava.putExtra("msg", true);
         hachtava.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         hachtava.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Intent launchIntent;
-        try {
+        Intent launchIntent = new Intent(context, MokedPage.class);
+        if (isCallable(context.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency")))
             launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency");
-            launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-        }catch (Exception e)    {
-            launchIntent = new Intent(context, MokedPage.class);
+        if (launchIntent != null) {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         }
         PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), hachtava, 0);
@@ -80,13 +84,13 @@ public class GrobootRec extends BroadcastReceiver {
         if (intent != null) {
             try {
                 text = intent.getCharSequenceExtra("text").toString();
-            }catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 text = "";
                 Crashlytics.log("text extra is null!\n" + e);
             }
             callT = intent.getIntExtra("callT", 1);
             Log.d("callT", "" + callT);
-            switch (callT)  {
+            switch (callT) {
                 case 1:
                     callType = sp.getBoolean("callT1", true);
                     string = "T1";
@@ -121,21 +125,22 @@ public class GrobootRec extends BroadcastReceiver {
             smsRes.alerT(madasApp);
         }
         cut = sp.getBoolean("cut", false);
-        if(testAp)  {
+        if (testAp) {
             callType = true;
         }
         Log.d("callT", "t6 is now: " + callType);
+        Uri uri;
         if (string.equals("T6") || string.equals("T4")) {
             vib = sp.getBoolean("NvibT4", true);
             sou = sp.getBoolean("NsouT4", true);
             app = sp.getBoolean("NappT4", false);
             uri = Uri.parse(sp.getString("NuRiT4", ""));
-        }   else if (cut) {
+        } else if (cut) {
             vib = sp.getBoolean("Nvib" + string, true);
             sou = sp.getBoolean("Nsou" + string, true);
             app = sp.getBoolean("Napp" + string, false);
             uri = Uri.parse(sp.getString("NuRi" + string, ""));
-        }   else {
+        } else {
             callType = true;
             vib = sp.getBoolean("Nvib", true);
             sou = sp.getBoolean("Nsou", true);
@@ -148,7 +153,7 @@ public class GrobootRec extends BroadcastReceiver {
         int nightStart = sp.getInt("nightStart", 23);
         int nightEnd = sp.getInt("nightEnd", 7);
         if (hour <= nightEnd || hour >= nightStart) {
-            switch (sleep)  {
+            switch (sleep) {
                 case 1:
                 case 4:
                 case 7:
@@ -161,9 +166,8 @@ public class GrobootRec extends BroadcastReceiver {
                     vib = false;
                     break;
             }
-        }
-        else  {
-            switch (sleep)  {
+        } else {
+            switch (sleep) {
                 case 3:
                 case 4:
                 case 5:
@@ -193,14 +197,12 @@ public class GrobootRec extends BroadcastReceiver {
                 builder.addAction(R.drawable.ic_info, "פרטים", madasApp);
             }
             if (!win) {
-                if (!statVib || silentVib) {
+                /*if (vib && (!statVib || !silentVib)) {
                     OreoVib = true;
-                    if (vib)
-                        builder.setVibrate(lng2);
-                    else {
-                        OreoVib = false;
-                        builder.setVibrate(lng);
-                    }
+                    builder.setVibrate(lng2);
+                } else {
+                    OreoVib = false;
+                    builder.setVibrate(lng);
                 }
                 if (sou && (!stat || !silent)) {
                     OreoSou = true;
@@ -218,8 +220,7 @@ public class GrobootRec extends BroadcastReceiver {
                     if (!app) {
                         builder.setSound(url, AudioManager.STREAM_ALARM);
                     }
-                }
-                else {
+                } else {
                     OreoSou = false;
                 }
                 if (ShabbatM) {
@@ -245,50 +246,70 @@ public class GrobootRec extends BroadcastReceiver {
                             e.printStackTrace();
                         }
                     }, finishTime * 1000);
-                }
+                }*/
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     String cnlId = "generated" + Calendar.getInstance().getTimeInMillis();
                     AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
                     NotificationChannel serviceChannel = new NotificationChannel(cnlId, "ערוץ זמני מותאם אישית", NotificationManager.IMPORTANCE_HIGH);
-                    serviceChannel.enableVibration(OreoVib);
-                    serviceChannel.setVibrationPattern(lng2);
+                    serviceChannel.enableVibration(false);//OreoVib
+                    //serviceChannel.setVibrationPattern(OreoVib ? lng2 : lng);
                     serviceChannel.setBypassDnd(true);
                     serviceChannel.setDescription("התראות עבור אירועי חירום");
                     serviceChannel.enableLights(true);
                     serviceChannel.setShowBadge(true);
                     serviceChannel.setLightColor(Color.RED);
-                    if (OreoSou) {
+                    /*if (OreoSou) {
                         if (app)
                             serviceChannel.setSound(uri, attributes);
                         else
                             serviceChannel.setSound(url, attributes);
-                    }
-                    else
-                        serviceChannel.setSound(null, attributes);
+                    } else*/
+                    serviceChannel.setSound(null, attributes);
                     serviceChannel.setGroup(Grp3);
                     notifManager = context.getSystemService(NotificationManager.class);
-                    if (notifManager != null){
+                    if (notifManager != null) {
                         notifManager.createNotificationChannel(serviceChannel);
                     }
                     builder.setChannelId(cnlId);
                 }
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(context)) {
+                    //If permission is granted start floating widget service
+                    Intent service = new Intent(context ,FloatingWidgetService.class);
+                    service.putExtra("vib", vib && (!statVib || !silentVib));
+                    service.putExtra("sou", sou && (!stat || !silent));
+                    service.putExtra("loop", sp.getBoolean("loop", false));
+                    service.putExtra("uri", app ? uri.toString() : url.toString());
+                    service.putExtra("timeK", sp.getString("timeK", "6"));
+                    service.putExtra("ShabbatM", ShabbatM);
+                    context.startService(service);
+                }
+                builder.setGroup("Calls");
+                builder.setGroupSummary(true);
+                Notification mNotification = builder.build();
+                /*if (sp.getBoolean("loop", false)) {
+                    mNotification.flags |= Notification.FLAG_INSISTENT;
+                }*/
+                if (sp.getBoolean("ride", false)) {
+                    notifManager.cancelAll();
+                    notifManager.notify(notNum, mNotification);
+                } else {
+                    notNum = ++NOTIF_ID;
+                    notifManager.notify(NOTIF_ID, mNotification);
+                }
             }
-            builder.setGroup("Calls");
-            builder.setGroupSummary(true);
-            Notification mNotification = builder.build();
-            if (sp.getBoolean("loop", false)) {
-                mNotification.flags |= Notification.FLAG_INSISTENT;
+            /**/
+            if (win && (callType || testAp)) {
+                Intent i = new Intent(context, smsRes.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                i.putExtra("notNum", notNum);
+                i.putExtra("loop", sp.getBoolean("loop", false));
+                i.putExtra("callT", callT);
+                context.startActivity(i);
             }
-            if (sp.getBoolean("ride", false)) {
-                notifManager.cancelAll();
-                notifManager.notify(notNum, mNotification);
-            } else {
-                notNum = ++NOTIF_ID;
-                notifManager.notify(NOTIF_ID, mNotification);
-            }
+            testAp = false;
         }
-        /**/
-        if (win && (callType || testAp)) {
+        else if (!not && win && (callType || testAp)) {
             Intent i = new Intent(context, smsRes.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
@@ -297,6 +318,14 @@ public class GrobootRec extends BroadcastReceiver {
             i.putExtra("callT", callT);
             context.startActivity(i);
         }
-        testAp = false;
+    }
+    private boolean isCallable(Intent intent) {
+        try {
+            List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            return list.size() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

@@ -1,9 +1,15 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 
@@ -22,6 +28,7 @@ public class MetroActivity extends Fragment {
     private static Animation anim;
     private static Animation big;
     static boolean MetroRun = false;
+    @SuppressLint("StaticFieldLeak")
     private static View v;
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -32,7 +39,7 @@ public class MetroActivity extends Fragment {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
     }
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
         View v = inflater.inflate(R.layout.activity_metro, container, false);
         if (SettingsDesigned.isRTL())
             v.setRotationY(180);
@@ -40,12 +47,12 @@ public class MetroActivity extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         boolean start = getActivity().getIntent().getBooleanExtra("start", false);
         boolean running = getActivity().getIntent().getBooleanExtra("running", false);
         Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
-        final TextView f = (TextView) view.findViewById(R.id.metroExp);
+        final TextView f = view.findViewById(R.id.metroExp);
         f.setTypeface(myTypeface);
         RelativeLayout bp = view.findViewById(R.id.bpmW);
         v = view.findViewById(R.id.startstop);
@@ -59,34 +66,51 @@ public class MetroActivity extends Fragment {
             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CPR");
             mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
         }
-        bp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!MetroRun) {
-                    MetroRun = true;
-                    Intent serviceIntent = new Intent(getActivity(), MetroService.class);
-                    ContextCompat.startForegroundService(getActivity(), serviceIntent);
-                    scaleView(v, 1f, .95f, 1f, .95f);
-                    anim.setDuration(230);
-                    big.setDuration(230);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "metro");
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "metronome");
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CPR");
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                } else {
-                    MetroRun = false;
-                    Intent serviceIntent = new Intent(getActivity(), MetroService.class);
-                    getActivity().stopService(serviceIntent);
-                    try {
-                        v.getAnimation().cancel();
-                        v.clearAnimation();
-                        anim.setAnimationListener(null);
-                        big.setAnimationListener(null);
-                        v.setAnimation(null);
-                    }catch (Exception e) {
-                        Crashlytics.log(e.getMessage());
+        bp.setOnClickListener(view1 -> {
+            if(!MetroRun) {
+                MetroRun = true;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationManager manager = getActivity().getSystemService(NotificationManager.class);
+                    if (manager != null && manager.getNotificationChannel("runInBg") == null) {
+                        NotificationChannelGroup group2 = new NotificationChannelGroup("grpOthers", "התראות שונות");
+                        NotificationChannel serviceChannel = new NotificationChannel("runInBg", "פעילות ברקע", NotificationManager.IMPORTANCE_MIN);
+                        serviceChannel.enableVibration(false);
+                        serviceChannel.enableLights(false);
+                        serviceChannel.setShowBadge(false);
+                        serviceChannel.setImportance(NotificationManager.IMPORTANCE_MIN);
+                        serviceChannel.setDescription("חיוני כדי לאפשר זיהוי מקרים");
+                        serviceChannel.setGroup("grpOthers");
+                        manager.createNotificationChannelGroup(group2);
+                        manager.createNotificationChannel(serviceChannel);
                     }
+                    Intent serviceIntent = new Intent(getActivity(), MetroService.class);
+                    try {
+                        ContextCompat.startForegroundService(getActivity(), serviceIntent);
+                    } catch (Exception e) {
+                        Crashlytics.log("failed starting metronome tile");
+                        Crashlytics.logException(e);
+                    }
+                }
+                scaleView(v, 1f, .95f, 1f, .95f);
+                anim.setDuration(230);
+                big.setDuration(230);
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "metro");
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "metronome");
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CPR");
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+            } else {
+                MetroRun = false;
+                Intent serviceIntent = new Intent(getActivity(), MetroService.class);
+                getActivity().stopService(serviceIntent);
+                try {
+                    v.getAnimation().cancel();
+                    v.clearAnimation();
+                    anim.setAnimationListener(null);
+                    big.setAnimationListener(null);
+                    v.setAnimation(null);
+                }catch (Exception e) {
+                    Crashlytics.log(e.getMessage());
                 }
             }
         });
