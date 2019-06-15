@@ -24,7 +24,6 @@ import java.util.Objects;
 public class NotificationService extends NotificationListenerService {
     protected String text;
     Context context;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -33,8 +32,8 @@ public class NotificationService extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification statusBarNotification) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        Boolean Mapp = sp.getBoolean("Mapp", false);
-        Log.e("Mapp is!", Mapp.toString());
+        boolean Mapp = sp.getBoolean("Mapp", false);
+        Log.e("Mapp is!", Mapp ? "true" : "false");
         if (Mapp && statusBarNotification.getPackageName() != null && (statusBarNotification.getPackageName().contains("mdaemergency")
                 || statusBarNotification.getPackageName().contains("mda.health")
                 || statusBarNotification.getPackageName().equals("atlow.mymadaadmin"))) {
@@ -133,8 +132,6 @@ public class NotificationService extends NotificationListenerService {
             Applicatio.tryConnectService(context);
         return START_STICKY;
     }
-
-
     @Override
     @TargetApi(Build.VERSION_CODES.N)
     public void onListenerConnected() {
@@ -147,7 +144,6 @@ public class NotificationService extends NotificationListenerService {
             }
         }
     }
-
     @Override
     @TargetApi(Build.VERSION_CODES.N)
     public void onListenerDisconnected() {

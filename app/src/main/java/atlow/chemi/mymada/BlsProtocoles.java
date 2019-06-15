@@ -8,6 +8,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
 
@@ -51,7 +53,7 @@ public class BlsProtocoles extends Fragment {
     }
     @SuppressLint("SetJavaScriptEnabled")
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         webview = view.findViewById(R.id.webview);
         spinner = view.findViewById(R.id.progressBar2);
@@ -59,22 +61,17 @@ public class BlsProtocoles extends Fragment {
         webview.setWebViewClient(new BlsProtocoles.CustomWebViewClient());
         webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + BLS);
         FloatingActionButton fab = view.findViewById(R.id.typeProtocole);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CharSequence protos[] = new CharSequence[] {getActivity().getResources().getString(R.string.protocolesBls), getActivity().getResources().getString(R.string.protocolesAls), getActivity().getResources().getString(R.string.protocolesDeath)};
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
-                builder.setTitle(getActivity().getResources().getString(R.string.protocoles)).setItems(protos, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (i != current) {
-                            ShowOrHideWebViewInitialUse = "show";
-                            webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + (i == 0 ? BLS : i == 1 ? ALS : Dead));
-                        }
-                    }
-                });
-                builder.show();
-            }
+        fab.setOnClickListener((vi) -> {
+            CharSequence[] protos = new CharSequence[]{getActivity().getResources().getString(R.string.protocolesBls), getActivity().getResources().getString(R.string.protocolesAls), getActivity().getResources().getString(R.string.protocolesDeath)};
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
+            builder.setTitle(getActivity().getResources().getString(R.string.protocoles)).setItems(protos, (dialogInterface, i) -> {
+                if (i != current) {
+                    ShowOrHideWebViewInitialUse = "show";
+                    webview.stopLoading();
+                    webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + (i == 0 ? BLS : i == 1 ? ALS : Dead));
+                }
+            });
+            builder.show();
         });
     }
     private class CustomWebViewClient extends WebViewClient {

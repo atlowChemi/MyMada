@@ -61,7 +61,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
     }
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
-        Chat msg = albumList.get(holder.getAdapterPosition());
+        Chat msg = albumList.get(position);
         String sender = msg.getSender();
         String msgTxt = msg.getMsg();
         String msgTime = msg.getTime();
@@ -72,6 +72,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
             params.setMargins(properDp,properDp,properDp,properDp);
             holder.msgSender.requestLayout();
             holder.msgTxt.setVisibility(View.GONE);
+            holder.msgTime.setVisibility(View.GONE);
             holder.msgHold.setOnClickListener(v -> {contactChatActivity.askForName(context, true);});
         }
         else {
@@ -80,6 +81,8 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
             holder.msgSender.setText(sender);
             holder.msgTxt.setText(msgTxt);
             holder.msgTime.setText(msgTime);
+            holder.msgTxt.setVisibility(View.VISIBLE);
+            holder.msgTime.setVisibility(View.VISIBLE);
             holder.msgTxt.setMovementMethod(new ScrollingMovementMethod());
             Typeface myTypeface = Typeface.createFromAsset(this.context.getAssets(), "fonts/opensanshebrew.ttf");
             holder.msgTxt.setTypeface(myTypeface);
@@ -87,6 +90,8 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
             holder.msgTime.setTypeface(myTypeface);
             if (msg.getSender().equals("admin"))
                 holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.chatAdmin));
+            else
+                holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.White));
         }
     }
     private int dpToPx(int dp) {

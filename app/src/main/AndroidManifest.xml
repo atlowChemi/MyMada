@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="atlow.chemi.mymada">
 
-    <uses-permission
-        android:name="android.permission.VIBRATE" />
-    <uses-permission
-        android:name="android.permission.WAKE_LOCK" />
-    <uses-permission
-        android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission
-        android:name="android.permission.INTERNET" />
-    <uses-permission
-        android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <uses-feature
         android:name="android.hardware.telephony"
@@ -34,14 +27,14 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7600269766434003~4255496174"/>
-
+            android:value="ca-app-pub-7600269766434003~4255496174" />
 
         <activity
             android:name=".HomePage"
@@ -62,10 +55,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme.SmsRes" />
         <activity
-        android:name=".SettingsActivity"
-        android:label="@string/title_activity_settings"
-        android:screenOrientation="portrait"
-        android:theme="@style/PreTheme" />
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait"
+            android:theme="@style/PreTheme" />
         <activity
             android:name=".InfoActivity"
             android:label="@string/title_activity_info"
@@ -169,17 +162,21 @@
             android:name=".SMSMonitorService"
             android:label="@string/smsMoni" />
         <service
+            android:name=".FloatingWidgetService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
             android:name=".MetroService"
             android:label="@string/metroMoni" />
         <service
-        android:name=".NotificationService"
-        android:enabled="@bool/listener"
-        android:label="@string/notiMoni"
-        android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
-        <intent-filter>
-            <action android:name="android.service.notification.NotificationListenerService" />
-        </intent-filter>
-    </service>
+            android:name=".NotificationService"
+            android:enabled="@bool/listener"
+            android:label="@string/notiMoni"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
         <service
             android:name=".NotificationServiceOld"
             android:description="@string/address"
@@ -203,8 +200,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".MyFirebaseInstanceIDService">
+        <service android:name=".MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -218,6 +214,7 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
+
             <meta-data
                 android:name="android.service.quicksettings.ACTIVE_TILE"
                 android:value="false" />
@@ -246,8 +243,7 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".ActionReciver" />
+        <receiver android:name=".ActionReciver" />
         <receiver
             android:name=".GrobootRec"
             android:enabled="true"

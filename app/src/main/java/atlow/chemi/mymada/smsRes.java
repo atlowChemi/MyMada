@@ -431,21 +431,6 @@ public class smsRes extends AppCompatActivity {
             pi = pendingIntent;
     }
     @Override
-    public void onWindowFocusChanged(boolean hasFocus)  {
-        /*try {
-            if(Build.VERSION_CODES.JELLY_BEAN <= Build.VERSION.SDK_INT) {
-                if (getSupportActionBar()!=null)
-                    getSupportActionBar().hide();
-                View decorView = getWindow().getDecorView();
-                int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-                decorView.setSystemUiVisibility(uiOptions | View.SYSTEM_UI_FLAG_FULLSCREEN);
-                ///getWindow().addFlags(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-            }
-        }catch (OutOfMemoryError e) {
-            e.printStackTrace();
-        }*/
-    }
-    @Override
     public void onDestroy() {
         SharedPreferences SP = getSharedPreferences("settings",0);
         final boolean sou = SP.getBoolean("Nsou" + string, true);

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item>
+        <shape android:shape="rectangle" xmlns:android="http://schemas.android.com/apk/res/android">
+            <size android:width="200dp" android:height="200dp" />
+            <corners android:radius="100dp" />
+            <solid android:color="@color/ColorRedDark" />
+        </shape>
+    </item>
+    <item
+        android:drawable="@drawable/ic_siren"
+        android:top="20dp"
+        android:bottom="30dp"
+        android:right="30dp"
+        android:left="30dp" />
+</layer-list>

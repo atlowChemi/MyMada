@@ -205,6 +205,7 @@
     <string name="emailInvalid">כתובת המייל שהזנת אינה תקינה!</string>
     <string name="emailNone">לא רשמת כתובת מייל!</string>
     <string name="emailNameNone">לא רשמת שם!</string>
+    <string name="chatNameNum">רשמת רק מספרים!</string>
     <string name="emailSubjNone">לא רשמת נושא להודעה!</string>
     <string name="emailMsgNone">לא רשמת תוכן בהודעה!</string>
     <string name="load">טוען. אנא המתן…</string>

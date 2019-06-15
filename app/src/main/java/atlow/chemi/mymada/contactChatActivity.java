@@ -54,7 +54,6 @@ public class contactChatActivity extends AppCompatActivity {
     private EditText ChatT;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     private Button sendChat;
-    private RecyclerView msgs;
     private static ChatAdapter adapter;
     private ArrayList<Chat> chats;
     private boolean isMove = false;
@@ -62,7 +61,7 @@ public class contactChatActivity extends AppCompatActivity {
     private MenuItem Detect;
     private DatabaseReference root;
     static String name, fcmToken;
-    private SharedPreferences sp;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +76,15 @@ public class contactChatActivity extends AppCompatActivity {
         chats = new ArrayList<>();
         adapter = new ChatAdapter(chats, contactChatActivity.this);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        //mLayoutManager.setReverseLayout(true);
-        //mLayoutManager.setStackFromEnd(true);
-        msgs = findViewById(R.id.chatMsg);
+        RecyclerView msgs = findViewById(R.id.chatMsg);
         msgs.setLayoutManager(mLayoutManager);
         msgs.addItemDecoration(new GridSpacingItemDecoration(1, dpToPx(4), true));
         msgs.setItemAnimator(new DefaultItemAnimator());
         msgs.setAdapter(adapter);
+        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
+        itemAnimator.setAddDuration(1000);
+        itemAnimator.setRemoveDuration(1000);
+        msgs.setItemAnimator(itemAnimator);
 
         fcmToken = MyFirebaseMessagingService.getToken(getApplicationContext());
         root = FirebaseDatabase.getInstance().getReference().child("chats").child(fcmToken);
@@ -91,7 +92,7 @@ public class contactChatActivity extends AppCompatActivity {
         TextInputLayout chatTil = findViewById(R.id.chatTil);
         sendChat = findViewById(R.id.sendChat);
 
-        sp = getSharedPreferences("Settings", 0);
+        SharedPreferences sp = getSharedPreferences("Settings", 0);
         name = sp.getString("UserName", "");
         if (name.trim().length() < 1) {
             askForName(contactChatActivity.this, false);
@@ -168,8 +169,10 @@ public class contactChatActivity extends AppCompatActivity {
                         time = tsLong + "";
                     }
                     chats.add(new Chat(sender, msg, time));
-                    if (adapter != null)
+                    if (adapter != null) {
                         adapter.notifyDataSetChanged();
+                        msgs.smoothScrollToPosition(adapter.getItemCount());
+                    }
                 }
                 else if (dataSnapshot.getKey() != null && dataSnapshot.getKey().equals("SeenByAdmin")) {
                     boolean seen = dataSnapshot.getValue(Boolean.class);
@@ -204,9 +207,12 @@ public class contactChatActivity extends AppCompatActivity {
             shabatText.setText(userN);
             Button ok = langPicker.getButton(DialogInterface.BUTTON_POSITIVE);
             ok.setOnClickListener((v) -> {
-                if (shabatText.getText().toString().isEmpty())
+                if (shabatText.getText().toString().trim().isEmpty())
                     shabatTil.setError(context.getString(R.string.emailNameNone));
-                if (shabatText.getText().toString().trim().length() > 0 && !TextUtils.isDigitsOnly(shabatText.getText().toString().trim())) {
+                else if (shabatText.getText().toString().trim().length() > 0 && TextUtils.isDigitsOnly(shabatText.getText().toString().trim())) {
+                    shabatTil.setError(context.getString(R.string.chatNameNum));
+                }
+                else {
                     String newI = shabatText.getText().toString().trim();
                     shabatTil.setErrorEnabled(false);
                     SharedPreferences.Editor e = sp.edit();

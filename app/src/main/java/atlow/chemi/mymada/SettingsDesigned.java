@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -44,6 +45,7 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         CardView advanced = findViewById(R.id.advanced_card);
         CardView tools = findViewById(R.id.tools_card);
         CardView lang = findViewById(R.id.lang_card);
+        TextView langArrow = findViewById(R.id.lang_arrow_tv);
         CardView info = findViewById(R.id.info_card);
         notifications.setOnClickListener(this);
         advanced.setOnClickListener(this);
@@ -56,6 +58,8 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         MappSwitch.setChecked(MappBool);
         CardView mappCard = findViewById(R.id.detect_card);
         mappCard.setOnClickListener(this);
+        if (!isRTL())
+            langArrow.setRotation(90);
     }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
