@@ -211,7 +211,8 @@
     <string name="load">Loading. Please wait…</string>
     <string name="permTitle">We need permission!</string>
     <string name="permDes">We need you to approve some permission so the app can work properly.</string>
-    <string name="permDesSD">We need permission to read from the card in order to play the alarm.</string>
+    <string name="permDesSD">We need permission to read from the phone memory in order to play the alarm.</string>
+    <string name="permDesOverlay">We need permission to show the app on top of other apps, in order to allow vibration &amp; sound even when phone is on silent mode.</string>
     <string name="permYes">Approve permission</string>
     <string name="importanceMsg">We have detected message detction notification is showing on the screen.\nyou can hide it by changing importance to minimum.</string>
     <string name="Apgar">Apgar is: %d</string>
