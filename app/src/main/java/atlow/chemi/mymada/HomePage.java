@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -53,7 +55,7 @@ public class HomePage extends AppCompatActivity {
     private Typeface myTypeface;
     private homeBAdapter adapter;
     public NotificationManager manager;
-    private static final int REQUEST_PERMISSION_SETTING = 101;
+    private static final int REQUEST_PERMISSION_SETTING = 101, OVERLAY_PER_REQ = 345;
     public final String Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
     private MenuItem Detect;
     @Override
@@ -141,6 +143,29 @@ public class HomePage extends AppCompatActivity {
                     .setPositiveButton(getResources().getString(R.string.title_activity_settings), (dialog, id) -> {
                         Intent intent = new Intent(getApplicationContext(), SettingsDesigned.class);
                         startActivity(intent);
+                    }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
+            final AlertDialog alert = builder.create();
+            TextView textView = alert.findViewById(android.R.id.message);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            textView = alert.findViewById(android.R.id.title);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            alert.setOnShowListener(dialogInterface -> {
+                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                ok.setTypeface(myTypeface);
+                canc.setTypeface(myTypeface);
+                canc.setTextColor(getResources().getColor(R.color.OldPrimary));
+            });
+            alert.show();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+            builder.setMessage(getResources().getString(R.string.permDesOverlay)).setCancelable(false)
+                    .setTitle(getString(R.string.permTitle))
+                    .setPositiveButton(getResources().getString(R.string.permYes), (dialog, id) -> {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(intent, OVERLAY_PER_REQ);
                     }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
             final AlertDialog alert = builder.create();
             TextView textView = alert.findViewById(android.R.id.message);
@@ -452,5 +477,37 @@ public class HomePage extends AppCompatActivity {
             item.setIcon(R.drawable.ic_detect_off);
         }
         s.apply();
+    }
+    private void CreateOverlayPermissionDialog() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+            builder.setMessage(getResources().getString(R.string.permDesOverlay)).setCancelable(false)
+                    .setTitle(getString(R.string.permTitle))
+                    .setPositiveButton(getResources().getString(R.string.permYes), (dialog, id) -> {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(intent, OVERLAY_PER_REQ);
+                    }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
+            final AlertDialog alert = builder.create();
+            TextView textView = alert.findViewById(android.R.id.message);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            textView = alert.findViewById(android.R.id.title);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            alert.setOnShowListener(dialogInterface -> {
+                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                ok.setTypeface(myTypeface);
+                canc.setTypeface(myTypeface);
+                canc.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.OldPrimary));
+            });
+            alert.show();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == OVERLAY_PER_REQ)
+            if (resultCode != RESULT_OK)
+                CreateOverlayPermissionDialog();
     }
 }

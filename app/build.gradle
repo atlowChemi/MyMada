@@ -22,7 +22,7 @@ android {
         applicationId "atlow.chemi.mymada"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 12070
+        versionCode 12075
         versionName '3.3'
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true

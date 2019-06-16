@@ -212,6 +212,7 @@
     <string name="permTitle">נדרשות לאפלקציה הרשאות מסוימות</string>
     <string name="permDes">האפליקציה זקוקה להרשאות מסוימות כדי לפעול כראוי.</string>
     <string name="permDesSD">האפליקציה זקוקה לגישה לקבצים בטלפון כדי להפעיל צלצולים כראוי.</string>
+    <string name="permDesOverlay">האפליקציה זקוקה להרשאה להיות מוצגת מעל אפליקציות אחרות, כדי לאפשר התראה עם צליל ורטט גם כשהמכשיר במצב שקט.</string>
     <string name="permYes">אישור הרשאות</string>
     <string name="importanceMsg">זיהינו כי התראה על זיהוי הודעות ברקע מופיעה במסך.\nלידיעתך, ניתן להעלים אותו על ידי העברה לדחיפות נמוכה.</string>
     <string name="Apgar">ציון אפגאר הוא: %d</string>

@@ -159,6 +159,7 @@
     <string name="load">טוען. אנא המתן…</string>
     <string name="permTitle">נדרשות לאפלקציה הרשאות מסוימות</string>
     <string name="permDes">האפליקציה זקוקה להרשאות מסוימות כדי לפעול כראוי.</string>
+    <string name="permDesOverlay">האפליקציה זקוקה להרשאה להיות מוצגת מעל אפליקציות אחרות, כדי לאפשר התראה עם צליל ורטט גם כשהמכשיר במצב שקט.</string>
     <string name="permDesSD">האפליקציה זקוקה לגישה לקבצים בטלפון כדי להפעיל צלצולים כראוי.</string>
     <string name="permYes">אישור הרשאות</string>
     <string name="requestGood">הבקשה הגיעה אלינו ונרשמה.\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>

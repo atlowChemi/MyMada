@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.core.content.ContextCompat;
@@ -17,10 +19,13 @@ import android.os.Bundle;
 import androidx.cardview.widget.CardView;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+
+import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -30,7 +35,7 @@ import java.util.Locale;
 public class SettingsDesigned extends AppCompatActivity implements View.OnClickListener {
     private SwitchCompat MappSwitch;
     private SharedPreferences sp;
-    private static final int REQUEST_PERMISSION_SETTING = 101;
+    private static final int REQUEST_PERMISSION_SETTING = 101, OVERLAY_PER_REQ = 345;
     private String[] Langs = new String[] {"עברית", "English"};
 
     @Override
@@ -60,6 +65,7 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         mappCard.setOnClickListener(this);
         if (!isRTL())
             langArrow.setRotation(90);
+        CreateOverlayPermissionDialog();
     }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -115,25 +121,16 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
                                 if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                                                    startActivity(intent);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent1 = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                                                startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
 
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
@@ -146,24 +143,15 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
                                 if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                    startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent12 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                                startActivityForResult(intent12, REQUEST_PERMISSION_SETTING);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
@@ -177,24 +165,15 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
                             if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                 builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                            }
+                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                            Intent intent13 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                            startActivityForResult(intent13, REQUEST_PERMISSION_SETTING);
                                         })
-                                        .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-                                            }
-                                        });
+                                        .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                 final AlertDialog alert = builder.create();
-                                alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                    @Override
-                                    public void onShow(DialogInterface dialogInterface) {
-                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                    }
+                                alert.setOnShowListener(dialogInterface -> {
+                                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                    canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                 });
                                 alert.show();
                             }
@@ -230,20 +209,12 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         final int langToPick = LocalHelper.getLanguage(SettingsDesigned.this).equals("iw") ? 0 : 1;
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesigned.this, R.style.AlertDialogStyle);
         builder.setTitle(getString(R.string.pref_title_lang));
-        builder.setNegativeButton(getString(R.string.ret), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.setSingleChoiceItems(Langs, langToPick, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String locale = which == 0 ? "iw" : "en";
-                if (langToPick != which) {
-                    LocalHelper.setLocale(getApplicationContext(), locale);
-                    recreate();
-                }
+        builder.setNegativeButton(getString(R.string.ret), (dialog, which) -> dialog.dismiss());
+        builder.setSingleChoiceItems(Langs, langToPick, (dialog, which) -> {
+            String locale = which == 0 ? "iw" : "en";
+            if (langToPick != which) {
+                LocalHelper.setLocale(getApplicationContext(), locale);
+                recreate();
             }
         });
         AlertDialog langPicker = builder.create();
@@ -253,13 +224,35 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         String text = getString(R.string.pref_notifictions_explain_content);
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesigned.this, R.style.AlertDialogStyle);
         builder.setTitle(getString(R.string.pref_notifictions_explain)).setMessage(text);
-        builder.setNegativeButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        }).create();
+        builder.setNegativeButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss()).create();
         builder.show();
+    }
+    private void CreateOverlayPermissionDialog() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+            builder.setMessage(getResources().getString(R.string.permDesOverlay)).setCancelable(false)
+                    .setTitle(getString(R.string.permTitle))
+                    .setPositiveButton(getResources().getString(R.string.permYes), (dialog, id) -> {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(intent, OVERLAY_PER_REQ);
+                    }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
+            final AlertDialog alert = builder.create();
+            TextView textView = alert.findViewById(android.R.id.message);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            textView = alert.findViewById(android.R.id.title);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            alert.setOnShowListener(dialogInterface -> {
+                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                ok.setTypeface(myTypeface);
+                canc.setTypeface(myTypeface);
+                canc.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.OldPrimary));
+            });
+            alert.show();
+        }
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -284,5 +277,11 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
     public static boolean isRTL(Locale locale) {
         final int directionality = Character.getDirectionality(locale.getDisplayName().charAt(0));
         return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT || directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == OVERLAY_PER_REQ)
+            if (resultCode != RESULT_OK)
+                CreateOverlayPermissionDialog();
     }
 }
