@@ -26,6 +26,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.List;
 
@@ -34,6 +38,8 @@ public class InfoActivity extends AppCompatActivity {
     private boolean isMove1 = false;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     private MenuItem Detect;
+    private InterstitialAd openUp, goToPriv;
+    private boolean startUp = true;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,38 +50,50 @@ public class InfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-7600269766434003~4255496174");
+        goToPriv = new InterstitialAd(this);
+        goToPriv.setAdUnitId("ca-app-pub-7600269766434003/4483563620");
+        goToPriv.loadAd(new AdRequest.Builder().build());
+        goToPriv.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                goToPriv.loadAd(new AdRequest.Builder().build());
+                Intent intent = new Intent(getApplicationContext(), PrivacyActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
         final TextView textView = findViewById(R.id.textView10);
         Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         textView.setTypeface(myTypeface);
         textView.setMovementMethod(new ScrollingMovementMethod());
         textView.setText(getResources().getString(R.string.TversionNumber, BuildConfig.VERSION_NAME));
         final Button privBtn = findViewById(R.id.privB);
-        privBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        boolean x = oldX1 - event.getX() > 140 || event.getX() - oldX1 > 140;
-                        boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
-                        if (x || y) {
-                            isMove1 = true;
-                            privBtn.setAlpha(1f);
-                        }
-                        return true;
-                    case MotionEvent.ACTION_DOWN:
-                        oldY1 = event.getY();
-                        oldX1 = event.getX();
-                        isMove1 = false;
-                        privBtn.setAlpha(0.4f);
-                        return true;
-                    case MotionEvent.ACTION_UP:
+        privBtn.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    boolean x = oldX1 - event.getX() > 140 || event.getX() - oldX1 > 140;
+                    boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                    if (x || y) {
+                        isMove1 = true;
                         privBtn.setAlpha(1f);
-                        if (!isMove1)
-                            privBtn.performClick();
-                        return true;
-                }
-                return false;
+                    }
+                    return true;
+                case MotionEvent.ACTION_DOWN:
+                    oldY1 = event.getY();
+                    oldX1 = event.getX();
+                    isMove1 = false;
+                    privBtn.setAlpha(0.4f);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    privBtn.setAlpha(1f);
+                    if (!isMove1)
+                        privBtn.performClick();
+                    return true;
             }
+            return false;
         });
     }
     @Override
@@ -92,13 +110,19 @@ public class InfoActivity extends AppCompatActivity {
         }
     }
     public void privacy(View view) {
-        Intent intent = new Intent(getApplicationContext(), PrivacyActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        if (goToPriv != null && goToPriv.isLoaded())
+            goToPriv.show();
+        else {
+            Intent intent = new Intent(getApplicationContext(), PrivacyActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
     }
     @Override
     protected void onResume() {
         super.onResume();
+        if (openUp != null && openUp.isLoaded())
+            openUp.show();
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         if (Detect != null) {
             int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
@@ -141,25 +165,15 @@ public class InfoActivity extends AppCompatActivity {
                                 if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                                                    startActivity(intent);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                                                startActivity(intent);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) ->dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
@@ -172,24 +186,15 @@ public class InfoActivity extends AppCompatActivity {
                                 if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                    startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent1 = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                                startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
@@ -203,24 +208,15 @@ public class InfoActivity extends AppCompatActivity {
                             if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                 builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                            }
+                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent inten = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                                startActivityForResult(inten, REQUEST_PERMISSION_SETTING);
                                         })
-                                        .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-                                            }
-                                        });
+                                        .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                 final AlertDialog alert = builder.create();
-                                alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                    @Override
-                                    public void onShow(DialogInterface dialogInterface) {
-                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                    }
+                                alert.setOnShowListener(dialogInterface -> {
+                                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                    canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                 });
                                 alert.show();
                             }

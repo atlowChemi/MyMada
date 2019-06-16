@@ -115,7 +115,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         if (sou) {
             playSound(getApplicationContext(), url, loop);
         }
-        if(ShabbatM)    {
+        if (ShabbatM)    {
             int finishTime = Integer.parseInt(timeK); //6 secs
             Handler handler = new Handler();
             handler.postDelayed(() -> {
