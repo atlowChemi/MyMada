@@ -27,6 +27,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +43,7 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
     private List<HomeB> albumList;
     private ArrayList<Button> btns;
     private float oldX1, oldY1;
+    private InterstitialAd openUp;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private Button homeB;
@@ -73,6 +79,11 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
         }catch (NullPointerException e) {
             Log.e("not Added btn", e.getMessage());
         }
+        MobileAds.initialize(mContext, "ca-app-pub-7600269766434003~4255496174");
+        openUp = new InterstitialAd(mContext);
+        openUp.setAdUnitId("ca-app-pub-7600269766434003/4483563620");
+        openUp.loadAd(new AdRequest.Builder().build());
+
         Display display = mContext.getWindowManager().getDefaultDisplay();
         int width = display.getWidth()/2;
         int heightAll = (int) (width * 0.8);
@@ -240,29 +251,71 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                     if (!realM) {
                         isMADA = isPI(mContext);
                     }
-                    if (realM || isMADA) {
-                        intent = new Intent(mContext, contactChatActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
-                    } else   {
-                        AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
-                        builder2.setTitle(mContext.getResources().getString(R.string.plsNote)).setMessage(mContext.getResources().getString(R.string.plsNoteCon)).setCancelable(true)
-                                .setNegativeButton(mContext.getResources().getString(R.string.plsNoteConCode), (dialogInterface, i) -> {
-                                    Intent intent13 = new Intent(mContext, codeRequest.class);
-                                    intent13.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    mContext.startActivity(intent13);
-                                }).setPositiveButton(mContext.getResources().getString(R.string.title_activity_contact), (dialogInterface, i) -> {
-                                    Intent intent14 = new Intent(mContext, contactChatActivity.class);
-                                    intent14.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    mContext.startActivity(intent14);
-                                });
-                        builder2.show();
+                    if (openUp != null && openUp.isLoaded()) {
+                        openUp.setAdListener(new AdListener() {
+                            @Override
+                            public void onAdClosed() {
+                                openUp.loadAd(new AdRequest.Builder().build());
+                                if (realM || isMADA) {
+                                    Intent intent = new Intent(mContext, contactChatActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    mContext.startActivity(intent);
+                                } else {
+                                    AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
+                                    builder2.setTitle(mContext.getResources().getString(R.string.plsNote)).setMessage(mContext.getResources().getString(R.string.plsNoteCon)).setCancelable(true)
+                                            .setNegativeButton(mContext.getResources().getString(R.string.plsNoteConCode), (dialogInterface, i) -> {
+                                                Intent intent13 = new Intent(mContext, codeRequest.class);
+                                                intent13.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                mContext.startActivity(intent13);
+                                            }).setPositiveButton(mContext.getResources().getString(R.string.title_activity_contact), (dialogInterface, i) -> {
+                                        Intent intent14 = new Intent(mContext, contactChatActivity.class);
+                                        intent14.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        mContext.startActivity(intent14);
+                                    });
+                                    builder2.show();
+                                }
+                            }
+                        });
+                        openUp.show();
+                    } else {
+                        if (realM || isMADA) {
+                            intent = new Intent(mContext, contactChatActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(intent);
+                        } else {
+                            AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
+                            builder2.setTitle(mContext.getResources().getString(R.string.plsNote)).setMessage(mContext.getResources().getString(R.string.plsNoteCon)).setCancelable(true)
+                                    .setNegativeButton(mContext.getResources().getString(R.string.plsNoteConCode), (dialogInterface, i) -> {
+                                        Intent intent13 = new Intent(mContext, codeRequest.class);
+                                        intent13.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        mContext.startActivity(intent13);
+                                    }).setPositiveButton(mContext.getResources().getString(R.string.title_activity_contact), (dialogInterface, i) -> {
+                                Intent intent14 = new Intent(mContext, contactChatActivity.class);
+                                intent14.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mContext.startActivity(intent14);
+                            });
+                            builder2.show();
+                        }
                     }
                     break;
                 case "inf":
-                    intent = new Intent(mContext, InfoActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
+                    if (openUp != null && openUp.isLoaded()) {
+                        openUp.setAdListener(new AdListener() {
+                            @Override
+                            public void onAdClosed() {
+                                openUp.loadAd(new AdRequest.Builder().build());
+                                Intent intent = new Intent(mContext, InfoActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mContext.startActivity(intent);
+                            }
+                        });
+                        openUp.show();
+                    }
+                    else {
+                        intent = new Intent(mContext, InfoActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                    }
                     break;
             }
         });

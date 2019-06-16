@@ -36,14 +36,11 @@ public class GrobootRec extends BroadcastReceiver {
     protected static PendingIntent madasApp;
     protected Context context;
     public static Boolean testAp = false;
-    public long[] lng = {0, 0, 0, 0, 0, 0, 0, 0, 0}, lng2 = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
+    public long[] lng = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     private static int NOTIF_ID = 5000;
-    private MediaPlayer mMediaPlayer;
-    protected int currentVolume, callT, notNum = 0;
+    protected int callT, notNum = 0;
     public static float vo = 0;
-    protected boolean callType, cut, vib, sou, app, OreoVib, OreoSou;
-    private NotificationCompat.Builder builder;
-    private NotificationManager notifManager;
+    protected boolean callType, cut, vib, sou, app;
 
     public GrobootRec() {
     }
@@ -184,93 +181,34 @@ public class GrobootRec extends BroadcastReceiver {
         if (not && callType) {
             String tick = string.equals("T4") || string.equals("T6") ? "התקבלה הודעה חדש באפליקציה!" : "התקבל אירוע חדש באפליקציה!";
             String titl = string.equals("T4") || string.equals("T6") ? "הודעה חדשה באפליקציה!" : "אירוע חדש באפליקציה!";
-            notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            builder = new NotificationCompat.Builder(context, CnlWin).setContentTitle(titl)
+            NotificationManager notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CnlWin).setContentTitle(titl)
                     .setContentText("לחץ כאן בכדי להכתיב טפסים.").setSmallIcon(R.drawable.ic_siren)
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                     .setVibrate(lng).setSound(null)
                     .setContentIntent(pendingIntent).setAutoCancel(true).addAction(R.drawable.ic_edit, "הכתב", pendingIntent)
                     .setTicker(tick).setStyle(new NotificationCompat.BigTextStyle().bigText(text));
+            builder.setGroup("Calls");
+            builder.setGroupSummary(true);
             if (testAp)
                 builder.setStyle(new NotificationCompat.BigTextStyle().bigText("בדיקת אפליקציה!")).addAction(R.drawable.ic_info, "פרטים", testPI);
             else if (madasApp != null) {
                 builder.addAction(R.drawable.ic_info, "פרטים", madasApp);
             }
             if (!win) {
-                /*if (vib && (!statVib || !silentVib)) {
-                    OreoVib = true;
-                    builder.setVibrate(lng2);
-                } else {
-                    OreoVib = false;
-                    builder.setVibrate(lng);
-                }
-                if (sou && (!stat || !silent)) {
-                    OreoSou = true;
-                    int vol = am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-                    currentVolume = am.getStreamVolume(AudioManager.STREAM_ALARM);
-                    vo = am.getStreamVolume(AudioManager.STREAM_ALARM);
-                    boolean volumeApp = sp.getBoolean("volumeApp", true);
-                    if (volumeApp) {
-                        int volumeAppNum = sp.getInt("volumeAppNum", vol);
-                        am.setStreamVolume(AudioManager.STREAM_ALARM, volumeAppNum, 0);
-                    }
-                    if (app) {
-                        builder.setSound(uri, AudioManager.STREAM_ALARM);
-                    }
-                    if (!app) {
-                        builder.setSound(url, AudioManager.STREAM_ALARM);
-                    }
-                } else {
-                    OreoSou = false;
-                }
-                if (ShabbatM) {
-                    int finishTime = Integer.parseInt(sp.getString("timeK", "6")); //6 secs
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> {
-                        if (sp.getBoolean("ride", false)) {
-                            notifManager.cancelAll();
-                            builder.setVibrate(lng).setSound(null).setChannelId(CnlWin);
-                            Notification mNotification = builder.build();
-                            notifManager.notify(0, mNotification);
-                        } else {
-                            notifManager.cancel(NOTIF_ID);
-                            builder.setVibrate(lng).setSound(null).setChannelId(CnlWin);
-                            Notification mNotification = builder.build();
-                            notifManager.notify(++NOTIF_ID, mNotification);
-                        }
-                        //int a = am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-                        mMediaPlayer = new MediaPlayer();
-                        try {
-                            mMediaPlayer.setVolume(vo, vo);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }, finishTime * 1000);
-                }*/
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    String cnlId = "generated" + Calendar.getInstance().getTimeInMillis();
-                    AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setLegacyStreamType(AudioManager.STREAM_ALARM).build();
-                    NotificationChannel serviceChannel = new NotificationChannel(cnlId, "ערוץ זמני מותאם אישית", NotificationManager.IMPORTANCE_HIGH);
-                    serviceChannel.enableVibration(false);//OreoVib
-                    //serviceChannel.setVibrationPattern(OreoVib ? lng2 : lng);
-                    serviceChannel.setBypassDnd(true);
-                    serviceChannel.setDescription("התראות עבור אירועי חירום");
-                    serviceChannel.enableLights(true);
-                    serviceChannel.setShowBadge(true);
-                    serviceChannel.setLightColor(Color.RED);
-                    /*if (OreoSou) {
-                        if (app)
-                            serviceChannel.setSound(uri, attributes);
-                        else
-                            serviceChannel.setSound(url, attributes);
-                    } else*/
-                    serviceChannel.setSound(null, attributes);
-                    serviceChannel.setGroup(Grp3);
-                    notifManager = context.getSystemService(NotificationManager.class);
-                    if (notifManager != null) {
-                        notifManager.createNotificationChannel(serviceChannel);
-                    }
-                    builder.setChannelId(cnlId);
+                    builder.setChannelId(CnlWin);
+                }
+                Notification mNotification = builder.build();
+                /*if (sp.getBoolean("loop", false)) {
+                    mNotification.flags |= Notification.FLAG_INSISTENT;
+                }*/
+                if (sp.getBoolean("ride", false)) {
+                    notifManager.cancelAll();
+                    notifManager.notify(notNum, mNotification);
+                } else {
+                    notNum = ++NOTIF_ID;
+                    notifManager.notify(NOTIF_ID, mNotification);
                 }
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(context)) {
                     //If permission is granted start floating widget service
@@ -282,19 +220,6 @@ public class GrobootRec extends BroadcastReceiver {
                     service.putExtra("timeK", sp.getString("timeK", "6"));
                     service.putExtra("ShabbatM", ShabbatM);
                     context.startService(service);
-                }
-                builder.setGroup("Calls");
-                builder.setGroupSummary(true);
-                Notification mNotification = builder.build();
-                /*if (sp.getBoolean("loop", false)) {
-                    mNotification.flags |= Notification.FLAG_INSISTENT;
-                }*/
-                if (sp.getBoolean("ride", false)) {
-                    notifManager.cancelAll();
-                    notifManager.notify(notNum, mNotification);
-                } else {
-                    notNum = ++NOTIF_ID;
-                    notifManager.notify(NOTIF_ID, mNotification);
                 }
             }
             /**/

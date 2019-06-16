@@ -24,6 +24,7 @@ public class MetroService extends Service {
     private AudioManager audioManager;
     private int currentVolume;
     public static float vo = 0;
+    static boolean running = false;
     private MetronomeAsyncTask metroTask;
     @Override
     public void onCreate() {
@@ -59,6 +60,7 @@ public class MetroService extends Service {
         Notification notification = builder.build();
         startForeground(13, notification);
         metro(MetroService.this);
+        running = true;
         return START_STICKY;
     }
 
@@ -69,12 +71,14 @@ public class MetroService extends Service {
     @Override
     public void onDestroy()  {
         metroStop();
+        running = false;
         super.onDestroy();
     }
 
     private void metro(Context context) {
         startAnim();
         MetroRun = true;
+        running = true;
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
             int vol = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
@@ -93,6 +97,7 @@ public class MetroService extends Service {
     private void metroStop() {
         stopAnim();
         MetroRun = false;
+        running = false;
         try {
             metroTask.stop();
         } catch (NullPointerException e) {
