@@ -52,6 +52,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/tzirim_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -90,6 +91,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/pulse_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -129,6 +131,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/metro_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -167,6 +170,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/vital_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -205,6 +209,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/oxy_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -243,6 +248,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/apgar_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -281,6 +287,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@id/glazgo_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -319,6 +326,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/proto_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

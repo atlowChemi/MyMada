@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
 import static android.service.notification.NotificationListenerService.requestRebind;
 
@@ -30,6 +31,10 @@ public class Applicatio extends MultiDexApplication {
     }
     @Override
     public void onCreate() {
+        if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits()) {
+            // Skip app initialization.
+            return;
+        }
         super.onCreate();
         try {
             FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");

@@ -16,7 +16,8 @@ import com.crashlytics.android.Crashlytics;
 public class ActionReciver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getStringExtra("action").equals("widget") && !MetroService.running) {
+        if (intent.getStringExtra("action") != null && intent.getStringExtra("action").equals("widget")
+                && !MetroActivity.MetroRun) {
             //Toast.makeText(context, "metro running is " + MetroService.running, Toast.LENGTH_SHORT).show();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationManager manager = context.getSystemService(NotificationManager.class);

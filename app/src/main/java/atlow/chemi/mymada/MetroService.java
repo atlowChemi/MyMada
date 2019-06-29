@@ -78,7 +78,6 @@ public class MetroService extends Service {
     private void metro(Context context) {
         startAnim();
         MetroRun = true;
-        running = true;
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
             int vol = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
@@ -104,7 +103,8 @@ public class MetroService extends Service {
             Crashlytics.log("failde stopping metronome");
             Crashlytics.logException(e);
         }
-        audioManager.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
+        if (audioManager != null)
+            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
     }
     private static class MetronomeAsyncTask extends AsyncTask<Void,Void,String> {
         Metronome metronome;
