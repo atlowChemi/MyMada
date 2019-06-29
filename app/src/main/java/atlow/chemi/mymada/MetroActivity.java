@@ -118,26 +118,30 @@ public class MetroActivity extends Fragment {
             bp.performClick();
     }
     static void startAnim() {
-        try {
-            scaleView(v, 1f, .95f, 1f, .95f);
-            anim.setDuration(230);
-            big.setDuration(230);
-        }catch (Exception e) {
-            Crashlytics.log(e.getMessage());
+        if (v != null && anim != null && big != null) {
+            try {
+                scaleView(v, 1f, .95f, 1f, .95f);
+                anim.setDuration(230);
+                big.setDuration(230);
+            } catch (Exception e) {
+                Crashlytics.log(e.getMessage());
+            }
         }
     }
     static void stopAnim() {
-        try {
-            v.getAnimation().cancel();
-            v.clearAnimation();
-            anim.setAnimationListener(null);
-            big.setAnimationListener(null);
-            v.setAnimation(null);
-        }catch (Exception e) {
-            Crashlytics.log(e.getMessage());
+        if (v != null && anim != null && big != null) {
+            try {
+                v.getAnimation().cancel();
+                v.clearAnimation();
+                anim.setAnimationListener(null);
+                big.setAnimationListener(null);
+                v.setAnimation(null);
+            } catch (Exception e) {
+                Crashlytics.log(e.getMessage());
+            }
         }
     }
-    public static void scaleView(final View v, float startScale, float endScale, float XstartScale, float XendScale) {
+    private static void scaleView(final View v, float startScale, float endScale, float XstartScale, float XendScale) {
         anim = new ScaleAnimation(XstartScale, XendScale, startScale, endScale, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         big = new ScaleAnimation(XendScale, XstartScale, endScale, startScale, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         anim.setFillAfter(true); // Needed to keep the result of the animation
@@ -145,29 +149,23 @@ public class MetroActivity extends Fragment {
         big.setDuration(250);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
+            public void onAnimationStart(Animation animation) {}
             @Override
             public void onAnimationEnd(Animation animation) {
                 v.startAnimation(big);
             }
             @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
+            public void onAnimationRepeat(Animation animation) {}
         });
         big.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
+            public void onAnimationStart(Animation animation) {}
             @Override
             public void onAnimationEnd(Animation animation) {
                 v.startAnimation(anim);
             }
             @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
+            public void onAnimationRepeat(Animation animation) {}
         });
         v.startAnimation(anim);
     }

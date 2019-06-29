@@ -51,6 +51,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/not_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -101,6 +102,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/newWin_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -151,6 +153,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/ride_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -201,6 +204,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@id/loop_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -251,6 +255,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@id/shabat_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

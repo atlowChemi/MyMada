@@ -54,11 +54,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme.SmsRes" />
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait"
-            android:theme="@style/PreTheme" />
-        <activity
             android:name=".InfoActivity"
             android:label="@string/title_activity_info"
             android:screenOrientation="portrait"
@@ -75,15 +70,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".InfoActivity" />
-        </activity>
-        <activity
-            android:name=".contactActivity"
-            android:label="@string/title_activity_contact"
-            android:screenOrientation="portrait"
-            android:theme="@style/MyMaterialTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".HomePage" />
         </activity>
         <activity
             android:name=".contactChatActivity"

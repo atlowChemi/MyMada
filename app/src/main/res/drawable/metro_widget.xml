@@ -8,11 +8,11 @@
             <solid android:color="@color/ColorRedDark" />
         </shape>
     </item>
-    <item
+    <!--item
         android:drawable="@drawable/ic_metronome_tile_white"
         android:top="20dp"
         android:bottom="15dp"
         android:right="20dp"
         android:left="20dp">
-    </item>
+    </item-->
 </layer-list>

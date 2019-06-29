@@ -254,6 +254,10 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                     if (openUp != null && openUp.isLoaded()) {
                         openUp.setAdListener(new AdListener() {
                             @Override
+                            public void onAdLeftApplication() {
+                                //TODO: close ad
+                            }
+                            @Override
                             public void onAdClosed() {
                                 openUp.loadAd(new AdRequest.Builder().build());
                                 if (realM || isMADA) {

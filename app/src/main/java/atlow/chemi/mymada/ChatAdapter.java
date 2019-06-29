@@ -73,7 +73,8 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
             holder.msgSender.requestLayout();
             holder.msgTxt.setVisibility(View.GONE);
             holder.msgTime.setVisibility(View.GONE);
-            holder.msgHold.setOnClickListener(v -> {contactChatActivity.askForName(context, true);});
+            holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.White));
+            holder.msgHold.setOnClickListener(v -> contactChatActivity.askForName(context, true));
         }
         else {
             sender = sender.equals("admin") ? this.context.getString(R.string.admin) : context.getSharedPreferences("Settings", 0).getString("UserName", context.getString(R.string.user));
@@ -88,6 +89,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
             holder.msgTxt.setTypeface(myTypeface);
             holder.msgSender.setTypeface(myTypeface);
             holder.msgTime.setTypeface(myTypeface);
+            holder.msgHold.setOnClickListener(null);
             if (msg.getSender().equals("admin"))
                 holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.chatAdmin));
             else

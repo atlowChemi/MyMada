@@ -12,6 +12,8 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +27,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -37,7 +38,6 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
     private SharedPreferences sp;
     private static final int REQUEST_PERMISSION_SETTING = 101, OVERLAY_PER_REQ = 345;
     private String[] Langs = new String[] {"עברית", "English"};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +45,8 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         resetTitle();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         CardView notifications = findViewById(R.id.notif_card);
         CardView advanced = findViewById(R.id.advanced_card);
         CardView tools = findViewById(R.id.tools_card);
@@ -255,7 +256,7 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         }
     }
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull  MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;

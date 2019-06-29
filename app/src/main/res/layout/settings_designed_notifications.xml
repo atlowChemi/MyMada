@@ -39,6 +39,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/cutA_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -89,6 +90,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/stat_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -139,6 +141,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/statVib_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -203,6 +206,7 @@
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
                 android:checked="true"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/T6_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -254,6 +258,7 @@
                 android:layout_marginBottom="8dp"
                 android:clickable="false"
                 android:checked="true"
+                android:theme="@style/CKS"
                 app:layout_constraintBottom_toTopOf="@+id/findT4_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

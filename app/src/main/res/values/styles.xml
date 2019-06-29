@@ -1,6 +1,5 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="CKS" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorControlActivated">@color/ColorAqua</item>
         <item name="colorSwitchThumbNormal">@color/materialGrey600</item>
@@ -14,9 +13,6 @@
         <item name="android:background">@color/ColorPrimaryDark</item>
     </style>
 
-    <style name="PreferenceListHeader" parent="Theme.AppCompat.Light">
-        <item name="android:textColor">@color/s_text</item>
-    </style>
     <style name="SpinnerNoArrow" parent="Widget.AppCompat.Spinner"><!--@android:style/Widget.Spinner-->
         <item name="android:background">@android:drawable/edit_text</item>
     </style>
