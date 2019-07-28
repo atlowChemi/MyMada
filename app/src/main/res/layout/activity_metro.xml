@@ -1,24 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bpmW"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="@dimen/activity_horizontal_margin"
-    android:id="@+id/bpmW"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
     <TextView
+        android:id="@+id/metroExp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/startT"
-        android:layout_centerHorizontal="true"
         android:textSize="18sp"
-        android:id="@+id/metroExp" />
-    <ImageView
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp"/>
+
+    <RelativeLayout
+        android:id="@+id/metro_BG"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/startstop"
-        android:layout_below="@+id/metroExp"
-        android:contentDescription="@string/button_d"
-        android:layout_margin="20dp"
-        android:src="@drawable/logo" />
-</RelativeLayout>
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/metroExp">
+        <View
+            android:id="@+id/startstop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/circle_shape_white"/>
+        <ProgressBar
+            android:id="@+id/metro_progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            style="?android:progressBarStyleHorizontal"
+            android:progressDrawable="@drawable/circle_proggres_bar"
+            android:background="@drawable/circle_proggress_bar_bg"
+            android:max="120"
+            android:progress="0" />
+        <TextView
+            android:id="@+id/metro_Clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="@color/calcB"
+            android:textAlignment="center"
+            android:textDirection="ltr"
+            android:textSize="80sp"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
