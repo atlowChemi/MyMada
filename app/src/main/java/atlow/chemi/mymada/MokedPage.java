@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.tabs.TabLayout;
@@ -23,6 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -65,27 +67,27 @@ public class MokedPage extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         if (!sp.getBoolean("pickedMoked", false)) {
-            final AlertDialog build = new AlertDialog.Builder(this, R.style.AlertDialogStyle)
+            Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
+            AlertDialog.Builder build = new AlertDialog.Builder(this, R.style.AlertDialogStyle)
                     .setTitle(MokedPage.this.getResources().getString(R.string.pickMokTtl))
                     .setMessage(MokedPage.this.getResources().getString(R.string.pickMokTxt))
-                    .setPositiveButton(MokedPage.this.getResources().getString(R.string.goToSet), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent(MokedPage.this, SettingsDesignedAdvanced.class);
-                    startActivity(intent);
-                }
-            }).setNegativeButton(MokedPage.this.getResources().getString(R.string.skip), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
-            }).create();
-            build.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialogInterface) {
-                    Button canc = build.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
-                }
+                    .setPositiveButton(MokedPage.this.getResources().getString(R.string.goToSet), (dialogInterface, i) -> {
+                        Intent intent = new Intent(MokedPage.this, SettingsDesignedAdvanced.class);
+                        startActivity(intent);
+                    }).setNegativeButton(MokedPage.this.getResources().getString(R.string.skip), (dialogInterface, i) -> dialogInterface.dismiss());
+            final AlertDialog alert = build.create();
+            alert.setOnShowListener(dialogInterface -> {
+                TextView textView = alert.findViewById(android.R.id.message);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
+                textView = alert.findViewById(android.R.id.title);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
+                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                ok.setTypeface(myTypeface);
+                canc.setTypeface(myTypeface);
+                canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
             });
             build.show();
         }

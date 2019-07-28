@@ -226,6 +226,7 @@
     <string name="plsNoteT">קוד הפעלה מאפשר שליחת הודעות למוקד מד\"א.\nבמידה ואינך מתנדב פעיל במד\"א, אין לך צורך בקוד הפעלה!</string>
     <string name="plsNoteCon">האפליקציה לא מזהה אותך כמתנדב. האם אתה מעוניין בקוד הפעלה או ביצירת קשר רגילה?</string>
     <string name="plsNoteConCode">אני רוצה קוד הפעלה</string>
+    <string name="contactMsg">אנו גוף עצמאי שאינו בקשר עם מד\"א. לכן אין לשלוח לנו פניות למקרים דחופים הדורשים מענה רפואי.\nכמו כן, איננו קשורים לאפליקציית הצוותים. אין ביכולתנו לסייע בה, או לשלוח מקרים.\nעיזרו לנו, ואל תיפנו בנושאים שאינם תחום אחריותנו, כדי שנוכל לתת לכם את המענה המיטבי!</string>
     <string name="pickMokTtl">מוקד ברירת מחדל</string>
     <string name="pickMokTxt">בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. אנא עבור להגדרות והגדר מרחב ברירת מחדל.</string>
     <string name="goToSet">עבור להגדרות</string>
@@ -426,6 +427,7 @@
         <item>ציות לפקודות</item>
     </string-array>
     <string name="button_p">פרוטוקלים</string>
+    <string name="button_dict">מילון רפואי</string>
     <string name="title_activity_utills_and_tools">כלי עזר</string>
     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
     <string name="title_mda">הורדת יישומון מד\"א</string>
@@ -452,4 +454,9 @@
     <string name="user">אתה:</string>
     <string name="msgSeen">מנהל ראה את הודעתך</string>
     <string name="msgNotSeen">מנהל טרם ראה את הודעתך</string>
+    <string name="add_word">הוסף מונח למילון</string>
+    <string name="successAddWord">הגדרה נוספה בהצלחה ונשלחה לאישורינו!</string>
+    <string name="wordName">מונח רפואי</string>
+    <string name="wordDefinition">משמעות המונח</string>
+    <string name="searchDictionary">חפש במילון</string>
 </resources>

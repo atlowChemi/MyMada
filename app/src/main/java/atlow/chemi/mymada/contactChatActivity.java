@@ -72,7 +72,7 @@ public class contactChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        makeAnnouncement();
         chats = new ArrayList<>();
         adapter = new ChatAdapter(chats, contactChatActivity.this);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -86,7 +86,8 @@ public class contactChatActivity extends AppCompatActivity {
         itemAnimator.setRemoveDuration(1000);
         msgs.setItemAnimator(itemAnimator);
 
-        fcmToken = MyFirebaseMessagingService.getToken(getApplicationContext());
+        MyFirebaseMessagingService.getToken(getApplicationContext());
+        fcmToken = getSharedPreferences("Settings", 0).getString("fcm", "empty");
         root = FirebaseDatabase.getInstance().getReference().child("chats").child(fcmToken);
         ChatT = findViewById(R.id.chatT);
         TextInputLayout chatTil = findViewById(R.id.chatTil);
@@ -191,6 +192,24 @@ public class contactChatActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
+    private void makeAnnouncement() {
+        Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+        builder.setMessage(R.string.contactMsg).setCancelable(false).setTitle(R.string.plsNote)
+                .setNegativeButton(R.string.ok, (dialog, id) -> dialog.cancel());
+        final AlertDialog alert = builder.create();
+        alert.setOnShowListener(dialogInterface -> {
+            TextView textView = alert.findViewById(android.R.id.message);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            textView = alert.findViewById(android.R.id.title);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+            canc.setTypeface(myTypeface);
+        });
+        alert.show();
+    }
     static void askForName(Context context, boolean cancelable) {
         View time = View.inflate(context, R.layout.shabat_t, null);
         final FixedTextInputEditText shabatText = time.findViewById(R.id.shabatT);
@@ -265,7 +284,7 @@ public class contactChatActivity extends AppCompatActivity {
         return true;
     }
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         switch (item.getItemId()) {
             case android.R.id.home:

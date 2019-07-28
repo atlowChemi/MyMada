@@ -21,37 +21,26 @@ import com.crashlytics.android.Crashlytics;
 
 
 public class SMSMonitorService extends Service {
-    private BroadcastReceiver callExplicitReceiver;
-    protected static String txtS = "";
-    protected String smsSender = "", string, smsBody = "", Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
+    protected String string, Grp2 = "grpOthers", CnlBg = "runInBg";
     public NotificationManager manager;
-    final protected int NOTIF_ID = 1;
-    protected static int numMessages = 0;
-    protected PendingIntent piR;
     public static Boolean testB = false;
-    public long[] lng = {0, 0, 0, 0, 0, 0, 0, 0, 0}, lng2 = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
     public Context context;
-    public static final String SMS_BUNDLE = "pdus";
-    private MediaPlayer mMediaPlayer;
-    int currentVolume, callT = 1;
-    protected boolean callType, cut, vib, sou, app, timeLegal = true, OreoVib, OreoSou;
-    public static float vo = 0;
-    private Uri uri, url;
+    protected boolean app;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
     }
-    public static void testR()   {
-        testB = true;
-        }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
             Intent callSNI = new Intent(this, HomePage.class);
             callSNI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, callSNI, 0);
+            Intent btn = new Intent(this, ActionReciver.class);
+            btn.putExtra("action", "runInBG");
+            PendingIntent pBtn = PendingIntent.getBroadcast(SMSMonitorService.this, 13, btn, PendingIntent.FLAG_UPDATE_CURRENT);
             Crashlytics.log("sending SmsMonitor notif");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 setNotifChannels();
@@ -63,6 +52,7 @@ public class SMSMonitorService extends Service {
                     .setGroup("BG")
                     .setPriority(NotificationManagerCompat.IMPORTANCE_MIN)
                     //.setColorized(true)
+                    .addAction(R.drawable.ic_close, getString(R.string.MetroStop), pBtn)
                     .setShowWhen(false)
                     .setColor(Color.argb(50, 76, 119, 247))
                     .setSound(null)

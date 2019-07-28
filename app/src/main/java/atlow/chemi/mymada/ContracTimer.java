@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -36,7 +37,6 @@ public class ContracTimer extends Fragment {
     private static boolean running = false;
     private Button contractionButton;
     private CircularProgressButton contractBtn;
-    private LinearLayoutManager mLayoutManager;
     private RecyclerView recyclerView;
     SharedPreferences sp;
     public ContracTimer()    {}
@@ -51,58 +51,51 @@ public class ContracTimer extends Fragment {
         boolean leesT20M = (no - ol) <= (20*60*1000);
         if (!sp.getString("contractList", "").isEmpty() && leesT20M) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
-            dialog.setMessage(getActivity().getResources().getString(R.string.ContracRecover)).setCancelable(false).setPositiveButton(getActivity().getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    /*****/
-                    num = sp.getInt("contarctNum", 0);
-                    end = new Date(sp.getLong("contractLong", 0));
-                    Gson gson = new Gson();
-                    String json = sp.getString("contractList", "");
-                    if (!json.isEmpty()) {
-                        Type type = new TypeToken<List<Contraction>>() {
-                        }.getType();
-                        albumList = gson.fromJson(json, type);
-                    }
-                    /******/
-                    adapter = new ContractionAdapter(albumList, getActivity());
-                    if (recyclerView != null) {
-                        recyclerView.setAdapter(adapter);
-                    }
+            dialog.setMessage(getActivity().getResources().getString(R.string.ContracRecover)).setCancelable(false).setPositiveButton(getActivity().getResources().getString(R.string.ok), (dialogInterface, i) -> {
+                /*****/
+                num = sp.getInt("contarctNum", 0);
+                end = new Date(sp.getLong("contractLong", 0));
+                Gson gson = new Gson();
+                String json = sp.getString("contractList", "");
+                if (!json.isEmpty()) {
+                    Type type = new TypeToken<List<Contraction>>() {}.getType();
+                    albumList = gson.fromJson(json, type);
                 }
-            }).setNegativeButton(getActivity().getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                    SharedPreferences.Editor spe;
-                    if (sp!=null) {
-                        spe = sp.edit();
-                        spe.putString("contractList", "");
-                        spe.putInt("contarctNum", 0);
-                        spe.putLong("contractLong", 0);
-                        spe.apply();
-                    }
-                    num = 0;
-                    end = null;
-                    adapter = new ContractionAdapter(albumList, getActivity());
-                    if (recyclerView != null) {
-                        recyclerView.setAdapter(adapter);
-                    }
+                /******/
+                adapter = new ContractionAdapter(albumList, getActivity());
+                if (recyclerView != null) {
+                    recyclerView.setAdapter(adapter);
+                }
+            }).setNegativeButton(getActivity().getResources().getString(R.string.dialog_no), (dialogInterface, i) -> {
+                dialogInterface.dismiss();
+                SharedPreferences.Editor spe;
+                if (sp!=null) {
+                    spe = sp.edit();
+                    spe.putString("contractList", "");
+                    spe.putInt("contarctNum", 0);
+                    spe.putLong("contractLong", 0);
+                    spe.apply();
+                }
+                num = 0;
+                end = null;
+                adapter = new ContractionAdapter(albumList, getActivity());
+                if (recyclerView != null) {
+                    recyclerView.setAdapter(adapter);
                 }
             });
             final AlertDialog alert = dialog.create();
-            alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialogInterface) {
-                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    try {
-                        Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
-                        canc.setTypeface(myTypeface);
-                        canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
-                    } catch (NullPointerException e) {
-                        Crashlytics.log("Contractions remake defect");
-                        Crashlytics.logException(e);
-                    }
+            alert.setOnShowListener(dialogInterface -> {
+                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                try {
+                    Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
+                    TextView textView = alert.findViewById(android.R.id.message);
+                    if (textView != null)
+                        textView.setTypeface(myTypeface);
+                    canc.setTypeface(myTypeface);
+                    canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
+                } catch (NullPointerException e) {
+                    Crashlytics.log("Contractions remake defect");
+                    Crashlytics.logException(e);
                 }
             });
             alert.show();
@@ -151,7 +144,7 @@ public class ContracTimer extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mLayoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setReverseLayout(true);
         mLayoutManager.setStackFromEnd(true);
         recyclerView = view.findViewById(R.id.recycler_view);
@@ -163,36 +156,39 @@ public class ContracTimer extends Fragment {
         contractBtn = view.findViewById(R.id.contra_btn);
         Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
         contractBtn.setTypeface(myTypeface);
-        contractBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                running = !running;
-                if (running) {
-                    start = Calendar.getInstance().getTime();
-                    contractBtn.setText(getActivity().getResources().getString(R.string.endContract));
-                    contractBtn.startAnimation();
-                    contractBtn.setBackgroundColor(Color.argb(255,218,218,218));
-                }else   {
-                    Date oldEnd = null;
-                    if (end!=null)
-                        oldEnd = end;
-                    end = Calendar.getInstance().getTime();
-                    contractBtn.setText(getActivity().getResources().getString(R.string.startContract));
-                    try {
-                        contractBtn.stopAnimation();
-                    } catch (NullPointerException e) {
-                        Crashlytics.log("error stoping circular btn");
-                        Crashlytics.logException(e);
-                    }
-                    contractBtn.revertAnimation();
-                    contractBtn.setBackgroundColor(Color.rgb(255,255,255));
-                    //contractBtn.revertAnimation();
-                    //Contraction a = new Contraction(num++, printDifference(start, end), hefresh);
-                    Contraction b = new Contraction(++num, start, end, oldEnd);
-                    albumList.add(b);
-                    adapter.notifyDataSetChanged();
-                    recyclerView.smoothScrollToPosition(albumList.size());
+        if (running) {
+            start = Calendar.getInstance().getTime();
+            contractBtn.setText(getActivity().getResources().getString(R.string.endContract));
+            contractBtn.startAnimation();
+            contractBtn.setBackgroundColor(Color.argb(255,218,218,218));
+        }
+        contractBtn.setOnClickListener(view1 -> {
+            running = !running;
+            if (running) {
+                start = Calendar.getInstance().getTime();
+                contractBtn.setText(getActivity().getResources().getString(R.string.endContract));
+                contractBtn.startAnimation();
+                contractBtn.setBackgroundColor(Color.argb(255,218,218,218));
+            }else   {
+                Date oldEnd = null;
+                if (end!=null)
+                    oldEnd = end;
+                end = Calendar.getInstance().getTime();
+                contractBtn.setText(getActivity().getResources().getString(R.string.startContract));
+                try {
+                    contractBtn.stopAnimation();
+                } catch (NullPointerException e) {
+                    Crashlytics.log("error stoping circular btn");
+                    Crashlytics.logException(e);
                 }
+                contractBtn.revertAnimation();
+                contractBtn.setBackgroundColor(Color.rgb(255,255,255));
+                //contractBtn.revertAnimation();
+                //Contraction a = new Contraction(num++, printDifference(start, end), hefresh);
+                Contraction b = new Contraction(++num, start, end, oldEnd);
+                albumList.add(b);
+                adapter.notifyDataSetChanged();
+                recyclerView.smoothScrollToPosition(albumList.size());
             }
         });
     }

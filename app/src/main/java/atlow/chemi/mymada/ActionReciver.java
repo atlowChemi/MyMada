@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.widget.Toast;
 
@@ -41,6 +42,11 @@ public class ActionReciver extends BroadcastReceiver {
                 Crashlytics.log("failed starting metronome widget");
                 Crashlytics.logException(e);
             }
+        }
+        else if (intent.getStringExtra("action") != null && intent.getStringExtra("action").equals("runInBG")) {
+            Intent serviceIntent = new Intent(context, SMSMonitorService.class);
+            context.stopService(serviceIntent);
+            context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false).apply();
         }
         else {
             Intent serviceIntent = new Intent(context, MetroService.class);

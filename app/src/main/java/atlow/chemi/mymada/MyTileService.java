@@ -41,7 +41,7 @@ public class MyTileService extends TileService {
             case Tile.STATE_ACTIVE:
                 Intent btn = new Intent(MyTileService.this, ActionReciver.class);
                 getApplicationContext().sendBroadcast(btn);
-                /*****/
+                /**/
                 setCurrentState(Tile.STATE_INACTIVE);
                 break;
             case Tile.STATE_INACTIVE:
@@ -65,7 +65,7 @@ public class MyTileService extends TileService {
                     Crashlytics.log("failed starting metronome tile");
                     Crashlytics.logException(e);
                 }
-                /*****/
+                /**/
                 setCurrentState(Tile.STATE_ACTIVE);
                 break;
             case Tile.STATE_UNAVAILABLE:
