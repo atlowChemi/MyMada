@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat;
 import com.crashlytics.android.Crashlytics;
 
 import static atlow.chemi.mymada.MetroActivity.MetroRun;
+import static atlow.chemi.mymada.MetroActivity.timestamp;
 import static atlow.chemi.mymada.MetroActivity.startAnim;
 import static atlow.chemi.mymada.MetroActivity.stopAnim;
 
@@ -78,6 +79,7 @@ public class MetroService extends Service {
     private void metro(Context context) {
         startAnim();
         MetroRun = true;
+        timestamp = System.currentTimeMillis();
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
             int vol = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
@@ -97,6 +99,7 @@ public class MetroService extends Service {
         stopAnim();
         MetroRun = false;
         running = false;
+        timestamp = 0;
         try {
             metroTask.stop();
         } catch (NullPointerException e) {
