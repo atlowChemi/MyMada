@@ -11,6 +11,7 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,7 +38,7 @@ import java.util.Set;
 
 public class UtillTools extends AppCompatActivity {
 
-    private final String[] toolsS = {"contrac", "pulse", "metro", "vital", "oxy", "apgar", "glaz", "prot"};
+    private final String[] toolsS = {"contrac", "pulse", "metro", "vital", "oxy", "apgar", "glaz", "prot", "dict"};
     private int pageNum = 8, metroLocation = 2;
     private ContracTimer contracTimer = new ContracTimer();
     private PulseCalc pulseCalc = new PulseCalc();
@@ -47,21 +48,11 @@ public class UtillTools extends AppCompatActivity {
     private ApgarCalc apgarCalc = new ApgarCalc();
     private GlazgoCalc glazgoCalc = new GlazgoCalc();
     private BlsProtocoles blsProtocoles = new BlsProtocoles();
-    private Fragment[] toolsF = {contracTimer, pulseCalc, metroActivity, vitalsChecker, oxyCalc, apgarCalc, glazgoCalc, blsProtocoles};
-    private String[] toolsT = new String[8];
+    private DictionaryAdmin dictionaryAdmin = new DictionaryAdmin();
+    private Fragment[] toolsF = {contracTimer, pulseCalc, metroActivity, vitalsChecker, oxyCalc, apgarCalc, glazgoCalc, blsProtocoles, dictionaryAdmin};
+    private String[] toolsT = new String[9];
     private MenuItem Detect;
-    /**
-     * The {@link PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +107,11 @@ public class UtillTools extends AppCompatActivity {
         if (toolsToShow.contains("prot")) {
             toolsT[i] = getResources().getString(R.string.button_p);
             toolsF[i] = blsProtocoles;
+            i++;
+        }
+        if (toolsToShow.contains("dict")) {
+            toolsT[i] = getResources().getString(R.string.button_dict);
+            toolsF[i] = dictionaryAdmin;
         }
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = findViewById(R.id.container);
@@ -203,7 +199,7 @@ public class UtillTools extends AppCompatActivity {
     }
     private static final int REQUEST_PERMISSION_SETTING = 101;
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         switch (item.getItemId()) {
             case android.R.id.home:

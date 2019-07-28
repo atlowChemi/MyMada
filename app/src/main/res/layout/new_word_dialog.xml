@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr"
+    android:baselineAligned="false"
+    android:padding="30dp">
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nameTil"
+        android:layout_alignParentTop="true">
+        <android.support.design.widget.FixedTextInputEditText
+            android:id="@+id/wordName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:lines="1"
+            android:hint="@string/wordName"
+            android:inputType="text"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/definitionTil"
+        android:layout_below="@id/nameTil">
+        <android.support.design.widget.FixedTextInputEditText
+            android:id="@+id/wordDefinition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:lines="5"
+            android:hint="@string/wordDefinition"
+            android:inputType="textMultiLine"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+</RelativeLayout>

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,10 +24,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class SettingsDesignedTools extends AppCompatActivity implements View.OnClickListener {
-    private final String[] toolsS = {"contrac", "pulse", "metro", "vital", "oxy", "apgar", "glaz", "prot"};
-    private ConstraintLayout tzirimPref, pulsePref, metroPref, vitalPref, oxyPref, apgarPref, glazgoPref, protoPref;
-    private SwitchCompat tzirim, pulse, metro, vital, oxy, apgar, glazgo, proto;
-    boolean tzirimB, pulseB, metroB, vitalB, oxyB, apgarB, glazgoB, protoB;
+    private final String[] toolsS = {"contrac", "pulse", "metro", "vital", "oxy", "apgar", "glaz", "prot", "dict"};
+    private ConstraintLayout tzirimPref, pulsePref, metroPref, vitalPref, oxyPref, apgarPref, glazgoPref, protoPref, dictionaryPref;
+    private SwitchCompat tzirim, pulse, metro, vital, oxy, apgar, glazgo, proto, dictionary;
+    boolean tzirimB, pulseB, metroB, vitalB, oxyB, apgarB, glazgoB, protoB, dictionaryB;
     private SharedPreferences sp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,8 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
         glazgoPref = findViewById(R.id.glazgo_pref);
         proto = findViewById(R.id.proto);
         protoPref = findViewById(R.id.proto_pref);
-
+        dictionary = findViewById(R.id.dictionary);
+        dictionaryPref = findViewById(R.id.dictionary_pref);
 
         tzirimPref.setOnClickListener(this);
         pulsePref.setOnClickListener(this);
@@ -62,6 +65,7 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
         apgarPref.setOnClickListener(this);
         glazgoPref.setOnClickListener(this);
         protoPref.setOnClickListener(this);
+        dictionaryPref.setOnClickListener(this);
 
         //get SharedPref
         sp = getSharedPreferences("Settings", 0);
@@ -74,6 +78,7 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
         apgarB = toolsToShow.contains("apgar");
         glazgoB = toolsToShow.contains("glaz");
         protoB = toolsToShow.contains("prot");
+        dictionaryB = toolsToShow.contains("dict");
 
         //set by the SharedPreferences
         setTrueOrFalse(tzirimB, tzirimPref.getId());
@@ -84,6 +89,7 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
         setTrueOrFalse(apgarB, apgarPref.getId());
         setTrueOrFalse(glazgoB, glazgoPref.getId());
         setTrueOrFalse(protoB, protoPref.getId());
+        setTrueOrFalse(dictionaryB, dictionaryPref.getId());
     }
     @Override
     protected void attachBaseContext(Context base) {
@@ -99,7 +105,7 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
         }
     }
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -152,13 +158,18 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
                 protoB = !sc.isChecked();
                 b = 7;
                 break;
+            case R.id.dictionary_pref:
+                sc = dictionary;
+                dictionaryB = !sc.isChecked();
+                b = 8;
+                break;
         }
         editor.apply();
         Set<String> t = new HashSet<>();
         if (sc != null) {
             sc.setChecked(!sc.isChecked());
             if (!tzirim.isChecked() && !pulse.isChecked() && !metro.isChecked() && !vital.isChecked() && !oxy.isChecked() &&
-                    !apgar.isChecked() && !glazgo.isChecked() && !proto.isChecked()) {
+                    !apgar.isChecked() && !glazgo.isChecked() && !proto.isChecked() && !dictionary.isChecked()) {
                 Snackbar snk = Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.NoPicked), Snackbar.LENGTH_LONG);
                 View viewSnk = snk.getView();
                 TextView tv = viewSnk.findViewById(com.google.android.material.R.id.snackbar_text);
@@ -190,6 +201,9 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
                     case 7:
                         protoB = true;
                         break;
+                    case 8:
+                        dictionaryB = true;
+                        break;
                 }
             } else {
                 if (tzirimB) t.add(toolsS[0]);
@@ -200,6 +214,7 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
                 if (apgarB) t.add(toolsS[5]);
                 if (glazgoB) t.add(toolsS[6]);
                 if (protoB) t.add(toolsS[7]);
+                if (dictionaryB) t.add(toolsS[8]);
                 SharedPreferences.Editor spe = sp.edit();
                 spe.putStringSet("Tools", t);
                 spe.apply();
@@ -233,6 +248,9 @@ public class SettingsDesignedTools extends AppCompatActivity implements View.OnC
                 break;
             case R.id.proto_pref:
                 sc = proto;
+                break;
+            case R.id.dictionary_pref:
+                sc = dictionary;
                 break;
         }
         editor.apply();

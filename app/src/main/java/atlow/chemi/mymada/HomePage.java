@@ -66,13 +66,16 @@ public class HomePage extends AppCompatActivity {
         setNotifChannels();
         rateUs.app_launched(HomePage.this);
         Context context = HomePage.this;
-        Crashlytics.setUserIdentifier(MyFirebaseMessagingService.getToken(context));
+
+        MyFirebaseMessagingService.getToken(getApplicationContext());
+        String token = getSharedPreferences("Settings", 0).getString("fcm", "empty");
+        Crashlytics.setUserIdentifier(token);
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
         boolean Mapp = sharedPreferences.getBoolean("Mapp", false);
         AdView mAdView;
         try {
-            Log.e("FCM token: ", MyFirebaseMessagingService.getToken(context));
+            Log.e("FCM token: ", token);
         }catch (Exception e)    {
             e.printStackTrace();
         }
@@ -145,13 +148,13 @@ public class HomePage extends AppCompatActivity {
                         startActivity(intent);
                     }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
             final AlertDialog alert = builder.create();
-            TextView textView = alert.findViewById(android.R.id.message);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
-            textView = alert.findViewById(android.R.id.title);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
             alert.setOnShowListener(dialogInterface -> {
+                TextView textView = alert.findViewById(android.R.id.message);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
+                textView = alert.findViewById(android.R.id.title);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
                 Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                 Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setTypeface(myTypeface);
@@ -168,22 +171,22 @@ public class HomePage extends AppCompatActivity {
                         startActivityForResult(intent, OVERLAY_PER_REQ);
                     }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
             final AlertDialog alert = builder.create();
-            TextView textView = alert.findViewById(android.R.id.message);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
-            textView = alert.findViewById(android.R.id.title);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
             alert.setOnShowListener(dialogInterface -> {
+                TextView textView = alert.findViewById(android.R.id.message);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
+                textView = alert.findViewById(android.R.id.title);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
                 Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                 Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setTypeface(myTypeface);
                 canc.setTypeface(myTypeface);
-                canc.setTextColor(getResources().getColor(R.color.OldPrimary));
+                canc.setTextColor(ContextCompat.getColor(HomePage.this, R.color.OldPrimary));
             });
             alert.show();
         }
-        if (!Privacy) {
+        if (oldU && !Privacy) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
             builder.setMessage(getResources().getString(R.string.privacyMsg)).setCancelable(false)
                     .setPositiveButton(getResources().getString(R.string.title_activity_privacy), (dialog, id) -> {
@@ -192,13 +195,13 @@ public class HomePage extends AppCompatActivity {
                     })
                     .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
             final AlertDialog alert = builder.create();
-            TextView textView = alert.findViewById(android.R.id.message);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
-            textView = alert.findViewById(android.R.id.title);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
             alert.setOnShowListener(dialogInterface -> {
+                TextView textView = alert.findViewById(android.R.id.message);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
+                textView = alert.findViewById(android.R.id.title);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
                 Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                 Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setTypeface(myTypeface);
@@ -226,13 +229,13 @@ public class HomePage extends AppCompatActivity {
                         })
                         .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                 final AlertDialog alert = builder.create();
-                TextView textView = alert.findViewById(android.R.id.message);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
-                textView = alert.findViewById(android.R.id.title);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
                 alert.setOnShowListener(dialogInterface -> {
+                    TextView textView = alert.findViewById(android.R.id.message);
+                    if (textView != null)
+                        textView.setTypeface(myTypeface);
+                    textView = alert.findViewById(android.R.id.title);
+                    if (textView != null)
+                        textView.setTypeface(myTypeface);
                     Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                     Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                     ok.setTypeface(myTypeface);
@@ -415,8 +418,10 @@ public class HomePage extends AppCompatActivity {
                                     .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                             final AlertDialog alert = builder.create();
                             alert.setOnShowListener(dialogInterface -> {
+                                TextView textView = alert.findViewById(android.R.id.message);
+                                if (textView != null)
+                                    textView.setTypeface(myTypeface);
                                 Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-
                                 canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                             });
                             alert.show();
@@ -437,6 +442,12 @@ public class HomePage extends AppCompatActivity {
                                     .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                             final AlertDialog alert = builder.create();
                             alert.setOnShowListener(dialogInterface -> {
+                                TextView textView = alert.findViewById(android.R.id.message);
+                                if (textView != null)
+                                    textView.setTypeface(myTypeface);
+                                textView = alert.findViewById(android.R.id.title);
+                                if (textView != null)
+                                    textView.setTypeface(myTypeface);
                                 Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                                 canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                             });
@@ -459,6 +470,12 @@ public class HomePage extends AppCompatActivity {
                                 .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                         final AlertDialog alert = builder.create();
                         alert.setOnShowListener(dialogInterface -> {
+                            TextView textView = alert.findViewById(android.R.id.message);
+                            if (textView != null)
+                                textView.setTypeface(myTypeface);
+                            textView = alert.findViewById(android.R.id.title);
+                            if (textView != null)
+                                textView.setTypeface(myTypeface);
                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                             canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                         });
@@ -488,13 +505,13 @@ public class HomePage extends AppCompatActivity {
                         startActivityForResult(intent, OVERLAY_PER_REQ);
                     }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
             final AlertDialog alert = builder.create();
-            TextView textView = alert.findViewById(android.R.id.message);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
-            textView = alert.findViewById(android.R.id.title);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
             alert.setOnShowListener(dialogInterface -> {
+                TextView textView = alert.findViewById(android.R.id.message);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
+                textView = alert.findViewById(android.R.id.title);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
                 Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                 Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setTypeface(myTypeface);

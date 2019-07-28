@@ -2,6 +2,8 @@ package atlow.chemi.mymada;
 
 import android.content.Context;
 import android.graphics.Typeface;
+
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,19 +43,27 @@ class VolunteerAdapter extends RecyclerView.Adapter<VolunteerAdapter.MyViewHolde
         this.mContext = mContext;
         this.albumList = albumList;
     }
+    VolunteerAdapter(List<Volunteer> albumList) {
+        this.albumList = albumList;
+    }
 
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
+    }
+
+    @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.volunteer_layout, parent, false);
 
         return new MyViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         Volunteer album = albumList.get(holder.getAdapterPosition());
-        String jobs[] = {"נהג","חובש","פראמדיק","רופא","מתנדב","משתלם","שירות לאומי"};
-        int colors[] = {R.color.hovesh,R.color.hovesh,R.color.para,R.color.para,R.color.noar,R.color.hovesh,R.color.hovesh};
+        String[] jobs = {"נהג", "חובש", "פראמדיק", "רופא", "מתנדב", "משתלם", "שירות לאומי"};
+        int[] colors = {R.color.hovesh,R.color.hovesh,R.color.para,R.color.para,R.color.noar,R.color.hovesh,R.color.hovesh};
         String job = jobs[album.getJob()];
         holder.title.setText(album.getName());
         holder.count.setText(job);
@@ -62,11 +72,8 @@ class VolunteerAdapter extends RecyclerView.Adapter<VolunteerAdapter.MyViewHolde
         holder.count.setTypeface(myTypeface);
         holder.thumbnail.setColorFilter(mContext.getResources().getColor(colors[album.getJob()]));
 
-        holder.overflow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPopupMenu(holder.overflow, holder.getAdapterPosition());//position);
-            }
+        holder.overflow.setOnClickListener(view -> {
+            showPopupMenu(holder.overflow, holder.getAdapterPosition());//position);
         });
     }
 

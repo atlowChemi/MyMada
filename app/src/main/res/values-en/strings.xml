@@ -348,6 +348,7 @@
     <string name="plsNoteT">Activation code allows sending SMS messages to MADA dispatch.\nIf you Are not a MADA volunteer, you do not need a code!</string>
     <string name="plsNoteCon">It seems to us you are not a MADA volunteer. Are you interested to ask for a activation code, or would you like to contact us for another reason?</string>
     <string name="plsNoteConCode">I want a activation code</string>
+    <string name="contactMsg">We are an app developing team unrelated to MADA, therefore dont send us emergency cals. call 101!.\nWe are unrelated to the official MADA app, we cannot help with issues there, nor can we send you medical calls.\nPlease help us. contact us only with issues or requests we can help you with, so we can make our responses efficient!</string>
     <string name="pickMokTtl">Default MADA region</string>
     <string name="pickMokTxt">You did not select your default MADA region. please pick a default region in settings.</string>
     <string name="goToSet">Go to settings</string>
@@ -425,6 +426,7 @@
         <item>Obeying  Commands</item>
     </string-array>
     <string name="button_p">Protocols</string>
+    <string name="button_dict">Medical dictionary</string>
     <string name="title_activity_utills_and_tools">Tools</string>
     <string name="privacyMsg">You had not yet seen the privacy policy. go there now.</string>
     <string name="title_mda">official MADA app</string>
@@ -450,4 +452,9 @@
     <string name="user">You:</string>
     <string name="msgSeen">Your message has been seen by a administrator</string>
     <string name="msgNotSeen">Your message was\'nt seen yet</string>
+    <string name="add_word">Add word to dictionary</string>
+    <string name="successAddWord">Added successfully, sent for our approval!</string>
+    <string name="wordName">Medical term</string>
+    <string name="wordDefinition">Term\'s definition</string>
+    <string name="searchDictionary">Search dictionary</string>
 </resources>

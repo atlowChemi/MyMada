@@ -83,13 +83,13 @@ public class MetroActivity extends Fragment {
                         manager.createNotificationChannelGroup(group2);
                         manager.createNotificationChannel(serviceChannel);
                     }
-                    Intent serviceIntent = new Intent(getActivity(), MetroService.class);
-                    try {
-                        ContextCompat.startForegroundService(getActivity(), serviceIntent);
-                    } catch (Exception e) {
-                        Crashlytics.log("failed starting metronome tile");
-                        Crashlytics.logException(e);
-                    }
+                }
+                Intent serviceIntent = new Intent(getActivity(), MetroService.class);
+                try {
+                    ContextCompat.startForegroundService(getActivity(), serviceIntent);
+                } catch (Exception e) {
+                    Crashlytics.log("failed starting metronome");
+                    Crashlytics.logException(e);
                 }
                 scaleView(v, 1f, .95f, 1f, .95f);
                 anim.setDuration(230);

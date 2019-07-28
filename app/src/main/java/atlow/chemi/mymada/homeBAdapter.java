@@ -143,13 +143,13 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                                     mContext.startActivity(intent15);
                                 });
                         final AlertDialog alert = builder.create();
-                        TextView textView = alert.findViewById(android.R.id.message);
-                        if (textView != null)
-                            textView.setTypeface(myTypeface);
-                        textView = alert.findViewById(android.R.id.title);
-                        if (textView != null)
-                            textView.setTypeface(myTypeface);
                         alert.setOnShowListener(dialogInterface -> {
+                            TextView textView = alert.findViewById(android.R.id.message);
+                            if (textView != null)
+                                textView.setTypeface(myTypeface);
+                            textView = alert.findViewById(android.R.id.title);
+                            if (textView != null)
+                                textView.setTypeface(myTypeface);
                             Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                             Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                             ok.setTypeface(myTypeface);
@@ -230,13 +230,13 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                                 }
                             });
                     final AlertDialog alert = builder.create();
-                    TextView textView = alert.findViewById(android.R.id.message);
-                    if (textView != null)
-                        textView.setTypeface(myTypeface);
-                    textView = alert.findViewById(android.R.id.title);
-                    if (textView != null)
-                        textView.setTypeface(myTypeface);
                     alert.setOnShowListener(dialogInterface -> {
+                        TextView textView = alert.findViewById(android.R.id.message);
+                        if (textView != null)
+                            textView.setTypeface(myTypeface);
+                        textView = alert.findViewById(android.R.id.title);
+                        if (textView != null)
+                            textView.setTypeface(myTypeface);
                         Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                         Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                         ok.setTypeface(myTypeface);
@@ -276,7 +276,22 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                                         intent14.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                         mContext.startActivity(intent14);
                                     });
-                                    builder2.show();
+
+                                    final AlertDialog alert = builder2.create();
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        TextView textView = alert.findViewById(android.R.id.message);
+                                        if (textView != null)
+                                            textView.setTypeface(myTypeface);
+                                        textView = alert.findViewById(android.R.id.title);
+                                        if (textView != null)
+                                            textView.setTypeface(myTypeface);
+                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                                        ok.setTypeface(myTypeface);
+                                        canc.setTypeface(myTypeface);
+                                        canc.setTextColor(mContext.getResources().getColor(R.color.OldPrimary));
+                                    });
+                                    alert.show();
                                 }
                             }
                         });
@@ -298,7 +313,22 @@ class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
                                 intent14.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 mContext.startActivity(intent14);
                             });
-                            builder2.show();
+
+                            final AlertDialog alert2 = builder2.create();
+                            alert2.setOnShowListener(dialogInterface -> {
+                                TextView textView = alert2.findViewById(android.R.id.message);
+                                if (textView != null)
+                                    textView.setTypeface(myTypeface);
+                                textView = alert2.findViewById(android.R.id.title);
+                                if (textView != null)
+                                    textView.setTypeface(myTypeface);
+                                Button canc = alert2.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                Button ok = alert2.getButton(DialogInterface.BUTTON_POSITIVE);
+                                ok.setTypeface(myTypeface);
+                                canc.setTypeface(myTypeface);
+                                canc.setTextColor(mContext.getResources().getColor(R.color.OldPrimary));
+                            });
+                            alert2.show();
                         }
                     }
                     break;

@@ -36,6 +36,7 @@ import java.util.Locale;
 public class SettingsDesigned extends AppCompatActivity implements View.OnClickListener {
     private SwitchCompat MappSwitch;
     private SharedPreferences sp;
+    Typeface myTypeface;
     private static final int REQUEST_PERMISSION_SETTING = 101, OVERLAY_PER_REQ = 345;
     private String[] Langs = new String[] {"עברית", "English"};
     @Override
@@ -47,6 +48,7 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         CardView notifications = findViewById(R.id.notif_card);
         CardView advanced = findViewById(R.id.advanced_card);
         CardView tools = findViewById(R.id.tools_card);
@@ -218,7 +220,14 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
                 recreate();
             }
         });
-        AlertDialog langPicker = builder.create();
+        final AlertDialog langPicker = builder.create();
+        langPicker.setOnShowListener(dialogInterface -> {
+            TextView textView = langPicker.findViewById(android.R.id.title);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            Button canc = langPicker.getButton(DialogInterface.BUTTON_NEGATIVE);
+            canc.setTypeface(myTypeface);
+        });
         langPicker.show();
     }
     private void CreateInfoDialog() {
@@ -226,11 +235,22 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesigned.this, R.style.AlertDialogStyle);
         builder.setTitle(getString(R.string.pref_notifictions_explain)).setMessage(text);
         builder.setNegativeButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss()).create();
-        builder.show();
+        AlertDialog alert = builder.create();
+        alert.setOnShowListener(dialogInterface -> {
+            TextView textView = alert.findViewById(android.R.id.message);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            textView = alert.findViewById(android.R.id.title);
+            if (textView != null)
+                textView.setTypeface(myTypeface);
+            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+            canc.setTypeface(myTypeface);
+        });
+        alert.show();
+
     }
     private void CreateOverlayPermissionDialog() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
             builder.setMessage(getResources().getString(R.string.permDesOverlay)).setCancelable(false)
                     .setTitle(getString(R.string.permTitle))
@@ -239,13 +259,13 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
                         startActivityForResult(intent, OVERLAY_PER_REQ);
                     }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
             final AlertDialog alert = builder.create();
-            TextView textView = alert.findViewById(android.R.id.message);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
-            textView = alert.findViewById(android.R.id.title);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
             alert.setOnShowListener(dialogInterface -> {
+                TextView textView = alert.findViewById(android.R.id.message);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
+                textView = alert.findViewById(android.R.id.title);
+                if (textView != null)
+                    textView.setTypeface(myTypeface);
                 Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                 Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setTypeface(myTypeface);

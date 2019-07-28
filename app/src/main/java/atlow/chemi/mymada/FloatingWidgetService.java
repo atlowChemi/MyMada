@@ -23,14 +23,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.io.IOException;
-import java.net.URI;
 
 public class FloatingWidgetService extends Service implements View.OnClickListener {
     private WindowManager mWindowManager;
@@ -45,11 +43,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     private Vibrator vibe;
     private AudioManager am;
     private MediaPlayer mMediaPlayer;
-    //Variable to check if the Floating widget view is on left side or in right side
-    // initially we are displaying Floating widget view to Left side so set it to true
-    private boolean isLeft = true;
-    public FloatingWidgetService() {
-    }
+    boolean isLeft = true;
+    public FloatingWidgetService() {}
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -161,6 +156,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         }
     }
     /*  Add Remove View to Window Manager  */
+    @SuppressLint({"InflateParams", "RtlHardcoded"})
     private void addRemoveView(LayoutInflater inflater) {
         //Inflate the removing view layout we created
         removeFloatingWidgetView = inflater.inflate(R.layout.remove_floating_widget_layout, null);
@@ -173,7 +169,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
         //Specify the view position
-        paramRemove.gravity = Gravity.TOP | Gravity.LEFT;
+        paramRemove.gravity = Gravity.TOP | Gravity.END;
         //Initially the Removing widget view is not visible, so set visibility to GONE
         removeFloatingWidgetView.setVisibility(View.GONE);
         remove_image_view = removeFloatingWidgetView.findViewById(R.id.remove_img);
@@ -181,8 +177,9 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         //Add the view to the window
         mWindowManager.addView(removeFloatingWidgetView, paramRemove);
     }
+
     /*  Add Floating Widget View to Window Manager  */
-    @SuppressLint("InflateParams")
+    @SuppressLint({"InflateParams", "RtlHardcoded"})
     private void addFloatingWidgetView(LayoutInflater inflater) {
         //Inflate the floating view layout we created
         mFloatingWidgetView = inflater.inflate(R.layout.floating_widget_layout, null);
@@ -209,6 +206,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     private void getWindowManagerDefaultDisplay() {
         mWindowManager.getDefaultDisplay().getSize(szWindow);
     }
+
     /*  Implement Touch Listener to Floating Widget Root View  */
     private void implementTouchListenerToFloatingWidgetView() {
         //Drag and move floating view using user's touch action.
@@ -266,7 +264,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                         int y_diff = y_cord - y_init_cord;
                         //The check for x_diff <5 && y_diff< 5 because sometime elements moves a little while clicking.
                         //So that is click event.
-                        if (Math.abs(x_diff) < 5 && Math.abs(y_diff) < 5) {
+                        if (Math.abs(x_diff) < 20 && Math.abs(y_diff) < 20) {
                             time_end = System.currentTimeMillis();
                             //Also check the difference between start time and end time should be less than 300ms
                             if ((time_end - time_start) < 300)
@@ -276,7 +274,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                         int barHeight = getStatusBarHeight();
                         if (y_cord_Destination < 0) {
                             y_cord_Destination = 0;
-                        } else if (y_cord_Destination + (mFloatingWidgetView.getHeight() + barHeight) > szWindow.y) {
+                        }
+                        else if (y_cord_Destination + (mFloatingWidgetView.getHeight() + barHeight) > szWindow.y) {
                             y_cord_Destination = szWindow.y - (mFloatingWidgetView.getHeight() + barHeight);
                         }
                         layoutParams.y = y_cord_Destination;
@@ -305,19 +304,20 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                                     WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeFloatingWidgetView.getLayoutParams();
                                     param_remove.x = x_cord_remove;
                                     param_remove.y = y_cord_remove;
-                                    mWindowManager.updateViewLayout(removeFloatingWidgetView, param_remove);
+                                    //mWindowManager.updateViewLayout(removeFloatingWidgetView, param_remove);
                                 }
                                 layoutParams.x = x_cord_remove + (Math.abs(removeFloatingWidgetView.getWidth() - mFloatingWidgetView.getWidth())) / 2;
                                 layoutParams.y = y_cord_remove + (Math.abs(removeFloatingWidgetView.getHeight() - mFloatingWidgetView.getHeight())) / 2;
                                 //Update the layout with new X & Y coordinate
                                 mWindowManager.updateViewLayout(mFloatingWidgetView, layoutParams);
                                 break;
-                            } else {
+                            }
+                            else {
                                 //If Floating window gets out of the Remove view update Remove view again
                                 inBounded = false;
                                 remove_image_view.getLayoutParams().height = remove_img_height;
                                 remove_image_view.getLayoutParams().width = remove_img_width;
-                                onFloatingWidgetClick();
+                                //onFloatingWidgetClick();
                             }
 
                         }
@@ -362,7 +362,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         //Get remove Floating view params
         WindowManager.LayoutParams removeParams = (WindowManager.LayoutParams) removeFloatingWidgetView.getLayoutParams();
         //get x and y coordinates of remove view
-        int x_cord = (szWindow.x - removeFloatingWidgetView.getWidth()) / 2;
+        int x_cord = (szWindow.x - remove_image_view.getWidth()) / 2;
         int y_cord = szWindow.y - (removeFloatingWidgetView.getHeight() + getStatusBarHeight());
         removeParams.x = x_cord;
         removeParams.y = y_cord;
@@ -371,6 +371,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     }
     /*  Reset position of Floating Widget view on dragging  */
     private void resetPosition(int x_cord_now) {
+        //Variable to check if the Floating widget view is on left side or in right side
+        // initially we are displaying Floating widget view to Left side so set it to true
         if (x_cord_now <= szWindow.x / 2) {
             isLeft = true;
             moveToLeft(x_cord_now);
@@ -391,12 +393,22 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 //If you want bounce effect uncomment below line and comment above line
                 // mParams.x = 0 - (int) (double) bounceValue(step, x);
                 //Update window manager for Floating Widget
-                mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                try {
+                    mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                }catch (Exception e) {
+                    Crashlytics.log("probably the floating closed");
+                    Crashlytics.logException(e);
+                }
             }
             public void onFinish() {
                 mParams.x = 0;
                 //Update window manager for Floating Widget
-                mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                try {
+                    mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                }catch (Exception e) {
+                Crashlytics.log("probably the floating closed");
+                Crashlytics.logException(e);
+            }
             }
         }.start();
     }
@@ -411,19 +423,28 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 //If you want bounce effect uncomment below line and comment above line
                 //  mParams.x = szWindow.x + (int) (double) bounceValue(step, x_cord_now) - mFloatingWidgetView.getWidth();
                 //Update window manager for Floating Widget
-                mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                try {
+                    mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                }catch (Exception e) {
+                    Crashlytics.log("probably the floating closed");
+                    Crashlytics.logException(e);
+                }
             }
             public void onFinish() {
                 mParams.x = szWindow.x - mFloatingWidgetView.getWidth();
                 //Update window manager for Floating Widget
-                mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                try {
+                    mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                }catch (Exception e) {
+                    Crashlytics.log("probably the floating closed");
+                    Crashlytics.logException(e);
+                }
             }
         }.start();
     }
     /*  Get Bounce value if you want to make bounce effect to your Floating Widget */
     private double bounceValue(long step, long scale) {
-        double value = scale * java.lang.Math.exp(-0.055 * step) * java.lang.Math.cos(0.08 * step);
-        return value;
+        return scale * Math.exp(-0.055 * step) * Math.cos(0.08 * step);
     }
     /*  Detect if the floating view is collapsed or expanded */
     private boolean isViewCollapsed() {

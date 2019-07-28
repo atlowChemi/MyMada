@@ -240,7 +240,7 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
         }
     }
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -626,19 +626,11 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesignedNotificationsSounds.this, R.style.AlertDialogStyle);
                 builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
                 builder.setMessage(getApplicationContext().getResources().getString(R.string.permDesSD));
-                builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                        ActivityCompat.requestPermissions(SettingsDesignedNotificationsSounds.this, permissionsRequired, retPer);
-                    }
+                builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), (dialog, which) -> {
+                    dialog.cancel();
+                    ActivityCompat.requestPermissions(SettingsDesignedNotificationsSounds.this, permissionsRequired, retPer);
                 });
-                builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), (dialog, which) -> dialog.cancel());
                 builder.show();
             }
             else if (permissionStatus.getBoolean(permissionsRequired[0], false)) {
@@ -647,23 +639,15 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
                 AlertDialog.Builder builder = new AlertDialog.Builder(SettingsDesignedNotificationsSounds.this, R.style.AlertDialogStyle);
                 builder.setTitle(getApplicationContext().getResources().getString(R.string.permTitle));
                 builder.setMessage(getApplicationContext().getResources().getString(R.string.permDesSD));
-                builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                        sentToSettings = true;
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                        intent.setData(uri);
-                        startActivityForResult(intent, retPer);
-                    }
+                builder.setPositiveButton(getApplicationContext().getResources().getString(R.string.permYes), (dialog, which) -> {
+                    dialog.cancel();
+                    sentToSettings = true;
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivityForResult(intent, retPer);
                 });
-                builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                builder.setNegativeButton(getApplicationContext().getResources().getString(R.string.ret), (dialog, which) -> dialog.cancel());
                 builder.show();
             }
             else {
@@ -689,7 +673,7 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Uri ringUri;
+        Uri ringUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.alert);;
         if (requestCode >99 && requestCode < 105) {
             if (ActivityCompat.checkSelfPermission(SettingsDesignedNotificationsSounds.this, permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED) {
                 //Got Permission
@@ -700,7 +684,12 @@ public class SettingsDesignedNotificationsSounds extends AppCompatActivity imple
             }
         }
         if (resultCode == RESULT_OK) {
-            ringUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            try {
+                ringUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            }catch (Exception e) {
+                Crashlytics.log("didnt prace the ringtone!");
+                Crashlytics.logException(e);
+            }
             SharedPreferences.Editor spe = sp.edit();
             if (requestCode == 0) {
                 spe.putString("NuRi", ringUri.toString());
