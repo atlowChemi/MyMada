@@ -2,13 +2,16 @@ package atlow.chemi.mymada;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.support.design.widget.FixedTextInputEditText;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +19,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +44,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView msgSender, msgTxt, msgTime;
+        private AppCompatImageView waBtn;
         private CardView msgHold;
         private MyViewHolder(View view) {
             super(view);
@@ -46,6 +52,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
             msgTxt = view.findViewById(R.id.msgTxt);
             msgTime = view.findViewById(R.id.msgTime);
             msgHold = view.findViewById(R.id.chat_card_view);
+            waBtn = view.findViewById(R.id.waBtn);
         }
     }
 
@@ -77,23 +84,48 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
             holder.msgHold.setOnClickListener(v -> contactChatActivity.askForName(context, true));
         }
         else {
-            sender = sender.equals("admin") ? this.context.getString(R.string.admin) : context.getSharedPreferences("Settings", 0).getString("UserName", context.getString(R.string.user));
-            msgTime = formatDate(msg.getTime());
-            holder.msgSender.setText(sender);
-            holder.msgTxt.setText(msgTxt);
-            holder.msgTime.setText(msgTime);
-            holder.msgTxt.setVisibility(View.VISIBLE);
-            holder.msgTime.setVisibility(View.VISIBLE);
-            holder.msgTxt.setMovementMethod(new ScrollingMovementMethod());
-            Typeface myTypeface = Typeface.createFromAsset(this.context.getAssets(), "fonts/opensanshebrew.ttf");
-            holder.msgTxt.setTypeface(myTypeface);
-            holder.msgSender.setTypeface(myTypeface);
-            holder.msgTime.setTypeface(myTypeface);
-            holder.msgHold.setOnClickListener(null);
-            if (msg.getSender().equals("admin"))
+            if (msg.isWhatsApp()) {
+                msgTime = formatDate(msg.getTime());
+                holder.msgTime.setText(msgTime);
+                holder.msgSender.setVisibility(View.GONE);
+                holder.waBtn.setVisibility(View.VISIBLE);
                 holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.chatAdmin));
-            else
-                holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.White));
+                holder.msgHold.setOnClickListener((view) -> {
+                    try {
+                        String toNumber = "+972557249771";
+                        String name = context.getSharedPreferences("Settings", 0).getString("UserName", context.getString(R.string.user));
+                        String message = "שלום, אני " + name + " ואני פונה לגבי השיחה שלנו באפליקציה";
+                        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                        sendIntent.setData(Uri.parse("http://api.whatsapp.com/send?phone="+toNumber +"&text="+message));
+                        sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(sendIntent);
+                    } catch (Exception e) {
+                        Log.e("WHATSAPP ERR", e.getMessage());
+                        Toast.makeText(context, "וואטסאפ לא מותקן כנראה!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            else {
+                sender = sender.equals("admin") ? this.context.getString(R.string.admin) : context.getSharedPreferences("Settings", 0).getString("UserName", context.getString(R.string.user));
+                msgTime = formatDate(msg.getTime());
+                holder.msgSender.setText(sender);
+                holder.msgTxt.setText(msgTxt);
+                holder.msgTime.setText(msgTime);
+                holder.msgTxt.setVisibility(View.VISIBLE);
+                holder.msgTime.setVisibility(View.VISIBLE);
+                holder.msgSender.setVisibility(View.VISIBLE);
+                holder.waBtn.setVisibility(View.GONE);
+                holder.msgTxt.setMovementMethod(new ScrollingMovementMethod());
+                Typeface myTypeface = Typeface.createFromAsset(this.context.getAssets(), "fonts/opensanshebrew.ttf");
+                holder.msgTxt.setTypeface(myTypeface);
+                holder.msgSender.setTypeface(myTypeface);
+                holder.msgTime.setTypeface(myTypeface);
+                holder.msgHold.setOnClickListener(null);
+                if (msg.getSender().equals("admin"))
+                    holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.chatAdmin));
+                else
+                    holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.White));
+            }
         }
     }
     private int dpToPx(int dp) {

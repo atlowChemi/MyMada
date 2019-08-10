@@ -4,11 +4,13 @@ class Chat {
     private String time;
     private String sender;
     private String msg;
+    private boolean WhatsApp;
 
-    Chat(String sender, String msg, String time)  {
+    Chat(String sender, String msg, String time, boolean WhatsApp)  {
         this.sender = sender;
         this.msg = msg;
         this.time = time;
+        this.WhatsApp = WhatsApp;
     }
     String getSender() {
         return sender;
@@ -27,5 +29,11 @@ class Chat {
     }
     public void setTime(String time) {
         this.time = time;
+    }
+    boolean isWhatsApp() {
+        return WhatsApp;
+    }
+    void setWhatsApp(boolean WhatsApp) {
+        this.WhatsApp = WhatsApp;
     }
 }

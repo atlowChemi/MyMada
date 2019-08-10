@@ -68,7 +68,7 @@ public class NotificationService extends NotificationListenerService {
                     return;
                 }
                 //conan, group, mishmeret, minhala, oldType, sherut.
-                if (title.contains("*אירוע חדש*")) {
+                if (title.contains("*אירוע חדש*") || title.contains("*New Event*")) {
                     if (text.contains("שירות") || text.contains("כלכלה") || text.contains("תפילה"))
                         intent.putExtra("callT", 6);
                     else if (text.contains("מנהלתי") || text.contains("מינהלתי") || text.contains("משמרת בנה"))
@@ -88,7 +88,7 @@ public class NotificationService extends NotificationListenerService {
                         else
                             intent.putExtra("callT", 1);
                     }
-                    String time = title.replace("*אירוע חדש*", "");
+                    String time = title.contains("אירוע חדש") ? title.replace("*אירוע חדש*", "") : title.replace("*New Event*", "");
                     intent.putExtra("time", time);
                     GrobootRec.madasApp(statusBarNotification.getNotification().contentIntent);
                     broadcastManager.sendBroadcast(intent);

@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,10 @@ import androidx.core.content.ContextCompat;
 
 import android.os.Handler;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,12 +39,14 @@ public class MetroActivity extends Fragment {
     @SuppressLint("StaticFieldLeak")
     private static View v;
     static long timestamp = 0;
-    private TextView clock;
-    private ProgressBar pb;
+    @SuppressLint("StaticFieldLeak")
+    private static TextView clock;
+    @SuppressLint("StaticFieldLeak")
+    private static ProgressBar pb;
     private FirebaseAnalytics mFirebaseAnalytics;
     private static StopWatch stopWatch = new StopWatch();
-    private final int START_TIMER = 0, STOP_TIMER = 1;
-    private Handler mHandler = new Handler() {
+    private static final int START_TIMER = 0, STOP_TIMER = 1;
+    private static Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -61,8 +68,18 @@ public class MetroActivity extends Fragment {
                     break;
                 case UPDATE_TIMER:
                     try {
-                        clock.setText(stopWatch.toString());
-                        pb.setProgress(stopWatch.getPercentOfTwoMinute());
+                        String timeToDisplay = stopWatch.toString();
+                        if (stopWatch.toString().contains("\n")) {
+                            int start = timeToDisplay.indexOf("\n");
+                            SpannableString string = new SpannableString(timeToDisplay);
+                            string.setSpan(new RelativeSizeSpan(0.6f), start, timeToDisplay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            clock.setText(string);
+                        } else
+                            clock.setText(stopWatch.toString());
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                            pb.setProgress(stopWatch.getPercentOfTwoMinute(), true);
+                        else
+                            pb.setProgress(stopWatch.getPercentOfTwoMinute());
                     }catch (Exception e) {
                         Crashlytics.logException(e);
                     }
@@ -151,7 +168,7 @@ public class MetroActivity extends Fragment {
         if (start)
             bp.performClick();
     }
-    private void clocketise(int what) {
+    static void clocketise(int what) {
         if (timestamp == 0 || System.currentTimeMillis() < timestamp)
             timestamp = System.currentTimeMillis();
         stopWatch.setStartTime(timestamp);
@@ -235,7 +252,7 @@ class StopWatch {
         this.startTime = System.currentTimeMillis() - this.currentTime;
     }
     int getPercentOfTwoMinute() {
-        return (int)(((System.currentTimeMillis() - this.startTime) / 1000) % 121);
+        return (int)(((System.currentTimeMillis() - this.startTime) / 1000) % 120);
     }
     private String getElapsedTimeSeconds() {
         long elapsed = 0;

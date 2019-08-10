@@ -18,6 +18,7 @@ import com.crashlytics.android.Crashlytics;
 
 import static atlow.chemi.mymada.MetroActivity.MetroRun;
 import static atlow.chemi.mymada.MetroActivity.timestamp;
+import static atlow.chemi.mymada.MetroActivity.clocketise;
 import static atlow.chemi.mymada.MetroActivity.startAnim;
 import static atlow.chemi.mymada.MetroActivity.stopAnim;
 
@@ -78,6 +79,7 @@ public class MetroService extends Service {
 
     private void metro(Context context) {
         startAnim();
+        clocketise(0);
         MetroRun = true;
         timestamp = System.currentTimeMillis();
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -97,6 +99,7 @@ public class MetroService extends Service {
     }
     private void metroStop() {
         stopAnim();
+        clocketise(1);
         MetroRun = false;
         running = false;
         timestamp = 0;
