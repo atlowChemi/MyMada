@@ -1,10 +1,10 @@
 package atlow.chemi.mymada;
 
 class DictionaryWord {
-    private String name;
-    private String definition;
-    private String key;
-    private boolean approved;
+    public String name;
+    public String definition;
+    public String key;
+    public boolean approved;
 
     DictionaryWord(String name, String definition, String key, boolean approved)  {
         this.name = name;

@@ -154,7 +154,7 @@ public class contactChatActivity extends AppCompatActivity {
                 }
             }
         });
-        chats.add(new Chat("NAME_CHANGE","NAME_CHANGE","NAME_CHANGE"));
+        chats.add(new Chat("NAME_CHANGE","NAME_CHANGE","NAME_CHANGE", false));
         root.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -162,6 +162,12 @@ public class contactChatActivity extends AppCompatActivity {
                         dataSnapshot.getKey().equals("SeenByAdmin"))) {
                     String sender = dataSnapshot.child("sender").getValue(String.class);
                     String msg = dataSnapshot.child("msg").getValue(String.class);
+                    boolean WhatsApp;
+                    try {
+                        WhatsApp = dataSnapshot.child("WhatsApp").getValue(Boolean.class);
+                    } catch (NullPointerException e) {
+                        WhatsApp = false;
+                    }
                     String time;
                     try {
                         time = dataSnapshot.child("time").getValue(Long.class) + "";
@@ -169,7 +175,7 @@ public class contactChatActivity extends AppCompatActivity {
                         long tsLong = System.currentTimeMillis() / 1000;
                         time = tsLong + "";
                     }
-                    chats.add(new Chat(sender, msg, time));
+                    chats.add(new Chat(sender, msg, time, WhatsApp));
                     if (adapter != null) {
                         adapter.notifyDataSetChanged();
                         msgs.smoothScrollToPosition(adapter.getItemCount());

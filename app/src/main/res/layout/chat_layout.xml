@@ -13,7 +13,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/waBtn"
+            card_view:layout_constraintDimensionRatio="1:1"
+            card_view:layout_constraintTop_toBottomOf="@id/msgTime"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            card_view:srcCompat="@drawable/ic_whatsapp"/>
         <TextView
             android:id="@+id/msgSender"
             android:layout_width="0dp"

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.material.snackbar.Snackbar;
@@ -37,6 +39,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import static android.app.Activity.RESULT_OK;
 
 public class DictionaryAdmin extends Fragment {
     private DictionaryWordAdapter adapter;
@@ -97,7 +101,7 @@ public class DictionaryAdmin extends Fragment {
     @SuppressLint("InflateParams")
     private void wordAdder()   {
         LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View newMan = null;
+        View newMan;
         EditText wordName, wordDefinition;
         TextInputLayout wordNameTil, wordDefinitionTil;
         if (inflater != null) {
@@ -173,8 +177,18 @@ public class DictionaryAdmin extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.app_bar_word_add) {
-            wordAdder();
+            //wordAdder();
+            Intent qr = new Intent(getActivity(), BarcodeScannerActivity.class);
+            startActivityForResult(qr, 6);
         }
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 6 && resultCode == RESULT_OK) {
+            String barcodeR = data.getStringExtra("barcodeR");
+            Toast.makeText(getActivity(), barcodeR, Toast.LENGTH_LONG).show();
+        }
     }
 }

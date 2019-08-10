@@ -298,37 +298,39 @@ public class smsRes extends AppCompatActivity {
                 Address = getBetweenStrings(Stxt, "כתובת: ", " קוד");
             } catch (Exception e) {
                 try {
-                    Address = getBetweenStrings(Stxt, "כתובת: ", ", קוד");
+                    Address = getBetweenStrings(Stxt, "Address: ", "Dispatch Code");
                 } catch (Exception ew) {
                     Address = "";
                 }
             }
             try {
-                KodH = getBetweenStrings(Stxt, "קוד הזנקה: ", ". קוד רפואי");
+                KodH = getBetweenStrings(Stxt, "קוד הזנקה: ", " קוד רפואי");
             } catch (Exception e) {
                 try {
-                    KodH = getBetweenStrings(Stxt, "קוד הזנקה: ", ", קוד רפואי");
+                    KodH = getBetweenStrings(Stxt, "Dispatch Code: ", "Medical Code");
                 } catch (Exception ew) {
                     KodH = "";
                 }
             }
             try {
-                KodR = getBetweenStrings(Stxt, "קוד רפואי: ", ".");
+                KodR = getEndStrings(Stxt, "קוד רפואי: ");
             } catch (Exception e) {
                 try {
-                    KodR = getEndStrings(Stxt, "קוד רפואי: ");
+                    KodR = getEndStrings(Stxt, "Medical Code: ");
                 } catch (Exception ew) {
                     KodR = "";
                 }
             }
             try {
-                time = getBetweenStrings(Stxt, ". ", "מונה:");
+                String textTo = Stxt.contains("מונה") ? "מונה:" : "Incident number:";
+                time = getBetweenStrings(Stxt, ". ", textTo);
             } catch (Exception e) {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
                 time = sdf.format(now.getTime());
             }
             try {
-                mikre = getStartStrings(Stxt, "קוד הזנקה:");
+                String textTo = Stxt.contains("קוד הזנקה") ? "קוד הזנקה:" : "Dispatch Code:";
+                mikre = getStartStrings(Stxt, textTo);
             } catch (Exception e) {
                 mikre = Stxt;
             }
