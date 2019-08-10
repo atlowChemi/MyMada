@@ -89,6 +89,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
                 holder.msgTime.setText(msgTime);
                 holder.msgSender.setVisibility(View.GONE);
                 holder.waBtn.setVisibility(View.VISIBLE);
+                holder.msgTxt.setText("לחץ על כפתור הוואטסאפ בכדי לתקשר איתנו בוואטסאפ.");
                 holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.chatAdmin));
                 holder.msgHold.setOnClickListener((view) -> {
                     try {

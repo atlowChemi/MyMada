@@ -177,9 +177,10 @@ public class DictionaryAdmin extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.app_bar_word_add) {
-            //wordAdder();
-            Intent qr = new Intent(getActivity(), BarcodeScannerActivity.class);
-            startActivityForResult(qr, 6);
+            wordAdder();
+            //barcode scanner
+            //Intent qr = new Intent(getActivity(), BarcodeScannerActivity.class);
+            //startActivityForResult(qr, 6);
         }
         return super.onOptionsItemSelected(item);
     }
