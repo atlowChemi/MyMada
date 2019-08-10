@@ -18,7 +18,7 @@
             android:layout_height="50dp"
             android:id="@+id/waBtn"
             card_view:layout_constraintDimensionRatio="1:1"
-            card_view:layout_constraintTop_toBottomOf="@id/msgTime"
+            card_view:layout_constraintTop_toBottomOf="@id/msgTxt"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintBottom_toBottomOf="parent"
