@@ -31,21 +31,14 @@ public class Applicatio extends MultiDexApplication {
     }
     @Override
     public void onCreate() {
-        if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits()) {
+        if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits())
             // Skip app initialization.
             return;
-        }
         super.onCreate();
-        try {
-            FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
-        }catch (Exception e)    {
-            e.printStackTrace();
-        }
-        try {
-            FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");
-        }catch (Exception e)    {
-            e.printStackTrace();
-        }
+        FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
+        FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");
+        FontsOverride.setDefaultFont(this, "SERIF", "fonts/opensanshebrew.ttf");
+        FontsOverride.setDefaultFont(this, "SANS_SERIF", "fonts/opensanshebrew.ttf");
         SharedPreferences sharedPreferences = getSharedPreferences("Settings",0);
         boolean mapp = sharedPreferences.getBoolean("Mapp", false);
         if (mapp) {
