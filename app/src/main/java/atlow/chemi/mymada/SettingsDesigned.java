@@ -29,6 +29,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.play.core.splitinstall.SplitInstallManager;
+import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
+import com.google.android.play.core.splitinstall.SplitInstallRequest;
+import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener;
+import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +41,8 @@ import java.util.Locale;
 public class SettingsDesigned extends AppCompatActivity implements View.OnClickListener {
     private SwitchCompat MappSwitch;
     private SharedPreferences sp;
-    Typeface myTypeface;
+    private Typeface myTypeface;
+    private int mySessionId = 0;
     private static final int REQUEST_PERMISSION_SETTING = 101, OVERLAY_PER_REQ = 345;
     private String[] Langs = new String[] {"עברית", "English"};
     @Override
@@ -216,8 +222,25 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
         builder.setSingleChoiceItems(Langs, langToPick, (dialog, which) -> {
             String locale = which == 0 ? "iw" : "en";
             if (langToPick != which) {
-                LocalHelper.setLocale(getApplicationContext(), locale);
-                recreate();
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    SplitInstallStateUpdatedListener listener = state -> {
+                        if (state.sessionId() == mySessionId) {
+                            switch (state.status()) {
+                                case SplitInstallSessionStatus.INSTALLED:
+                                    LocalHelper.setLocale(getApplicationContext(), locale);
+                                    recreate();
+                                    break;
+                            }
+                        }
+                    };
+                    SplitInstallManager splitInstallManager = SplitInstallManagerFactory.create(getApplicationContext());
+                    splitInstallManager.registerListener(listener);
+                    SplitInstallRequest request = SplitInstallRequest.newBuilder().addLanguage(Locale.forLanguageTag(locale)).build();
+                    splitInstallManager.startInstall(request).addOnCompleteListener(sessionId -> { mySessionId = sessionId.getResult(); });
+                } else {
+                    LocalHelper.setLocale(getApplicationContext(), locale);
+                    recreate();
+                }
             }
         });
         final AlertDialog langPicker = builder.create();
