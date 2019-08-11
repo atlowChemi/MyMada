@@ -60,7 +60,7 @@ android {
             enableSplit true
         }
         language {
-            enableSplit false
+            enableSplit true
         }
     }
 }

@@ -7,16 +7,23 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 
+import com.google.android.play.core.splitcompat.SplitCompat;
+import com.google.android.play.core.splitinstall.SplitInstallManager;
+import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
+import com.google.android.play.core.splitinstall.SplitInstallRequest;
+
 import java.util.Locale;
 
 public class LocalHelper {
     private static String SELECTED_LANGUAGE = "lng";
     public static Context onAttach(Context ctx) {
         String lang = getPersistedData(ctx, Locale.getDefault().getLanguage());
+        SplitCompat.install(ctx);
         return setLocale(ctx, lang);
     }
     public static Context onAttach(Context ctx, String defLang) {
         String lang = getPersistedData(ctx, defLang);
+        SplitCompat.install(ctx);
         return setLocale(ctx, lang);
     }
     public static String getLanguage(Context ctx) {
@@ -40,10 +47,8 @@ public class LocalHelper {
     }
     @TargetApi(Build.VERSION_CODES.N)
     private static Context updateResources(Context ctx, String lang) {
-        Locale locale = new Locale(lang);
-        Locale.setDefault(locale);
         Configuration configuration = ctx.getResources().getConfiguration();
-        configuration.setLocale(locale);
+        configuration.setLocale(Locale.forLanguageTag(lang));
         return ctx.createConfigurationContext(configuration);
     }
     @SuppressWarnings("deprecation")
