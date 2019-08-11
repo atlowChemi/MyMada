@@ -130,11 +130,6 @@
                 android:value="atlow.chemi.mymada.HomePage" />
         </activity>
         <activity
-            android:name=".BarcodeScannerActivity"
-            android:theme="@style/Dialog.Camera"
-            android:excludeFromRecents="true"
-            android:exported="true" />
-        <activity
             android:name=".SettingsDesigned"
             android:label="@string/title_activity_settings"
             android:theme="@style/MyMaterialTheme" />

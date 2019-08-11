@@ -224,13 +224,9 @@ public class SettingsDesigned extends AppCompatActivity implements View.OnClickL
             if (langToPick != which) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                     SplitInstallStateUpdatedListener listener = state -> {
-                        if (state.sessionId() == mySessionId) {
-                            switch (state.status()) {
-                                case SplitInstallSessionStatus.INSTALLED:
-                                    LocalHelper.setLocale(getApplicationContext(), locale);
-                                    recreate();
-                                    break;
-                            }
+                        if (state.sessionId() == mySessionId && state.status() == SplitInstallSessionStatus.INSTALLED) {
+                                LocalHelper.setLocale(getApplicationContext(), locale);
+                                recreate();
                         }
                     };
                     SplitInstallManager splitInstallManager = SplitInstallManagerFactory.create(getApplicationContext());
