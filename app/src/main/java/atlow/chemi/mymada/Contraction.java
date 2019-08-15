@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.Date;
 
-class Contraction {
+public class Contraction {
     private Date start;
     private Date end;
     private Date oldEnd;
@@ -13,36 +13,36 @@ class Contraction {
     private String previous;
     private String length;
 
-    Contraction(int number, String length, String previous)  {
+    public Contraction(int number, String length, String previous)  {
         this.number = number;
         this.previous = previous;
         this.length = length;
     }
-    Contraction(int number, Date start, Date end, Date oldEnd)  {
+    public Contraction(int number, Date start, Date end, Date oldEnd)  {
         this.number = number;
         this.start = start;
         this.end = end;
         this.oldEnd = oldEnd;
     }
-    Date getStart() {
+    public Date getStart() {
         return this.start;
     }
     void setStart(Date start) {
         this.start = start;
     }
-    Date getEnd() {
+    public Date getEnd() {
         return this.end;
     }
     void setEnd(Date end) {
         this.end = end;
     }
-    Date getOldEnd() {
+    public Date getOldEnd() {
         return this.oldEnd;
     }
-    void setOldEnd(Date oldEnd) {
+    public void setOldEnd(Date oldEnd) {
         this.oldEnd = oldEnd;
     }
-    int getNumber() {
+    public int getNumber() {
         return this.number;
     }
     void setNumber(int number) {

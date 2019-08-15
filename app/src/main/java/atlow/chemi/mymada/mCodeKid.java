@@ -1,11 +1,11 @@
 package atlow.chemi.mymada;
 
-class mCodeKid {
+public class mCodeKid {
     public String id;
     public String name, catogory;
     public int order;
     private boolean isChecked;
-    mCodeKid(String name, String id, String catogory, int order) {
+    public mCodeKid(String name, String id, String catogory, int order) {
         this.id = id;
         this.name = name;
         this.catogory = catogory;
@@ -24,10 +24,10 @@ class mCodeKid {
     public int getOrder()   {
         return this.order;
     }
-    boolean isChecked()  {
+    public boolean isChecked()  {
         return this.isChecked;
     }
-    void setChecked(boolean checked)    {
+    public void setChecked(boolean checked)    {
         this.isChecked = checked;
     }
 }

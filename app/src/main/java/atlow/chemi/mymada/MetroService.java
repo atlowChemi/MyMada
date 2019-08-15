@@ -16,11 +16,11 @@ import androidx.core.app.NotificationCompat;
 
 import com.crashlytics.android.Crashlytics;
 
-import static atlow.chemi.mymada.MetroActivity.MetroRun;
-import static atlow.chemi.mymada.MetroActivity.timestamp;
-import static atlow.chemi.mymada.MetroActivity.clocketise;
-import static atlow.chemi.mymada.MetroActivity.startAnim;
-import static atlow.chemi.mymada.MetroActivity.stopAnim;
+import static atlow.chemi.mymada.fragments.MetroActivity.MetroRun;
+import static atlow.chemi.mymada.fragments.MetroActivity.timestamp;
+import static atlow.chemi.mymada.fragments.MetroActivity.clocketise;
+import static atlow.chemi.mymada.fragments.MetroActivity.startAnim;
+import static atlow.chemi.mymada.fragments.MetroActivity.stopAnim;
 
 public class MetroService extends Service {
     private AudioManager audioManager;

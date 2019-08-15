@@ -50,6 +50,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import atlow.chemi.mymada.adapters.ChatAdapter;
+
 public class contactChatActivity extends AppCompatActivity {
     private EditText ChatT;
     private static final int REQUEST_PERMISSION_SETTING = 101;
@@ -216,7 +218,7 @@ public class contactChatActivity extends AppCompatActivity {
         });
         alert.show();
     }
-    static void askForName(Context context, boolean cancelable) {
+    public static void askForName(Context context, boolean cancelable) {
         View time = View.inflate(context, R.layout.shabat_t, null);
         final FixedTextInputEditText shabatText = time.findViewById(R.id.shabatT);
         final TextInputLayout shabatTil = time.findViewById(R.id.shabatTil);

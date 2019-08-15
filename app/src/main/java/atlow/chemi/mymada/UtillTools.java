@@ -20,8 +20,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -35,6 +33,16 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import atlow.chemi.mymada.fragments.ApgarCalc;
+import atlow.chemi.mymada.fragments.BlsProtocoles;
+import atlow.chemi.mymada.fragments.ContracTimer;
+import atlow.chemi.mymada.fragments.DictionaryAdmin;
+import atlow.chemi.mymada.fragments.GlazgoCalc;
+import atlow.chemi.mymada.fragments.MetroActivity;
+import atlow.chemi.mymada.fragments.OxyCalc;
+import atlow.chemi.mymada.fragments.PulseCalc;
+import atlow.chemi.mymada.fragments.VitalsChecker;
 
 public class UtillTools extends AppCompatActivity {
 

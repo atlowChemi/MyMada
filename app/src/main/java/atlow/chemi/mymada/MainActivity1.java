@@ -39,6 +39,8 @@ import com.crashlytics.android.Crashlytics;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import atlow.chemi.mymada.adapters.mCodeAdapt;
+
 public class MainActivity1 extends Fragment {
     private boolean bool, isMove = false;
     protected CharSequence[] _options = {
