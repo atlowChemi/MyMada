@@ -2,7 +2,6 @@ package atlow.chemi.mymada;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -47,6 +46,8 @@ import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import atlow.chemi.mymada.adapters.VolunteerAdapter;
 
 public class MainActivity2 extends Fragment {
     private String textS = "";
@@ -225,13 +226,13 @@ public class MainActivity2 extends Fragment {
         });
     }
 
-    static void deleteVol(int position)    {
+    public static void deleteVol(int position)    {
         albumList.remove(position);
         adapter.notifyDataSetChanged();
         if (newPplBtn.getVisibility() != View.VISIBLE)
             newPplBtn.setVisibility(View.VISIBLE);
     }
-    static void editVol(final int position, final Context context)    {
+    public static void editVol(final int position, final Context context)    {
         View newMan = inflater.inflate(R.layout.add_human, null);
         final Spinner addManSppiner = newMan.findViewById(R.id.addManSpinner);
         final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item, colors);

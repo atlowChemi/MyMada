@@ -8,7 +8,7 @@ public class AnimatedColor {
     private final float[] mStartHsv, mEndHsv;
     private float[] mMove = new float[3];
 
-    AnimatedColor(int start, int end) {
+    public AnimatedColor(int start, int end) {
         mStartColor = start;
         mEndColor = end;
         mStartHsv = toHsv(start);

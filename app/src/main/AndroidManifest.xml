@@ -10,16 +10,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false"/>
-    <uses-feature
-        android:name="android.hardware.camera.autofocus"
-        android:required="false"/>
+        android:required="false" />
 
     <application
         android:name=".Applicatio"
@@ -117,6 +115,15 @@
             android:parentActivityName=".HomePage"
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
+        <activity
+            android:name=".UtillitiesAndTools"
+            android:label="@string/button_h"
+            android:parentActivityName=".HomePage"
+            android:theme="@style/MyMaterialTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomePage" />
+        </activity>
         <activity
             android:name=".UtillTools"
             android:label="@string/button_h"

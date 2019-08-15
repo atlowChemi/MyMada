@@ -1,24 +1,24 @@
 package atlow.chemi.mymada;
 
-class HomeB {
+public class HomeB {
     private String intent;
     private int bg;
     HomeB() {
     }
-    HomeB(String i, int img) {
+    public HomeB(String i, int img) {
         this.intent = i;
         this.bg = img;
     }
-    String getIntent() {
+    public String getIntent() {
         return this.intent;
     }
-    void setIntent(String i)    {
+    public void setIntent(String i)    {
         this.intent = i;
     }
-    int getBg()  {
+    public int getBg()  {
         return this.bg;
     }
-    void setBg(int img)  {
+    public void setBg(int img)  {
         this.bg = img;
     }
 }

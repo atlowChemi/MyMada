@@ -4,15 +4,15 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 
-class AudioGenerator {
+public class AudioGenerator {
 
     private int sampleRate;
     private AudioTrack audioTrack;
 
-    AudioGenerator(int sampleRate) {
+    public AudioGenerator(int sampleRate) {
         this.sampleRate = sampleRate;
     }
-    double[] getSineWave(int samples,int sampleRate,double frequencyOfTone){
+    public double[] getSineWave(int samples,int sampleRate,double frequencyOfTone){
         double[] sample = new double[samples];
         for (int i = 0; i < samples; i++) {
             sample[i] = Math.sin(2 * Math.PI * i / (sampleRate/frequencyOfTone));
@@ -32,15 +32,15 @@ class AudioGenerator {
         }
         return generatedSound;
     }
-    void createPlayer(){
+    public void createPlayer(){
         audioTrack = new AudioTrack(AudioManager.STREAM_ALARM, sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, sampleRate, AudioTrack.MODE_STREAM);
         audioTrack.play();
     }
-    void writeSound(double[] samples) {
+    public void writeSound(double[] samples) {
         byte[] generatedSnd = get16BitPcm(samples);
         audioTrack.write(generatedSnd, 0, generatedSnd.length);
     }
-    void destroyAudioTrack() {
+    public void destroyAudioTrack() {
         audioTrack.stop();
         audioTrack.release();
     }

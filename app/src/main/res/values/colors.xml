@@ -37,4 +37,7 @@
     <color name="calcG">#46b23a</color>
     <color name="bgShadowEnd">#aeadad</color>
     <color name="chatAdmin">#E2E2E2</color>
+    <color name="navPickedColor">#D2D4DB</color>
+    <color name="navPickedTextColor">#05167c</color>
+    <color name="navNotPickedTextColor">#5d5d5d</color>
 </resources>
