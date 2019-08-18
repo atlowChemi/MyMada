@@ -458,7 +458,9 @@
     <string name="msgNotSeen">מנהל טרם ראה את הודעתך</string>
     <string name="add_word">הוסף מונח למילון</string>
     <string name="successAddWord">הגדרה נוספה בהצלחה ונשלחה לאישורינו!</string>
+    <string name="successEditWord">הגדרה נערכה בהצלחה ונשלחה לאישורינו!</string>
     <string name="wordName">מונח רפואי</string>
     <string name="wordDefinition">משמעות המונח</string>
     <string name="searchDictionary">חפש במילון</string>
+    <string name="editDictionary">ערוך מונח</string>
 </resources>

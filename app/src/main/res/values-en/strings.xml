@@ -455,8 +455,10 @@
     <string name="msgNotSeen">Your message was\'nt seen yet</string>
     <string name="add_word">Add word to dictionary</string>
     <string name="successAddWord">Added successfully, sent for our approval!</string>
+    <string name="successEditWord">Edited successfully, sent for our approval!</string>
     <string name="wordName">Medical term</string>
     <string name="wordDefinition">Term\'s definition</string>
     <string name="searchDictionary">Search dictionary</string>
+    <string name="editDictionary">Edit term</string>
     <string name="general_settings">General Settings</string>
 </resources>
