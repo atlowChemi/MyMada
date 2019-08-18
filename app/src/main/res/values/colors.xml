@@ -40,4 +40,5 @@
     <color name="navPickedColor">#D2D4DB</color>
     <color name="navPickedTextColor">#05167c</color>
     <color name="navNotPickedTextColor">#5d5d5d</color>
+    <color name="navBar">#c1c1c4</color>
 </resources>

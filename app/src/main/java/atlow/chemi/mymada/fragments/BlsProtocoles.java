@@ -31,7 +31,7 @@ public class BlsProtocoles extends Fragment {
     private boolean isConnected = true;
     private int current = 0;
 
-    public BlsProtocoles()    {}
+    public BlsProtocoles(){}
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
