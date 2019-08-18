@@ -28,7 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.SettingsDesigned;
+import atlow.chemi.mymada.SettingsPage;
 
 public class VitalsChecker extends Fragment {
     private int ageRank = 0, topP, lowP, topB, lowB, topSYS, lowSYS, topDIA, lowDIA;
@@ -46,6 +46,8 @@ public class VitalsChecker extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        if (getActivity() != null)
+            getActivity().setTitle(R.string.button_e);
         //Systolic high
         correct[0][0] = new int[]{90,110, 140};
         //Systolic low
@@ -118,7 +120,7 @@ public class VitalsChecker extends Fragment {
         b.setTypeface(myTypeface);
         c.setTypeface(myTypeface);
         final RadioGroup group = view.findViewById(R.id.radioAge);
-        if (!SettingsDesigned.isRTL())
+        if (!SettingsPage.isRTL())
             group.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         group.setOnCheckedChangeListener((radioGroup, i) -> {
             View radioButton = group.findViewById(i);
@@ -159,7 +161,7 @@ public class VitalsChecker extends Fragment {
         vitalMsg.setTypeface(myTypeface);
         vitalInfBG = view.findViewById(R.id.VitalInfBG);
         vitalMsgBG = view.findViewById(R.id.VitalMsgBG);
-        if (SettingsDesigned.isRTL()) {
+        if (SettingsPage.isRTL()) {
             vitalInfBG.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
             vitalMsgBG.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         }

@@ -32,6 +32,11 @@ import com.crashlytics.android.Crashlytics;
 import java.util.List;
 import java.util.Locale;
 
+import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.recieversAndServices.NotificationService;
+import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
+import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
+
 public class PrivacyActivity extends AppCompatActivity {
     private ProgressBar spinner;
     private WebView webview;
@@ -263,7 +268,7 @@ public class PrivacyActivity extends AppCompatActivity {
                 s.apply();
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsDesigned.class));
+                startActivity(new Intent(this, SettingsPage.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -18,6 +18,7 @@
 -keepattributes Signature
 -keepattributes *Annotation*
 -keep class sun.misc.Unsafe { *; }
+-keep class com.shockwave.**
 -keep class com.google.gson.examples.android.model.** { *; }
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
@@ -28,9 +29,5 @@
 -keepattributes *Annotation*
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -ignorewarnings
--keep class * {
-    public private *;
-}
--keepclassmembers class atlow.chemi.mymada.models.** {
-  *;
-}
+-keep class * {public private *;}
+-keepclassmembers class atlow.chemi.mymada.models.** {*;}

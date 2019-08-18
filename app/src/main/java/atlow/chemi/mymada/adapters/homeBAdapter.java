@@ -35,8 +35,8 @@ import com.google.android.gms.ads.MobileAds;
 import java.util.ArrayList;
 import java.util.List;
 
-import atlow.chemi.mymada.GrobootRec;
-import atlow.chemi.mymada.HomeB;
+import atlow.chemi.mymada.recieversAndServices.GrobootRec;
+import atlow.chemi.mymada.classes.HomeB;
 import atlow.chemi.mymada.InfoActivity;
 import atlow.chemi.mymada.MokedPage;
 import atlow.chemi.mymada.R;

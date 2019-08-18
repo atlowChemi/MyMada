@@ -14,7 +14,7 @@ import android.widget.TextView;
 import java.util.Date;
 import java.util.List;
 
-import atlow.chemi.mymada.Contraction;
+import atlow.chemi.mymada.classes.Contraction;
 import atlow.chemi.mymada.R;
 
 public class ContractionAdapter extends RecyclerView.Adapter<ContractionAdapter.MyViewHolder> {

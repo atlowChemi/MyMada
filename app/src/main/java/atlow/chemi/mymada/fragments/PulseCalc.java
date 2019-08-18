@@ -1,6 +1,5 @@
 package atlow.chemi.mymada.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.media.AudioManager;
@@ -22,9 +21,8 @@ import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
-import atlow.chemi.mymada.AudioGenerator;
+import atlow.chemi.mymada.classes.AudioGenerator;
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.SettingsDesigned;
 
 public class PulseCalc extends Fragment {
     private boolean running = false;
@@ -39,6 +37,8 @@ public class PulseCalc extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        if (getActivity() != null)
+            getActivity().setTitle(R.string.button_c);
     }
     @Override
     public View onCreateView(@NonNull  LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {

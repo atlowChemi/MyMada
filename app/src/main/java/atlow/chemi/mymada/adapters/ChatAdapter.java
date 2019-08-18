@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import atlow.chemi.mymada.Chat;
+import atlow.chemi.mymada.classes.Chat;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.contactChatActivity;
 

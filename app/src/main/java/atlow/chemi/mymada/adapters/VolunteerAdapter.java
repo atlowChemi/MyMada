@@ -17,9 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.List;
 
-import atlow.chemi.mymada.MainActivity2;
+import atlow.chemi.mymada.fragments.MainActivity2;
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.Volunteer;
+import atlow.chemi.mymada.classes.Volunteer;
 
 public class VolunteerAdapter extends RecyclerView.Adapter<VolunteerAdapter.MyViewHolder> {
 

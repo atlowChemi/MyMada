@@ -31,6 +31,14 @@ import com.crashlytics.android.Crashlytics;
 import java.util.ArrayList;
 import java.util.List;
 
+import atlow.chemi.mymada.fragments.MainActivity1;
+import atlow.chemi.mymada.fragments.MainActivity2;
+import atlow.chemi.mymada.fragments.MainActivity3;
+import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.recieversAndServices.NotificationService;
+import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
+import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
+
 public class MokedPage extends AppCompatActivity {
     private MenuItem Detect;
 
@@ -57,7 +65,7 @@ public class MokedPage extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ViewPager viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
-        if (SettingsDesigned.isRTL())
+        if (SettingsPage.isRTL())
             viewPager.setRotationY(180);
         boolean msg = getIntent().getBooleanExtra("msg", false);
         if(!msg)
@@ -72,7 +80,8 @@ public class MokedPage extends AppCompatActivity {
                     .setTitle(MokedPage.this.getResources().getString(R.string.pickMokTtl))
                     .setMessage(MokedPage.this.getResources().getString(R.string.pickMokTxt))
                     .setPositiveButton(MokedPage.this.getResources().getString(R.string.goToSet), (dialogInterface, i) -> {
-                        Intent intent = new Intent(MokedPage.this, SettingsDesignedAdvanced.class);
+                        Intent intent = new Intent(MokedPage.this, SettingsPage.class);
+                        intent.putExtra("pickMoked", true);
                         startActivity(intent);
                     }).setNegativeButton(MokedPage.this.getResources().getString(R.string.skip), (dialogInterface, i) -> dialogInterface.dismiss());
             final AlertDialog alert = build.create();
@@ -296,7 +305,7 @@ public class MokedPage extends AppCompatActivity {
                 s.apply();
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsDesigned.class));
+                startActivity(new Intent(this, SettingsPage.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

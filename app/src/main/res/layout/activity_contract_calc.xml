@@ -18,7 +18,7 @@
         android:background="@color/buttonMaterialDark"
         android:layout_alignParentBottom="true"
         android:id="@+id/contractBtn">
-        <atlow.chemi.mymada.CircularProgressButton
+        <atlow.chemi.mymada.classes.CircularProgressButton
             android:layout_centerHorizontal="true"
             android:id="@+id/contra_btn"
             android:text="@string/startContract"

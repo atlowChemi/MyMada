@@ -7,7 +7,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:fitsSystemWindows="true"
     android:id="@+id/main3"
-    tools:context="atlow.chemi.mymada.MainActivity3">
+    tools:context="atlow.chemi.mymada.fragments.MainActivity3">
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/freeMsg"
         android:layout_width="match_parent"

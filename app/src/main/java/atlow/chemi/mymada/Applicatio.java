@@ -18,6 +18,13 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
+import atlow.chemi.mymada.helpers.FontsOverride;
+import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.recieversAndServices.BootCompleteReceiver;
+import atlow.chemi.mymada.recieversAndServices.GrobootRec;
+import atlow.chemi.mymada.recieversAndServices.NotificationService;
+import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
+
 import static android.service.notification.NotificationListenerService.requestRebind;
 
 public class Applicatio extends MultiDexApplication {

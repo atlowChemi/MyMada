@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import atlow.chemi.mymada.helpers.LocalHelper;
 import okhttp3.OkHttpClient;
 
 public class codeC extends AppCompatActivity {
@@ -44,6 +47,8 @@ public class codeC extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         resetTitle();
         setContentView(R.layout.activity_code_c);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //start
         SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);

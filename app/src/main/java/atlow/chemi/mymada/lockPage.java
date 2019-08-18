@@ -14,6 +14,8 @@ import android.widget.Button;
 
 import com.crashlytics.android.Crashlytics;
 
+import atlow.chemi.mymada.helpers.LocalHelper;
+
 public class lockPage extends AppCompatActivity {
     private Button btn5, btn6, btn7;
     private boolean isMove5 = false, isMove6 = false, isMove7 = false;

@@ -16,15 +16,6 @@
     <style name="SpinnerNoArrow" parent="Widget.AppCompat.Spinner"><!--@android:style/Widget.Spinner-->
         <item name="android:background">@android:drawable/edit_text</item>
     </style>
-    <style name="Dialog.Camera" parent="Theme.AppCompat.Dialog">
-        <item name="android:windowFrame">@null</item>
-        <item name="android:maxHeight">400dp</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:windowBackground">@color/ColorPrimary</item>
-    </style>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
@@ -46,7 +37,8 @@
         <item name="android:textColorHint">@color/ColorAqua</item>
         <item name="colorControlNormal">@color/ColorBlue</item>
         <item name="colorControlActivated">@color/ColorAqua</item>
-        <item name="colorControlHighlight">@color/ColorAqua</item>
+        <!--item name="colorControlHighlight">@color/ColorAqua</item-->
+        <item name="colorControlHighlight">@android:color/transparent</item>
     </style>
 
     <style name="MyMaterialTheme.SmsRes" parent="MyMaterialTheme.Base">

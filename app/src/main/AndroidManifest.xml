@@ -81,7 +81,7 @@
             android:name=".contactChatActivity"
             android:label="@string/title_activity_contact"
             android:screenOrientation="portrait"
-            android:theme="@style/MyMaterialTheme.Base">
+            android:theme="@style/MyMaterialTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".HomePage" />
@@ -98,6 +98,7 @@
         <activity
             android:name=".codeC"
             android:label="@string/title_activity_code_c"
+            android:theme="@style/MyMaterialTheme"
             android:screenOrientation="portrait" />
         <activity
             android:name=".MokedPage"
@@ -125,51 +126,22 @@
                 android:value=".HomePage" />
         </activity>
         <activity
-            android:name=".UtillTools"
-            android:label="@string/button_h"
-            android:parentActivityName=".HomePage"
-            android:theme="@style/MyMaterialTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="atlow.chemi.mymada.HomePage" />
-        </activity>
-        <activity
-            android:name=".SettingsDesigned"
+            android:name=".SettingsPage"
             android:label="@string/title_activity_settings"
-            android:theme="@style/MyMaterialTheme" />
-        <activity
-            android:name=".SettingsDesignedNotifications"
-            android:label="@string/pref_header_notifications"
-            android:theme="@style/MyMaterialTheme" />
-        <activity
-            android:name=".SettingsDesignedNotificationsSounds"
-            android:label="@string/pref_header_sound_and_vib"
-            android:theme="@style/MyMaterialTheme" />
-        <activity
-            android:name=".SettingsDesignedAdvanced"
-            android:label="@string/pref_header_advanced"
-            android:theme="@style/MyMaterialTheme" />
-        <activity
-            android:name=".SettingsDesignedTools"
-            android:label="@string/pref_header_tools"
-            android:theme="@style/MyMaterialTheme" />
-        <activity
-            android:name=".SettingsDesignedAmpm"
-            android:label="@string/pref_header_ampm"
             android:theme="@style/MyMaterialTheme" />
 
         <service
-            android:name=".SMSMonitorService"
+            android:name=".recieversAndServices.SMSMonitorService"
             android:label="@string/smsMoni" />
         <service
-            android:name=".FloatingWidgetService"
+            android:name=".recieversAndServices.FloatingWidgetService"
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".MetroService"
+            android:name=".recieversAndServices.MetroService"
             android:label="@string/metroMoni" />
         <service
-            android:name=".NotificationService"
+            android:name=".recieversAndServices.NotificationService"
             android:enabled="@bool/listener"
             android:label="@string/notiMoni"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
@@ -178,7 +150,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".NotificationServiceOld"
+            android:name=".recieversAndServices.NotificationServiceOld"
             android:description="@string/address"
             android:enabled="@bool/listenerO"
             android:exported="true"
@@ -193,14 +165,14 @@
             </intent-filter>
         </service>
         <service
-            android:name=".MyFirebaseMessagingService"
+            android:name=".helpers.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".MyTileService"
+            android:name=".recieversAndServices.MyTileService"
             android:enabled="@bool/tile"
             android:icon="@drawable/ic_metronome_tile"
             android:label="@string/button_d"
@@ -215,7 +187,7 @@
         </service>
 
         <receiver
-            android:name=".BootCompleteReceiver"
+            android:name=".recieversAndServices.BootCompleteReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -237,13 +209,13 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".ActionReciver" />
+        <receiver android:name=".recieversAndServices.ActionReciver" />
         <receiver
-            android:name=".GrobootRec"
+            android:name=".recieversAndServices.GrobootRec"
             android:enabled="true"
             android:exported="false" />
         <receiver
-            android:name=".MetroWidget"
+            android:name=".recieversAndServices.MetroWidget"
             android:label="@string/button_d">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

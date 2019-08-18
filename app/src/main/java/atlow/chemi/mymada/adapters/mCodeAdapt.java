@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.mCodeKid;
+import atlow.chemi.mymada.classes.mCodeKid;
 
 public class mCodeAdapt extends ArrayAdapter<mCodeKid> {
     private Context mContext;
