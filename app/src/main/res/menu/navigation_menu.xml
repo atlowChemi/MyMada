@@ -36,7 +36,6 @@
             android:title="@string/button_dict" />
         <item
             android:id="@+id/protocoles"
-            android:icon="@drawable/ic_protocoles"
             android:title="@string/button_p"
             android:orderInCategory="0">
             <menu>
