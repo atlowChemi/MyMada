@@ -31,13 +31,36 @@
             android:icon="@drawable/ic_glazgo"
             android:title="@string/button_gl"/>
         <item
-            android:id="@+id/protocoles"
-            android:icon="@drawable/ic_protocoles"
-            android:title="@string/button_p"/>
-        <item
             android:id="@+id/dictionary"
             android:icon="@drawable/ic_dictionary"
             android:title="@string/button_dict" />
+        <item
+            android:id="@+id/protocoles"
+            android:icon="@drawable/ic_protocoles"
+            android:title="@string/button_p"
+            android:orderInCategory="0">
+            <menu>
+                <group
+                    android:menuCategory="secondary"
+                    android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/bls"
+                        android:title="@string/protocolesBls"
+                        android:icon="@drawable/ic_bls"
+                        android:orderInCategory="2"/>
+                    <item
+                        android:id="@+id/als"
+                        android:title="@string/protocolesAls"
+                        android:icon="@drawable/ic_als"
+                        android:orderInCategory="2" />
+                    <item
+                        android:id="@+id/death"
+                        android:title="@string/protocolesDeath"
+                        android:icon="@drawable/ic_dead"
+                        android:orderInCategory="2" />
+                </group>
+            </menu>
+        </item>
     </group>
 
 </menu>

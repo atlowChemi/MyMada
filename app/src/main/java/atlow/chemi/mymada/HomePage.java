@@ -47,6 +47,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import atlow.chemi.mymada.adapters.homeBAdapter;
+import atlow.chemi.mymada.classes.HomeB;
+import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
+import atlow.chemi.mymada.helpers.rateUs;
+import atlow.chemi.mymada.recieversAndServices.NotificationService;
+import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
+import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 
 public class HomePage extends AppCompatActivity {
@@ -142,7 +149,7 @@ public class HomePage extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
             builder.setMessage(getResources().getString(R.string.newSettings)).setCancelable(false)
                     .setPositiveButton(getResources().getString(R.string.title_activity_settings), (dialog, id) -> {
-                        Intent intent = new Intent(getApplicationContext(), SettingsDesigned.class);
+                        Intent intent = new Intent(getApplicationContext(), SettingsPage.class);
                         startActivity(intent);
                     }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
             final AlertDialog alert = builder.create();
@@ -334,7 +341,7 @@ public class HomePage extends AppCompatActivity {
                 detectionBtn(item);
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsDesigned.class));
+                startActivity(new Intent(this, SettingsPage.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

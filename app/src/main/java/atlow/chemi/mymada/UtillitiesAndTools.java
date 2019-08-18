@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,16 +25,15 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import atlow.chemi.mymada.fragments.ApgarCalc;
@@ -45,6 +45,10 @@ import atlow.chemi.mymada.fragments.MetroActivity;
 import atlow.chemi.mymada.fragments.OxyCalc;
 import atlow.chemi.mymada.fragments.PulseCalc;
 import atlow.chemi.mymada.fragments.VitalsChecker;
+import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.recieversAndServices.NotificationService;
+import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
+import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 public class UtillitiesAndTools extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
@@ -52,14 +56,17 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
     private NavigationView navigationView;
     private MenuItem Detect;
     private Typeface myTypeface;
+    private FragmentTransaction transaction;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     private Fragment contracTimer = new ContracTimer(), pulseCalc = new PulseCalc(), metroActivity = new MetroActivity(),
             vitalsChecker= new VitalsChecker(), oxyCalc = new OxyCalc(), apgarCalc = new ApgarCalc(),
-            glazgoCalc = new GlazgoCalc(),  blsProtocoles = new BlsProtocoles(), dictionaryAdmin = new DictionaryAdmin();
+            glazgoCalc = new GlazgoCalc(), dictionaryAdmin = new DictionaryAdmin();
+    private BlsProtocoles blsProtocoles = new BlsProtocoles();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        resetTitle();
         setContentView(R.layout.activity_utillities_and_tools);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -73,6 +80,7 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
 
         navigationView = findViewById(R.id.navigation);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.inflateMenu(R.menu.navigation_menu);
         Menu navMenu = navigationView.getMenu();
 
         String[] toolsS =  {"contrac", "pulse", "metro", "vital", "oxy", "apgar", "glaz", "prot", "dict"};
@@ -132,10 +140,29 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
             navigationView.setCheckedItem(R.id.metronome);
             f = metroActivity;
         }
-        displayFragment(f);
+        if (savedInstanceState == null)
+            displayFragment(f, false);
     }
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocalHelper.onAttach(base));
+    }
+    private void resetTitle() {
+        try {
+            int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
+            if (label != 0)
+                setTitle(label);
+        } catch (PackageManager.NameNotFoundException e) {
+            Crashlytics.log(e.getMessage());
+        }
+    }
+    @Override
+    public void onPostCreate(Bundle bundle) {
+        super.onPostCreate(bundle);
+        drawerToggle.syncState();
+    }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         Fragment fragment = metroActivity;
         switch (id) {
@@ -160,23 +187,31 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
             case R.id.glazgowCalc:
                 fragment = glazgoCalc;
                 break;
-            case R.id.protocoles:
+            case R.id.bls:
                 fragment = blsProtocoles;
+                blsProtocoles.setCurrentPage(0);
+                break;
+            case R.id.als:
+                fragment = blsProtocoles;
+                blsProtocoles.setCurrentPage(1);
+                break;
+            case R.id.death:
+                fragment = blsProtocoles;
+                blsProtocoles.setCurrentPage(2);
                 break;
             case R.id.dictionary:
                 fragment = dictionaryAdmin;
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START, true);
-        displayFragment(fragment);
+        displayFragment(fragment, true);
         return true;
     }
-    private void displayFragment(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        Random random = new Random();
-        int enterAnim = random.nextBoolean() ? R.anim.enter_from_left : R.anim.enter_from_right;
-        int exitAnim = enterAnim == R.anim.enter_from_left ? R.anim.exit_to_right : R.anim.exit_to_left;
-        transaction.setCustomAnimations(enterAnim, exitAnim);
+    private void displayFragment(Fragment fragment, boolean animate) {
+        transaction = getSupportFragmentManager().beginTransaction();
+        if (animate) {
+            transaction.setCustomAnimations(R.anim.enter_from_top, R.anim.exit_to_top);
+        }
         transaction.replace(R.id.frame, fragment);
         transaction.commit();
     }
@@ -224,7 +259,7 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
                     detectionBtn(item);
                     return true;
                 case R.id.action_settings:
-                    startActivity(new Intent(this, SettingsDesigned.class));
+                    startActivity(new Intent(this, SettingsPage.class));
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);

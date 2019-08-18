@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import atlow.chemi.mymada.DictionaryWord;
+import atlow.chemi.mymada.classes.DictionaryWord;
 import atlow.chemi.mymada.adapters.DictionaryWordAdapter;
 import atlow.chemi.mymada.R;
 
@@ -52,7 +52,8 @@ public class DictionaryAdmin extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        setRetainInstance(true);if (getActivity() != null)
+            getActivity().setTitle(R.string.button_dict);
     }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

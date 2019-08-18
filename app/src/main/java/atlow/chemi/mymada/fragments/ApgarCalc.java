@@ -21,9 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import atlow.chemi.mymada.AnimatedColor;
+import atlow.chemi.mymada.classes.AnimatedColor;
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.SettingsDesigned;
 
 public class ApgarCalc extends Fragment {
     private TextView a;
@@ -37,6 +36,8 @@ public class ApgarCalc extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        if (getActivity() != null)
+            getActivity().setTitle(R.string.button_ag);
     }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {

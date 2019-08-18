@@ -17,7 +17,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.SettingsDesigned;
 
 public class OxyCalc extends Fragment {
     private EditText psi, atm;
@@ -27,7 +26,8 @@ public class OxyCalc extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        setRetainInstance(true);if (getActivity() != null)
+            getActivity().setTitle(R.string.button_g);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {

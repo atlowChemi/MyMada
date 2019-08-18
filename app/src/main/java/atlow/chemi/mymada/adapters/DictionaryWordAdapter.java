@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import atlow.chemi.mymada.DictionaryWord;
+import atlow.chemi.mymada.classes.DictionaryWord;
 import atlow.chemi.mymada.R;
 
 public class DictionaryWordAdapter extends RecyclerView.Adapter<DictionaryWordAdapter.MyViewHolder> {

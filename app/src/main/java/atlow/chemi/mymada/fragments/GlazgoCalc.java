@@ -20,9 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import atlow.chemi.mymada.AnimatedColor;
+import atlow.chemi.mymada.classes.AnimatedColor;
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.SettingsDesigned;
 
 public class GlazgoCalc extends Fragment {
     private TextView a;
@@ -39,6 +38,8 @@ public class GlazgoCalc extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        if (getActivity() != null)
+            getActivity().setTitle(R.string.button_gl);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {

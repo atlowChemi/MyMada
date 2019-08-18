@@ -29,8 +29,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import atlow.chemi.mymada.CircularProgressButton;
-import atlow.chemi.mymada.Contraction;
+import atlow.chemi.mymada.classes.CircularProgressButton;
+import atlow.chemi.mymada.classes.Contraction;
 import atlow.chemi.mymada.adapters.ContractionAdapter;
 import atlow.chemi.mymada.R;
 
@@ -40,7 +40,6 @@ public class ContracTimer extends Fragment {
     private static int num = 0;
     private static Date start, end;
     private static boolean running = false;
-    private Button contractionButton;
     private CircularProgressButton contractBtn;
     private RecyclerView recyclerView;
     SharedPreferences sp;
@@ -49,6 +48,8 @@ public class ContracTimer extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        if (getActivity() != null)
+            getActivity().setTitle(R.string.button_f);
         sp = getActivity().getSharedPreferences("Settings", 0);
         if (albumList == null || albumList.isEmpty()) {
             albumList = new ArrayList<>();

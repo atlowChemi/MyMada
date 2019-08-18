@@ -46,6 +46,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
+import atlow.chemi.mymada.recieversAndServices.NotificationService;
+import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
+import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
+
 public class codeRequest extends AppCompatActivity {
     private ProgressDialog pdialog;
     private EditText codeA, codeN, codeT;
@@ -413,7 +419,7 @@ public class codeRequest extends AppCompatActivity {
                 s.apply();
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsDesigned.class));
+                startActivity(new Intent(this, SettingsPage.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

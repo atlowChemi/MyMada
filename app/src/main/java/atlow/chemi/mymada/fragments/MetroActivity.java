@@ -30,9 +30,8 @@ import android.widget.TextView;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import atlow.chemi.mymada.MetroService;
+import atlow.chemi.mymada.recieversAndServices.MetroService;
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.SettingsDesigned;
 
 public class MetroActivity extends Fragment {
     private static Animation anim, big;
@@ -96,8 +95,10 @@ public class MetroActivity extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        if (getActivity() != null)
+        if (getActivity() != null) {
             mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
+            getActivity().setTitle(R.string.button_d);
+        }
     }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {

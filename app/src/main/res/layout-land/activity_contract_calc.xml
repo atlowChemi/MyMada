@@ -29,7 +29,7 @@
         app:layout_constraintStart_toEndOf="@+id/guideline3"
         app:layout_constraintTop_toTopOf="parent">
 
-        <atlow.chemi.mymada.CircularProgressButton
+        <atlow.chemi.mymada.classes.CircularProgressButton
             android:id="@+id/contra_btn"
             android:layout_width="180dp"
             android:layout_height="180dp"

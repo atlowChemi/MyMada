@@ -388,4 +388,5 @@
     <string name="wordName">מונח רפואי</string>
     <string name="wordDefinition">משמעות המונח</string>
     <string name="searchDictionary">חפש במילון</string>
+    <string name="general_settings">הגדרות כלליות</string>
 </resources>

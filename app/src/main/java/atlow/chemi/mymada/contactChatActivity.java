@@ -51,6 +51,12 @@ import java.util.List;
 import java.util.Map;
 
 import atlow.chemi.mymada.adapters.ChatAdapter;
+import atlow.chemi.mymada.classes.Chat;
+import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
+import atlow.chemi.mymada.recieversAndServices.NotificationService;
+import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
+import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 public class contactChatActivity extends AppCompatActivity {
     private EditText ChatT;
@@ -416,7 +422,7 @@ public class contactChatActivity extends AppCompatActivity {
                 s.apply();
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsDesigned.class));
+                startActivity(new Intent(this, SettingsPage.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
