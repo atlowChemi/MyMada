@@ -84,7 +84,7 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.navigation);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.inflateMenu(R.menu.settings_menu);
-        drawerLayout.openDrawer(GravityCompat.START, true);
+        //drawerLayout.openDrawer(GravityCompat.START, true);
         Menu navMenu = navigationView.getMenu();
         Detect = navMenu.findItem(R.id.detect);
         Detect.setIcon(MappBool ? R.drawable.ic_detect_on : R.drawable.ic_detect_off).setChecked(MappBool);
