@@ -461,4 +461,5 @@
     <string name="searchDictionary">Search dictionary</string>
     <string name="editDictionary">Edit term</string>
     <string name="general_settings">General Settings</string>
+    <string name="langBad">Language replacment has failed. Check you\'ve got internet and retry!</string>
 </resources>

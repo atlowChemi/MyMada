@@ -80,7 +80,8 @@ public class contactChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        makeAnnouncement();
+        if (savedInstanceState == null)
+            makeAnnouncement();
         chats = new ArrayList<>();
         adapter = new ChatAdapter(chats, contactChatActivity.this);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());

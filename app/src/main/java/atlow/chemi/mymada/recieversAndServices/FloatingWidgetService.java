@@ -232,6 +232,14 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                WindowManager.LayoutParams removeParams = (WindowManager.LayoutParams) removeFloatingWidgetView.getLayoutParams();
+                //get x and y coordinates of remove view
+                int remove_x_cord = (szWindow.x - remove_image_view.getWidth()) / 2;
+                int remove_y_cord = szWindow.y - (removeFloatingWidgetView.getHeight() + getStatusBarHeight());
+                removeParams.x = remove_x_cord;
+                removeParams.y = remove_y_cord;
+                //Update Remove view params
+                mWindowManager.updateViewLayout(removeFloatingWidgetView, removeParams);
                 //Get Floating widget view params
                 WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) mFloatingWidgetView.getLayoutParams();
                 //get the touch location coordinates
@@ -307,7 +315,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                                     WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeFloatingWidgetView.getLayoutParams();
                                     param_remove.x = x_cord_remove;
                                     param_remove.y = y_cord_remove;
-                                    //mWindowManager.updateViewLayout(removeFloatingWidgetView, param_remove);
+                                    mWindowManager.updateViewLayout(removeFloatingWidgetView, param_remove);
                                 }
                                 layoutParams.x = x_cord_remove + (Math.abs(removeFloatingWidgetView.getWidth() - mFloatingWidgetView.getWidth())) / 2;
                                 layoutParams.y = y_cord_remove + (Math.abs(removeFloatingWidgetView.getHeight() - mFloatingWidgetView.getHeight())) / 2;
@@ -370,7 +378,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         removeParams.x = x_cord;
         removeParams.y = y_cord;
         //Update Remove view params
-        mWindowManager.updateViewLayout(removeFloatingWidgetView, removeParams);
+        //mWindowManager.updateViewLayout(removeFloatingWidgetView, removeParams);
     }
     /*  Reset position of Floating Widget view on dragging  */
     private void resetPosition(int x_cord_now) {
@@ -392,26 +400,29 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) mFloatingWidgetView.getLayoutParams();
             public void onTick(long t) {
                 long step = (500 - t) / 5;
-                mParams.x = 0 - (int) (current_x_cord * current_x_cord * step);
+                //mParams.x = 0 - (int) (current_x_cord * current_x_cord * step);
                 //If you want bounce effect uncomment below line and comment above line
-                // mParams.x = 0 - (int) (double) bounceValue(step, x);
+                mParams.x = 0 - (int) (double) bounceValue(step, x);
                 //Update window manager for Floating Widget
-                try {
-                    mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
-                }catch (Exception e) {
-                    Crashlytics.log("probably the floating closed");
-                    Crashlytics.logException(e);
-                }
+                if (mWindowManager != null)
+                    try {
+                        mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                    }catch (Exception e) {
+                        Crashlytics.log("probably the floating closed");
+                        Crashlytics.logException(e);
+                    }
             }
             public void onFinish() {
                 mParams.x = 0;
                 //Update window manager for Floating Widget
-                try {
-                    mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
-                }catch (Exception e) {
-                Crashlytics.log("probably the floating closed");
-                Crashlytics.logException(e);
-            }
+                if (mWindowManager != null)
+                    try {
+                        mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
+                    }
+                    catch (Exception e) {
+                        Crashlytics.log("probably the floating closed");
+                        Crashlytics.logException(e);
+                     }
             }
         }.start();
     }
@@ -422,9 +433,9 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) mFloatingWidgetView.getLayoutParams();
             public void onTick(long t) {
                 long step = (500 - t) / 5;
-                mParams.x = (int) (szWindow.x + (current_x_cord * current_x_cord * step) - mFloatingWidgetView.getWidth());
+                //mParams.x = (int) (szWindow.x + (current_x_cord * current_x_cord * step) - mFloatingWidgetView.getWidth());
                 //If you want bounce effect uncomment below line and comment above line
-                //  mParams.x = szWindow.x + (int) (double) bounceValue(step, x_cord_now) - mFloatingWidgetView.getWidth();
+                  mParams.x = szWindow.x + (int) (double) bounceValue(step, current_x_cord) - mFloatingWidgetView.getWidth();
                 //Update window manager for Floating Widget
                 try {
                     mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);

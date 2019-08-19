@@ -8,13 +8,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -31,6 +36,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.splitinstall.SplitInstallManager;
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
 import com.google.android.play.core.splitinstall.SplitInstallRequest;
@@ -46,18 +52,20 @@ import atlow.chemi.mymada.fragments.SettingsNotifications;
 import atlow.chemi.mymada.fragments.SettingsNotificationsSounds;
 import atlow.chemi.mymada.fragments.SettingsTools;
 import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.helpers.MyDrawerLayout;
 import atlow.chemi.mymada.recieversAndServices.NotificationService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 public class SettingsPage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private DrawerLayout drawerLayout;
+    private MyDrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private MenuItem Detect;
     private Typeface myTypeface;
     private SharedPreferences sp;
     private int mySessionId = 0;
     private NavigationView navigationView;
+    private boolean isDrawerLocked = false;
     private String[] Langs = new String[] {"עברית", "English"},
             Mokdim = new String[] {"ירושלים","איילון","אשר","גלבוע","דן","ירדן","ירקון","כרמל","לכיש","נגב","שרון","מוקד 4"};
     private static final int REQUEST_PERMISSION_SETTING = 101, OVERLAY_PER_REQ = 345;
@@ -71,20 +79,30 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_utillities_and_tools);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
+
         sp = getSharedPreferences("Settings", 0);
         boolean MappBool = sp.getBoolean("Mapp", false);
 
         drawerLayout = findViewById(R.id.activity_Utils);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-
         navigationView = findViewById(R.id.navigation);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.inflateMenu(R.menu.settings_menu);
-        //drawerLayout.openDrawer(GravityCompat.START, true);
+        if (isDeviceTablet()) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            drawerLayout.setScrimColor(Color.TRANSPARENT);
+            isDrawerLocked = true;
+        }
+        else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.setScrimColor(0x99000000);
+            isDrawerLocked = false;
+        }
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
         Menu navMenu = navigationView.getMenu();
         Detect = navMenu.findItem(R.id.detect);
         Detect.setIcon(MappBool ? R.drawable.ic_detect_on : R.drawable.ic_detect_off).setChecked(MappBool);
@@ -95,6 +113,34 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
         CreateOverlayPermissionDialog();
         if (getIntent().getBooleanExtra("pickMoked", false))
             PickMokedDialog();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (drawerLayout != null && !isDeviceTablet()) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.setScrimColor(0x99000000);
+            isDrawerLocked = false;
+            drawerLayout.closeDrawer(navigationView);
+            drawerToggle.syncState();
+        }
+        else if (drawerLayout != null) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            drawerLayout.setScrimColor(Color.TRANSPARENT);
+            isDrawerLocked = true;
+        }
+        SharedPreferences sp = getSharedPreferences("Settings", 0);
+        boolean newLang = sp.getBoolean("WasLangChanged", false);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean("WasLangChanged", false);
+        editor.apply();
+        if (newLang)
+            recreate();
+        if (Detect != null) {
+            int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
+            Detect.setIcon(icon);
+        }
     }
     @Override
     protected void attachBaseContext(Context base) {
@@ -112,7 +158,8 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
     @Override
     public void onPostCreate(Bundle bundle) {
         super.onPostCreate(bundle);
-        drawerToggle.syncState();
+        if(drawerToggle != null)
+            drawerToggle.syncState();
         SharedPreferences.Editor sp1 = sp.edit();
         sp1.putBoolean("oldU", true);
         sp1.apply();
@@ -147,7 +194,8 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                 PickMokedDialog();
                 return true;
         }
-        drawerLayout.closeDrawer(GravityCompat.START, true);
+        if (!isDrawerLocked)
+            drawerLayout.closeDrawer(GravityCompat.START, true);
         displayFragment(fragment, true);
         return true;
     }
@@ -168,25 +216,10 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
     }
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+        if (drawerLayout.isDrawerOpen(GravityCompat.START) && !isDrawerLocked)
             drawerLayout.closeDrawer(GravityCompat.START);
         else
             super.onBackPressed();
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        SharedPreferences sp = getSharedPreferences("Settings", 0);
-        boolean newLang = sp.getBoolean("WasLangChanged", false);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putBoolean("WasLangChanged", false);
-        editor.apply();
-        if (newLang)
-            recreate();
-        if (Detect != null) {
-            int icon = sp.getBoolean("Mapp", false) ? R.drawable.ic_detect_on : R.drawable.ic_detect_off;
-            Detect.setIcon(icon);
-        }
     }
     private void CreateLangDialog() {
         final int langToPick = LocalHelper.getLanguage(SettingsPage.this).equals("iw") ? 0 : 1;
@@ -206,7 +239,15 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                     SplitInstallManager splitInstallManager = SplitInstallManagerFactory.create(getApplicationContext());
                     splitInstallManager.registerListener(listener);
                     SplitInstallRequest request = SplitInstallRequest.newBuilder().addLanguage(Locale.forLanguageTag(locale)).build();
-                    splitInstallManager.startInstall(request).addOnCompleteListener(sessionId -> { mySessionId = sessionId.getResult(); });
+                    splitInstallManager.startInstall(request)
+                            .addOnCompleteListener(sessionId -> { mySessionId = sessionId.getResult(); })
+                            .addOnFailureListener(e -> {
+                                Snackbar bar = Snackbar.make(findViewById(android.R.id.content), R.string.langBad, Snackbar.LENGTH_LONG);
+                                View viewSnk = bar.getView();
+                                TextView tv = viewSnk.findViewById(com.google.android.material.R.id.snackbar_text);
+                                tv.setTextColor(Color.WHITE);
+                                bar.show();
+                            });
                 } else {
                     LocalHelper.setLocale(getApplicationContext(), locale);
                     recreate();
@@ -267,9 +308,9 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
     }
     @Override
     public boolean onOptionsItemSelected(@NonNull  MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item))
+        if (drawerToggle != null && drawerToggle.onOptionsItemSelected(item) && !isDrawerLocked)
             return true;
-        if (item.getItemId() == android.R.id.home) {
+        else if (isDrawerLocked && item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }
@@ -401,5 +442,14 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
             item.setIcon(R.drawable.ic_detect_off);
         }
         s.apply();
+    }
+    public boolean isDeviceTablet(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        float yInches= metrics.heightPixels/metrics.ydpi;
+        float xInches= metrics.widthPixels/metrics.xdpi;
+        double diagonalInches = Math.sqrt(xInches*xInches + yInches*yInches);
+        boolean land = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        return land && diagonalInches >= 6.5;
     }
 }

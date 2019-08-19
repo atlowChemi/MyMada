@@ -9,7 +9,7 @@
     <ScrollView
         android:id="@+id/scrollView3"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
@@ -158,7 +158,6 @@
             </com.google.android.material.textfield.TextInputLayout>
         </RelativeLayout>
     </ScrollView>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/convinie"
         android:layout_width="0dp"
@@ -167,7 +166,6 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:maxWidth="250dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/guideline"
@@ -175,16 +173,14 @@
 
         <TextView
             android:id="@+id/ApgarGrade"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/btns_new"
             android:gravity="start|top"
             android:padding="14dp"
             android:textSize="19sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
         <LinearLayout
             android:id="@+id/ApgarInfBG"
             android:layout_width="0dp"
@@ -209,13 +205,11 @@
                 android:contentDescription="@string/app_name"
                 android:tint="@color/Black"
                 app:srcCompat="@drawable/ic_info" />
-
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="10dp"
                 android:background="@color/Black" />
-
             <TextView
                 android:id="@+id/ApgarInfi"
                 android:layout_width="match_parent"
@@ -226,12 +220,10 @@
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.64" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

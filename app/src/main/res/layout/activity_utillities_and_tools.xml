@@ -19,17 +19,21 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </com.google.android.material.appbar.AppBarLayout>
-    <androidx.drawerlayout.widget.DrawerLayout
+    <atlow.chemi.mymada.helpers.MyDrawerLayout
         android:id="@+id/activity_Utils"
         android:layout_width="match_parent"
         android:layout_below="@+id/toolbarHolder"
+        tools:openDrawer="start"
         android:layout_height="match_parent">
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/frame"/>
+            android:id="@+id/frame"
+            android:paddingEnd="0dp"
+            android:paddingTop="5dp"
+            android:paddingStart="@dimen/fragment_space"/>
         <com.google.android.material.navigation.NavigationView
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/navigation_drawer_width"
             android:layout_height="match_parent"
             android:background="@color/White"
             android:layout_gravity="start"
@@ -38,5 +42,5 @@
             app:itemTextColor="@drawable/nav_item_text"
             app:itemIconTint="@drawable/nav_item_text"
             android:id="@+id/navigation"/>
-    </androidx.drawerlayout.widget.DrawerLayout>
+    </atlow.chemi.mymada.helpers.MyDrawerLayout>
 </RelativeLayout>
