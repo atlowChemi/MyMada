@@ -58,7 +58,7 @@ public class BlsProtocoles extends Fragment {
         spinner = view.findViewById(R.id.progressBar2);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new BlsProtocoles.CustomWebViewClient());
-        Log.e("URLTOLOAD:", "current is:" + current + " url: " + strings[current]);
+        Log.e("TRACK_URL:", "current is:" + current + " url: " + strings[current]);
         webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + strings[current]);
     }
     @SuppressLint("SetJavaScriptEnabled")

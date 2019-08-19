@@ -391,4 +391,5 @@
     <string name="searchDictionary">חפש במילון</string>
     <string name="editDictionary">ערוך מונח</string>
     <string name="general_settings">הגדרות כלליות</string>
+    <string name="langBad">החלפת שפה הופסקה בשל תקלה. ודא שיש חיבור לרשת ונסה שוב!</string>
 </resources>

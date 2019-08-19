@@ -19,10 +19,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -46,23 +49,23 @@ import atlow.chemi.mymada.fragments.OxyCalc;
 import atlow.chemi.mymada.fragments.PulseCalc;
 import atlow.chemi.mymada.fragments.VitalsChecker;
 import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.helpers.MyDrawerLayout;
 import atlow.chemi.mymada.recieversAndServices.NotificationService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 public class UtillitiesAndTools extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private DrawerLayout drawerLayout;
+    private MyDrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private NavigationView navigationView;
+    private boolean isDrawerLocked = false;
     private MenuItem Detect;
     private Typeface myTypeface;
     private FragmentTransaction transaction;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     private Fragment contracTimer = new ContracTimer(), pulseCalc = new PulseCalc(), metroActivity = new MetroActivity(),
             vitalsChecker= new VitalsChecker(), oxyCalc = new OxyCalc(), apgarCalc = new ApgarCalc(),
-            glazgoCalc = new GlazgoCalc(), dictionaryAdmin = new DictionaryAdmin();
-    private BlsProtocoles blsProtocoles = new BlsProtocoles();
-
+            glazgoCalc = new GlazgoCalc(), dictionaryAdmin = new DictionaryAdmin(), blsProtocoles = new BlsProtocoles();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +77,17 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
 
         drawerLayout = findViewById(R.id.activity_Utils);
+        if (isDeviceTablet()) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            drawerLayout.setScrimColor(Color.TRANSPARENT);
+            isDrawerLocked = true;
+        }
+        else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.setScrimColor(0x99000000);
+            isDrawerLocked = false;
+        }
+
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
@@ -189,21 +203,22 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
                 break;
             case R.id.bls:
                 fragment = blsProtocoles;
-                blsProtocoles.setCurrentPage(0);
+                ((BlsProtocoles)blsProtocoles).setCurrentPage(0);
                 break;
             case R.id.als:
                 fragment = blsProtocoles;
-                blsProtocoles.setCurrentPage(1);
+                ((BlsProtocoles)blsProtocoles).setCurrentPage(1);
                 break;
             case R.id.death:
                 fragment = blsProtocoles;
-                blsProtocoles.setCurrentPage(2);
+                ((BlsProtocoles)blsProtocoles).setCurrentPage(2);
                 break;
             case R.id.dictionary:
                 fragment = dictionaryAdmin;
                 break;
         }
-        drawerLayout.closeDrawer(GravityCompat.START, true);
+        if (!isDrawerLocked)
+            drawerLayout.closeDrawer(GravityCompat.START, true);
         displayFragment(fragment, true);
         return true;
     }
@@ -217,7 +232,7 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
     }
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+        if (drawerLayout.isDrawerOpen(GravityCompat.START) && !isDrawerLocked)
             drawerLayout.closeDrawer(GravityCompat.START);
         else
             super.onBackPressed();
@@ -225,6 +240,18 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
     @Override
     protected void onResume() {
         super.onResume();
+        if (drawerLayout != null && !isDeviceTablet()) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.setScrimColor(0x99000000);
+            isDrawerLocked = false;
+            drawerLayout.closeDrawer(navigationView);
+            drawerToggle.syncState();
+        }
+        else if (drawerLayout != null) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            drawerLayout.setScrimColor(Color.TRANSPARENT);
+            isDrawerLocked = true;
+        }
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         boolean newLang = sp.getBoolean("WasLangChanged", false);
         SharedPreferences.Editor editor = sp.edit();
@@ -248,7 +275,7 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
     }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item))
+        if (drawerToggle != null && drawerToggle.onOptionsItemSelected(item) && !isDrawerLocked)
             return true;
         else {
             switch (item.getItemId()) {
@@ -379,5 +406,14 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
             item.setIcon(R.drawable.ic_detect_off);
         }
         s.apply();
+    }
+    public boolean isDeviceTablet(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        float yInches= metrics.heightPixels/metrics.ydpi;
+        float xInches= metrics.widthPixels/metrics.xdpi;
+        double diagonalInches = Math.sqrt(xInches*xInches + yInches*yInches);
+        boolean land = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        return land && diagonalInches >= 6.5;
     }
 }

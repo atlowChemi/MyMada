@@ -1,5 +1,6 @@
 package atlow.chemi.mymada.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -35,6 +36,7 @@ import atlow.chemi.mymada.adapters.ContractionAdapter;
 import atlow.chemi.mymada.R;
 
 public class ContracTimer extends Fragment {
+    @SuppressLint("StaticFieldLeak")
     private static ContractionAdapter adapter;
     private static ArrayList<Contraction> albumList;
     private static int num = 0;
@@ -42,7 +44,7 @@ public class ContracTimer extends Fragment {
     private static boolean running = false;
     private CircularProgressButton contractBtn;
     private RecyclerView recyclerView;
-    SharedPreferences sp;
+    private SharedPreferences sp;
     public ContracTimer()    {}
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -167,7 +169,8 @@ public class ContracTimer extends Fragment {
         Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
         contractBtn.setTypeface(myTypeface);
         if (running) {
-            start = Calendar.getInstance().getTime();
+            if (start == null)
+                start = Calendar.getInstance().getTime();
             contractBtn.setText(getActivity().getResources().getString(R.string.endContract));
             contractBtn.startAnimation();
             contractBtn.setBackgroundColor(Color.argb(255,218,218,218));
@@ -179,7 +182,8 @@ public class ContracTimer extends Fragment {
                 contractBtn.setText(getActivity().getResources().getString(R.string.endContract));
                 contractBtn.startAnimation();
                 contractBtn.setBackgroundColor(Color.argb(255,218,218,218));
-            }else   {
+            }
+            else   {
                 Date oldEnd = null;
                 if (end!=null)
                     oldEnd = end;
@@ -188,13 +192,11 @@ public class ContracTimer extends Fragment {
                 try {
                     contractBtn.stopAnimation();
                 } catch (NullPointerException e) {
-                    Crashlytics.log("error stoping circular btn");
+                    Crashlytics.log("error stopping circular btn");
                     Crashlytics.logException(e);
                 }
                 contractBtn.revertAnimation();
                 contractBtn.setBackgroundColor(Color.rgb(255,255,255));
-                //contractBtn.revertAnimation();
-                //Contraction a = new Contraction(num++, printDifference(start, end), hefresh);
                 Contraction b = new Contraction(++num, start, end, oldEnd);
                 albumList.add(b);
                 adapter.notifyDataSetChanged();

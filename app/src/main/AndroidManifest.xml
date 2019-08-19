@@ -62,7 +62,6 @@
         <activity
             android:name=".InfoActivity"
             android:label="@string/title_activity_info"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -71,7 +70,6 @@
         <activity
             android:name=".PrivacyActivity"
             android:label="@string/title_activity_privacy"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -80,7 +78,6 @@
         <activity
             android:name=".contactChatActivity"
             android:label="@string/title_activity_contact"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
