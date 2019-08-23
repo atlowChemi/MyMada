@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -56,7 +57,7 @@ public class MainActivity3 extends Fragment {
         freeMsg = view.findViewById(R.id.freeMsg);
         newSendButton = view.findViewById(R.id.yourMsgBtnNew);
         if (getActivity() != null) {
-            Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send);
+            Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
             newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         }
         newSendButton.setOnTouchListener((v, event) -> {

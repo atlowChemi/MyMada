@@ -15,7 +15,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FixedTextInputEditText;
+import atlow.chemi.mymada.helpers.FixedTextInputEditText;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.material.textfield.TextInputLayout;
@@ -112,7 +113,7 @@ public class contactChatActivity extends AppCompatActivity {
         ChatT.setTypeface(myTypeface);
         chatTil.setTypeface(myTypeface);
         sendChat.setTypeface(myTypeface);
-        Drawable img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send);
+        Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
         sendChat.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         sendChat.setOnTouchListener((v, event) -> {
                 switch (event.getAction()) {

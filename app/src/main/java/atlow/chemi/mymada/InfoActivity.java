@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,10 +21,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -40,13 +43,14 @@ import atlow.chemi.mymada.recieversAndServices.NotificationService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
-public class InfoActivity extends AppCompatActivity {
+public class InfoActivity extends AppCompatActivity implements View.OnTouchListener {
     private float oldX1, oldY1;
     private boolean isMove1 = false;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     private MenuItem Detect;
     private InterstitialAd openUp, goToPriv;
     private boolean startUp = true;
+    private Button privBtn;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,31 +81,8 @@ public class InfoActivity extends AppCompatActivity {
         textView.setTypeface(myTypeface);
         textView.setMovementMethod(new ScrollingMovementMethod());
         textView.setText(getResources().getString(R.string.TversionNumber, BuildConfig.VERSION_NAME));
-        final Button privBtn = findViewById(R.id.privB);
-        privBtn.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_MOVE:
-                    boolean x = oldX1 - event.getX() > 140 || event.getX() - oldX1 > 140;
-                    boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
-                    if (x || y) {
-                        isMove1 = true;
-                        privBtn.setAlpha(1f);
-                    }
-                    return true;
-                case MotionEvent.ACTION_DOWN:
-                    oldY1 = event.getY();
-                    oldX1 = event.getX();
-                    isMove1 = false;
-                    privBtn.setAlpha(0.4f);
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    privBtn.setAlpha(1f);
-                    if (!isMove1)
-                        privBtn.performClick();
-                    return true;
-            }
-            return false;
-        });
+        privBtn = findViewById(R.id.privB);
+        privBtn.setOnTouchListener(this);
     }
     @Override
     protected void attachBaseContext(Context base) {
@@ -123,6 +104,17 @@ public class InfoActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), PrivacyActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
+        }
+    }
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        int windowWidth = getWindow().getDecorView().getMeasuredWidth();
+        if (privBtn != null && windowWidth > (privBtn.getHeight() * 4.5)) {
+            Log.e("window width", "do change");
+            ViewGroup.LayoutParams params = privBtn.getLayoutParams();
+            params.width = privBtn.getHeight()*4;
+            privBtn.setLayoutParams(params);
         }
     }
     @Override
@@ -256,5 +248,30 @@ public class InfoActivity extends AppCompatActivity {
             e.printStackTrace();
             return false;
         }
+    }
+    @Override
+    public boolean onTouch(View view, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                boolean x = oldX1 - event.getX() > 140 || event.getX() - oldX1 > 140;
+                boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                if (x || y) {
+                    isMove1 = true;
+                    privBtn.setAlpha(1f);
+                }
+                return true;
+            case MotionEvent.ACTION_DOWN:
+                oldY1 = event.getY();
+                oldX1 = event.getX();
+                isMove1 = false;
+                privBtn.setAlpha(0.4f);
+                return true;
+            case MotionEvent.ACTION_UP:
+                privBtn.setAlpha(1f);
+                if (!isMove1)
+                    privBtn.performClick();
+                return true;
+        }
+        return false;
     }
 }

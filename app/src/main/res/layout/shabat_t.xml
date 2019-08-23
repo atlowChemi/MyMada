@@ -12,7 +12,7 @@
         android:layout_weight="1"
         android:id="@+id/shabatTil">
 
-        <android.support.design.widget.FixedTextInputEditText
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
             android:id="@+id/shabatT"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

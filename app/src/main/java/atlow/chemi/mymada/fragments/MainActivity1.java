@@ -16,6 +16,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.fragment.app.Fragment;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -126,7 +128,7 @@ public class MainActivity1 extends Fragment {
         final Button newSendButton = view.findViewById(R.id.M1btnN);
         final EditText family = view.findViewById(R.id.M1txt5);
         assert family != null;
-        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send);
+        Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
         newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         sp.setOnEditorActionListener((arg0, arg1, arg2) -> {
             if(arg1== EditorInfo.IME_ACTION_DONE){
