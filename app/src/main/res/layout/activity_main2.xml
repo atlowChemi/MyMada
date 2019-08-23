@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/M2ambulance">
 
-        <android.support.design.widget.FixedTextInputEditText
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
             android:id="@+id/M2txt1E"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

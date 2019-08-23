@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/nameTil"
         android:layout_alignParentTop="true">
-        <android.support.design.widget.FixedTextInputEditText
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
             android:id="@+id/wordName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/definitionTil"
         android:layout_below="@id/nameTil">
-        <android.support.design.widget.FixedTextInputEditText
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
             android:id="@+id/wordDefinition"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

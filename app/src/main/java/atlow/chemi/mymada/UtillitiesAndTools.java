@@ -29,6 +29,7 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
@@ -96,6 +97,10 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.inflateMenu(R.menu.navigation_menu);
         Menu navMenu = navigationView.getMenu();
+
+        int start = getApplicationContext().getResources().getDimensionPixelSize(R.dimen.fragment_space);
+        FrameLayout frame = findViewById(R.id.frame);
+        frame.setPaddingRelative(start, 0,0,0);
 
         String[] toolsS =  {"contrac", "pulse", "metro", "vital", "oxy", "apgar", "glaz", "prot", "dict"};
         SharedPreferences preferences = getSharedPreferences("Settings", 0);

@@ -41,7 +41,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ballonType">
 
-        <android.support.design.widget.FixedTextInputEditText
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
             android:id="@+id/ATM"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ATM_TIL">
 
-        <android.support.design.widget.FixedTextInputEditText
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
             android:id="@+id/PSI"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

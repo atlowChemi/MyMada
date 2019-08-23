@@ -288,7 +288,7 @@
     <string name="pref_title_sleep">Day-night mode</string>
     <string name="pref_description_sleep_on">Between 23:00 and 7:00 calls will not alert.</string>
     <string name="pref_description_sleep_off">Different alert types by the time day (night is from 23:00 till 7:00)\\\\nplease note!\\\\nthis will not turn on the sound or vibration, but will allow them if sett.</string>
-    <string name="pref_title_region">Pick default MDA region</string>
+    <string name="pref_title_region">Pick MDA region</string>
     <string name="newCall">אירוע חדש</string>
     <string name="time">התקבל בשעה: %1$s</string>
     <string name="edit">Edit</string>

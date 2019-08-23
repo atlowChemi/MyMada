@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.text.Editable;
 import android.text.SpannableString;
@@ -95,7 +96,7 @@ public class MainActivity2 extends Fragment {
             LinearLayout l = view.findViewById(R.id.LinBtns);
             l.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         }
-        Drawable img = getActivity().getResources().getDrawable(R.drawable.ic_send);
+        Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
         newSendButtonM2.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         albumList = new ArrayList<>();

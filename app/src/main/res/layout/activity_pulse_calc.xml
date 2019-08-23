@@ -10,7 +10,7 @@
         android:layout_marginStart="@dimen/activity_vertical_margin"
         android:layout_marginEnd="@dimen/activity_vertical_margin"
         android:id="@+id/shortPulseATIL">
-        <android.support.design.widget.FixedTextInputEditText
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
@@ -27,7 +27,7 @@
         android:layout_marginEnd="@dimen/activity_vertical_margin"
         android:id="@+id/fullPulseATIL"
         android:layout_below="@+id/shortPulseATIL">
-        <android.support.design.widget.FixedTextInputEditText
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/fullPulseA"

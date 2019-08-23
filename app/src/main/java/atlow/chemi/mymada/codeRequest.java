@@ -35,6 +35,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.material.textfield.TextInputLayout;
@@ -111,7 +112,7 @@ public class codeRequest extends AppCompatActivity {
         codeNTIL.setTypeface(myTypeface);
         codeTTIL.setTypeface(myTypeface);
         sendCR = findViewById(R.id.sendCR);
-        Drawable img = getApplicationContext().getResources().getDrawable(R.drawable.ic_send);
+        Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
         sendCR.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         sendCR.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {

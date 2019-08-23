@@ -58,7 +58,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/chat_card_send"
             app:layout_constraintStart_toStartOf="parent">
-            <android.support.design.widget.FixedTextInputEditText
+            <atlow.chemi.mymada.helpers.FixedTextInputEditText
                 android:id="@+id/chatT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
