@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -75,7 +76,6 @@ public class InfoActivity extends AppCompatActivity implements View.OnTouchListe
                 startActivity(intent);
             }
         });
-
         final TextView textView = findViewById(R.id.textView10);
         Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         textView.setTypeface(myTypeface);

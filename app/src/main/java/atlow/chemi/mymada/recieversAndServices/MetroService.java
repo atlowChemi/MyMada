@@ -64,15 +64,16 @@ public class MetroService extends Service {
             builder.setPriority(NotificationManager.IMPORTANCE_MIN);
         }
         Notification notification = builder.build();
+        Crashlytics.log("built Metro Notif.");
         startForeground(13, notification);
+        Crashlytics.log("started Metro service foreground.");
         metro(MetroService.this);
         running = true;
         return START_STICKY;
     }
-
     @Override
     public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
     @Override
     public void onDestroy()  {
@@ -80,7 +81,6 @@ public class MetroService extends Service {
         running = false;
         super.onDestroy();
     }
-
     private void metro(Context context) {
         startAnim();
         clocketise(0);

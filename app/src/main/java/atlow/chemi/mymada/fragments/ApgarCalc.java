@@ -29,9 +29,7 @@ public class ApgarCalc extends Fragment {
     private Spinner Apperence, Pulse, Grimace, Activity, Respirations;
     private int old,newer;
     private AnimatedColor color;
-    public ApgarCalc()    {
-
-    }
+    public ApgarCalc()    {}
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

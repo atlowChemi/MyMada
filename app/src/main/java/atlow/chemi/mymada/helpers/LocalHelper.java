@@ -51,13 +51,13 @@ public class LocalHelper {
         configuration.setLocale(Locale.forLanguageTag(lang));
         return ctx.createConfigurationContext(configuration);
     }
-    @SuppressWarnings("deprecation")
     private static Context updateResourcesLegacy(Context ctx, String lang) {
         Locale locale = new Locale(lang);
         Locale.setDefault(locale);
         Resources resources = ctx.getResources();
         Configuration configuration = resources.getConfiguration();
         configuration.locale = locale;
+        configuration.setLayoutDirection(locale);
         resources.updateConfiguration(configuration, resources.getDisplayMetrics());
         return ctx;
     }

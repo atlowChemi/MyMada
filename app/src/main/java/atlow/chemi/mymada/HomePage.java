@@ -72,6 +72,7 @@ public class HomePage extends AppCompatActivity {
         rateUs.app_launched(HomePage.this);
         Context context = HomePage.this;
 
+        FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         MyFirebaseMessagingService.getToken(getApplicationContext());
         String token = getSharedPreferences("Settings", 0).getString("fcm", "empty");
         Crashlytics.setUserIdentifier(token);

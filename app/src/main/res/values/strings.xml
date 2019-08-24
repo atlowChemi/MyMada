@@ -392,4 +392,5 @@
     <string name="editDictionary">ערוך מונח</string>
     <string name="general_settings">הגדרות כלליות</string>
     <string name="langBad">החלפת שפה הופסקה בשל תקלה. ודא שיש חיבור לרשת ונסה שוב!</string>
+    <string name="oxyCalc" translatable="false">%d</string>
 </resources>

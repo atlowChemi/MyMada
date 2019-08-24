@@ -7,6 +7,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import atlow.chemi.mymada.R;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 public class SettingsNotificationsSounds extends Fragment implements View.OnClickListener {
     private SharedPreferences sp, permissionStatus;
@@ -268,6 +270,8 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT_pref:
                 sc = NappT;
                 newB = !sc.isChecked();
+                if (newB)
+                    getAllowed(0);
                 desc = !newB ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("Napp", newB);
                 NrinT_Pref.setClickable(newB);
@@ -310,6 +314,8 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT1_pref:
                 sc = NappT1;
                 newB = !sc.isChecked();
+                if (newB)
+                    getAllowed(1);
                 desc = !newB ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("NappT1", newB);
                 NrinT1_Pref.setClickable(newB);
@@ -352,6 +358,8 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT2_pref:
                 sc = NappT2;
                 newB = !sc.isChecked();
+                if (newB)
+                    getAllowed(2);
                 desc = !newB ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("NappT2", newB);
                 NrinT2_Pref.setClickable(newB);
@@ -394,6 +402,8 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT3_pref:
                 sc = NappT3;
                 newB = !sc.isChecked();
+                if (newB)
+                    getAllowed(3);
                 desc = !newB ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("NappT3", newB);
                 NrinT3_Pref.setClickable(newB);
@@ -425,6 +435,8 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT4_pref:
                 sc = NappT4;
                 newB = !sc.isChecked();
+                if (newB)
+                    getAllowed(4);
                 desc = NappT4.isChecked() ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
                 editor.putBoolean("NappT4", newB);
                 NrinT4_Pref.setClickable(newB);
@@ -610,19 +622,24 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             tv.setText(desc);
         }
     }
-    private void ringtoner(int T) {
+    private void getAllowed(int T) {
         retPer = T == 0 ? PERMISSION_T : T == 1 ? PERMISSION_T1 : T == 2 ? PERMISSION_T2 : T == 3 ? PERMISSION_T3 : PERMISSION_T4;
-        if(ActivityCompat.checkSelfPermission(getActivity(), permissionsRequired[0]) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), permissionsRequired[0])) {
+        if(checkSelfPermission(getActivity(), permissionsRequired[0]) != PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(permissionsRequired[0])) {
                 //Show Information about why you need the permission
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
                 builder.setTitle(getActivity().getResources().getString(R.string.permTitle));
                 builder.setMessage(getActivity().getResources().getString(R.string.permDesSD));
                 builder.setPositiveButton(getActivity().getResources().getString(R.string.permYes), (dialog, which) -> {
                     dialog.cancel();
-                    ActivityCompat.requestPermissions(getActivity(), permissionsRequired, retPer);
+                    requestPermissions(permissionsRequired, retPer);
                 });
-                builder.setNegativeButton(getActivity().getResources().getString(R.string.ret), (dialog, which) -> dialog.cancel());
+                builder.setNegativeButton(getActivity().getString(R.string.ret), (dialog, which) -> {
+                    dialog.cancel();
+                    ConstraintLayout layout = retPer == 100 ? NappT_Pref : retPer == 101 ? NappT1_Pref :
+                            retPer == 102 ? NappT2_Pref : retPer == 103 ? NappT3_Pref : NappT4_Pref;
+                    layout.performClick();
+                });
                 builder.show();
             }
             else if (permissionStatus.getBoolean(permissionsRequired[0], false)) {
@@ -639,17 +656,26 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                     intent.setData(uri);
                     startActivityForResult(intent, retPer);
                 });
-                builder.setNegativeButton(getActivity().getResources().getString(R.string.ret), (dialog, which) -> dialog.cancel());
+                builder.setNegativeButton(getActivity().getString(R.string.ret), (dialog, which) -> {
+                    dialog.cancel();
+                    ConstraintLayout layout = retPer == 100 ? NappT_Pref : retPer == 101 ? NappT1_Pref :
+                            retPer == 102 ? NappT2_Pref : retPer == 103 ? NappT3_Pref : NappT4_Pref;
+                    layout.performClick();
+                });
                 builder.show();
             }
             else {
                 //just request the permission
-                ActivityCompat.requestPermissions(getActivity(), permissionsRequired, retPer);
+                requestPermissions(permissionsRequired, retPer);
             }
             SharedPreferences.Editor editor = permissionStatus.edit();
             editor.putBoolean(permissionsRequired[0],true);
             editor.apply();
         }
+    }
+    private void ringtoner(int T) {
+        if(checkSelfPermission(getActivity(), permissionsRequired[0]) != PackageManager.PERMISSION_GRANTED)
+            getAllowed(T);
         else {
             String uri = T > 0 ? "NuRiT" + T : "NuRi";
             Intent picker = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
@@ -659,23 +685,30 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             picker.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
             picker.putExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, Uri.parse(sp.getString(uri, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString())));
             picker.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(sp.getString(uri, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString())));
-            getActivity().startActivityForResult(picker, T);
+            startActivityForResult(picker, T);
         }
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         Uri ringUri = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert);;
+        Log.e("return from permission", "return code is: " + requestCode);
         if (requestCode >99 && requestCode < 105) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(getActivity(), permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED) {
                 //Got Permission
+                Log.e("return from permission", "return was true");
                 SharedPreferences.Editor ed = sp.edit();
                 ed.putBoolean("allowed", true);
                 ed.apply();
-                ringtoner(requestCode-100);
+                //ringtoner(requestCode-100);
+            }
+            else {
+                Log.e("return from permission", "return permission denied");
+                ConstraintLayout layout = requestCode == 100 ? NappT_Pref : requestCode == 101 ? NappT1_Pref :
+                        requestCode == 102 ? NappT2_Pref : requestCode == 103 ? NappT3_Pref : NappT4_Pref;
+                layout.performClick();
             }
         }
-        if (resultCode == RESULT_OK) {
+        if (requestCode < 6 && resultCode == RESULT_OK) {
             try {
                 ringUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
             }catch (Exception e) {
@@ -691,16 +724,25 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             }
             spe.apply();
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode >99 && requestCode < 105) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED) {
+            Log.e("return from permission", "return code is: " + requestCode);
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("return from permission", "return was true");
                 //Got Permission
                 SharedPreferences.Editor ed = sp.edit();
                 ed.putBoolean("allowed", true);
                 ed.apply();
-                ringtoner(requestCode-100);
+                //ringtoner(requestCode-100);
+            }
+            else {
+                Log.e("return from permission", "return permission denied");
+                ConstraintLayout layout = requestCode == 100 ? NappT_Pref : requestCode == 101 ? NappT1_Pref :
+                        requestCode == 102 ? NappT2_Pref : requestCode == 103 ? NappT3_Pref : NappT4_Pref;
+                layout.performClick();
             }
         }
     }

@@ -5,9 +5,11 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,7 +34,7 @@ import com.crashlytics.android.Crashlytics;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.SettingsPage;
 
-public class MainActivity3 extends Fragment {
+public class MainActivity3 extends Fragment implements View.OnTouchListener {
     private TextInputLayout freeMsg;
     private boolean isMove = false;
     private float oldX1, oldY1;
@@ -58,32 +60,17 @@ public class MainActivity3 extends Fragment {
         newSendButton = view.findViewById(R.id.yourMsgBtnNew);
         if (getActivity() != null) {
             Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
-            newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
-        }
-        newSendButton.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_MOVE:
-                    boolean x = oldX1 - event.getX() > 10 || event.getX() - oldX1 > 10;
-                    boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
-                    if (x || y) {
-                        isMove = true;
-                        newSendButton.setAlpha(1f);
-                    }
-                    return true;
-                case MotionEvent.ACTION_DOWN:
-                    oldY1 = event.getY();
-                    oldX1 = event.getX();
-                    isMove = false;
-                    newSendButton.setAlpha(0.4f);
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    newSendButton.setAlpha(1f);
-                    if (!isMove)
-                        newSendButton.performClick();
-                    return true;
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1)
+                newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
+            else {
+                int direction = getResources().getConfiguration().getLayoutDirection();
+                if (direction == Configuration.SCREENLAYOUT_LAYOUTDIR_RTL)
+                    newSendButton.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                else
+                    newSendButton.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
             }
-            return false;
-        });
+        }
+        newSendButton.setOnTouchListener(this);
         newSendButton.setOnClickListener(v -> {
             if(editText.getText().toString().trim().length() < 1) {
                 String customMsgErr = getResources().getString(R.string.customMsgErr);
@@ -93,6 +80,7 @@ public class MainActivity3 extends Fragment {
             sms(editText.getText().toString());
         });
     }
+
     private void sms(final String msg)   {
         final String[] phones = {"+972523993348","+972523993345","+972523993339","+972523993338","+972523993342","+972523993337","+972523993343","+972523993340"
                 ,"+972523993346","+972523993356","+972523993341","+972586309592"};
@@ -125,5 +113,31 @@ public class MainActivity3 extends Fragment {
             canc.setTextColor(ContextCompat.getColor(getActivity(), R.color.OldPrimary));
         });
         builder.show();
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                boolean x = oldX1 - event.getX() > 10 || event.getX() - oldX1 > 10;
+                boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
+                if (x || y) {
+                    isMove = true;
+                    newSendButton.setAlpha(1f);
+                }
+                return true;
+            case MotionEvent.ACTION_DOWN:
+                oldY1 = event.getY();
+                oldX1 = event.getX();
+                isMove = false;
+                newSendButton.setAlpha(0.4f);
+                return true;
+            case MotionEvent.ACTION_UP:
+                newSendButton.setAlpha(1f);
+                if (!isMove)
+                    newSendButton.performClick();
+                return true;
+        }
+        return false;
     }
 }
