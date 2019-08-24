@@ -2,6 +2,7 @@ package atlow.chemi.mymada.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.fragment.app.Fragment;
@@ -129,7 +131,15 @@ public class MainActivity1 extends Fragment {
         final EditText family = view.findViewById(R.id.M1txt5);
         assert family != null;
         Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
-        newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1)
+            newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
+        else {
+            int direction = getResources().getConfiguration().getLayoutDirection();
+            if (direction == Configuration.SCREENLAYOUT_LAYOUTDIR_RTL)
+                newSendButton.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+            else
+                newSendButton.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+        }
         sp.setOnEditorActionListener((arg0, arg1, arg2) -> {
             if(arg1== EditorInfo.IME_ACTION_DONE){
                 newSendButton.performClick();

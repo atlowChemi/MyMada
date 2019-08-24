@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -18,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
@@ -97,7 +99,15 @@ public class MainActivity2 extends Fragment {
             l.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         }
         Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
-        newSendButtonM2.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1)
+            newSendButtonM2.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
+        else {
+            int direction = getResources().getConfiguration().getLayoutDirection();
+            if (direction == Configuration.SCREENLAYOUT_LAYOUTDIR_RTL)
+                newSendButtonM2.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+            else
+                newSendButtonM2.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+        }
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         albumList = new ArrayList<>();
         adapter = new VolunteerAdapter(albumList);

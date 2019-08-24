@@ -4,6 +4,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 
 import com.google.android.material.textfield.TextInputLayout;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -39,7 +41,7 @@ public class OxyCalc extends Fragment {
         return v;
     }
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         view.refreshDrawableState();
         Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
@@ -79,15 +81,16 @@ public class OxyCalc extends Fragment {
             this.view = view;
         }
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-        public void afterTextChanged(Editable editable) {
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             switch (view.getId()) {
                 case R.id.ATM:
                     String ATM = atm.getText().toString().trim();
                     if (!ATM.isEmpty() && ATM.matches("[0-9]+"))  {
                         double pulse2c = Integer.parseInt(ATM.replaceAll("[\\D]",""));
                         double oxy = oxyType.getSelectedItemPosition() == 0 ? 2.4 : 20;
-                        time.setText("" + (int)((pulse2c*oxy)/10));
+                        time.setText(getActivity().getString(R.string.oxyCalc, (int)(pulse2c*oxy)/10));
+                        if (atm.hasFocus())
+                            psi.setText(getActivity().getString(R.string.oxyCalc, (int)pulse2c*15));
                     }else
                         time.setText("0");
                     break;
@@ -95,11 +98,14 @@ public class OxyCalc extends Fragment {
                     String PSI = psi.getText().toString().trim();
                     if (!PSI.isEmpty() && PSI.matches("[0-9]+"))  {
                         double pulse2c = Integer.parseInt(PSI.replaceAll("[\\D]",""));
-                        atm.setText("" + (int)(pulse2c/15));
+                        if (psi.hasFocus())
+                            atm.setText(getActivity().getString(R.string.oxyCalc, (int)pulse2c/15));
                         //time.setText("" + pulse2c*4);
                     }
                     break;
             }
+        }
+        public void afterTextChanged(Editable editable) {
         }
     }
 }

@@ -68,6 +68,14 @@
                 android:value=".HomePage" />
         </activity>
         <activity
+            android:name=".NewKtTest"
+            android:label="@string/title_activity_info"
+            android:theme="@style/MyMaterialTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomePage" />
+        </activity>
+        <activity
             android:name=".PrivacyActivity"
             android:label="@string/title_activity_privacy"
             android:theme="@style/MyMaterialTheme">
@@ -126,6 +134,7 @@
             android:name=".SettingsPage"
             android:label="@string/title_activity_settings"
             android:theme="@style/MyMaterialTheme" />
+
 
         <service
             android:name=".recieversAndServices.SMSMonitorService"
