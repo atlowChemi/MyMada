@@ -50,16 +50,13 @@ public class mCodeAdapt extends ArrayAdapter<mCodeKid> {
             viewHolder = new ViewHolder();
             inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.m_code_row, parent, false);
-            viewHolder.mcId = (TextView) convertView.findViewById(R.id.mcId);
-            viewHolder.mcName = (CheckBox) convertView.findViewById(R.id.mcName);
-            viewHolder.mcSep = (TextView) convertView.findViewById(R.id.mcSep);
-            viewHolder.mcName.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    int getPos = (Integer) buttonView.getTag();
-                    checked[getPos] = isChecked;
-                    arrayList.get(getPos).setChecked(isChecked);
-                }
+            viewHolder.mcId = convertView.findViewById(R.id.mcId);
+            viewHolder.mcName = convertView.findViewById(R.id.mcName);
+            viewHolder.mcSep = convertView.findViewById(R.id.mcSep);
+            viewHolder.mcName.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int getPos = (Integer) buttonView.getTag();
+                checked[getPos] = isChecked;
+                arrayList.get(getPos).setChecked(isChecked);
             });
             convertView.setTag(viewHolder);
             convertView.setTag(R.id.mcName, viewHolder.mcName);
@@ -77,6 +74,7 @@ public class mCodeAdapt extends ArrayAdapter<mCodeKid> {
         ColorStateList colorStateList;
         switch (arrayList.get(order).getCatogory()) {
             case "area":
+            case "pain":
                 colorStateList = new ColorStateList(
                         new int[][]{new int[]{-android.R.attr.state_checked},new int[]{android.R.attr.state_checked} ,},
                         new int[]{Color.parseColor("#4bacc6"),Color.parseColor("#4bacc6"),}
@@ -91,14 +89,6 @@ public class mCodeAdapt extends ArrayAdapter<mCodeKid> {
                 );
                 CompoundButtonCompat.setButtonTintList(viewHolder.mcName, colorStateList);
                 viewHolder.mcSep.setBackgroundColor(Color.parseColor("#8064a2"));
-                break;
-            case "pain":
-                colorStateList = new ColorStateList(
-                        new int[][]{new int[]{-android.R.attr.state_checked},new int[]{android.R.attr.state_checked} ,},
-                        new int[]{Color.parseColor("#4bacc6"),Color.parseColor("#4bacc6"),}
-                );
-                CompoundButtonCompat.setButtonTintList(viewHolder.mcName, colorStateList);
-                viewHolder.mcSep.setBackgroundColor(Color.parseColor("#4bacc6"));
                 break;
             case "vasc":
                 colorStateList = new ColorStateList(

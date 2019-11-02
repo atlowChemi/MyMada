@@ -60,15 +60,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme.SmsRes" />
         <activity
-            android:name=".InfoActivity"
-            android:label="@string/title_activity_info"
-            android:theme="@style/MyMaterialTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".HomePage" />
-        </activity>
-        <activity
-            android:name=".NewKtTest"
+            android:name=".InfoActivityKt"
             android:label="@string/title_activity_info"
             android:theme="@style/MyMaterialTheme">
             <meta-data
@@ -147,7 +139,7 @@
             android:name=".recieversAndServices.MetroService"
             android:label="@string/metroMoni" />
         <service
-            android:name=".recieversAndServices.NotificationService"
+            android:name=".NotificationService"
             android:enabled="@bool/listener"
             android:label="@string/notiMoni"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">

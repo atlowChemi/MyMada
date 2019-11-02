@@ -148,6 +148,7 @@
     <string name="langSwitched">השינוי יכנס לתוקף בכניסה הבאה לאפליקציה.</string>
     <string name="err">תקלה</string>
     <string name="ok">אישור</string>
+    <string name="apply">החל</string>
     <string name="codeGood">קוד הפעלה נקלט בהצלחה!\nהאפליקציה תופעל כעת!</string>
     <string name="codeBad">קוד הפעלה\nשגוי או לא קיים. נסה שנית!</string>
     <string name="codeNotExist">נראה כי מעולם לא שלחת לנו בקשת קוד.\nבמידה ושלחת כבר פעם, אנא נסה לשלוח בקשת קוד שוב, ופרט על התקלה.</string>
@@ -394,5 +395,7 @@
     <string name="editDictionary">ערוך מונח</string>
     <string name="general_settings">הגדרות כלליות</string>
     <string name="langBad">החלפת שפה הופסקה בשל תקלה. ודא שיש חיבור לרשת ונסה שוב!</string>
+    <string name="langLoad">מוריד את השפה המבוקשת %s</string>
     <string name="oxyCalc" translatable="false">%d</string>
+    <string name="back">חזרה לעמוד הבית</string>
 </resources>

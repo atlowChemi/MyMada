@@ -55,7 +55,6 @@ import atlow.chemi.mymada.adapters.ChatAdapter;
 import atlow.chemi.mymada.classes.Chat;
 import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
-import atlow.chemi.mymada.recieversAndServices.NotificationService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 

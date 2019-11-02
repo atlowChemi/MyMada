@@ -51,7 +51,6 @@ import atlow.chemi.mymada.fragments.PulseCalc;
 import atlow.chemi.mymada.fragments.VitalsChecker;
 import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.helpers.MyDrawerLayout;
-import atlow.chemi.mymada.recieversAndServices.NotificationService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
@@ -184,7 +183,11 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         Fragment fragment = metroActivity;
+        boolean home = false;
         switch (id) {
+            case R.id.homeDrawer:
+                home = true;
+                break;
             case R.id.contractionCalc:
                 fragment = contracTimer;
                 break;
@@ -222,6 +225,8 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
                 fragment = dictionaryAdmin;
                 break;
         }
+        if (home)
+            finish();
         if (!isDrawerLocked)
             drawerLayout.closeDrawer(GravityCompat.START, true);
         displayFragment(fragment, true);

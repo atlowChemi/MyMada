@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 
 import atlow.chemi.mymada.helpers.LocalHelper;
-import atlow.chemi.mymada.recieversAndServices.NotificationService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 

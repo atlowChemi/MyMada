@@ -25,7 +25,7 @@
     android:layoutDirection="ltr"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:id="@+id/infP"
-    tools:context=".InfoActivity">
+    tools:context=".PrivacyActivity">
     <!--android:background="@drawable/rbg"-->
         <WebView  xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/webview"
