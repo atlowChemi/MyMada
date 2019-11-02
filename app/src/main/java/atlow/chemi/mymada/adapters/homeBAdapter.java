@@ -35,9 +35,9 @@ import com.google.android.gms.ads.MobileAds;
 import java.util.ArrayList;
 import java.util.List;
 
+import atlow.chemi.mymada.InfoActivityKt;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 import atlow.chemi.mymada.classes.HomeB;
-import atlow.chemi.mymada.InfoActivity;
 import atlow.chemi.mymada.MokedPage;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.UtillitiesAndTools;
@@ -348,7 +348,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                             @Override
                             public void onAdClosed() {
                                 openUp.loadAd(new AdRequest.Builder().build());
-                                Intent intent = new Intent(mContext, InfoActivity.class);
+                                Intent intent = new Intent(mContext, InfoActivityKt.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 mContext.startActivity(intent);
                             }
@@ -356,7 +356,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                         openUp.show();
                     }
                     else {
-                        intent = new Intent(mContext, InfoActivity.class);
+                        intent = new Intent(mContext, InfoActivityKt.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         mContext.startActivity(intent);
                     }

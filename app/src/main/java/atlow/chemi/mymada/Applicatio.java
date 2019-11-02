@@ -22,7 +22,6 @@ import atlow.chemi.mymada.helpers.FontsOverride;
 import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.recieversAndServices.BootCompleteReceiver;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
-import atlow.chemi.mymada.recieversAndServices.NotificationService;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 import static android.service.notification.NotificationListenerService.requestRebind;
@@ -39,7 +38,6 @@ public class Applicatio extends MultiDexApplication {
     @Override
     public void onCreate() {
         if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits())
-            // Skip app initialization.
             return;
         super.onCreate();
         FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
@@ -70,8 +68,9 @@ public class Applicatio extends MultiDexApplication {
     public static void toggleNotificationListenerService(Context mContext) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             PackageManager pm = mContext.getPackageManager();
-            pm.setComponentEnabledSetting(new ComponentName(mContext, NotificationService.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-            pm.setComponentEnabledSetting(new ComponentName(mContext, NotificationService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+            ComponentName componentName = new ComponentName(mContext, NotificationService.class);
+            pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         }
     }
     private void makeRec() {

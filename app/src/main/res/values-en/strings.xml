@@ -195,6 +195,7 @@
     <string name="langSwitched">The changes will take place next time you enter of the app.</string>
     <string name="err">Error</string>
     <string name="ok">OK</string>
+    <string name="apply">Apply</string>
     <string name="codeGood">The code has worked!\nThe app will now work!</string>
     <string name="codeBad">The code is incorrect.!\nTry again!</string>
     <string name="codeNotExist">It seems to us you never asked for a activation code.\nIf you sent a request once, please request another one, and explain the error that happened.</string>
@@ -462,4 +463,6 @@
     <string name="editDictionary">Edit term</string>
     <string name="general_settings">General Settings</string>
     <string name="langBad">Language replacment has failed. Check you\'ve got internet and retry!</string>
+    <string name="langLoad">Downloading the requested language %s.</string>
+    <string name="back">Home page</string>
 </resources>

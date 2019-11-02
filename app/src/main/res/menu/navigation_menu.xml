@@ -3,6 +3,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/homeDrawer"
+            android:icon="@drawable/ic_back"
+            android:title="@string/back" />
+        <item
             android:id="@+id/contractionCalc"
             android:icon="@drawable/ic_contractions"
             android:title="@string/button_f"/>

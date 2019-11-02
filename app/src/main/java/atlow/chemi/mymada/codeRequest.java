@@ -49,7 +49,6 @@ import java.util.Random;
 
 import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
-import atlow.chemi.mymada.recieversAndServices.NotificationService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 

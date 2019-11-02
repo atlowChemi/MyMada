@@ -1,4 +1,4 @@
-package atlow.chemi.mymada.recieversAndServices;
+package atlow.chemi.mymada;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -19,7 +19,6 @@ import com.crashlytics.android.Crashlytics;
 
 import java.util.Objects;
 
-import atlow.chemi.mymada.Applicatio;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 
 
@@ -142,7 +141,7 @@ public class NotificationService extends NotificationListenerService {
             try {
                 getActiveNotifications();
             } catch (Exception e) {
-                Log.e("getActiveNotification", e.getMessage());
+                Log.e("getActiveNotification", Objects.requireNonNull(e.getMessage()));
                 Crashlytics.logException(e);
             }
         }
