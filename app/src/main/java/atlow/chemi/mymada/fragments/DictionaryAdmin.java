@@ -35,6 +35,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -91,6 +92,7 @@ public class DictionaryAdmin extends Fragment {
             }
             dictionary.clear();
             dictionary.addAll(set);
+            Collections.sort(dictionary, (dictionaryWord, t1) -> dictionaryWord.getName().compareToIgnoreCase(t1.getName()));
             adapter.notifyDataSetChanged();
             if (searchView == null || searchView.getQuery().toString().isEmpty())
                 adapter.filter("");
