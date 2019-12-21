@@ -63,6 +63,7 @@ public class MetroActivity extends Fragment {
                         clock.setText(stopWatch.toString());
                         pb.setProgress(0);
                     }catch (Exception e) {
+                        Crashlytics.log("Text box does not exist");
                         Crashlytics.logException(e);
                     }
                     break;
@@ -81,6 +82,7 @@ public class MetroActivity extends Fragment {
                         else
                             pb.setProgress(stopWatch.getPercentOfTwoMinute());
                     }catch (Exception e) {
+                        Crashlytics.log("Text box does not exist");
                         Crashlytics.logException(e);
                     }
                     mHandler.sendEmptyMessageDelayed(UPDATE_TIMER, REFRESH_RATE);
@@ -128,7 +130,6 @@ public class MetroActivity extends Fragment {
         }
         bp.setOnClickListener(view1 -> {
             if(!MetroRun) {
-                clocketise(START_TIMER);
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "metro");
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "metronome");
@@ -153,10 +154,12 @@ public class MetroActivity extends Fragment {
                 Intent serviceIntent = new Intent(getActivity(), MetroService.class);
                 try {
                     ContextCompat.startForegroundService(getActivity(), serviceIntent);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     Crashlytics.log("failed starting metronome");
                     Crashlytics.logException(e);
                 }
+                clocketise(START_TIMER);
                 startAnim();
             }
             else {
@@ -231,7 +234,6 @@ public class MetroActivity extends Fragment {
 }
 class StopWatch {
     private long startTime = 0;
-    private long currentTime = 0;
     private boolean isOn = false;
     void setStartTime(long startTime) {
         this.startTime = startTime;
