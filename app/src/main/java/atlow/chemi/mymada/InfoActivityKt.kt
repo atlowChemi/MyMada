@@ -45,18 +45,18 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
         val toolbar = toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        MobileAds.initialize(applicationContext, "ca-app-pub-7600269766434003~4255496174")
+        MobileAds.initialize(this) {}
         goToPriv = InterstitialAd(this)
-        goToPriv.setAdUnitId("ca-app-pub-7600269766434003/4483563620")
+        goToPriv.adUnitId = "ca-app-pub-7600269766434003/4483563620"
         goToPriv.loadAd(AdRequest.Builder().build())
-        goToPriv.setAdListener(object : AdListener() {
+        goToPriv.adListener = object : AdListener() {
             override fun onAdClosed() {
                 goToPriv.loadAd(AdRequest.Builder().build())
                 val intent = Intent(applicationContext, PrivacyActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
             }
-        })
+        }
         val myTypeface = Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")
         textView10.setTypeface(myTypeface)
         textView10.setMovementMethod(ScrollingMovementMethod())
@@ -78,8 +78,8 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
         }
 
     }
-    fun privacy(view: View) {
-        if (goToPriv?.isLoaded)
+    fun privacy(_view: View) {
+        if (goToPriv.isLoaded)
             goToPriv.show()
         else {
             val intent = Intent(applicationContext, PrivacyActivity::class.java)

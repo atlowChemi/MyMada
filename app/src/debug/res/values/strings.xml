@@ -376,6 +376,8 @@
     <string name="ContracMinutes">%1$d דקות ו%2$d שניות</string>
     <string name="ContracSecondes">%d שניות</string>
     <string name="ContracRecover">שחזר נתונים קודמים?</string>
+    <string name="ContracDelete">מחק צירים שמורים?</string>
+    <string name="ContracDeleteEmpty">אין צירים למחוק</string>
     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
     <string name="title_low_calls">הודעות לא קריטיות</string>
     <string name="title_notif">התראה</string>

@@ -2,7 +2,6 @@ package atlow.chemi.mymada.fragments;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,12 +23,8 @@ import java.util.Set;
 
 import atlow.chemi.mymada.R;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class SettingsTools extends Fragment implements View.OnClickListener {
     private final String[] toolsS = {"contrac", "pulse", "metro", "vital", "oxy", "apgar", "glaz", "prot", "dict"};
-    private ConstraintLayout tzirimPref, pulsePref, metroPref, vitalPref, oxyPref, apgarPref, glazgoPref, protoPref, dictionaryPref;
     private SwitchCompat tzirim, pulse, metro, vital, oxy, apgar, glazgo, proto, dictionary;
     private boolean tzirimB, pulseB, metroB, vitalB, oxyB, apgarB, glazgoB, protoB, dictionaryB;
     private SharedPreferences sp;
@@ -49,25 +44,24 @@ public class SettingsTools extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
         tzirim = view.findViewById(R.id.tzirim);
-        tzirimPref = view.findViewById(R.id.tzirim_pref);
+        ConstraintLayout tzirimPref = view.findViewById(R.id.tzirim_pref);
         pulse = view.findViewById(R.id.pulse);
-        pulsePref = view.findViewById(R.id.pulse_pref);
+        ConstraintLayout pulsePref = view.findViewById(R.id.pulse_pref);
         metro = view.findViewById(R.id.metro);
-        metroPref = view.findViewById(R.id.metro_pref);
+        ConstraintLayout metroPref = view.findViewById(R.id.metro_pref);
         vital = view.findViewById(R.id.vital);
-        vitalPref = view.findViewById(R.id.vital_pref);
+        ConstraintLayout vitalPref = view.findViewById(R.id.vital_pref);
         oxy = view.findViewById(R.id.oxy);
-        oxyPref = view.findViewById(R.id.oxy_pref);
+        ConstraintLayout oxyPref = view.findViewById(R.id.oxy_pref);
         apgar = view.findViewById(R.id.apgar);
-        apgarPref = view.findViewById(R.id.apgar_pref);
+        ConstraintLayout apgarPref = view.findViewById(R.id.apgar_pref);
         glazgo = view.findViewById(R.id.glazgo);
-        glazgoPref = view.findViewById(R.id.glazgo_pref);
+        ConstraintLayout glazgoPref = view.findViewById(R.id.glazgo_pref);
         proto = view.findViewById(R.id.proto);
-        protoPref = view.findViewById(R.id.proto_pref);
+        ConstraintLayout protoPref = view.findViewById(R.id.proto_pref);
         dictionary = view.findViewById(R.id.dictionary);
-        dictionaryPref = view.findViewById(R.id.dictionary_pref);
+        ConstraintLayout dictionaryPref = view.findViewById(R.id.dictionary_pref);
 
         tzirimPref.setOnClickListener(this);
         pulsePref.setOnClickListener(this);
@@ -103,7 +97,6 @@ public class SettingsTools extends Fragment implements View.OnClickListener {
         setTrueOrFalse(protoB, protoPref.getId());
         setTrueOrFalse(dictionaryB, dictionaryPref.getId());
     }
-
     public void onClick(View view) {
         SwitchCompat sc = null;
         SharedPreferences.Editor editor = sp.edit();
@@ -161,11 +154,14 @@ public class SettingsTools extends Fragment implements View.OnClickListener {
             sc.setChecked(!sc.isChecked());
             if (!tzirim.isChecked() && !pulse.isChecked() && !metro.isChecked() && !vital.isChecked() && !oxy.isChecked() &&
                     !apgar.isChecked() && !glazgo.isChecked() && !proto.isChecked() && !dictionary.isChecked()) {
-                Snackbar snk = Snackbar.make(view.findViewById(android.R.id.content), getResources().getString(R.string.NoPicked), Snackbar.LENGTH_LONG);
-                View viewSnk = snk.getView();
-                TextView tv = viewSnk.findViewById(com.google.android.material.R.id.snackbar_text);
-                tv.setTextColor(Color.WHITE);
-                snk.show();
+                View v = getActivity().findViewById(android.R.id.content);
+                if (v != null) {
+                    Snackbar snk = Snackbar.make(v, getResources().getString(R.string.NoPicked), Snackbar.LENGTH_LONG);
+                    View viewSnk = snk.getView();
+                    TextView tv = viewSnk.findViewById(com.google.android.material.R.id.snackbar_text);
+                    tv.setTextColor(Color.WHITE);
+                    snk.show();
+                }
                 sc.setChecked(true);
                 switch (b) {
                     case 0:

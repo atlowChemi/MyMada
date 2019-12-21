@@ -690,56 +690,39 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Uri ringUri = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert);;
-        Log.e("return from permission", "return code is: " + requestCode);
-        if (requestCode >99 && requestCode < 105) {
-            if (checkSelfPermission(getActivity(), permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED) {
-                //Got Permission
-                Log.e("return from permission", "return was true");
-                SharedPreferences.Editor ed = sp.edit();
-                ed.putBoolean("allowed", true);
-                ed.apply();
-                //ringtoner(requestCode-100);
-            }
-            else {
-                Log.e("return from permission", "return permission denied");
-                ConstraintLayout layout = requestCode == 100 ? NappT_Pref : requestCode == 101 ? NappT1_Pref :
-                        requestCode == 102 ? NappT2_Pref : requestCode == 103 ? NappT3_Pref : NappT4_Pref;
-                layout.performClick();
-            }
-        }
+        Uri ringUri = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.alert);
         if (requestCode < 6 && resultCode == RESULT_OK) {
             try {
                 ringUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
             }catch (Exception e) {
-                Crashlytics.log("didnt prace the ringtone!");
+                Crashlytics.log("didn't parce the ringtone!");
                 Crashlytics.logException(e);
             }
             SharedPreferences.Editor spe = sp.edit();
-            if (requestCode == 0) {
-                spe.putString("NuRi", ringUri.toString());
+            if (ringUri != null) {
+                if (requestCode == 0) {
+                    spe.putString("NuRi", ringUri.toString());
+                } else if (requestCode == 1 || requestCode == 2 || requestCode == 3 || requestCode == 4) {
+                    spe.putString("NuRiT" + requestCode, ringUri.toString());
+                }
+                spe.apply();
             }
-            else if (requestCode == 1 || requestCode == 2 || requestCode == 3 || requestCode == 4) {
-                spe.putString("NuRiT" + requestCode, ringUri.toString());
-            }
-            spe.apply();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode >99 && requestCode < 105) {
-            Log.e("return from permission", "return code is: " + requestCode);
+            Crashlytics.log("return from permission - return code is: " + requestCode);
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.e("return from permission", "return was true");
+                Crashlytics.log("return from permission - return was true");
                 //Got Permission
                 SharedPreferences.Editor ed = sp.edit();
                 ed.putBoolean("allowed", true);
                 ed.apply();
-                //ringtoner(requestCode-100);
             }
             else {
-                Log.e("return from permission", "return permission denied");
+                Crashlytics.log("return from permission - return permission denied");
                 ConstraintLayout layout = requestCode == 100 ? NappT_Pref : requestCode == 101 ? NappT1_Pref :
                         requestCode == 102 ? NappT2_Pref : requestCode == 103 ? NappT3_Pref : NappT4_Pref;
                 layout.performClick();

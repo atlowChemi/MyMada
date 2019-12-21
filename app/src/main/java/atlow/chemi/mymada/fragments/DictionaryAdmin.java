@@ -184,12 +184,4 @@ public class DictionaryAdmin extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 6 && resultCode == RESULT_OK) {
-            String barcodeR = data.getStringExtra("barcodeR");
-            Toast.makeText(getActivity(), barcodeR, Toast.LENGTH_LONG).show();
-        }
-    }
 }
