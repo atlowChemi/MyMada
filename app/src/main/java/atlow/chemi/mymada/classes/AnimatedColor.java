@@ -1,7 +1,6 @@
 package atlow.chemi.mymada.classes;
 
 import android.graphics.Color;
-import android.util.Log;
 
 public class AnimatedColor {
     private final int mStartColor, mEndColor;
@@ -21,13 +20,13 @@ public class AnimatedColor {
             return mEndColor;
         return Color.HSVToColor(move(delta));
     }
-    public float[] move(float delta) {
+    private float[] move(float delta) {
         mMove[0] = (mEndHsv[0] - mStartHsv[0]) * delta + mStartHsv[0];
         mMove[1] = (mEndHsv[1] - mStartHsv[1]) * delta + mStartHsv[1];
         mMove[2] = (mEndHsv[2] - mStartHsv[2]) * delta + mStartHsv[2];
         return mMove;
     }
-    public float[] toHsv(int color) {
+    private float[] toHsv(int color) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
         return hsv;
