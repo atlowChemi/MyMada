@@ -8,13 +8,20 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,7 +45,7 @@ import atlow.chemi.mymada.R;
 public class ContracTimer extends Fragment {
     @SuppressLint("StaticFieldLeak")
     private static ContractionAdapter adapter;
-    private static ArrayList<Contraction> albumList;
+    private ArrayList<Contraction> albumList;
     private static int num = 0;
     private static Date start, end;
     private static boolean running = false;
@@ -49,7 +56,7 @@ public class ContracTimer extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        setRetainInstance(false);
         if (getActivity() != null)
             getActivity().setTitle(R.string.button_f);
         sp = getActivity().getSharedPreferences("Settings", 0);
@@ -151,6 +158,7 @@ public class ContracTimer extends Fragment {
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.activity_contract_calc, container, false);
     }
     @Override
@@ -220,7 +228,7 @@ public class ContracTimer extends Fragment {
         }
 
         @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, RecyclerView parent, @NonNull RecyclerView.State state) {
             int position = parent.getChildAdapterPosition(view); // item position
             int column = position % spanCount; // item column
 
@@ -261,5 +269,56 @@ public class ContracTimer extends Fragment {
             }
         }
         super.onDestroy();
+    }
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.contractions_menu, menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_delete) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
+            if (albumList != null && !albumList.isEmpty()) {
+                dialog.setMessage(getActivity().getResources().getString(R.string.ContracDelete)).setCancelable(false)
+                        .setPositiveButton(getActivity().getResources().getString(R.string.ok), (dialogInterface, i) -> {
+                            SharedPreferences.Editor spe;
+                            if (sp != null) {
+                                spe = sp.edit();
+                                spe.putString("contractList", "");
+                                spe.putInt("contarctNum", 0);
+                                spe.putLong("contractLong", 0);
+                                spe.apply();
+                            }
+                            num = 0;
+                            end = null;
+                            albumList.clear();
+                            if (recyclerView != null) {
+                                recyclerView.setAdapter(adapter);
+                            }
+                        })
+                        .setNegativeButton(getActivity().getResources().getString(R.string.dialog_no), (dialogInterface, i) -> dialogInterface.cancel());
+                final AlertDialog alert = dialog.create();
+                alert.setOnShowListener(dialogInterface -> {
+                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    try {
+                        Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
+                        TextView textView = alert.findViewById(android.R.id.message);
+                        if (textView != null)
+                            textView.setTypeface(myTypeface);
+                        canc.setTypeface(myTypeface);
+                        canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
+                    } catch (NullPointerException e) {
+                        Crashlytics.log("Contractions remake defect");
+                        Crashlytics.logException(e);
+                    }
+                });
+                alert.show();
+            } else {
+                dialog.setMessage(getActivity().getResources().getString(R.string.ContracDeleteEmpty)).setCancelable(false)
+                        .setPositiveButton(getActivity().getResources().getString(R.string.ok), (dialogInterface, i) -> dialogInterface.cancel());
+                dialog.create().show();
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

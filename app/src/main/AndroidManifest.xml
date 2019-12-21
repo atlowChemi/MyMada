@@ -33,10 +33,6 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
-
-        <meta-data
-            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-            android:value="barcode" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7600269766434003~4255496174" />
@@ -73,7 +69,7 @@
             android:theme="@style/MyMaterialTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".InfoActivity" />
+                android:value=".InfoActivityKt" />
         </activity>
         <activity
             android:name=".contactChatActivity"

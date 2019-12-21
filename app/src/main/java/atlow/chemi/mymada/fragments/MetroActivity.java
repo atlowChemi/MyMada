@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 
@@ -46,10 +47,9 @@ public class MetroActivity extends Fragment {
     private FirebaseAnalytics mFirebaseAnalytics;
     private static StopWatch stopWatch = new StopWatch();
     private static final int START_TIMER = 0, STOP_TIMER = 1;
-    private static Handler mHandler = new Handler() {
+    private static Handler mHandler = new Handler(new Handler.Callback() {
         @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
+        public boolean handleMessage(@NonNull Message msg) {
             final int UPDATE_TIMER = 2, REFRESH_RATE = 500;
             switch (msg.what) {
                 case START_TIMER:
@@ -88,8 +88,9 @@ public class MetroActivity extends Fragment {
                 default:
                     break;
             }
+            return false;
         }
-    };
+    });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -157,7 +158,8 @@ public class MetroActivity extends Fragment {
                     Crashlytics.logException(e);
                 }
                 startAnim();
-            } else {
+            }
+            else {
                 clocketise(STOP_TIMER);
                 MetroRun = false;
                 Intent serviceIntent = new Intent(getActivity(), MetroService.class);
@@ -177,7 +179,7 @@ public class MetroActivity extends Fragment {
     public static void startAnim() {
         if (v != null) {
             try {
-                scaleView(v, 1.05f, 1f, 1.05f, 1f);
+                scaleView(v);
                 anim.setDuration(650);
                 big.setDuration(350);
             } catch (Exception e) {
@@ -198,9 +200,9 @@ public class MetroActivity extends Fragment {
             }
         }
     }
-    private static void scaleView(final View v, float startScale, float endScale, float XstartScale, float XendScale) {
-        anim = new ScaleAnimation(XstartScale, XendScale, startScale, endScale, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        big = new ScaleAnimation(XendScale, XstartScale, endScale, startScale, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+    private static void scaleView(final View v) {
+        anim = new ScaleAnimation((float) 1.05, (float) 1.0, (float) 1.05, (float) 1.0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        big = new ScaleAnimation((float) 1.0, (float) 1.05, (float) 1.0, (float) 1.05, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         anim.setFillAfter(true); // Needed to keep the result of the animation
         anim.setDuration(650);
         big.setDuration(350);
@@ -243,14 +245,6 @@ class StopWatch {
         this.startTime = 0;
         this.isOn = false;
     }
-    public void pause() {
-        this.isOn = false;
-        this.currentTime = System.currentTimeMillis() - this.startTime;
-    }
-    public void resume() {
-        this.isOn = true;
-        this.startTime = System.currentTimeMillis() - this.currentTime;
-    }
     int getPercentOfTwoMinute() {
         return (int)(((System.currentTimeMillis() - this.startTime) / 1000) % 120);
     }
@@ -272,6 +266,8 @@ class StopWatch {
             elapsed = ((((System.currentTimeMillis() - this.startTime) / 1000) / 60) / 60);
         return elapsed <= 9 ? "0" + elapsed : elapsed + "";
     }
+    @NonNull
+    @Override
     public String toString() {
         if (getElapsedTimeHours().equals("00"))
             return getElapsedTimeMinutes() + ":" + getElapsedTimeSeconds();

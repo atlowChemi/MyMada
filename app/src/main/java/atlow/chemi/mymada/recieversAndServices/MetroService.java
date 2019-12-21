@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -35,10 +36,6 @@ public class MetroService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
         Intent callSNI = new Intent(MetroService.this, UtillitiesAndTools.class);
         callSNI.putExtra("running", true);
         callSNI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -47,12 +44,11 @@ public class MetroService extends Service {
         PendingIntent pBtn = PendingIntent.getBroadcast(MetroService.this, 9, btn, PendingIntent.FLAG_UPDATE_CURRENT);
         String action = MetroService.this.getResources().getString(R.string.MetroStop);
 
-        Crashlytics.log("Starting Metro Notif");
+        Crashlytics.log("Starting Metro Notification");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "runInBg")
                 .setContentTitle(MetroService.this.getResources().getString(R.string.MetroServiceTtl))
                 .setContentText(MetroService.this.getResources().getString(R.string.MetroServiceTxt))
                 .setContentIntent(pendingIntent)
-                //.setColorized(true)
                 .setSmallIcon(R.drawable.ic_metronome_tile)
                 .setShowWhen(false)
                 .setColor(Color.argb(50, 255, 57, 50))
@@ -61,12 +57,16 @@ public class MetroService extends Service {
                 .setVibrate(null)
                 .setOngoing(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.setPriority(NotificationManager.IMPORTANCE_MIN);
+            builder.setPriority(NotificationManagerCompat.IMPORTANCE_MIN);
         }
         Notification notification = builder.build();
-        Crashlytics.log("built Metro Notif.");
+        Crashlytics.log("built Metro Notification.");
         startForeground(13, notification);
         Crashlytics.log("started Metro service foreground.");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         metro(MetroService.this);
         running = true;
         return START_STICKY;
@@ -110,7 +110,7 @@ public class MetroService extends Service {
         try {
             metroTask.stop();
         } catch (NullPointerException e) {
-            Crashlytics.log("failde stopping metronome");
+            Crashlytics.log("failed stopping metronome");
             Crashlytics.logException(e);
         }
         if (audioManager != null)
@@ -123,14 +123,10 @@ public class MetroService extends Service {
             metronome = new Metronome();
         }
         protected String doInBackground(Void... params) {
-            //metronome.setBeat(beats);
-            //metronome.setNoteValue(noteValue);
-            //metronome.setBpm(bpm);
-            //metronome.setBeatSound(beatSound);
-            //metronome.setSound(sound);
             try {
                 metronome.play();
             }catch (Exception e)    {
+                Crashlytics.logException(e);
                 e.printStackTrace();
             }
             return null;
@@ -138,10 +134,6 @@ public class MetroService extends Service {
         void stop() {
             metronome.stop();
             metronome = null;
-        }
-        void setBpm(short bpm) {
-            metronome.setBpm(bpm);
-            metronome.calcSilence();
         }
     }
 }

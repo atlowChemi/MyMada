@@ -61,7 +61,6 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
     private boolean isDrawerLocked = false;
     private MenuItem Detect;
     private Typeface myTypeface;
-    private FragmentTransaction transaction;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     private Fragment contracTimer = new ContracTimer(), pulseCalc = new PulseCalc(), metroActivity = new MetroActivity(),
             vitalsChecker= new VitalsChecker(), oxyCalc = new OxyCalc(), apgarCalc = new ApgarCalc(),
@@ -126,8 +125,8 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
             navMenu.removeItem(R.id.metronome);
 
         if (!toolsToShow.contains("metro")) {
-            navigationView.setCheckedItem(navMenu.getItem(0));
-            switch (navMenu.getItem(0).getItemId()) {
+            navigationView.setCheckedItem(navMenu.getItem(1));
+            switch (navMenu.getItem(1).getItemId()) {
                 case R.id.dictionary:
                     f = dictionaryAdmin;
                     break;
@@ -233,7 +232,7 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
         return true;
     }
     private void displayFragment(Fragment fragment, boolean animate) {
-        transaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (animate) {
             transaction.setCustomAnimations(R.anim.enter_from_top, R.anim.exit_to_top);
         }
