@@ -26,12 +26,4 @@ public class Volunteer {
     public void setJob(int job) {
         this.job = job;
     }
-
-    public int getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(int thumbnail) {
-        this.thumbnail = thumbnail;
-    }
 }
