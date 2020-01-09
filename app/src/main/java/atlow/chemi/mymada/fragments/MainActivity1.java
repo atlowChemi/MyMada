@@ -47,7 +47,7 @@ import atlow.chemi.mymada.adapters.mCodeAdapt;
 import atlow.chemi.mymada.classes.mCodeKid;
 
 public class MainActivity1 extends Fragment {
-    private boolean bool, isMove = false;
+    private boolean bool, isMove = false, yishuv = true;
     private CharSequence[] _options = {
             "מצבי חירום סביבתיים", "2000 גוף זר באוזניים", "2001 גוף זר באף", "2002 גוף זר בעיניים", "2003 הכשת נחש", "2004 הרעלות","2005 התייבשות","2006 מכת ברק","2007 עקיצת עקרב","2008 פגיעה מבע\"ח","2009 פגיעות חום","2010 פגיעות קור","2011 רגישות יתר / אלרגיה","2012 שאיפת חומרים רעילים","2013 שאיפת עשן","2014 תגובה אנפילקטית","2015 צריכת יתר אלכוהול","2016 צריכת יתר סמים","2017 צריכת יתר תרופות","2018 תליה","2099 אחר",
             "טראומה","3000 חבלה בגפיים","3001 חבלה בצוואר","3002 חבלה רב מערכתית","3003 חבלת חזה","3004 חבלת ראש","3005 חבלת אגן","3006 חבלת בטן","3007 חבלת עמ\"ש","3008 חבלת פנים","3009 חשד לשבר צוואר ירך","3010 חשד לשבר בגפיים עליונות","3011  חשד לשבר בגפיים תחתונות","3012 כוויה","3017 כוויה דרגה 1","3018 כוויה דרגה 2","3019 כוויה דרגה 3","3013 כוויה כימית","3014 פגיעת מעיכה","3015 קטיעת אצבעות","3016 קטיעת גפיים","3099 אחר",
@@ -93,11 +93,9 @@ public class MainActivity1 extends Fragment {
     private mCodeAdapt codeAdapter;
     private TextInputLayout ambulance, hn, ht, first, last, sum, code;
     private Dialog dialog;
-    EditText edit1, editv, edita, edit2,edit3, edit4, edit5, edit6, sp;
+    private EditText edit1, editv, edita, edit2,edit3, edit4, edit5, edit6, sp;
     private String kodR = "", txt;
-    private Context context;
     private SharedPreferences sp2;
-    private boolean yishuv = true;
     private Typeface myTypeface;
     private float oldX1, oldY1;
     public MainActivity1()  {}
@@ -117,7 +115,7 @@ public class MainActivity1 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        context = MainActivity1.this.getContext();
+        Context context = MainActivity1.this.getContext();
         sp2 = context.getSharedPreferences("Settings", 0);
         ArrayList<mCodeKid> arrayOfMediCode = new ArrayList<>();
         boolean[] sep = new boolean[_options.length];

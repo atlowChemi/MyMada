@@ -17,6 +17,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.SpannableString;
@@ -57,7 +59,6 @@ public class smsRes extends AppCompatActivity {
     public static float vo = 0;
     private float oldX1, oldY1;
     private boolean isMove1 = false;
-    @SuppressLint("ClickableViewAccessibility")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void attachBaseContext(Context base) {
@@ -83,24 +84,20 @@ public class smsRes extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         int callT = extras != null ? extras.getInt("callT") : 1;
         switch (callT)  {
-            case 1:
-                string = "T1";
-                break;
             case 2:
                 string = "T2";
                 break;
             case 3:
+            case 5:
                 string = "T3";
                 break;
             case 4:
                 string = "T4";
                 break;
-            case 5:
-                string = "T3";
-                break;
             case 6:
                 string = "T6";
                 break;
+            case 1:
             default:
                 string = "T1";
                 break;
@@ -232,24 +229,20 @@ public class smsRes extends AppCompatActivity {
         two.setTypeface(myTypeface);
         one.setText(string.equals("T4") || string.equals("T6") ? "הודעה חדשה!" : "אירוע חדש!");
         switch (callT)  {
-            case 1:
-                m.setText("כונן");
-                break;
             case 2:
                 m.setText("קבוצה");
                 break;
             case 3:
+            case 5:
                 m.setText("משמרת");
                 break;
             case 4:
                 m.setText("הודעה מנהלתית");
                 break;
-            case 5:
-                m.setText("משמרת");
-                break;
             case 6:
                 m.setText("שירות");
                 break;
+            case 1:
             default:
                 m.setText("כונן");
                 break;
@@ -263,7 +256,7 @@ public class smsRes extends AppCompatActivity {
             try {
                 Stxt = Stxt.substring(0, Stxt.indexOf("//"));
             } catch (StringIndexOutOfBoundsException e) {
-                Log.e("smsRes OldSMS", e.getMessage());
+                Log.getStackTraceString(e);
                 Crashlytics.logException(e);
             }
             try {
@@ -457,11 +450,10 @@ public class smsRes extends AppCompatActivity {
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         return false;
     }
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         return super.onOptionsItemSelected(item);
     }
     private class MyTouchListener implements View.OnTouchListener {

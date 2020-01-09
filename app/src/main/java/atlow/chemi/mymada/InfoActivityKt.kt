@@ -30,10 +30,10 @@ import com.google.android.gms.ads.MobileAds
 import kotlinx.android.synthetic.main.activity_info.*
 
 class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
-    private var oldX1 : Float = 0f
+    private var oldX1 = 0f
     private var oldY1 = 0f
     private var isMove1 = false
-    private val RequestPermissionSetting = 101
+    private val _requestPermissionSetting = 101
     private lateinit var detect:MenuItem
     private lateinit var goToPriv:InterstitialAd
     private lateinit var privBtn: Button
@@ -58,9 +58,9 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
             }
         }
         val myTypeface = Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")
-        textView10.setTypeface(myTypeface)
-        textView10.setMovementMethod(ScrollingMovementMethod())
-        textView10.setText(resources.getString(R.string.TversionNumber, BuildConfig.VERSION_NAME))
+        textView10.typeface = myTypeface
+        textView10.movementMethod = ScrollingMovementMethod()
+        textView10.text = resources.getString(R.string.TversionNumber, BuildConfig.VERSION_NAME)
         privBtn = privB
         privBtn.setOnTouchListener(this)
     }
@@ -73,11 +73,13 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
             val label = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA).labelRes
             if (label != 0)
                 setTitle(label)
-        } catch (e: PackageManager.NameNotFoundException) {
-            Crashlytics.log(e.message)
+        }
+        catch (e: PackageManager.NameNotFoundException) {
+            Crashlytics.logException(e)
         }
 
     }
+    @Suppress("UNUSED_PARAMETER")
     fun privacy(_view: View) {
         if (goToPriv.isLoaded)
             goToPriv.show()
@@ -146,13 +148,14 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
                                             .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
                                     val alert = builder.create()
                                     alert.setOnShowListener {
-                                        val canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
-                                        canc.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
+                                        val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
+                                        cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
                                     }
                                     alert.show()
                                 }
                                 s.putBoolean("Mapp", true)
-                            } catch (e: ActivityNotFoundException) {
+                            }
+                            catch (e: ActivityNotFoundException) {
                                 val intent = Intent(this, NotificationService::class.java)
                                 val old = Intent(this, NotificationServiceOld::class.java)
                                 stopService(intent)
@@ -162,20 +165,21 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
                                     builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
                                             .setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
                                                 val intent1 = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                                                startActivityForResult(intent1, RequestPermissionSetting)
+                                                startActivityForResult(intent1, _requestPermissionSetting)
                                             }
                                             .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
                                     val alert = builder.create()
                                     alert.setOnShowListener {
-                                        val canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
-                                        canc.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
+                                        val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
+                                        cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
                                     }
                                     alert.show()
                                 }
                                 s.putBoolean("Mapp", true)
                             }
 
-                        } else {
+                        }
+                        else {
                             val intent = Intent(this, NotificationService::class.java)
                             val old = Intent(this, NotificationServiceOld::class.java)
                             stopService(intent)
@@ -185,13 +189,13 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
                                 builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
                                         .setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
                                             val inten = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                                            startActivityForResult(inten, RequestPermissionSetting)
+                                            startActivityForResult(inten, _requestPermissionSetting)
                                         }
                                         .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
                                 val alert = builder.create()
                                 alert.setOnShowListener {
-                                    val canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
-                                    canc.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
+                                    val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
+                                    cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
                                 }
                                 alert.show()
                             }
@@ -219,10 +223,10 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
     }
     private fun isCallable(intent: Intent): Boolean {
         return try {
-            val list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            list.size > 0
-        } catch (e: Exception) {
-            e.printStackTrace()
+            packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size > 0
+        }
+        catch (e: Exception) {
+            Crashlytics.logException(e)
             false
         }
     }

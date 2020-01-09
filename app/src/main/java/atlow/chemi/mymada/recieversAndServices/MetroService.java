@@ -1,7 +1,6 @@
 package atlow.chemi.mymada.recieversAndServices;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -20,10 +19,11 @@ import com.crashlytics.android.Crashlytics;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.UtillitiesAndTools;
 import atlow.chemi.mymada.classes.Metronome;
+import atlow.chemi.mymada.helpers.Event;
 
 import static atlow.chemi.mymada.fragments.MetroActivity.MetroRun;
-import static atlow.chemi.mymada.fragments.MetroActivity.timestamp;
 import static atlow.chemi.mymada.fragments.MetroActivity.clocketise;
+import static atlow.chemi.mymada.fragments.MetroActivity.timestamp;
 import static atlow.chemi.mymada.fragments.MetroActivity.startAnim;
 import static atlow.chemi.mymada.fragments.MetroActivity.stopAnim;
 

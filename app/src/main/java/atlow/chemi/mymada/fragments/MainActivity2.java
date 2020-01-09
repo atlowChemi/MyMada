@@ -17,6 +17,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -55,39 +56,40 @@ import atlow.chemi.mymada.SettingsPage;
 import atlow.chemi.mymada.classes.Volunteer;
 import atlow.chemi.mymada.adapters.VolunteerAdapter;
 
-public class MainActivity2 extends Fragment {
-    private String textS = "";
-    private static EditText txtboxN, addManName;
-    private static TextInputLayout ambNum, addManTIL;
-    private static String name;
+public class MainActivity2 extends Fragment implements View.OnTouchListener {
+    private EditText txtboxN, addManName;
+    private TextInputLayout ambNum, addManTIL;
+    private String name;
     private TextView explain;
-    private static int job;
-    private static LayoutInflater inflater;
-    private static VolunteerAdapter adapter;
-    private static List<Volunteer> albumList;
+    private int job;
+    private LayoutInflater inflater;
+    private VolunteerAdapter adapter;
+    private List<Volunteer> albumList;
     private Typeface myTypeface;
-    private static String[] colors = {"נהג","חובש","פראמדיק","רופא","מתנדב","משתלם","שירות לאומי"};
-    private boolean isMove = false, isMove2 = false;
-    private float oldX1, oldY1, oldX2, oldY2;
-    private Button newSendButtonM2;
-    private static Button newPplBtn;
+    private String[] colors = {"נהג", "חובש", "פראמדיק", "רופא", "מתנדב", "משתלם", "שירות לאומי"};
+    private boolean isMove = false;
+    private float oldX, oldY;
+    private Button newPplBtn;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle) {
         View view = inflater.inflate(R.layout.activity_main2, container, false);
         if (SettingsPage.isRTL())
             view.setRotationY(180);
         return view;
     }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
-        newSendButtonM2 = view.findViewById(R.id.M2btn1ENew);
+        Button newSendButtonM2 = view.findViewById(R.id.M2btn1ENew);
         newPplBtn = view.findViewById(R.id.newManNew);
         GradientDrawable drawable = (GradientDrawable) newPplBtn.getBackground();
         drawable.mutate();
@@ -110,8 +112,9 @@ public class MainActivity2 extends Fragment {
         }
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         albumList = new ArrayList<>();
-        adapter = new VolunteerAdapter(albumList);
-        adapter.setmContext(getActivity());
+        adapter = new VolunteerAdapter(getActivity(), albumList);
+        adapter.DeleteVolunteerEvent.addListener(this::deleteVol);
+        adapter.EditVolunteerEvent.addListener(this::editVol);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setRotationY(180);
@@ -126,34 +129,11 @@ public class MainActivity2 extends Fragment {
         txtboxN.addTextChangedListener(new MyTextWatcher(txtboxN));
         ambNum = view.findViewById(R.id.M2ambulance);
         ambNum.setTypeface(myTypeface);
-        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_item, colors);
+        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, colors);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        newPplBtn.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_MOVE:
-                    boolean x = oldX2 - event.getX() > 10 || event.getX() - oldX2 > 10;
-                    boolean y = oldY2 - event.getY() > 50 || event.getY() - oldY2 > 50;
-                    if (x || y) {
-                        isMove2 = true;
-                        newPplBtn.setAlpha(1f);
-                    }
-                    return true;
-                case MotionEvent.ACTION_DOWN:
-                    oldY2 = event.getY();
-                    oldX2 = event.getX();
-                    isMove2 = false;
-                    newPplBtn.setAlpha(0.4f);
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    newPplBtn.setAlpha(1f);
-                    if (!isMove2)
-                        newPplBtn.performClick();
-                    return true;
-            }
-            return false;
-        });
+        newPplBtn.setOnTouchListener(this);
         newPplBtn.setOnClickListener(view1 -> {
-            inflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View newMan = inflater.inflate(R.layout.add_human, null);
             final Spinner addManSppiner = newMan.findViewById(R.id.addManSpinner);
             addManSppiner.setAdapter(spinnerArrayAdapter);
@@ -191,80 +171,57 @@ public class MainActivity2 extends Fragment {
             });
             builder.show();
         });
-        newSendButtonM2.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_MOVE:
-                    boolean x = oldX1 - event.getX() > 10 || event.getX() - oldX1 > 10;
-                    boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
-                    if (x || y) {
-                        isMove = true;
-                        newSendButtonM2.setAlpha(1f);
-                    }
-                    return true;
-                case MotionEvent.ACTION_DOWN:
-                    oldY1 = event.getY();
-                    oldX1 = event.getX();
-                    isMove = false;
-                    newSendButtonM2.setAlpha(0.4f);
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    newSendButtonM2.setAlpha(1f);
-                    if (!isMove)
-                        newSendButtonM2.performClick();
-                    return true;
-            }
-            return false;
-        });
+        newSendButtonM2.setOnTouchListener(this);
         newSendButtonM2.setOnClickListener(view12 -> {
-            if(txtboxN.getText().toString().trim().isEmpty())
+            if (txtboxN.getText().toString().trim().isEmpty())
                 ambNum.setError(getActivity().getResources().getString(R.string.err_amb));
             else {
                 ambNum.setErrorEnabled(false);
-                final String[] merhavim = {"י-ם","איילון","אשר","גלבוע","דן","ירדן","ירקון","כרמל","לכיש","נגב","שרון","מוקד 4"};
+                final String[] merhavim = {"י-ם", "איילון", "אשר", "גלבוע", "דן", "ירדן", "ירקון", "כרמל", "לכיש", "נגב", "שרון", "מוקד 4"};
                 SharedPreferences sp2 = getActivity().getSharedPreferences("Settings", 0);
                 final int merhav = sp2.getInt("merhav", 0);
-                textS = "צוות אמבולנס " + merhavim[merhav] + " ";
-                textS += txtboxN.getText() + ":\n";
+                StringBuilder textSb = new StringBuilder("צוות אמבולנס ").append(merhavim[merhav]).append(" ").append(txtboxN.getText()).append(":\n");
                 if (albumList.size() == 0) {
                     di(getActivity().getResources().getString(R.string.SendNoNames));
                     return;
-                } else  {
-                    for (int i = 0; i<albumList.size(); i++)  {
-                        if (i!=0)
-                            textS += "\n";
-                        textS += colors[albumList.get(i).getJob()] + " - " + albumList.get(i).getName();
+                } else {
+                    for (int i = 0; i < albumList.size(); i++) {
+                        if (i != 0)
+                            textSb.append("\n");
+                        textSb.append(colors[albumList.get(i).getJob()]).append(" - ").append(albumList.get(i).getName());
                     }
                 }
-                sms(textS);
+                sms(textSb.toString());
             }
         });
     }
 
-    public static void deleteVol(int position)    {
+    private void deleteVol(int position) {
         albumList.remove(position);
         adapter.notifyDataSetChanged();
         if (newPplBtn.getVisibility() != View.VISIBLE)
             newPplBtn.setVisibility(View.VISIBLE);
     }
-    public static void editVol(final int position, final Context context)    {
+
+    public void editVol(final int position) {
         View newMan = inflater.inflate(R.layout.add_human, null);
         final Spinner addManSppiner = newMan.findViewById(R.id.addManSpinner);
-        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item, colors);
+        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, colors);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         addManSppiner.setAdapter(spinnerArrayAdapter);
         addManName = newMan.findViewById(R.id.addManName);
         addManName.setText(albumList.get(position).getName());
         addManSppiner.setSelection(albumList.get(position).getJob());
         addManTIL = newMan.findViewById(R.id.addManTIL);
-        final AlertDialog builder = new AlertDialog.Builder(context, R.style.AlertDialogStyle).setTitle(context.getResources().getString(R.string.Nteam)).setView(newMan).setCancelable(false)
-                .setNegativeButton(context.getResources().getString(R.string.ret), (dialogInterface, i) -> dialogInterface.dismiss()).setPositiveButton(context.getResources().getString(R.string.ok), null).create();
+        final AlertDialog builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogStyle).setTitle(getContext().getResources().getString(R.string.Nteam)).setView(newMan).setCancelable(false)
+                .setNegativeButton(getContext().getResources().getString(R.string.ret), (dialogInterface, i) -> dialogInterface.dismiss()).setPositiveButton(getContext().getResources().getString(R.string.ok), null).create();
         builder.setOnShowListener(dialogInterface -> {
             Button canc = builder.getButton(DialogInterface.BUTTON_NEGATIVE);
-            canc.setTextColor(context.getResources().getColor(R.color.OldPrimary));
+            canc.setTextColor(getContext().getResources().getColor(R.color.OldPrimary));
             Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
             ok.setOnClickListener(view -> {
                 if (addManName.getText().toString().isEmpty())
-                    addManTIL.setError(context.getResources().getString(R.string.emailNameNone));
+                    addManTIL.setError(getContext().getResources().getString(R.string.emailNameNone));
                 if (addManName.getText().toString().trim().length() > 0) {
                     addManTIL.setErrorEnabled(false);
                     name = addManName.getText().toString();
@@ -277,6 +234,32 @@ public class MainActivity2 extends Fragment {
             });
         });
         builder.show();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                boolean x = oldX - event.getX() > 10 || event.getX() - oldX > 10;
+                boolean y = oldY - event.getY() > 50 || event.getY() - oldY > 50;
+                if (x || y) {
+                    isMove = true;
+                    v.setAlpha(1f);
+                }
+                return true;
+            case MotionEvent.ACTION_DOWN:
+                oldY = event.getY();
+                oldX = event.getX();
+                isMove = false;
+                v.setAlpha(0.4f);
+                return true;
+            case MotionEvent.ACTION_UP:
+                v.setAlpha(1f);
+                if (!isMove)
+                    v.performClick();
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -327,11 +310,17 @@ public class MainActivity2 extends Fragment {
 
     private class MyTextWatcher implements TextWatcher {
         private View view;
+
         private MyTextWatcher(View view) {
             this.view = view;
         }
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
                 case R.id.addManName:
@@ -341,7 +330,7 @@ public class MainActivity2 extends Fragment {
                         addManTIL.setErrorEnabled(false);
                     break;
                 case R.id.M2txt1E:
-                    if(txtboxN.getText().toString().isEmpty())
+                    if (txtboxN.getText().toString().isEmpty())
                         ambNum.setError(getActivity().getResources().getString(R.string.err_amb));
                     else
                         ambNum.setErrorEnabled(false);
@@ -349,21 +338,23 @@ public class MainActivity2 extends Fragment {
             }
         }
     }
-    private void di(String err)   {
+
+    private void di(String err) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
         builder.setTitle(getResources().getString(R.string.err)).setMessage(err).setCancelable(false)
                 .setNegativeButton(getResources().getString(R.string.ok), (dialog, id) -> dialog.cancel());
         AlertDialog alert = builder.create();
         alert.show();
     }
-    private void sms(final String msg)   {
 
-        final String[] phones = {"+972523993348","+972523993345","+972523993339","+972523993338","+972523993342","+972523993337","+972523993343","+972523993340"
-                ,"+972523993346","+972523993356","+972523993341","+972586309592"};
-        final String[] merhavim = {"ירושלים","איילון","אשר","גלבוע","דן","ירדן","ירקון","כרמל","לכיש","נגב","שרון","מוקד 4"};
+    private void sms(final String msg) {
+
+        final String[] phones = {"+972523993348", "+972523993345", "+972523993339", "+972523993338", "+972523993342", "+972523993337", "+972523993343", "+972523993340"
+                , "+972523993346", "+972523993356", "+972523993341", "+972586309592"};
+        final String[] merhavim = {"ירושלים", "איילון", "אשר", "גלבוע", "דן", "ירדן", "ירקון", "כרמל", "לכיש", "נגב", "שרון", "מוקד 4"};
         SharedPreferences sp2 = getActivity().getSharedPreferences("Settings", 0);
         final int merhav = sp2.getInt("merhav", 0);
-        int smss = 1 + msg.length()/70;
+        int smss = 1 + msg.length() / 70;
         String couT = msg.length() + " " + getResources().getString(R.string.smsCountChar) + " " + smss + " " + getResources().getString(R.string.smsCountMsg);
         String me = getActivity().getResources().getString(R.string.toDispatch) + merhavim[merhav] + ".";
         String a = me + "\n\n" + msg + "\n\n";

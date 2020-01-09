@@ -82,21 +82,20 @@ public class PrivacyActivity extends AppCompatActivity {
             if (label != 0)
                 setTitle(label);
         } catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.log(e.getMessage());
+            Crashlytics.logException(e);
         }
     }
     private class CustomWebViewClient extends WebViewClient {
         @Override
         public void onPageStarted(WebView webview, String url, Bitmap favicon) {
-            if (ShowOrHideWebViewInitialUse.equals("show")) {
-                webview.setVisibility(webview.INVISIBLE);
-            }
+            if (ShowOrHideWebViewInitialUse.equals("show"))
+                webview.setVisibility(WebView.INVISIBLE);
         }
         @Override
         public void onPageFinished(WebView view, String url) {
             ShowOrHideWebViewInitialUse = "hide";
             spinner.setVisibility(View.GONE);
-            view.setVisibility(webview.VISIBLE);
+            view.setVisibility(WebView.VISIBLE);
             SharedPreferences sp = getSharedPreferences("Settings", 0);
             SharedPreferences.Editor sp1 = sp.edit();
             sp1.putBoolean("privacy", true);
@@ -169,30 +168,21 @@ public class PrivacyActivity extends AppCompatActivity {
                                 if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                                                    startActivity(intent);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                                                startActivity(intent);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        cancelButton.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
                                 s.putBoolean("Mapp", true);
-                            } catch (ActivityNotFoundException e) {
+                            }
+                            catch (ActivityNotFoundException e) {
                                 Intent intent = new Intent(this, NotificationService.class);
                                 Intent old = new Intent(this, NotificationServiceOld.class);
                                 stopService(intent);
@@ -200,30 +190,22 @@ public class PrivacyActivity extends AppCompatActivity {
                                 if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                    startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent1 = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                                startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        cancelButton.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
                                 s.putBoolean("Mapp", true);
                             }
-                        } else {
+                        }
+                        else {
                             Intent intent = new Intent(this, NotificationService.class);
                             Intent old = new Intent(this, NotificationServiceOld.class);
                             stopService(intent);
@@ -231,33 +213,26 @@ public class PrivacyActivity extends AppCompatActivity {
                             if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                 builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                            }
+                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                            Intent intent12 = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                            startActivityForResult(intent12, REQUEST_PERMISSION_SETTING);
                                         })
-                                        .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-                                            }
-                                        });
+                                        .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                 final AlertDialog alert = builder.create();
-                                alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                    @Override
-                                    public void onShow(DialogInterface dialogInterface) {
-                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                    }
+                                alert.setOnShowListener(dialogInterface -> {
+                                    Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                    cancelButton.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                 });
                                 alert.show();
                             }
                             s.putBoolean("Mapp", true);
                         }
-                    } else {
+                    }
+                    else {
                         s.putBoolean("Mapp", true);
                     }
-                } else {
+                }
+                else {
                     Intent serviceIntent = new Intent(this, SMSMonitorService.class);
                     stopService(serviceIntent);
                     item.setChecked(false);
@@ -275,10 +250,10 @@ public class PrivacyActivity extends AppCompatActivity {
     }
     private boolean isCallable(Intent intent) {
         try {
-            List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            return list.size() > 0;
-        }catch (Exception e)    {
-            e.printStackTrace();
+            return getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+        }
+        catch (Exception e)    {
+            Crashlytics.logException(e);
             return false;
         }
     }
