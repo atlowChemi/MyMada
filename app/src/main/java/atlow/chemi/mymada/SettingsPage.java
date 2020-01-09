@@ -69,8 +69,6 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
     private int mySessionId = 0;
     private NavigationView navigationView;
     private boolean isDrawerLocked = false;
-    private AlertDialog progDialog;
-    private AlertDialog.Builder progressDialogBuilder;
     private ProgressBar progressBar;
     private TextView progressText;
     private Button posBtn, negBtn;
@@ -79,7 +77,7 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
             Mokdim = new String[] {"ירושלים","איילון","אשר","גלבוע","דן","ירדן","ירקון","כרמל","לכיש","נגב","שרון","מוקד 4"};
     private static final int REQUEST_PERMISSION_SETTING = 101, OVERLAY_PER_REQ = 345;
     private Fragment settingsNotifications = new SettingsNotifications(), settingsNotifSou = new SettingsNotificationsSounds(),
-    settingsAdvanced = new SettingsAdvanced(), settingsAmpm = new SettingsAmpm(), settingsTools = new SettingsTools();
+    settingsAdvanced = new SettingsAdvanced(), settingsAmPm = new SettingsAmpm(), settingsTools = new SettingsTools();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,7 +190,7 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                 fragment = settingsAdvanced;
                 break;
             case R.id.ampm:
-                fragment = settingsAmpm;
+                fragment = settingsAmPm;
                 break;
             case R.id.tools:
                 fragment = settingsTools;
@@ -275,16 +273,26 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                                     HideProgressDialog(0);
                                     LocalHelper.setLocale(getApplicationContext(), locale);
                                     break;
+                                case SplitInstallSessionStatus.CANCELED:
+                                case SplitInstallSessionStatus.CANCELING:
+                                case SplitInstallSessionStatus.DOWNLOADED:
+                                case SplitInstallSessionStatus.FAILED:
+                                case SplitInstallSessionStatus.INSTALLING:
+                                case SplitInstallSessionStatus.PENDING:
+                                case SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION:
+                                case SplitInstallSessionStatus.UNKNOWN:
+                                    HideProgressDialog(1);
+                                    break;
                             }
                         }
                     };
                     splitInstallManager = SplitInstallManagerFactory.create(getApplicationContext());
                     Set<String> langs = splitInstallManager.getInstalledLanguages();
-                    String lngs = "";
+                    StringBuilder languages = new StringBuilder();
                     for (String lng : langs) {
-                        lngs += lng + ", ";
+                        languages.append(lng).append(", ");
                     }
-                    Log.e("SPLIT MANAGER", "available lang " + lngs);
+                    Log.e("SPLIT MANAGER", "available lang " + languages);
                     Log.e("SPLIT MANAGER", "requested lang " + locale);
                     splitInstallManager.registerListener(listener);
                     SplitInstallRequest request = SplitInstallRequest.newBuilder().addLanguage(Locale.forLanguageTag(locale)).build();
@@ -317,13 +325,13 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
             TextView textView = langPicker.findViewById(android.R.id.title);
             if (textView != null)
                 textView.setTypeface(myTypeface);
-            Button canc = langPicker.getButton(DialogInterface.BUTTON_NEGATIVE);
-            canc.setTypeface(myTypeface);
+            Button cancelButton = langPicker.getButton(DialogInterface.BUTTON_NEGATIVE);
+            cancelButton.setTypeface(myTypeface);
         });
         langPicker.show();
     }
     public void ShowProgressDialog() {
-        progressDialogBuilder = new AlertDialog.Builder(SettingsPage.this, R.style.AlertDialogStyle);
+        AlertDialog.Builder progressDialogBuilder = new AlertDialog.Builder(SettingsPage.this, R.style.AlertDialogStyle);
         LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         View dialogView = inflater.inflate(R.layout.progress_bar_layout, null);
         progressDialogBuilder.setView(dialogView).setTitle("מוריד שפה").setCancelable(false)
@@ -336,7 +344,7 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
         progressBar = dialogView.findViewById(R.id.progressBar2);
         progressText = dialogView.findViewById(R.id.loadTxt);
         progressText.setText(getString(R.string.langLoad, "0%"));
-        progDialog = progressDialogBuilder.create();
+        AlertDialog progDialog = progressDialogBuilder.create();
         progDialog.show();
         posBtn = progDialog.getButton(DialogInterface.BUTTON_POSITIVE);
         posBtn.setVisibility(View.GONE);
@@ -373,11 +381,11 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                 textView = alert.findViewById(android.R.id.title);
                 if (textView != null)
                     textView.setTypeface(myTypeface);
-                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                 Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setTypeface(myTypeface);
-                canc.setTypeface(myTypeface);
-                canc.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.OldPrimary));
+                cancelButton.setTypeface(myTypeface);
+                cancelButton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.OldPrimary));
             });
             alert.show();
         }
@@ -517,8 +525,8 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                             textView = alert.findViewById(android.R.id.title);
                             if (textView != null)
                                 textView.setTypeface(myTypeface);
-                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                            Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                            cancelButton.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                         });
                         alert.show();
                     }

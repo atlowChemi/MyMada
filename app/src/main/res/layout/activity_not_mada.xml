@@ -94,7 +94,7 @@
             android:layout_centerHorizontal="true"
             android:background="@drawable/btns_new"
             android:gravity="center"
-            android:onClick="TZapp"
+            android:onClick="TZ_app"
             android:text="@string/title_mda"
             android:textColor="#FFF"
             android:textSize="20sp" />

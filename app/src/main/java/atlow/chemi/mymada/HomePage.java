@@ -10,12 +10,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -70,8 +68,6 @@ public class HomePage extends AppCompatActivity {
         setNotifChannels();
         rateUs.app_launched(HomePage.this);
         Context context = HomePage.this;
-
-        FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         MyFirebaseMessagingService.getToken(getApplicationContext());
         String token = getSharedPreferences("Settings", 0).getString("fcm", "empty");
         Crashlytics.setUserIdentifier(token);
@@ -81,7 +77,8 @@ public class HomePage extends AppCompatActivity {
         AdView mAdView;
         try {
             Log.e("FCM token: ", token);
-        }catch (Exception e)    {
+        }
+        catch (Exception e)    {
             e.printStackTrace();
         }
         FirebaseMessaging.getInstance().subscribeToTopic("news");
@@ -92,7 +89,8 @@ public class HomePage extends AppCompatActivity {
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
             Crashlytics.log("Ads Loaded");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Crashlytics.log("Ads Not Loaded");
             Crashlytics.logException(e);
         }
@@ -108,7 +106,6 @@ public class HomePage extends AppCompatActivity {
         List<HomeB> albumList = new ArrayList<>();
         adapter = new homeBAdapter(HomePage.this, albumList);
         rv.setLayoutManager(layoutManager);
-        //rv.setRotationY(180);
         rv.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(), true));
         rv.setItemAnimator(new DefaultItemAnimator());
         rv.setAdapter(adapter);
@@ -125,7 +122,8 @@ public class HomePage extends AppCompatActivity {
             HomeB Info = new HomeB("inf", R.drawable.new_inf);
             albumList.add(Info);
             Crashlytics.log("HomeBtns Loaded properly!");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Crashlytics.log("HomeBtns caused crash!");
             Crashlytics.logException(e);
         }
@@ -145,76 +143,25 @@ public class HomePage extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         boolean Privacy = sharedPreferences.getBoolean("privacy", false);
         boolean oldU = sharedPreferences.getBoolean("oldU", false);
-        if (!oldU) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-            builder.setMessage(getResources().getString(R.string.newSettings)).setCancelable(false)
-                    .setPositiveButton(getResources().getString(R.string.title_activity_settings), (dialog, id) -> {
-                        Intent intent = new Intent(getApplicationContext(), SettingsPage.class);
-                        startActivity(intent);
-                    }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-            final AlertDialog alert = builder.create();
-            alert.setOnShowListener(dialogInterface -> {
-                TextView textView = alert.findViewById(android.R.id.message);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
-                textView = alert.findViewById(android.R.id.title);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
-                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                ok.setTypeface(myTypeface);
-                canc.setTypeface(myTypeface);
-                canc.setTextColor(getResources().getColor(R.color.OldPrimary));
-            });
-            alert.show();
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-            builder.setMessage(getResources().getString(R.string.permDesOverlay)).setCancelable(false)
-                    .setTitle(getString(R.string.permTitle))
-                    .setPositiveButton(getResources().getString(R.string.permYes), (dialog, id) -> {
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                        startActivityForResult(intent, OVERLAY_PER_REQ);
-                    }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-            final AlertDialog alert = builder.create();
-            alert.setOnShowListener(dialogInterface -> {
-                TextView textView = alert.findViewById(android.R.id.message);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
-                textView = alert.findViewById(android.R.id.title);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
-                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                ok.setTypeface(myTypeface);
-                canc.setTypeface(myTypeface);
-                canc.setTextColor(ContextCompat.getColor(HomePage.this, R.color.OldPrimary));
-            });
-            alert.show();
-        }
-        if (oldU && !Privacy) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-            builder.setMessage(getResources().getString(R.string.privacyMsg)).setCancelable(false)
-                    .setPositiveButton(getResources().getString(R.string.title_activity_privacy), (dialog, id) -> {
-                        Intent intent = new Intent(getApplicationContext(), PrivacyActivity.class);
-                        startActivity(intent);
-                    })
-                    .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-            final AlertDialog alert = builder.create();
-            alert.setOnShowListener(dialogInterface -> {
-                TextView textView = alert.findViewById(android.R.id.message);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
-                textView = alert.findViewById(android.R.id.title);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
-                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                ok.setTypeface(myTypeface);
-                canc.setTypeface(myTypeface);
-                canc.setTextColor(getResources().getColor(R.color.OldPrimary));
-            });
-            alert.show();
-        }
+        //If the user wasn't in settings ever, ask him to go there
+        if (!oldU)
+            ShowDialog(getString(R.string.newSettings),
+                    getString(R.string.title_activity_settings),
+                    new Intent(getApplicationContext(), SettingsPage.class));
+
+        //If the user is android M or above, make sure he permitted app overlay.
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this))
+            ShowDialog(getString(R.string.permDesOverlay),
+                    getString(R.string.permTitle),
+                    getString(R.string.permYes),
+                    new Intent(getApplicationContext(), SettingsPage.class),
+                    true, OVERLAY_PER_REQ);
+        //If user was never in privacy page, ask him to visit there.
+        else if (!Privacy)
+            ShowDialog(getString(R.string.privacyMsg),
+                    getString(R.string.title_activity_privacy),
+                    new Intent(HomePage.this, PrivacyActivity.class));
+
         if(Mapp && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             manager = context.getSystemService(NotificationManager.class);
             int importance = 1;
@@ -224,30 +171,10 @@ public class HomePage extends AppCompatActivity {
             }
             Log.d("importance", "is " + importance);
             if (importance != NotificationManager.IMPORTANCE_MIN) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                builder.setMessage(getResources().getString(R.string.importanceMsg)).setCancelable(false)
-                        .setPositiveButton(getResources().getString(R.string.importance), (dialog, id) -> {
-                            Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
-                            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
-                            intent.putExtra(Settings.EXTRA_CHANNEL_ID, CnlBg);
-                            startActivity(intent);
-                        })
-                        .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-                final AlertDialog alert = builder.create();
-                alert.setOnShowListener(dialogInterface -> {
-                    TextView textView = alert.findViewById(android.R.id.message);
-                    if (textView != null)
-                        textView.setTypeface(myTypeface);
-                    textView = alert.findViewById(android.R.id.title);
-                    if (textView != null)
-                        textView.setTypeface(myTypeface);
-                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                    ok.setTypeface(myTypeface);
-                    canc.setTypeface(myTypeface);
-                    canc.setTextColor(ContextCompat.getColor(context, R.color.OldPrimary));
-                });
-                alert.show();
+                Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                intent.putExtra(Settings.EXTRA_CHANNEL_ID, CnlBg);
+                ShowDialog(getString(R.string.importanceMsg), getString(R.string.importance), intent);
             }
         }
     }
@@ -260,7 +187,8 @@ public class HomePage extends AppCompatActivity {
             int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
             if (label != 0)
                 setTitle(label);
-        } catch (PackageManager.NameNotFoundException e) {
+        }
+        catch (PackageManager.NameNotFoundException e) {
             Crashlytics.log(e.getMessage());
         }
     }
@@ -277,22 +205,19 @@ public class HomePage extends AppCompatActivity {
         public void getItemOffsets(@NonNull Rect outRect,@NonNull View view,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
             int position = parent.getChildAdapterPosition(view); // item position
             int column = position % spanCount; // item column
-
             if (includeEdge) {
                 outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
                 outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
-
-                if (position == 0) { // top edge
+                if (position == 0)  // top edge
                     outRect.top = spacing;
-                }
                 outRect.bottom = spacing; // item bottom
             }
             else {
                 outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
                 outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
-                if (position >= 1) {
+                if (position >= 1)
                     outRect.top = spacing; // item top
-                }
+
             }
         }
     }
@@ -349,10 +274,10 @@ public class HomePage extends AppCompatActivity {
     }
     private boolean isCallable(Intent intent) {
         try {
-            List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            return list.size() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
+            return getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+        }
+        catch (Exception e) {
+            Crashlytics.logException(e);
             return false;
         }
     }
@@ -414,84 +339,47 @@ public class HomePage extends AppCompatActivity {
                 if (activityExists) {
                     try {
                         if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                    .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
-                                        Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                                        startActivity(intent);
-                                    })
-                                    .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-                            final AlertDialog alert = builder.create();
-                            alert.setOnShowListener(dialogInterface -> {
-                                TextView textView = alert.findViewById(android.R.id.message);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                            });
-                            alert.show();
+                            ShowDialog(getString(R.string.dialog_help),
+                                    getString(R.string.dialog_yes),
+                                    new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
                         }
                         s.putBoolean("Mapp", true);
-                    } catch (ActivityNotFoundException e) {
+                    }
+                    catch (ActivityNotFoundException e) {
                         Intent intent = new Intent(this, NotificationService.class);
                         Intent old = new Intent(this, NotificationServiceOld.class);
                         stopService(intent);
                         startService(old);
                         if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                    .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
-                                        Intent intent1 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                        startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
-                                    })
-                                    .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-                            final AlertDialog alert = builder.create();
-                            alert.setOnShowListener(dialogInterface -> {
-                                TextView textView = alert.findViewById(android.R.id.message);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                textView = alert.findViewById(android.R.id.title);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                            });
-                            alert.show();
+                            ShowDialog(getString(R.string.dialog_help),
+                                    null,
+                                    getString(R.string.dialog_yes),
+                                    new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
+                                    true, REQUEST_PERMISSION_SETTING);
                         }
                         s.putBoolean("Mapp", true);
                     }
-                } else {
+                }
+                else {
                     Intent intent = new Intent(this, NotificationService.class);
                     Intent old = new Intent(this, NotificationServiceOld.class);
                     stopService(intent);
                     startService(old);
                     if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                        builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
-                                    Intent intent12 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                    startActivityForResult(intent12, REQUEST_PERMISSION_SETTING);
-                                })
-                                .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-                        final AlertDialog alert = builder.create();
-                        alert.setOnShowListener(dialogInterface -> {
-                            TextView textView = alert.findViewById(android.R.id.message);
-                            if (textView != null)
-                                textView.setTypeface(myTypeface);
-                            textView = alert.findViewById(android.R.id.title);
-                            if (textView != null)
-                                textView.setTypeface(myTypeface);
-                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                        });
-                        alert.show();
+                        ShowDialog(getString(R.string.dialog_help),
+                                null,
+                                getString(R.string.dialog_yes),
+                                new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
+                                true, REQUEST_PERMISSION_SETTING);
                     }
                     s.putBoolean("Mapp", true);
                 }
-            } else {
+            }
+            else {
                 s.putBoolean("Mapp", true);
             }
-        } else {
+        }
+        else {
             Intent serviceIntent = new Intent(this, SMSMonitorService.class);
             stopService(serviceIntent);
             item.setChecked(false);
@@ -500,36 +388,68 @@ public class HomePage extends AppCompatActivity {
         }
         s.apply();
     }
-    private void CreateOverlayPermissionDialog() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-            builder.setMessage(getResources().getString(R.string.permDesOverlay)).setCancelable(false)
-                    .setTitle(getString(R.string.permTitle))
-                    .setPositiveButton(getResources().getString(R.string.permYes), (dialog, id) -> {
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                        startActivityForResult(intent, OVERLAY_PER_REQ);
-                    }).setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-            final AlertDialog alert = builder.create();
-            alert.setOnShowListener(dialogInterface -> {
-                TextView textView = alert.findViewById(android.R.id.message);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
-                textView = alert.findViewById(android.R.id.title);
-                if (textView != null)
-                    textView.setTypeface(myTypeface);
-                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                ok.setTypeface(myTypeface);
-                canc.setTypeface(myTypeface);
-                canc.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.OldPrimary));
-            });
-            alert.show();
-        }
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == OVERLAY_PER_REQ)
-            if (resultCode != RESULT_OK)
-                CreateOverlayPermissionDialog();
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == OVERLAY_PER_REQ &&
+                resultCode != RESULT_OK &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                !Settings.canDrawOverlays(this))
+                ShowDialog(getString(R.string.permDesOverlay),
+                        getString(R.string.permTitle),
+                        getString(R.string.permYes),
+                        new Intent(getApplicationContext(), SettingsPage.class),
+                        true, OVERLAY_PER_REQ);
+    }
+
+    /***
+     * Show a designed Alert Dialog.
+     * @param msg message to show in dialog.
+     * @param btnPos string for positive button.
+     * @param intent Intent to open up when positive button clicked.
+     */
+    private void ShowDialog(String msg, String btnPos, Intent intent) {
+        ShowDialog(msg, null , btnPos, intent, false, 0);
+    }
+
+    /***
+     * Show a designed Alert Dialog.
+     * @param msg message to show in dialog.
+     * @param title message to show in dialog's title.
+     * @param btnPos string for positive button.
+     * @param intent Intent to open up when positive button clicked.
+     * @param resultActivity is the activity a result activity or not
+     * @param result result of intent
+     */
+    private void ShowDialog(String msg, String title, String btnPos, Intent intent, boolean resultActivity, int result) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+        builder.setMessage(msg).setCancelable(false)
+                .setPositiveButton(btnPos, (dialog, id) ->
+                {
+                    if (resultActivity)
+                        startActivityForResult(intent, result);
+                    else
+                        startActivity(intent);
+                })
+                .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
+        if (title != null)
+            builder.setTitle(title);
+        final AlertDialog alert = builder.create();
+        alert.setOnShowListener(dialogInterface -> DialogOnShowListener(alert));
+        alert.show();
+    }
+
+    private void DialogOnShowListener(AlertDialog alert) {
+        TextView textView = alert.findViewById(android.R.id.message);
+        if (textView != null)
+            textView.setTypeface(myTypeface);
+        textView = alert.findViewById(android.R.id.title);
+        if (textView != null)
+            textView.setTypeface(myTypeface);
+        Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+        Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+        ok.setTypeface(myTypeface);
+        cancelButton.setTypeface(myTypeface);
+        cancelButton.setTextColor(getResources().getColor(R.color.OldPrimary));
     }
 }

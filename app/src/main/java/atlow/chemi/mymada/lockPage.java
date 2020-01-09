@@ -10,7 +10,6 @@ import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -57,7 +56,7 @@ public class lockPage extends AppCompatActivity implements View.OnTouchListener 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
-    public void TZapp(View view) {
+    public void TZ_app(View view) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("market://details?id=com.groboot.mdaemergency"));
         try {

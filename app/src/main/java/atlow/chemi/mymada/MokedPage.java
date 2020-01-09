@@ -7,11 +7,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.tabs.TabLayout;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -40,6 +41,7 @@ import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 public class MokedPage extends AppCompatActivity {
     private MenuItem Detect;
+    private static final int REQUEST_PERMISSION_SETTING = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,7 @@ public class MokedPage extends AppCompatActivity {
         setContentView(R.layout.activity_moked_page);
         SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
         boolean realM = sharedPreferences.getBoolean("realM", false);
-        boolean isMADA = false;
+        boolean isMADA;
         if (!realM) {
             isMADA = isPI(MokedPage.this);
             if (!isMADA) {
@@ -76,13 +78,14 @@ public class MokedPage extends AppCompatActivity {
         if (!sp.getBoolean("pickedMoked", false)) {
             Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
             AlertDialog.Builder build = new AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                    .setTitle(MokedPage.this.getResources().getString(R.string.pickMokTtl))
-                    .setMessage(MokedPage.this.getResources().getString(R.string.pickMokTxt))
-                    .setPositiveButton(MokedPage.this.getResources().getString(R.string.goToSet), (dialogInterface, i) -> {
+                    .setTitle(getString(R.string.pickMokTtl))
+                    .setMessage(getString(R.string.pickMokTxt))
+                    .setPositiveButton(getString(R.string.goToSet), (dialogInterface, i) -> {
                         Intent intent = new Intent(MokedPage.this, SettingsPage.class);
                         intent.putExtra("pickMoked", true);
                         startActivity(intent);
-                    }).setNegativeButton(MokedPage.this.getResources().getString(R.string.skip), (dialogInterface, i) -> dialogInterface.dismiss());
+                    })
+                    .setNegativeButton(getString(R.string.skip), (dialogInterface, i) -> dialogInterface.dismiss());
             final AlertDialog alert = build.create();
             alert.setOnShowListener(dialogInterface -> {
                 TextView textView = alert.findViewById(android.R.id.message);
@@ -91,11 +94,11 @@ public class MokedPage extends AppCompatActivity {
                 textView = alert.findViewById(android.R.id.title);
                 if (textView != null)
                     textView.setTypeface(myTypeface);
-                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                 Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setTypeface(myTypeface);
-                canc.setTypeface(myTypeface);
-                canc.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
+                cancelButton.setTypeface(myTypeface);
+                cancelButton.setTextColor(MokedPage.this.getResources().getColor(R.color.ColorPrimary));
             });
             build.show();
         }
@@ -103,11 +106,9 @@ public class MokedPage extends AppCompatActivity {
     private static boolean isPI(Context context) {
         final PackageManager packageManager = context.getPackageManager();
         Intent intent = packageManager.getLaunchIntentForPackage("com.groboot.mdaemergency");
-        if (intent == null) {
+        if (intent == null)
             return false;
-        }
-        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return list.size() > 0;
+        return packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
     }
     @Override
     protected void attachBaseContext(Context base) {
@@ -118,47 +119,44 @@ public class MokedPage extends AppCompatActivity {
             int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
             if (label != 0)
                 setTitle(label);
-        } catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.log(e.getMessage());
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            Crashlytics.logException(e);
         }
     }
+
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new MainActivity1(), MokedPage.this.getResources().getString(R.string.button_a));
-        adapter.addFragment(new MainActivity2(), MokedPage.this.getResources().getString(R.string.button_b));
-        adapter.addFragment(new MainActivity3(), MokedPage.this.getResources().getString(R.string.button_i));
+        adapter.addFragment(new MainActivity1(), getString(R.string.button_a));
+        adapter.addFragment(new MainActivity2(), getString(R.string.button_b));
+        adapter.addFragment(new MainActivity3(), getString(R.string.button_i));
         viewPager.setAdapter(adapter);
     }
-
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
-
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
+        ViewPagerAdapter(FragmentManager manager) {
+            super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
-
+        @NonNull
         @Override
         public Fragment getItem(int position) {
             return mFragmentList.get(position);
         }
-
         @Override
         public int getCount() {
             return mFragmentList.size();
         }
-
-        public void addFragment(Fragment fragment, String title) {
+        void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
-
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
-    }
 
+    }
 
     @Override
     protected void onResume() {
@@ -178,7 +176,6 @@ public class MokedPage extends AppCompatActivity {
         menu.findItem(R.id.one).setCheckable(true).setChecked(sp.getBoolean("Mapp", false)).setIcon(icon);
         return true;
     }
-    private static final int REQUEST_PERMISSION_SETTING = 101;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
@@ -206,30 +203,21 @@ public class MokedPage extends AppCompatActivity {
                                 if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                                                    startActivity(intent);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                                                startActivity(intent);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        cancelButton.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
                                 s.putBoolean("Mapp", true);
-                            } catch (ActivityNotFoundException e) {
+                            }
+                            catch (ActivityNotFoundException e) {
                                 Intent intent = new Intent(this, NotificationService.class);
                                 Intent old = new Intent(this, NotificationServiceOld.class);
                                 stopService(intent);
@@ -237,30 +225,22 @@ public class MokedPage extends AppCompatActivity {
                                 if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                     builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                    startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                                }
+                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                                Intent intent12 = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                                startActivityForResult(intent12, REQUEST_PERMISSION_SETTING);
                                             })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                     final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
+                                    alert.setOnShowListener(dialogInterface -> {
+                                        Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        cancelButton.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                     });
                                     alert.show();
                                 }
                                 s.putBoolean("Mapp", true);
                             }
-                        } else {
+                        }
+                        else {
                             Intent intent = new Intent(this, NotificationService.class);
                             Intent old = new Intent(this, NotificationServiceOld.class);
                             stopService(intent);
@@ -268,33 +248,26 @@ public class MokedPage extends AppCompatActivity {
                             if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                                 builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                            }
+                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                            Intent intent1 = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                            startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
                                         })
-                                        .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-                                            }
-                                        });
+                                        .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                                 final AlertDialog alert = builder.create();
-                                alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                    @Override
-                                    public void onShow(DialogInterface dialogInterface) {
-                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                    }
+                                alert.setOnShowListener(dialogInterface -> {
+                                    Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                    cancelButton.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                                 });
                                 alert.show();
                             }
                             s.putBoolean("Mapp", true);
                         }
-                    } else {
+                    }
+                    else {
                         s.putBoolean("Mapp", true);
                     }
-                } else {
+                }
+                else {
                     Intent serviceIntent = new Intent(this, SMSMonitorService.class);
                     stopService(serviceIntent);
                     item.setChecked(false);
@@ -312,10 +285,10 @@ public class MokedPage extends AppCompatActivity {
     }
     private boolean isCallable(Intent intent) {
         try {
-            List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            return list.size() > 0;
-        }catch (Exception e)    {
-            e.printStackTrace();
+            return getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+        }
+        catch (Exception e)    {
+            Crashlytics.logException(e);
             return false;
         }
     }

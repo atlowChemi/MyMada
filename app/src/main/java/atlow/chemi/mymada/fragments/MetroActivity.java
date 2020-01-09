@@ -35,6 +35,59 @@ import atlow.chemi.mymada.recieversAndServices.MetroService;
 import atlow.chemi.mymada.R;
 
 public class MetroActivity extends Fragment {
+    static class StopWatch {
+        private long startTime = 0;
+        private boolean isOn = false;
+
+        void setStartTime(long startTime) {
+            this.startTime = startTime;
+        }
+
+        public void start() {
+            if (this.startTime == 0)
+                this.startTime = System.currentTimeMillis();
+            this.isOn = true;
+        }
+
+        public void stop() {
+            this.startTime = 0;
+            this.isOn = false;
+        }
+
+        int getPercentOfTwoMinute() {
+            return (int) (((System.currentTimeMillis() - this.startTime) / 1000) % 120);
+        }
+
+        private String getElapsedTimeSeconds() {
+            long elapsed = 0;
+            if (isOn)
+                elapsed = ((System.currentTimeMillis() - this.startTime) / 1000) % 60;
+            return elapsed <= 9 ? "0" + elapsed : elapsed + "";
+        }
+
+        private String getElapsedTimeMinutes() {
+            long elapsed = 0;
+            if (isOn)
+                elapsed = (((System.currentTimeMillis() - this.startTime) / 1000) / 60) % 60;
+            return elapsed <= 9 ? "0" + elapsed : elapsed + "";
+        }
+
+        private String getElapsedTimeHours() {
+            long elapsed = 0;
+            if (isOn)
+                elapsed = ((((System.currentTimeMillis() - this.startTime) / 1000) / 60) / 60);
+            return elapsed <= 9 ? "0" + elapsed : elapsed + "";
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            if (getElapsedTimeHours().equals("00"))
+                return getElapsedTimeMinutes() + ":" + getElapsedTimeSeconds();
+            return getElapsedTimeHours() + "\n" + getElapsedTimeMinutes() + ":" + getElapsedTimeSeconds();
+        }
+    }
+
     private static Animation anim, big;
     public static boolean MetroRun = false;
     @SuppressLint("StaticFieldLeak")
@@ -62,7 +115,7 @@ public class MetroActivity extends Fragment {
                     try {
                         clock.setText(stopWatch.toString());
                         pb.setProgress(0);
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         Crashlytics.log("Text box does not exist");
                         Crashlytics.logException(e);
                     }
@@ -81,7 +134,7 @@ public class MetroActivity extends Fragment {
                             pb.setProgress(stopWatch.getPercentOfTwoMinute(), true);
                         else
                             pb.setProgress(stopWatch.getPercentOfTwoMinute());
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         Crashlytics.log("Text box does not exist");
                         Crashlytics.logException(e);
                     }
@@ -103,10 +156,12 @@ public class MetroActivity extends Fragment {
             getActivity().setTitle(R.string.button_d);
         }
     }
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle)  {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceBundle) {
         return inflater.inflate(R.layout.activity_metro, container, false);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -129,7 +184,7 @@ public class MetroActivity extends Fragment {
             startAnim();
         }
         bp.setOnClickListener(view1 -> {
-            if(!MetroRun) {
+            if (!MetroRun) {
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "metro");
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "metronome");
@@ -154,15 +209,13 @@ public class MetroActivity extends Fragment {
                 Intent serviceIntent = new Intent(getActivity(), MetroService.class);
                 try {
                     ContextCompat.startForegroundService(getActivity(), serviceIntent);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     Crashlytics.log("failed starting metronome");
                     Crashlytics.logException(e);
                 }
                 clocketise(START_TIMER);
                 startAnim();
-            }
-            else {
+            } else {
                 clocketise(STOP_TIMER);
                 MetroRun = false;
                 Intent serviceIntent = new Intent(getActivity(), MetroService.class);
@@ -173,12 +226,14 @@ public class MetroActivity extends Fragment {
         if (start)
             bp.performClick();
     }
+
     public static void clocketise(int what) {
         if (timestamp == 0 || System.currentTimeMillis() < timestamp)
             timestamp = System.currentTimeMillis();
         stopWatch.setStartTime(timestamp);
         mHandler.sendEmptyMessage(what);
     }
+
     public static void startAnim() {
         if (v != null) {
             try {
@@ -190,6 +245,7 @@ public class MetroActivity extends Fragment {
             }
         }
     }
+
     public static void stopAnim() {
         if (v != null && anim != null && big != null) {
             try {
@@ -203,6 +259,7 @@ public class MetroActivity extends Fragment {
             }
         }
     }
+
     private static void scaleView(final View v) {
         anim = new ScaleAnimation((float) 1.05, (float) 1.0, (float) 1.05, (float) 1.0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         big = new ScaleAnimation((float) 1.0, (float) 1.05, (float) 1.0, (float) 1.05, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -211,68 +268,32 @@ public class MetroActivity extends Fragment {
         big.setDuration(350);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {}
+            public void onAnimationStart(Animation animation) {
+            }
+
             @Override
             public void onAnimationEnd(Animation animation) {
                 v.startAnimation(big);
             }
+
             @Override
-            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {
+            }
         });
         big.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {}
+            public void onAnimationStart(Animation animation) {
+            }
+
             @Override
             public void onAnimationEnd(Animation animation) {
                 v.startAnimation(anim);
             }
+
             @Override
-            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {
+            }
         });
         v.startAnimation(anim);
-    }
-}
-class StopWatch {
-    private long startTime = 0;
-    private boolean isOn = false;
-    void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-    public void start() {
-        if (this.startTime == 0)
-            this.startTime = System.currentTimeMillis();
-        this.isOn = true;
-    }
-    public void stop() {
-        this.startTime = 0;
-        this.isOn = false;
-    }
-    int getPercentOfTwoMinute() {
-        return (int)(((System.currentTimeMillis() - this.startTime) / 1000) % 120);
-    }
-    private String getElapsedTimeSeconds() {
-        long elapsed = 0;
-        if (isOn)
-            elapsed = ((System.currentTimeMillis() - this.startTime) / 1000) % 60;
-        return elapsed <= 9 ? "0" + elapsed : elapsed + "";
-    }
-    private String getElapsedTimeMinutes() {
-        long elapsed = 0;
-        if (isOn)
-            elapsed = (((System.currentTimeMillis() - this.startTime) / 1000) / 60) % 60;
-        return elapsed <= 9 ? "0" + elapsed : elapsed + "";
-    }
-    private String getElapsedTimeHours() {
-        long elapsed = 0;
-        if (isOn)
-            elapsed = ((((System.currentTimeMillis() - this.startTime) / 1000) / 60) / 60);
-        return elapsed <= 9 ? "0" + elapsed : elapsed + "";
-    }
-    @NonNull
-    @Override
-    public String toString() {
-        if (getElapsedTimeHours().equals("00"))
-            return getElapsedTimeMinutes() + ":" + getElapsedTimeSeconds();
-        return getElapsedTimeHours() + "\n" + getElapsedTimeMinutes() + ":" + getElapsedTimeSeconds();
     }
 }
