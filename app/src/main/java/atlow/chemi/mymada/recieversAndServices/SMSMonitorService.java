@@ -38,7 +38,7 @@ public class SMSMonitorService extends Service {
             Intent callSNI = new Intent(this, HomePage.class);
             callSNI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, callSNI, 0);
-            Intent btn = new Intent(this, ActionReciver.class);
+            Intent btn = new Intent(this, ActionReceiver.class);
             btn.putExtra("action", "runInBG");
             PendingIntent pBtn = PendingIntent.getBroadcast(SMSMonitorService.this, 13, btn, PendingIntent.FLAG_UPDATE_CURRENT);
             Crashlytics.log("sending SmsMonitor notif");

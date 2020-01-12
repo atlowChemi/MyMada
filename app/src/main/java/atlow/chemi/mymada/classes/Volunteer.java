@@ -3,12 +3,10 @@ package atlow.chemi.mymada.classes;
 public class Volunteer {
     private String name;
     private int job;
-    private int thumbnail;
 
-    public Volunteer(String name, int job, int thumbnail) {
+    public Volunteer(String name, int job) {
         this.name = name;
         this.job = job;
-        this.thumbnail = thumbnail;
     }
 
     public String getName() {

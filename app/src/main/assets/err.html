@@ -1,9 +1,9 @@
 ﻿<html dir="rtl">
-   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-      <title>שגיאה</title>
-      <style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>שגיאה</title>
+    <style>
          @font-face {
             font-family: myFont;
             src: url('./fonts/opensanshebrew.ttf') format('truetype');
@@ -62,33 +62,37 @@
                left: 100%;
             }
          }
-      </style>
-      <script src="jquery.js"></script>
-      <script>
-         $(document).ready(function() {
-            //$("#slider").css("height", $("img").height() - 5);
-            var lng = $.urlParam("lng");
-            if(lng == "en") {
-               $("h1").text("unable to connect :/");
-               $("p").html("we were unable to reach this site<br />check your connection.");
-               $("body").css("direction", "ltr");
-            }
-         });
-         $.urlParam = function(name) {
-            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-            if(results == null)
-               return null;
-            return decodeURI(results[1]) || 0;
-         }
-      </script>
-   </head>
-   <body>
-      <div id="main">
-         <h1>לא ניתן להתחבר :/</h1>
-         <div id="slider">
+    </style>
+</head>
+<body>
+    <div id="main">
+        <h1 id="header">לא ניתן להתחבר :/</h1>
+        <div id="slider">
             <div id="bar"></div>
-         </div>
-         <p id="probId">לא הצלחנו להשיג את האתר המבוקש<br />בדוק את החיבור ונסה שנית.</p>
-      </div>
-   </body>
+        </div>
+        <p id="probId">לא הצלחנו להשיג את האתר המבוקש<br/>בדוק את החיבור ונסה שנית.</p>
+    </div>
+    <script>
+        function getUrlVars() {
+            var vars = {};
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                vars[key] = value;
+            });
+            return vars;
+        }
+        function getUrlParam(parameter, defaultValue){
+            var urlParameter = defaultValue;
+            if(window.location.href.indexOf(parameter) > -1){
+                urlParameter = getUrlVars()[parameter];
+            }
+            return urlParameter;
+        }
+        var lng = getUrlParam('lng','he');
+        if(lng == "en") {
+            document.getElementById("header").innerHTML = "unable to connect :/";
+            document.getElementById("probId").innerHTML = "we were unable to reach this site<br />check your connection.";
+            document.body.style.direction = "ltr";
+        }
+    </script>
+</body>
 </html>

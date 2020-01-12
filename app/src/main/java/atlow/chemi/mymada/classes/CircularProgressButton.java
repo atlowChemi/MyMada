@@ -17,12 +17,13 @@ import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Handler;
-import androidx.annotation.ColorRes;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.helpers.UtilsJava;
@@ -30,7 +31,7 @@ import atlow.chemi.mymada.helpers.UtilsJava;
 
 public class CircularProgressButton extends AppCompatButton implements AnimatedButton, CustomizableByCode {
     private enum State {
-        PROGRESS, IDLE, DONE, STOPED
+        PROGRESS, IDLE, DONE, STOPPED
     }
 
     //private CircularAnimatedDrawable mAnimatedDrawable;
@@ -55,7 +56,7 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
 
     /**
      *
-     * @param context
+     * @param context app context
      */
     public CircularProgressButton(Context context) {
         super(context);
@@ -64,8 +65,8 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
     }
     /**
      *
-     * @param context
-     * @param attrs
+     * @param context app context
+     * @param attrs button attributes
      */
     public CircularProgressButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -74,9 +75,9 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
     }
     /**
      *
-     * @param context
-     * @param attrs
-     * @param defStyleAttr
+     * @param context app context
+     * @param attrs button attribiutes
+     * @param defStyleAttr default style
      */
     public CircularProgressButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -85,10 +86,10 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
     }
     /**
      *
-     * @param context
-     * @param attrs
-     * @param defStyleAttr
-     * @param defStyleRes
+     * @param context app context
+     * @param attrs button attributes
+     * @param defStyleAttr default style
+     * @param defStyleRes default style resource
      */
     @TargetApi(23)
     public CircularProgressButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -97,10 +98,10 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
         init(context, attrs, defStyleAttr, defStyleRes);
     }
     /**
-     * Commom initializer method.
+     * Common initializer method.
      *
      * @param context Context
-     * @param attrs Atributes passed in the XML
+     * @param attrs Attributes passed in the XML
      */
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mParams = new Params();
@@ -111,11 +112,11 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
 
         if(attrs == null) {
             drawables = loadGradientDrawable(UtilsJava.getDrawable(getContext(), R.drawable.round_button));
-        } else{
+        }
+        else{
             int[] attrsArray = new int[] {
                     android.R.attr.background, // 0
             };
-
             TypedArray typedArray =  context.obtainStyledAttributes(attrs, R.styleable.CircularProgressButton, defStyleAttr, defStyleRes);
             TypedArray typedArrayBG = context.obtainStyledAttributes(attrs, attrsArray, defStyleAttr, defStyleRes);
 
@@ -173,17 +174,22 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
         else {
             if (drawable instanceof GradientDrawable) {
                 mGradientDrawable.setBothDrawables((GradientDrawable) drawable);
-            } else if (drawable instanceof ColorDrawable) {
+            }
+            else if (drawable instanceof ColorDrawable) {
                 ColorDrawable colorDrawable = (ColorDrawable) drawable;
                 GradientDrawable gradientDrawable = new GradientDrawable();
                 gradientDrawable.setColor(colorDrawable.getColor());
                 mGradientDrawable.setBothDrawables(gradientDrawable);
-            } else if (drawable instanceof InsetDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            }
+            else if (drawable instanceof InsetDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 InsetDrawable insetDrawable = (InsetDrawable) drawable;
                 mGradientDrawable = loadGradientDrawable(insetDrawable.getDrawable());
                 // use the original inset as background to keep margins, and use the inner drawable for morphing
-                mGradientDrawable.backGroundDrawable = insetDrawable;
-            } else if (drawable instanceof StateListDrawable) {
+                if(mGradientDrawable != null) {
+                    mGradientDrawable.backGroundDrawable = insetDrawable;
+                }
+            }
+            else if (drawable instanceof StateListDrawable) {
                 StateListDrawable stateListDrawable = (StateListDrawable) drawable;
                 //try to get the drawable for an active, enabled, unpressed button
                 stateListDrawable.setState(new int[] {android.R.attr.state_enabled, android.R.attr.state_active,
@@ -192,7 +198,7 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
                 mGradientDrawable = loadGradientDrawable(current);
 
             }
-            if (mGradientDrawable.morphingDrawable == null) {
+            if (mGradientDrawable == null || mGradientDrawable.morphingDrawable == null) {
                 throw new RuntimeException("Error reading background... Use a shape or a color in xml!");
             }
         }
@@ -254,7 +260,8 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
 
         if (mState == State.PROGRESS && !mIsMorphingInProgress) {
             drawProgress(canvas);
-        } else if(mState == State.DONE){
+        }
+        else if(mState == State.DONE){
             drawDoneAnimation(canvas);
         }
     }
@@ -281,7 +288,8 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
             mAnimatedDrawable.setBounds(left, top, right, bottom);
             mAnimatedDrawable.setCallback(this);
             mAnimatedDrawable.start();
-        } else {
+        }
+        else {
             mAnimatedDrawable.setProgress(progress);
             mAnimatedDrawable.draw(canvas);
         }
@@ -304,19 +312,19 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
     }
 
     /**
-     * Stops the animation and sets the button in the STOPED state.
+     * Stops the animation and sets the button in the STOPPED state.
      */
     public void stopAnimation() {
         if(mState == State.PROGRESS && !mIsMorphingInProgress) {
-            mState = State.STOPED;
+            mState = State.STOPPED;
             mAnimatedDrawable.stop();
         }
     }
 
     /**
      * Call this method when you want to show a 'completed' or a 'done' status. You have to choose the
-     * color and the image to be shown. If your loading progress ended with a success status you probrably
-     * want to put a icon for "sucess" and a blue color, otherwise red and a failure icon. You can also
+     * color and the image to be shown. If your loading progress ended with a success status you probably
+     * want to put a icon for "success" and a blue color, otherwise red and a failure icon. You can also
      * show that a music is completed... or show some status on a game... be creative!
      *
      * @param fillColor The color of the background of the button
@@ -394,25 +402,19 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
         }
 
         ValueAnimator widthAnimation = ValueAnimator.ofInt(fromWidth, toWidth);
-        widthAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int val = (Integer) valueAnimator.getAnimatedValue();
-                ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                layoutParams.width = val;
-                setLayoutParams(layoutParams);
-            }
+        widthAnimation.addUpdateListener(valueAnimator -> {
+            int val = (Integer) valueAnimator.getAnimatedValue();
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            layoutParams.width = val;
+            setLayoutParams(layoutParams);
         });
 
         ValueAnimator heightAnimation = ValueAnimator.ofInt(fromHeight, toHeight);
-        heightAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int val = (Integer) valueAnimator.getAnimatedValue();
-                ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                layoutParams.height = val;
-                setLayoutParams(layoutParams);
-            }
+        heightAnimation.addUpdateListener(valueAnimator -> {
+            int val = (Integer) valueAnimator.getAnimatedValue();
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            layoutParams.height = val;
+            setLayoutParams(layoutParams);
         });
 
 
@@ -420,7 +422,8 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
         mAnimatorSet.setDuration(300);
         if (mGradientDrawable != null) {
             mAnimatorSet.playTogether(cornerAnimation, widthAnimation, heightAnimation);
-        } else {
+        }
+        else {
             mAnimatorSet.playTogether(widthAnimation, heightAnimation);
         }
         mAnimatorSet.addListener(new AnimatorListenerAdapter() {
@@ -468,7 +471,8 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
 
         if(mIsMorphingInProgress) {
             mAnimatorSet.cancel();
-        } else {
+        }
+        else {
             mParams.mInitialWidth = getWidth();
             mParams.mInitialHeight = getHeight();
         }
@@ -481,32 +485,25 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
         //this.setText(null);
         setClickable(true);
 
-        int toHeight =  mParams.mInitialHeight;
-        int toWidth = toHeight; //Making a perfect circle
+        int toHeightAndWidth =  mParams.mInitialHeight;
 
         ObjectAnimator cornerAnimation =
                 ObjectAnimator.ofFloat(mGradientDrawable, "cornerRadius", mParams.mInitialCornerRadius, mParams.mFinalCornerRadius);
 
-        ValueAnimator widthAnimation = ValueAnimator.ofInt(mParams.mInitialWidth, toWidth);
-        widthAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int val = (Integer) valueAnimator.getAnimatedValue();
-                ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                layoutParams.width = val;
-                setLayoutParams(layoutParams);
-            }
+        ValueAnimator widthAnimation = ValueAnimator.ofInt(mParams.mInitialWidth, toHeightAndWidth);
+        widthAnimation.addUpdateListener(valueAnimator -> {
+            int val = (Integer) valueAnimator.getAnimatedValue();
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            layoutParams.width = val;
+            setLayoutParams(layoutParams);
         });
 
-        ValueAnimator heightAnimation = ValueAnimator.ofInt(mParams.mInitialHeight, toHeight);
-        heightAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int val = (Integer) valueAnimator.getAnimatedValue();
-                ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                layoutParams.height = val;
-                setLayoutParams(layoutParams);
-            }
+        ValueAnimator heightAnimation = ValueAnimator.ofInt(mParams.mInitialHeight, toHeightAndWidth);
+        heightAnimation.addUpdateListener(valueAnimator -> {
+            int val = (Integer) valueAnimator.getAnimatedValue();
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            layoutParams.height = val;
+            setLayoutParams(layoutParams);
         });
 
         /*ValueAnimator strokeAnimation = ValueAnimator.ofFloat(
@@ -532,12 +529,7 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
                 if (doneWhileMorphing) {
                     doneWhileMorphing = false;
 
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            doneLoadingAnimation(mFillColorDone, mBitmapDone);
-                        }
-                    };
+                    Runnable runnable = () -> doneLoadingAnimation(mFillColorDone, mBitmapDone);
 
                     new Handler().postDelayed(runnable, 50);
                 }

@@ -1,6 +1,5 @@
 package atlow.chemi.mymada.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -8,15 +7,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -37,18 +34,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import atlow.chemi.mymada.R;
+import atlow.chemi.mymada.adapters.ContractionAdapter;
 import atlow.chemi.mymada.classes.CircularProgressButton;
 import atlow.chemi.mymada.classes.Contraction;
-import atlow.chemi.mymada.adapters.ContractionAdapter;
-import atlow.chemi.mymada.R;
 
 public class ContracTimer extends Fragment {
-    @SuppressLint("StaticFieldLeak")
-    private static ContractionAdapter adapter;
+    private ContractionAdapter adapter;
     private ArrayList<Contraction> albumList;
-    private static int num = 0;
-    private static Date start, end;
-    private static boolean running = false;
+    private int num = 0;
+    private Date start, end;
+    private boolean running = false;
     private CircularProgressButton contractBtn;
     private RecyclerView recyclerView;
     private SharedPreferences sp;
@@ -69,17 +65,16 @@ public class ContracTimer extends Fragment {
             if (!sp.getString("contractList", "").isEmpty() && leesT20M) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
                 dialog.setMessage(getActivity().getResources().getString(R.string.ContracRecover)).setCancelable(false).setPositiveButton(getActivity().getResources().getString(R.string.ok), (dialogInterface, i) -> {
-                    /*****/
+                    /**/
                     num = sp.getInt("contarctNum", 0);
                     end = new Date(sp.getLong("contractLong", 0));
                     Gson gson = new Gson();
                     String json = sp.getString("contractList", "");
                     if (!json.isEmpty()) {
-                        Type type = new TypeToken<List<Contraction>>() {
-                        }.getType();
+                        Type type = new TypeToken<List<Contraction>>() {}.getType();
                         albumList = gson.fromJson(json, type);
                     }
-                    /******/
+                    /**/
                     adapter = new ContractionAdapter(albumList, getActivity());
                     if (recyclerView != null) {
                         recyclerView.setAdapter(adapter);
@@ -103,14 +98,14 @@ public class ContracTimer extends Fragment {
                 });
                 final AlertDialog alert = dialog.create();
                 alert.setOnShowListener(dialogInterface -> {
-                    Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    Button cancel = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
                     try {
                         Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
                         TextView textView = alert.findViewById(android.R.id.message);
                         if (textView != null)
                             textView.setTypeface(myTypeface);
-                        canc.setTypeface(myTypeface);
-                        canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
+                        cancel.setTypeface(myTypeface);
+                        cancel.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
                     } catch (NullPointerException e) {
                         Crashlytics.log("Contractions remake defect");
                         Crashlytics.logException(e);
@@ -152,7 +147,7 @@ public class ContracTimer extends Fragment {
                 }
             }
         }
-        else if (!albumList.isEmpty() && adapter == null){
+        else if (adapter == null){
             adapter = new ContractionAdapter(albumList, getActivity());
         }
     }
@@ -162,7 +157,7 @@ public class ContracTimer extends Fragment {
         return inflater.inflate(R.layout.activity_contract_calc, container, false);
     }
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setReverseLayout(true);
@@ -174,8 +169,10 @@ public class ContracTimer extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
         contractBtn = view.findViewById(R.id.contra_btn);
-        Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
-        contractBtn.setTypeface(myTypeface);
+        if(getActivity() != null) {
+            Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
+            contractBtn.setTypeface(myTypeface);
+        }
         if (running) {
             if (start == null)
                 start = Calendar.getInstance().getTime();

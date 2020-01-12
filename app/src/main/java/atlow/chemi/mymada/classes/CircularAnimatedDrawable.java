@@ -17,12 +17,11 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-/**
- * Created by leandro on 5/31/16.
- */
+import androidx.annotation.NonNull;
+
 public class CircularAnimatedDrawable extends Drawable implements Animatable {
-    public static final int MIN_PROGRESS = 0;
-    public static final int MAX_PROGRESS = 100;
+    static final int MIN_PROGRESS = 0;
+    static final int MAX_PROGRESS = 100;
 
     private ValueAnimator mValueAnimatorAngle;
     private ValueAnimator mValueAnimatorSweep;
@@ -57,7 +56,7 @@ public class CircularAnimatedDrawable extends Drawable implements Animatable {
      * @param borderWidth The width of the spinning bar
      * @param arcColor The color of the spinning bar
      */
-    public CircularAnimatedDrawable(View view, float borderWidth, int arcColor) {
+    CircularAnimatedDrawable(View view, float borderWidth, int arcColor) {
         mAnimatedView = view;
 
         mBorderWidth = borderWidth;
@@ -84,7 +83,7 @@ public class CircularAnimatedDrawable extends Drawable implements Animatable {
         fBounds.bottom = bounds.bottom - mBorderWidth / 2f - .5f;
     }
 
-    public void setLoadingBarColor(int color) {
+    void setLoadingBarColor(int color) {
         mPaint.setColor(color);
     }
 
@@ -122,7 +121,7 @@ public class CircularAnimatedDrawable extends Drawable implements Animatable {
     /**
      * Method the inform if the animation is in process
      *
-     * @return
+     * @return is the animation running
      */
     @Override
     public boolean isRunning() {
@@ -131,20 +130,22 @@ public class CircularAnimatedDrawable extends Drawable implements Animatable {
 
     /**
      * Method called when the drawable is going to draw itself.
-     * @param canvas
+     * @param canvas canvas to draw on
      */
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         float startAngle = mCurrentGlobalAngle - mCurrentGlobalAngleOffset;
         float sweepAngle = mCurrentSweepAngle;
 
 		if (progress >= MIN_PROGRESS && progress <= MAX_PROGRESS) {
 			startAngle = -90;
 			sweepAngle = shownProgress;
-		} else if (!mModeAppearing) {
+		}
+		else if (!mModeAppearing) {
             startAngle = startAngle + sweepAngle;
             sweepAngle = 360 - sweepAngle - MIN_SWEEP_ANGLE;
-        } else {
+        }
+		else {
             sweepAngle += MIN_SWEEP_ANGLE;
         }
 
@@ -174,12 +175,7 @@ public class CircularAnimatedDrawable extends Drawable implements Animatable {
         mValueAnimatorAngle.setInterpolator(ANGLE_INTERPOLATOR);
         mValueAnimatorAngle.setDuration(ANGLE_ANIMATOR_DURATION);
         mValueAnimatorAngle.setRepeatCount(ValueAnimator.INFINITE);
-        mValueAnimatorAngle.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mCurrentGlobalAngle = (float)animation.getAnimatedValue();
-            }
-        });
+        mValueAnimatorAngle.addUpdateListener(animation -> mCurrentGlobalAngle = (float)animation.getAnimatedValue());
 
         mValueAnimatorSweep = ValueAnimator.ofFloat(0, 360f - 2 * MIN_SWEEP_ANGLE);
         mValueAnimatorSweep.setInterpolator(SWEEP_INTERPOLATOR);
@@ -192,39 +188,30 @@ public class CircularAnimatedDrawable extends Drawable implements Animatable {
                 shouldDraw = false;
             }
         });
-
-        mValueAnimatorSweep.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mCurrentSweepAngle = (float) animation.getAnimatedValue();
-
-                if (mCurrentSweepAngle < 5) {
-                    shouldDraw = true;
-                }
-
-                if (shouldDraw) {
-                    mAnimatedView.invalidate();
-                }
+        mValueAnimatorSweep.addUpdateListener(animation -> {
+            mCurrentSweepAngle = (float) animation.getAnimatedValue();
+            if (mCurrentSweepAngle < 5) {
+                shouldDraw = true;
+            }
+            if (shouldDraw) {
+                mAnimatedView.invalidate();
             }
         });
-
         // progress animation is set up on each change of progress val
     }
 
     /**
      * This method is called in every repetition of the animation, so the animation make the sweep
-     * growing and then make it shirinking.
+     * growing and then make it shrinking.
      */
     private void toggleAppearingMode() {
         mModeAppearing = !mModeAppearing;
-
         if (mModeAppearing) {
             mCurrentGlobalAngleOffset = (mCurrentGlobalAngleOffset + MIN_SWEEP_ANGLE * 2) % 360;
         }
     }
 
-
-    public void dispose() {
+    void dispose() {
         if (mValueAnimatorAngle != null) {
             mValueAnimatorAngle.end();
             mValueAnimatorAngle.removeAllUpdateListeners();
@@ -254,10 +241,9 @@ public class CircularAnimatedDrawable extends Drawable implements Animatable {
         }
     }
 
-    public void setProgress(int progress) {
+    void setProgress(int progress) {
         if (this.progress == progress)
             return;
-
         this.progress = progress;
 
         if (progress < MIN_PROGRESS)
@@ -267,12 +253,9 @@ public class CircularAnimatedDrawable extends Drawable implements Animatable {
             mValueAnimatorProgress = ValueAnimator.ofFloat(shownProgress, progress * 3.6f);
             mValueAnimatorProgress.setInterpolator(SWEEP_INTERPOLATOR);
             mValueAnimatorProgress.setDuration(PROGRESS_ANIMATOR_DURATION);
-            mValueAnimatorProgress.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    shownProgress = (float) animation.getAnimatedValue();
-                    mAnimatedView.invalidate();
-                }
+            mValueAnimatorProgress.addUpdateListener(animation -> {
+                shownProgress = (float) animation.getAnimatedValue();
+                mAnimatedView.invalidate();
             });
         } else {
             if (mValueAnimatorProgress.isRunning())

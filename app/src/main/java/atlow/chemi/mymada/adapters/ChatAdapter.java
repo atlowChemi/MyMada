@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,8 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,13 +28,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import atlow.chemi.mymada.classes.Chat;
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.contactChatActivity;
+import atlow.chemi.mymada.classes.Chat;
+import atlow.chemi.mymada.helpers.ChatEventCallback;
+import atlow.chemi.mymada.helpers.Event;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
     private List<Chat> albumList;
     private Context context;
+    public Event<ChatEventCallback> nameChangeRequestCallback = new Event<>();
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView msgSender, msgTxt, msgTime;
@@ -74,7 +77,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             holder.msgTxt.setVisibility(View.GONE);
             holder.msgTime.setVisibility(View.GONE);
             holder.msgHold.setCardBackgroundColor(ContextCompat.getColor(context, R.color.White));
-            holder.msgHold.setOnClickListener(v -> contactChatActivity.askForName(context, true));
+            holder.msgHold.setOnClickListener(v -> {
+                for(ChatEventCallback listener: nameChangeRequestCallback.listeners()) {
+                    listener.invoke();
+                }
+            });
         }
         else {
             if (msg.isWhatsApp()) {
@@ -94,7 +101,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(sendIntent);
                     } catch (Exception e) {
-                        Log.e("WHATSAPP ERR", e.getMessage());
+                        Crashlytics.logException(e);
                         Toast.makeText(context, "וואטסאפ לא מותקן כנראה!", Toast.LENGTH_SHORT).show();
                     }
                 });

@@ -39,7 +39,7 @@ public class MyTileService extends TileService {
         // switch from active to passive based on tiles current state
         switch (tile.getState()) {
             case Tile.STATE_ACTIVE:
-                Intent btn = new Intent(MyTileService.this, ActionReciver.class);
+                Intent btn = new Intent(MyTileService.this, ActionReceiver.class);
                 getApplicationContext().sendBroadcast(btn);
                 /**/
                 setCurrentState(Tile.STATE_INACTIVE);

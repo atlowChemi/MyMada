@@ -1,7 +1,5 @@
 package atlow.chemi.mymada.classes;
 
-import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
 
 public class Metronome {
@@ -15,27 +13,28 @@ public class Metronome {
     public Metronome() {
         audioGenerator.createPlayer();
     }
+
     public void play() {
         int beat = 30;
         do {
-            Log.e("Metronome", ""+currentBeat);
+            //Log.e("Metronome", ""+currentBeat);
             if(currentBeat == 1)
                 try {
                     audioGenerator.writeSound(soundTockArray);
-                }catch (Exception e) {
+                } catch(Exception e) {
                     Crashlytics.logException(e);
                     e.printStackTrace();
                 }
             else
                 try {
                     audioGenerator.writeSound(soundTickArray);
-                }catch (Exception e) {
+                } catch(Exception e) {
                     Crashlytics.logException(e);
                     e.printStackTrace();
                 }
             try {
                 audioGenerator.writeSound(silenceSoundArray);
-            }catch (Exception e) {
+            } catch(Exception e) {
                 Crashlytics.logException(e);
                 e.printStackTrace();
             }
@@ -44,6 +43,7 @@ public class Metronome {
                 currentBeat = 1;
         } while(play);
     }
+
     public void stop() {
         play = false;
         audioGenerator.destroyAudioTrack();
