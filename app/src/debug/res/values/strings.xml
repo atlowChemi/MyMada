@@ -399,4 +399,5 @@
     <string name="langBad">החלפת שפה הופסקה בשל תקלה. ודא שיש חיבור לרשת ונסה שוב!</string>
     <string name="langLoad">מוריד את השפה המבוקשת %s</string>
     <string name="oxyCalc" translatable="false">%d</string>
+    <string name="MetroBound">המטרונום פעיל מתוך כלי עזר, לא ניתן לעצור אותו חיצונית.</string>
 </resources>

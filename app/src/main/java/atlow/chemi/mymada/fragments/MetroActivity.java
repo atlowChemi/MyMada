@@ -93,8 +93,7 @@ public class MetroActivity extends Fragment {
     }
 
     private Intent notifyMeIntent;
-    private MetroService metroService;
-    private boolean bound = false;
+    public static boolean bound = false;
 
     private Animation anim, big;
     private boolean MetroRun = false;
@@ -175,11 +174,11 @@ public class MetroActivity extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         boolean start = false;
-        boolean running = false;
+        //boolean running = false;
         Typeface myTypeface;
         if(getActivity() != null) {
             start = getActivity().getIntent().getBooleanExtra("start", false);
-            running = getActivity().getIntent().getBooleanExtra("running", false);
+            //running = getActivity().getIntent().getBooleanExtra("running", false);
             myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/opensanshebrew.ttf");
             final TextView f = view.findViewById(R.id.metroExp);
             f.setTypeface(myTypeface);
@@ -312,7 +311,7 @@ public class MetroActivity extends Fragment {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             MetroService.MetroBinder binder = (MetroService.MetroBinder)service;
-            metroService = binder.getService();
+            MetroService metroService = binder.getService();
             bound = true;
             metroService.MetronomeStartEvent.addListener(MetroActivity.this::MetronomeStartedInBackground); // register
             metroService.MetronomeStopEvent.addListener(MetroActivity.this::MetronomeStoppedInBackground); // register

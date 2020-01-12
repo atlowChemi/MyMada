@@ -467,4 +467,5 @@
     <string name="langBad">Language replacment has failed. Check you\'ve got internet and retry!</string>
     <string name="langLoad">Downloading the requested language %s.</string>
     <string name="back">Home page</string>
+    <string name="MetroBound">Metronome is running in tools page, and can\'t be shut down in background.</string>
 </resources>
