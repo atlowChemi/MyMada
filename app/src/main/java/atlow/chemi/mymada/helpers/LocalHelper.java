@@ -8,9 +8,6 @@ import android.content.res.Resources;
 import android.os.Build;
 
 import com.google.android.play.core.splitcompat.SplitCompat;
-import com.google.android.play.core.splitinstall.SplitInstallManager;
-import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
-import com.google.android.play.core.splitinstall.SplitInstallRequest;
 
 import java.util.Locale;
 

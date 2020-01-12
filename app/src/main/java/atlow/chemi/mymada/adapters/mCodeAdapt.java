@@ -4,15 +4,15 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import androidx.annotation.NonNull;
-import androidx.core.widget.CompoundButtonCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.core.widget.CompoundButtonCompat;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -22,33 +22,30 @@ import atlow.chemi.mymada.classes.mCodeKid;
 
 public class mCodeAdapt extends ArrayAdapter<mCodeKid> {
     private Context mContext;
-    LayoutInflater inflater;
     private ArrayList<mCodeKid> userKids = null;
     private ArrayList<mCodeKid> arrayList;
-    private boolean[] checked, sep;
+    private boolean[] checked;
 
     private static class ViewHolder {
         TextView mcId, mcSep;
         CheckBox mcName;
     }
 
-    public mCodeAdapt(Context context, ArrayList<mCodeKid> codes, boolean[] sep) {
+    public mCodeAdapt(Context context, ArrayList<mCodeKid> codes) {
         super(context, R.layout.m_code_row, codes);
         mContext = context;
         this.userKids = codes;
         this.arrayList = new ArrayList<>();
         this.arrayList.addAll(codes);
         this.checked = new boolean[arrayList.size()];
-        this.sep = sep;
     }
     @NonNull
     @Override
     public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
-        mCodeKid msg = getItem(position);
         final ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            inflater = LayoutInflater.from(getContext());
+            LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.m_code_row, parent, false);
             viewHolder.mcId = convertView.findViewById(R.id.mcId);
             viewHolder.mcName = convertView.findViewById(R.id.mcName);
@@ -72,7 +69,7 @@ public class mCodeAdapt extends ArrayAdapter<mCodeKid> {
         viewHolder.mcName.setTag(order);
         viewHolder.mcName.setChecked(arrayList.get(order).isChecked());
         ColorStateList colorStateList;
-        switch (arrayList.get(order).getCatogory()) {
+        switch (arrayList.get(order).getCategory()) {
             case "area":
             case "pain":
                 colorStateList = new ColorStateList(
@@ -191,14 +188,14 @@ public class mCodeAdapt extends ArrayAdapter<mCodeKid> {
         }
     }
     public String getChecked()  {
-        String toReturn = "";
+        StringBuilder toReturn = new StringBuilder();
         for (int i=0;i<arrayList.size();i++)  {
             if(checked[i])
-                toReturn += arrayList.get(i).getId() + ", ";
+                toReturn.append(arrayList.get(i).getId()).append(", ");
         }
         if (toReturn.length() > 1)
-            toReturn = toReturn.substring(0, toReturn.length() - 2);
-        return toReturn;
+            toReturn = new StringBuilder(toReturn.substring(0, toReturn.length() - 2));
+        return toReturn.toString();
     }
     public void filter(String charText) {
         charText = charText.toLowerCase(Locale.getDefault());
@@ -211,7 +208,7 @@ public class mCodeAdapt extends ArrayAdapter<mCodeKid> {
                 String id = uk.getId().toLowerCase(Locale.getDefault());
                 if(name.contains(charText) || id.contains(charText))
                     userKids.add(uk);
-                if (charText.contains("לבבי") && uk.getCatogory().contains("vasc"))
+                if (charText.contains("לבבי") && uk.getCategory().contains("vasc"))
                     userKids.add(uk);
 
             }

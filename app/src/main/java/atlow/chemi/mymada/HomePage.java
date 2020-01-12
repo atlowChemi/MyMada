@@ -57,7 +57,7 @@ public class HomePage extends AppCompatActivity {
     private Typeface myTypeface;
     private homeBAdapter adapter;
     public NotificationManager manager;
-    private static final int REQUEST_PERMISSION_SETTING = 101, OVERLAY_PER_REQ = 345;
+    private final int OVERLAY_PER_REQ = 345;
     public final String Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
     private MenuItem Detect;
     @Override
@@ -336,6 +336,7 @@ public class HomePage extends AppCompatActivity {
             Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             boolean activityExists = isCallable(test);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                int REQUEST_PERMISSION_SETTING = 101;
                 if (activityExists) {
                     try {
                         if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {

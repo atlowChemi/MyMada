@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.recieversAndServices.ActionReciver;
 
 /**
  * Implementation of App Widget functionality.
@@ -17,7 +16,7 @@ public class MetroWidget extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         // Create an Intent to launch MainActivity when clicked
-        Intent btn = new Intent(context, ActionReciver.class);
+        Intent btn = new Intent(context, ActionReceiver.class);
         btn.putExtra("action", "widget");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, btn, 0);
         // Construct the RemoteViews object

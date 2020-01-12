@@ -203,7 +203,7 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".recieversAndServices.ActionReciver" />
+        <receiver android:name=".recieversAndServices.ActionReceiver" />
         <receiver
             android:name=".recieversAndServices.GrobootRec"
             android:enabled="true"

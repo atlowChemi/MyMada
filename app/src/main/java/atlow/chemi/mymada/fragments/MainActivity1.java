@@ -123,7 +123,7 @@ public class MainActivity1 extends Fragment {
             arrayOfMediCode.add(new mCodeKid(_options[i] + "",_optionsNum[i] + "",_optionsCat[i], i));
             sep[i] = _optionsNum[i].equals("sep");
         }
-        codeAdapter = new mCodeAdapt(getContext(), arrayOfMediCode, sep);
+        codeAdapter = new mCodeAdapt(getContext(), arrayOfMediCode);
         sp = view.findViewById(R.id.M1button2);
         final Button newSendButton = view.findViewById(R.id.M1btnN);
         final EditText family = view.findViewById(R.id.M1txt5);

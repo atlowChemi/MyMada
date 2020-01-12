@@ -153,7 +153,7 @@ public class MainActivity2 extends Fragment implements View.OnTouchListener {
                         addManTIL.setError(getActivity().getResources().getString(R.string.emailNameNone));
                     if (addManName.getText().toString().trim().length() > 0) {
                         addManTIL.setErrorEnabled(false);
-                        Volunteer a = new Volunteer(addManName.getText().toString(), addManSppiner.getSelectedItemPosition(), R.drawable.ic_person);
+                        Volunteer a = new Volunteer(addManName.getText().toString(), addManSppiner.getSelectedItemPosition());
                         albumList.add(a);
                         adapter.notifyDataSetChanged();
                         int size = albumList.size();

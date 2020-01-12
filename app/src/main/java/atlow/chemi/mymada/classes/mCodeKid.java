@@ -2,13 +2,13 @@ package atlow.chemi.mymada.classes;
 
 public class mCodeKid {
     public String id;
-    private String name, catogory;
+    private String name, category;
     private int order;
     private boolean isChecked;
-    public mCodeKid(String name, String id, String catogory, int order) {
+    public mCodeKid(String name, String id, String category, int order) {
         this.id = id;
         this.name = name;
-        this.catogory = catogory;
+        this.category = category;
         this.order = order;
         this.isChecked = false;
     }
@@ -18,8 +18,8 @@ public class mCodeKid {
     public String getName() {
         return this.name;
     }
-    public String getCatogory() {
-        return this.catogory;
+    public String getCategory() {
+        return this.category;
     }
     public int getOrder()   {
         return this.order;

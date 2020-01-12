@@ -15,12 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
-/**
- * Created by Leandro Ferreira on 22/09/16.
- *
- * An animation of the 'Done' status. It makes a circular reveal of a background color and the
- * than show the image passed in the constructor.
- */
 public class CircularRevealAnimatedDrawable extends Drawable implements Animatable {
 
     private boolean mIsFilled;
@@ -32,7 +26,7 @@ public class CircularRevealAnimatedDrawable extends Drawable implements Animatab
     private ValueAnimator mRevealInAnimation;
     private boolean isRunning;
     private float mCenterWidth;
-    private float mCenterHeith;
+    private float mCenterHeight;
     private Bitmap mReadyImage;
     private int mImageReadyAlpha;
     private float bitMapXOffset;
@@ -44,7 +38,7 @@ public class CircularRevealAnimatedDrawable extends Drawable implements Animatab
      * @param fillColor The color of the background that will the revealed
      * @param bitmap The animage that will be shown in the end of the animation.
      */
-    public CircularRevealAnimatedDrawable(View view, int fillColor, Bitmap bitmap) {
+    CircularRevealAnimatedDrawable(View view, int fillColor, Bitmap bitmap) {
         mAnimatedView = view;
         isRunning = false;
 
@@ -71,7 +65,7 @@ public class CircularRevealAnimatedDrawable extends Drawable implements Animatab
     /**
      * The method is called when bounds change
      *
-     * @param bounds
+     * @param bounds new bounds
      */
     @Override
     protected void onBoundsChange(Rect bounds) {
@@ -87,7 +81,7 @@ public class CircularRevealAnimatedDrawable extends Drawable implements Animatab
 
         mFinalRadius = (bounds.right - bounds.left)/2;
         mCenterWidth = (bounds.right + bounds.left)/2;
-        mCenterHeith = (bounds.bottom + bounds.top)/2;
+        mCenterHeight = (bounds.bottom + bounds.top)/2;
     }
 
     /**
@@ -97,25 +91,19 @@ public class CircularRevealAnimatedDrawable extends Drawable implements Animatab
     private void setupAnimations(){
         final ValueAnimator alphaAnimator = ValueAnimator.ofInt(0, 255);
         alphaAnimator.setDuration(80);
-        alphaAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mImageReadyAlpha = (int) animation.getAnimatedValue();
-                invalidateSelf();
-                mAnimatedView.invalidate();
-            }
+        alphaAnimator.addUpdateListener(animation -> {
+            mImageReadyAlpha = (int) animation.getAnimatedValue();
+            invalidateSelf();
+            mAnimatedView.invalidate();
         });
 
         mRevealInAnimation = ValueAnimator.ofFloat(0, mFinalRadius);
         mRevealInAnimation.setInterpolator(new DecelerateInterpolator());
         mRevealInAnimation.setDuration(120);
-        mRevealInAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mRadius = (float) animation.getAnimatedValue();
-                invalidateSelf();
-                mAnimatedView.invalidate();
-            }
+        mRevealInAnimation.addUpdateListener(animation -> {
+            mRadius = (float) animation.getAnimatedValue();
+            invalidateSelf();
+            mAnimatedView.invalidate();
         });
         mRevealInAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -166,7 +154,7 @@ public class CircularRevealAnimatedDrawable extends Drawable implements Animatab
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawCircle(mCenterWidth, mCenterHeith, mRadius, mPaint);
+        canvas.drawCircle(mCenterWidth, mCenterHeight, mRadius, mPaint);
 
         if(mIsFilled) {
             mPaintImageReady.setAlpha(mImageReadyAlpha);
@@ -185,7 +173,7 @@ public class CircularRevealAnimatedDrawable extends Drawable implements Animatab
         return PixelFormat.OPAQUE;
     }
 
-    public void dispose() {
+    void dispose() {
         if (mRevealInAnimation != null) {
             mRevealInAnimation.end();
             mRevealInAnimation.removeAllUpdateListeners();

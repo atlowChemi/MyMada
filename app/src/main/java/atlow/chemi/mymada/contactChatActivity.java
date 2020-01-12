@@ -8,14 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import atlow.chemi.mymada.helpers.FixedTextInputEditText;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -48,11 +46,11 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import atlow.chemi.mymada.adapters.ChatAdapter;
 import atlow.chemi.mymada.classes.Chat;
+import atlow.chemi.mymada.helpers.FixedTextInputEditText;
 import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
@@ -60,15 +58,15 @@ import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 public class contactChatActivity extends AppCompatActivity {
     private EditText ChatT;
-    private static final int REQUEST_PERMISSION_SETTING = 101;
+    private final int REQUEST_PERMISSION_SETTING = 101;
     private Button sendChat;
-    private static ChatAdapter adapter;
+    private ChatAdapter adapter;
     private ArrayList<Chat> chats;
     private boolean isMove = false;
     private float oldX1, oldY1;
     private MenuItem Detect;
     private DatabaseReference root;
-    static String name, fcmToken;
+    private String name, fcmToken;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -84,6 +82,7 @@ public class contactChatActivity extends AppCompatActivity {
             makeAnnouncement();
         chats = new ArrayList<>();
         adapter = new ChatAdapter(chats, contactChatActivity.this);
+        adapter.nameChangeRequestCallback.addListener(() -> askForName(true));
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         RecyclerView msgs = findViewById(R.id.chatMsg);
         msgs.setLayoutManager(mLayoutManager);
@@ -105,7 +104,7 @@ public class contactChatActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         name = sp.getString("UserName", "");
         if (name.trim().length() < 1) {
-            askForName(contactChatActivity.this, false);
+            askForName(false);
         }
 
         Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
@@ -140,8 +139,9 @@ public class contactChatActivity extends AppCompatActivity {
         });
         sendChat.setOnClickListener((view) -> {
             if (name.trim().length() < 1) {
-                askForName(contactChatActivity.this, false);
-            } else {
+                askForName(false);
+            }
+            else {
                 String msg = ChatT.getText().toString().trim();
                 if (msg.length() > 0) {
                     //send new chat
@@ -158,7 +158,8 @@ public class contactChatActivity extends AppCompatActivity {
                     msgMap.put("msg", msg);
                     msgMap.put("time", System.currentTimeMillis());
                     messageRoot.updateChildren(msgMap).addOnSuccessListener(aVoid -> ChatT.setText(""));
-                } else {
+                }
+                else {
                     di(getString(R.string.emailMsgNone));
                 }
             }
@@ -173,14 +174,16 @@ public class contactChatActivity extends AppCompatActivity {
                     String msg = dataSnapshot.child("msg").getValue(String.class);
                     boolean WhatsApp;
                     try {
-                        WhatsApp = dataSnapshot.child("WhatsApp").getValue(Boolean.class);
-                    } catch (NullPointerException e) {
+                        WhatsApp = (boolean)dataSnapshot.child("WhatsApp").getValue();
+                    }
+                    catch (NullPointerException e) {
                         WhatsApp = false;
                     }
                     String time;
                     try {
                         time = dataSnapshot.child("time").getValue(Long.class) + "";
-                    } catch (NullPointerException e) {
+                    }
+                    catch (NullPointerException e) {
                         long tsLong = System.currentTimeMillis() / 1000;
                         time = tsLong + "";
                     }
@@ -190,8 +193,8 @@ public class contactChatActivity extends AppCompatActivity {
                         msgs.smoothScrollToPosition(adapter.getItemCount());
                     }
                 }
-                else if (dataSnapshot.getKey() != null && dataSnapshot.getKey().equals("SeenByAdmin")) {
-                    boolean seen = dataSnapshot.getValue(Boolean.class);
+                else if (dataSnapshot.getKey() != null && dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("SeenByAdmin")) {
+                    boolean seen = (boolean)dataSnapshot.getValue();
                     TextView seenTv = findViewById(R.id.msgSeen);
                     String text = seen ? getString(R.string.msgSeen) : getString(R.string.msgNotSeen);
                     seenTv.setText(text);
@@ -220,46 +223,47 @@ public class contactChatActivity extends AppCompatActivity {
             textView = alert.findViewById(android.R.id.title);
             if (textView != null)
                 textView.setTypeface(myTypeface);
-            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-            canc.setTypeface(myTypeface);
+            Button cancel = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+            cancel.setTypeface(myTypeface);
         });
         alert.show();
     }
-    public static void askForName(Context context, boolean cancelable) {
-        View time = View.inflate(context, R.layout.shabat_t, null);
-        final FixedTextInputEditText shabatText = time.findViewById(R.id.shabatT);
-        final TextInputLayout shabatTil = time.findViewById(R.id.shabatTil);
-        shabatTil.setHint(context.getString(R.string.name));
-        shabatText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-        SharedPreferences sp = context.getSharedPreferences("Settings", 0);
+    public void askForName(boolean cancelable) {
+        View time = View.inflate(getApplicationContext(), R.layout.shabat_t, null);
+        final FixedTextInputEditText nameText = time.findViewById(R.id.shabatT);
+        final TextInputLayout nameTil = time.findViewById(R.id.shabatTil);
+        nameTil.setHint(getString(R.string.name));
+        nameText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+        SharedPreferences sp = getSharedPreferences("Settings", 0);
         final String userN = sp.getString("UserName", "");
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogStyle)
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext(), R.style.AlertDialogStyle)
                 .setView(time).setTitle(R.string.writeName).setCancelable(cancelable);
-        builder.setPositiveButton(context.getString(R.string.ok), null);
-        final AlertDialog langPicker = builder.create();
-        langPicker.setOnShowListener((dialog) -> {
-            shabatText.setText(userN);
-            Button ok = langPicker.getButton(DialogInterface.BUTTON_POSITIVE);
+        builder.setPositiveButton(getString(R.string.ok), null);
+        final AlertDialog namePicker = builder.create();
+        namePicker.setOnShowListener((dialog) -> {
+            nameText.setText(userN);
+            Button ok = namePicker.getButton(DialogInterface.BUTTON_POSITIVE);
             ok.setOnClickListener((v) -> {
-                if (shabatText.getText().toString().trim().isEmpty())
-                    shabatTil.setError(context.getString(R.string.emailNameNone));
-                else if (shabatText.getText().toString().trim().length() > 0 && TextUtils.isDigitsOnly(shabatText.getText().toString().trim())) {
-                    shabatTil.setError(context.getString(R.string.chatNameNum));
-                }
+                String nameEditable = nameText.getText() != null ? nameText.getText().toString().trim() : "";
+                if (nameEditable.isEmpty())
+                    nameTil.setError(getString(R.string.emailNameNone));
                 else {
-                    String newI = shabatText.getText().toString().trim();
-                    shabatTil.setErrorEnabled(false);
-                    SharedPreferences.Editor e = sp.edit();
-                    e.putString("UserName", newI);
-                    name = newI;
-                    e.apply();
-                    dialog.dismiss();
-                    adapter.notifyDataSetChanged();
-                    FirebaseDatabase.getInstance().getReference().child("chats").child(fcmToken).child("Name").setValue(newI);
+                    if (TextUtils.isDigitsOnly(nameEditable))
+                        nameTil.setError(getString(R.string.chatNameNum));
+                    else {
+                        nameTil.setErrorEnabled(false);
+                        SharedPreferences.Editor e = sp.edit();
+                        e.putString("UserName", nameEditable);
+                        name = nameEditable;
+                        e.apply();
+                        dialog.dismiss();
+                        adapter.notifyDataSetChanged();
+                        FirebaseDatabase.getInstance().getReference().child("chats").child(fcmToken).child("Name").setValue(nameEditable);
+                    }
                 }
             });
         });
-        langPicker.show();
+        namePicker.show();
     }
     @Override
     protected void attachBaseContext(Context base) {
@@ -270,7 +274,8 @@ public class contactChatActivity extends AppCompatActivity {
             int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
             if (label != 0)
                 setTitle(label);
-        } catch (PackageManager.NameNotFoundException e) {
+        }
+        catch (PackageManager.NameNotFoundException e) {
             Crashlytics.log(e.getMessage());
         }
     }
@@ -322,98 +327,37 @@ public class contactChatActivity extends AppCompatActivity {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         if (activityExists) {
                             try {
-                                if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                                    builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                                                    startActivity(intent);
-                                                }
-                                            })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
-                                    final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
-                                    });
-                                    alert.show();
-                                }
+                                if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName))
+                                    PermissionDialog(false);
                                 s.putBoolean("Mapp", true);
-                            } catch (ActivityNotFoundException e) {
+                            }
+                            catch (ActivityNotFoundException e) {
                                 Intent intent = new Intent(this, NotificationService.class);
                                 Intent old = new Intent(this, NotificationServiceOld.class);
                                 stopService(intent);
                                 startService(old);
-                                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                                    builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                    startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                                }
-                                            })
-                                            .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
-                                    final AlertDialog alert = builder.create();
-                                    alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialogInterface) {
-                                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                        }
-                                    });
-                                    alert.show();
-                                }
+                                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext()))
+                                    PermissionDialog(true);
+
                                 s.putBoolean("Mapp", true);
                             }
-                        } else {
+                        }
+                        else {
                             Intent intent = new Intent(this, NotificationService.class);
                             Intent old = new Intent(this, NotificationServiceOld.class);
                             stopService(intent);
                             startService(old);
-                            if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                                builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                        .setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                                startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                            }
-                                        })
-                                        .setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-                                            }
-                                        });
-                                final AlertDialog alert = builder.create();
-                                alert.setOnShowListener(new DialogInterface.OnShowListener() {
-                                    @Override
-                                    public void onShow(DialogInterface dialogInterface) {
-                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                                    }
-                                });
-                                alert.show();
-                            }
+                            if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext()))
+                                PermissionDialog(true);
+
                             s.putBoolean("Mapp", true);
                         }
-                    } else {
+                    }
+                    else {
                         s.putBoolean("Mapp", true);
                     }
-                } else {
+                }
+                else {
                     Intent serviceIntent = new Intent(this, SMSMonitorService.class);
                     stopService(serviceIntent);
                     item.setChecked(false);
@@ -431,10 +375,10 @@ public class contactChatActivity extends AppCompatActivity {
     }
     private boolean isCallable(Intent intent) {
         try {
-            List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            return list.size() > 0;
-        }catch (Exception e)    {
-            e.printStackTrace();
+            return getPackageManager().queryIntentActivities(intent,  PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+        }
+        catch (Exception e)    {
+            Crashlytics.logException(e);
             return false;
         }
     }
@@ -452,7 +396,7 @@ public class contactChatActivity extends AppCompatActivity {
         }
 
         @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, RecyclerView parent, @NonNull RecyclerView.State state) {
             int position = parent.getChildAdapterPosition(view); // item position
             int column = position % spanCount; // item column
 
@@ -464,7 +408,8 @@ public class contactChatActivity extends AppCompatActivity {
                     outRect.top = spacing;
                 }
                 outRect.bottom = spacing/9; // item bottom
-            } else {
+            }
+            else {
                 outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
                 outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
                 if (position >= spanCount) {
@@ -476,5 +421,26 @@ public class contactChatActivity extends AppCompatActivity {
     private int dpToPx(int dp) {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
+    private void PermissionDialog(boolean old) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+        builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
+                .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                    if(!old) {
+                    Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                    startActivity(intent);
+                    }
+                    else {
+                        Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                        startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
+                    }
+                })
+                .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
+        final AlertDialog alert = builder.create();
+        alert.setOnShowListener(dialogInterface -> {
+            Button cancel = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+            cancel.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+        });
+        alert.show();
     }
 }
