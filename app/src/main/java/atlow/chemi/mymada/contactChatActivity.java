@@ -229,14 +229,14 @@ public class contactChatActivity extends AppCompatActivity {
         alert.show();
     }
     public void askForName(boolean cancelable) {
-        View time = View.inflate(getApplicationContext(), R.layout.shabat_t, null);
+        View time = View.inflate(contactChatActivity.this, R.layout.shabat_t, null);
         final FixedTextInputEditText nameText = time.findViewById(R.id.shabatT);
         final TextInputLayout nameTil = time.findViewById(R.id.shabatTil);
         nameTil.setHint(getString(R.string.name));
         nameText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
         SharedPreferences sp = getSharedPreferences("Settings", 0);
         final String userN = sp.getString("UserName", "");
-        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext(), R.style.AlertDialogStyle)
+        AlertDialog.Builder builder = new AlertDialog.Builder(contactChatActivity.this, R.style.AlertDialogStyle)
                 .setView(time).setTitle(R.string.writeName).setCancelable(cancelable);
         builder.setPositiveButton(getString(R.string.ok), null);
         final AlertDialog namePicker = builder.create();
