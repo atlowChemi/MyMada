@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import atlow.chemi.mymada.InfoActivityKt;
+import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 import atlow.chemi.mymada.classes.HomeB;
 import atlow.chemi.mymada.MokedPage;
@@ -361,6 +362,10 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                         mContext.startActivity(intent);
                     }
                     break;
+                case "react":
+                    intent = new Intent(mContext, MainReactActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
             }
         });
     }
