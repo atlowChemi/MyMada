@@ -29,8 +29,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.crashlytics.android.Crashlytics;
-
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.SettingsPage;
 
@@ -103,8 +101,8 @@ public class MainActivity3 extends Fragment implements View.OnTouchListener {
                     try {
                         startActivity(intent);
                     } catch (ActivityNotFoundException e) {
-                        Crashlytics.log("sms not sent!");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("sms not sent!");
+//                        Crashlytics.logException(e);
                     }
                     dialog.cancel();
                 }).create();

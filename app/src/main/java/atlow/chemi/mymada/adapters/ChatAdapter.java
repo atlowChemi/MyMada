@@ -19,8 +19,6 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -101,7 +99,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(sendIntent);
                     } catch (Exception e) {
-                        Crashlytics.logException(e);
+//                        Crashlytics.logException(e);
                         Toast.makeText(context, "וואטסאפ לא מותקן כנראה!", Toast.LENGTH_SHORT).show();
                     }
                 });

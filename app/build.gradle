@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     signingConfigs {
@@ -16,12 +16,11 @@ android {
             storePassword '1446264'
         }
     }
-    compileSdkVersion 29
-    buildToolsVersion '29.0.2'
+    compileSdkVersion 33
     defaultConfig {
         applicationId "atlow.chemi.mymada"
-        minSdkVersion 17
-        targetSdkVersion 29
+        minSdkVersion 21
+        targetSdkVersion 33
         versionCode 12800
         versionName '3.5.5'
         multiDexEnabled true
@@ -42,7 +41,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
             debuggable true
-            minifyEnabled = true
+            minifyEnabled = false
             multiDexEnabled = true
         }
     }
@@ -63,6 +62,7 @@ android {
             enableSplit true
         }
     }
+    namespace 'atlow.chemi.mymada'
 }
 
 dependencies {
@@ -75,7 +75,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-ads:18.3.0'
     implementation 'com.google.firebase:firebase-inappmessaging-display:19.0.2'
     implementation 'com.google.firebase:firebase-functions:19.0.1'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation 'com.google.android.play:core:1.6.4'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -88,6 +87,8 @@ dependencies {
     implementation 'com.wdullaer:materialdatetimepicker:4.2.1'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

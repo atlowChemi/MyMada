@@ -15,8 +15,6 @@ import android.os.IBinder;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.crashlytics.android.Crashlytics;
-
 import javax.annotation.Nullable;
 
 import atlow.chemi.mymada.R;
@@ -52,7 +50,7 @@ public class MetroService extends Service {
         PendingIntent pBtn = PendingIntent.getBroadcast(MetroService.this, 9, btn, PendingIntent.FLAG_UPDATE_CURRENT);
         String action = MetroService.this.getResources().getString(R.string.MetroStop);
 
-        Crashlytics.log("Starting Metro Notification");
+//        Crashlytics.log("Starting Metro Notification");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "runInBg")
                 .setContentTitle(MetroService.this.getResources().getString(R.string.MetroServiceTtl))
                 .setContentText(MetroService.this.getResources().getString(R.string.MetroServiceTxt))
@@ -68,9 +66,9 @@ public class MetroService extends Service {
             builder.setPriority(NotificationManagerCompat.IMPORTANCE_MIN);
         }
         Notification notification = builder.build();
-        Crashlytics.log("built Metro Notification.");
+//        Crashlytics.log("built Metro Notification.");
         startForeground(13, notification);
-        Crashlytics.log("started Metro service foreground.");
+//        Crashlytics.log("started Metro service foreground.");
 
         timestamp = System.currentTimeMillis();
         for(MetronomeEventCallback listener : MetronomeStartEvent.listeners())
@@ -125,8 +123,8 @@ public class MetroService extends Service {
             metroTask.stop();
         }
         catch(NullPointerException e) {
-            Crashlytics.log("failed stopping metronome");
-            Crashlytics.logException(e);
+//            Crashlytics.log("failed stopping metronome");
+//            Crashlytics.logException(e);
         }
         if(audioManager != null)
             audioManager.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
@@ -143,7 +141,7 @@ public class MetroService extends Service {
             try {
                 metronome.play();
             } catch(Exception e) {
-                Crashlytics.logException(e);
+//                Crashlytics.logException(e);
                 e.printStackTrace();
             }
             return null;

@@ -27,8 +27,6 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,7 +119,7 @@ public class MokedPage extends AppCompatActivity {
                 setTitle(label);
         }
         catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.logException(e);
+//            Crashlytics.logException(e);
         }
     }
 
@@ -288,7 +286,7 @@ public class MokedPage extends AppCompatActivity {
             return getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
         }
         catch (Exception e)    {
-            Crashlytics.logException(e);
+//            Crashlytics.logException(e);
             return false;
         }
     }

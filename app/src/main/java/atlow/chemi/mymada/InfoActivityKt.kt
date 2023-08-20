@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
-import com.crashlytics.android.Crashlytics
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
@@ -75,7 +74,7 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
                 setTitle(label)
         }
         catch (e: PackageManager.NameNotFoundException) {
-            Crashlytics.logException(e)
+//            Crashlytics.logException(e)
         }
 
     }
@@ -226,7 +225,7 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
             packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size > 0
         }
         catch (e: Exception) {
-            Crashlytics.logException(e)
+//            Crashlytics.logException(e)
             false
         }
     }

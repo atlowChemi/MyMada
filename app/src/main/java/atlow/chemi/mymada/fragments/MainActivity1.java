@@ -36,8 +36,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -412,8 +410,8 @@ public class MainActivity1 extends Fragment {
                     try {
                         startActivity(intent);
                     } catch (ActivityNotFoundException e) {
-                        Crashlytics.log("sms not sent!");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("sms not sent!");
+//                        Crashlytics.logException(e);
                     }
                     dialog.cancel();
                 }).create();

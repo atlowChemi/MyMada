@@ -15,8 +15,6 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.util.Objects;
 
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
@@ -56,7 +54,7 @@ public class NotificationService extends NotificationListenerService {
                     text = "תקלה";
             }catch (Exception e)  {
                 text = "\nתקלה!";
-                Crashlytics.log("notification text is null!\n" + e);
+//                Crashlytics.log("notification text is null!\n" + e);
             }
             Intent intent = new Intent("MADA_APP");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -142,7 +140,7 @@ public class NotificationService extends NotificationListenerService {
                 getActiveNotifications();
             } catch (Exception e) {
                 Log.e("getActiveNotification", Objects.requireNonNull(e.getMessage()));
-                Crashlytics.logException(e);
+//                Crashlytics.logException(e);
             }
         }
     }

@@ -8,8 +8,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-
 import atlow.chemi.mymada.R;
 
 public class rateUs {
@@ -65,7 +63,7 @@ public class rateUs {
                         context.startActivity(new Intent(Intent.ACTION_VIEW,
                                 Uri.parse("market://details?id=" + APP_PACKAGE_NAME)));
                     }catch(ActivityNotFoundException e) {
-                        Crashlytics.logException(e);
+//                        Crashlytics.logException(e);
                     }
 
                     dialog1.dismiss();

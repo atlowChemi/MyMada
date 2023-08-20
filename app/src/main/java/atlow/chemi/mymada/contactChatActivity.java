@@ -36,7 +36,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -276,7 +275,7 @@ public class contactChatActivity extends AppCompatActivity {
                 setTitle(label);
         }
         catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.log(e.getMessage());
+//            Crashlytics.log(e.getMessage());
         }
     }
     private void di(String err)   {
@@ -378,7 +377,7 @@ public class contactChatActivity extends AppCompatActivity {
             return getPackageManager().queryIntentActivities(intent,  PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
         }
         catch (Exception e)    {
-            Crashlytics.logException(e);
+//            Crashlytics.logException(e);
             return false;
         }
     }

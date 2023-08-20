@@ -11,8 +11,6 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
-import com.crashlytics.android.Crashlytics;
-
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.fragments.MetroActivity;
 
@@ -41,8 +39,8 @@ public class ActionReceiver extends BroadcastReceiver {
                 try {
                     ContextCompat.startForegroundService(context, serviceIntent);
                 } catch(Exception e) {
-                    Crashlytics.log("failed starting metronome widget");
-                    Crashlytics.logException(e);
+//                    Crashlytics.log("failed starting metronome widget");
+//                    Crashlytics.logException(e);
                 }
             } else if(action.equals("runInBG")) {
                 context.stopService(serviceIntent);

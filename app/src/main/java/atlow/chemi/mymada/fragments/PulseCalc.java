@@ -19,8 +19,6 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
-
 import atlow.chemi.mymada.classes.AudioGenerator;
 import atlow.chemi.mymada.R;
 
@@ -125,8 +123,8 @@ public class PulseCalc extends Fragment {
                         String toShow = "" + pulse2c * 4;
                         fullPulse.setText(toShow);
                     } catch (IndexOutOfBoundsException e) {
-                        Crashlytics.log("error with pulse calculation");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("error with pulse calculation");
+//                        Crashlytics.logException(e);
                     }
                 }
             }
