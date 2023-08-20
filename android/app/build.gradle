@@ -6,13 +6,13 @@ android {
         release {
             keyAlias 'hi'
             keyPassword 'REMOVED_SIGNING_PASSWORD'
-            storeFile file('../../cert.jks')
+            storeFile file('../../../cert.jks')
             storePassword 'REMOVED_SIGNING_PASSWORD'
         }
         debug {
             keyAlias 'hi'
             keyPassword 'REMOVED_SIGNING_PASSWORD'
-            storeFile file('../../certDebug.jks')
+            storeFile file('../../../certDebug.jks')
             storePassword 'REMOVED_SIGNING_PASSWORD'
         }
     }
