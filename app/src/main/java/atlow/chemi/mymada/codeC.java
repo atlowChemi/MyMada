@@ -25,7 +25,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -144,7 +143,7 @@ public class codeC extends AppCompatActivity {
             if (label != 0)
                 setTitle(label);
         } catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.log(e.getMessage());
+//            Crashlytics.log(e.getMessage());
         }
     }
     private void di(String err)   {
@@ -201,12 +200,12 @@ public class codeC extends AppCompatActivity {
                     try {
                         allowed = dataSnapshot.child("allowed").getValue(Boolean.class);
                     } catch (NullPointerException e) {
-                        Crashlytics.log(e.getMessage());
+//                        Crashlytics.log(e.getMessage());
                     }
                     try {
                         used = dataSnapshot.child("used").getValue(Boolean.class);
                     } catch (NullPointerException e) {
-                        Crashlytics.log(e.getMessage());
+//                        Crashlytics.log(e.getMessage());
                     }
                     if (myCode.equals(code)) {
                         if (used)

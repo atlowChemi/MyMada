@@ -46,8 +46,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -369,8 +367,8 @@ public class MainActivity2 extends Fragment implements View.OnTouchListener {
                     try {
                         startActivity(intent);
                     } catch (ActivityNotFoundException e) {
-                        Crashlytics.log("sms not sent!");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("sms not sent!");
+//                        Crashlytics.logException(e);
                     }
                     dialog.cancel();
                 }).create();

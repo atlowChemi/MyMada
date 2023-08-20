@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -27,9 +26,6 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import com.crashlytics.android.Crashlytics;
-
-import java.util.List;
 import java.util.Locale;
 
 import atlow.chemi.mymada.helpers.LocalHelper;
@@ -82,7 +78,7 @@ public class PrivacyActivity extends AppCompatActivity {
             if (label != 0)
                 setTitle(label);
         } catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.logException(e);
+//            Crashlytics.logException(e);
         }
     }
     private class CustomWebViewClient extends WebViewClient {
@@ -253,7 +249,7 @@ public class PrivacyActivity extends AppCompatActivity {
             return getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
         }
         catch (Exception e)    {
-            Crashlytics.logException(e);
+//            Crashlytics.logException(e);
             return false;
         }
     }

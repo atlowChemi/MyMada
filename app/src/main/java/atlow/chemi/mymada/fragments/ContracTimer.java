@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -107,8 +106,8 @@ public class ContracTimer extends Fragment {
                         cancel.setTypeface(myTypeface);
                         cancel.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
                     } catch (NullPointerException e) {
-                        Crashlytics.log("Contractions remake defect");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("Contractions remake defect");
+//                        Crashlytics.logException(e);
                     }
                 });
                 alert.show();
@@ -197,8 +196,8 @@ public class ContracTimer extends Fragment {
                 try {
                     contractBtn.stopAnimation();
                 } catch (NullPointerException e) {
-                    Crashlytics.log("error stopping circular btn");
-                    Crashlytics.logException(e);
+//                    Crashlytics.log("error stopping circular btn");
+//                    Crashlytics.logException(e);
                 }
                 contractBtn.revertAnimation();
                 contractBtn.setBackgroundColor(Color.rgb(255,255,255));
@@ -262,7 +261,7 @@ public class ContracTimer extends Fragment {
                 se.putLong("contractLong", end.getTime());
                 se.apply();
             }catch (NullPointerException e) {
-                Crashlytics.log(e.getMessage());
+//                Crashlytics.log(e.getMessage());
             }
         }
         super.onDestroy();
@@ -305,8 +304,8 @@ public class ContracTimer extends Fragment {
                         canc.setTypeface(myTypeface);
                         canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
                     } catch (NullPointerException e) {
-                        Crashlytics.log("Contractions remake defect");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("C/*ontractions remake defect");
+//                        Crashlytics.logExc*/eption(e);
                     }
                 });
                 alert.show();

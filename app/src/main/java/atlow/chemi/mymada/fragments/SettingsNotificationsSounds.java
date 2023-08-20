@@ -20,8 +20,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import com.crashlytics.android.Crashlytics;
-
 import atlow.chemi.mymada.R;
 
 import static android.app.Activity.RESULT_OK;
@@ -695,8 +693,8 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             try {
                 ringUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
             }catch (Exception e) {
-                Crashlytics.log("didn't parce the ringtone!");
-                Crashlytics.logException(e);
+//                Crashlytics.log("didn't parce the ringtone!");
+//                Crashlytics.logException(e);
             }
             SharedPreferences.Editor spe = sp.edit();
             if (ringUri != null) {
@@ -713,16 +711,16 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode >99 && requestCode < 105) {
-            Crashlytics.log("return from permission - return code is: " + requestCode);
+//            Crashlytics.log("return from permission - return code is: " + requestCode);
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Crashlytics.log("return from permission - return was true");
+//                Crashlytics.log("return from permission - return was true");
                 //Got Permission
                 SharedPreferences.Editor ed = sp.edit();
                 ed.putBoolean("allowed", true);
                 ed.apply();
             }
             else {
-                Crashlytics.log("return from permission - return permission denied");
+//                Crashlytics.log("return from permission - return permission denied");
                 ConstraintLayout layout = requestCode == 100 ? NappT_Pref : requestCode == 101 ? NappT1_Pref :
                         requestCode == 102 ? NappT2_Pref : requestCode == 103 ? NappT3_Pref : NappT4_Pref;
                 layout.performClick();

@@ -8,15 +8,10 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -112,8 +107,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static void getToken(Context context) {
         FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
-                Crashlytics.log("didn't succeed getting token");
-                Crashlytics.logException(task.getException());
+//                Crashlytics.log("didn't succeed getting token");
+//                Crashlytics.logException(task.getException());
                 return;
             }
             context.getSharedPreferences("Settings", 0).edit().putString("fcm", task.getResult().getToken()).apply();

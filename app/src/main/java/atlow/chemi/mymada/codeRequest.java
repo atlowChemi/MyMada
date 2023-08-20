@@ -37,7 +37,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -170,7 +169,7 @@ public class codeRequest extends AppCompatActivity {
             if (label != 0)
                 setTitle(label);
         } catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.log(e.getMessage());
+//            Crashlytics.log(e.getMessage());
         }
     }
     public boolean isEmailValid(CharSequence email) {
@@ -205,8 +204,8 @@ public class codeRequest extends AppCompatActivity {
                     try {
                         gooddi(getResources().getString(R.string.requestGood));
                     } catch (WindowManager.BadTokenException e) {
-                        Crashlytics.log("gooddi called after window closed.");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("gooddi called after window closed.");
+//                        Crashlytics.logException(e);
                     }
                     pdialog.cancel();
                     SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);

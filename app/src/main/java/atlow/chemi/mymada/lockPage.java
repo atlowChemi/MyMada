@@ -11,8 +11,6 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.crashlytics.android.Crashlytics;
-
 import atlow.chemi.mymada.helpers.LocalHelper;
 
 public class lockPage extends AppCompatActivity implements View.OnTouchListener {
@@ -42,7 +40,7 @@ public class lockPage extends AppCompatActivity implements View.OnTouchListener 
             if (label != 0)
                 setTitle(label);
         } catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.log(e.getMessage());
+//            Crashlytics.log(e.getMessage());
         }
     }
     public void cod(View view) {

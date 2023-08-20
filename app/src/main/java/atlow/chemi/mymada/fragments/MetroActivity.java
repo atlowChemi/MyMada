@@ -30,7 +30,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import atlow.chemi.mymada.R;
@@ -123,8 +122,8 @@ public class MetroActivity extends Fragment {
                         clock.setText(stopWatch.toString());
                         pb.setProgress(0);
                     } catch(Exception e) {
-                        Crashlytics.log("Text box does not exist");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("Text box does not exist");
+//                        Crashlytics.logException(e);
                     }
                     break;
                 case UPDATE_TIMER:
@@ -142,8 +141,8 @@ public class MetroActivity extends Fragment {
                         else
                             pb.setProgress(stopWatch.getPercentOfTwoMinute());
                     } catch(Exception e) {
-                        Crashlytics.log("Text box does not exist");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("Text box does not exist");
+//                        Crashlytics.logException(e);
                     }
                     mHandler.sendEmptyMessageDelayed(UPDATE_TIMER, REFRESH_RATE);
                     break;
@@ -238,7 +237,7 @@ public class MetroActivity extends Fragment {
                 anim.setDuration(650);
                 big.setDuration(350);
             } catch(Exception e) {
-                Crashlytics.log(e.getMessage());
+//                Crashlytics.log(e.getMessage());
             }
         }
     }
@@ -252,7 +251,7 @@ public class MetroActivity extends Fragment {
                 big.setAnimationListener(null);
                 v.setAnimation(null);
             } catch(Exception e) {
-                Crashlytics.log(e.getMessage());
+//                Crashlytics.log(e.getMessage());
             }
         }
     }
@@ -362,8 +361,8 @@ public class MetroActivity extends Fragment {
             try {
                 ContextCompat.startForegroundService(getActivity(), notifyMeIntent);
             } catch(Exception e) {
-                Crashlytics.log("failed starting metronome");
-                Crashlytics.logException(e);
+//                Crashlytics.log("failed starting metronome");
+//                Crashlytics.logException(e);
             }
         }
     }

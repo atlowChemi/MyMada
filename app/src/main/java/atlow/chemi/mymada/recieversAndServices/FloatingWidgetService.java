@@ -26,8 +26,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.io.IOException;
 
 import atlow.chemi.mymada.MokedPage;
@@ -151,11 +149,11 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             mMediaPlayer.start();
 
         } catch (IOException e) {
-            Crashlytics.log("error with play number 1");
-            Crashlytics.logException(e);
+//            Crashlytics.log("error with play number 1");
+//            Crashlytics.logException(e);
         } catch (RuntimeException e) {
-            Crashlytics.log("error with play number 2");
-            Crashlytics.logException(e);
+//            Crashlytics.log("error with play number 2");
+//            Crashlytics.logException(e);
         }
     }
     /*  Add Remove View to Window Manager  */
@@ -408,8 +406,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                     try {
                         mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
                     }catch (Exception e) {
-                        Crashlytics.log("probably the floating closed");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("probably the floating closed");
+//                        Crashlytics.logException(e);
                     }
             }
             public void onFinish() {
@@ -420,8 +418,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                         mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
                     }
                     catch (Exception e) {
-                        Crashlytics.log("probably the floating closed");
-                        Crashlytics.logException(e);
+//                        Crashlytics.log("probably the floating closed");
+//                        Crashlytics.logException(e);
                      }
             }
         }.start();
@@ -440,8 +438,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 try {
                     mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
                 }catch (Exception e) {
-                    Crashlytics.log("probably the floating closed");
-                    Crashlytics.logException(e);
+//                    Crashlytics.log("probably the floating closed");
+//                    Crashlytics.logException(e);
                 }
             }
             public void onFinish() {
@@ -450,8 +448,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 try {
                     mWindowManager.updateViewLayout(mFloatingWidgetView, mParams);
                 }catch (Exception e) {
-                    Crashlytics.log("probably the floating closed");
-                    Crashlytics.logException(e);
+//                    Crashlytics.log("probably the floating closed");
+//                    Crashlytics.logException(e);
                 }
             }
         }.start();

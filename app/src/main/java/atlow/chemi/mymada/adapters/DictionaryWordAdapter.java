@@ -17,15 +17,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,7 +165,7 @@ public class DictionaryWordAdapter extends RecyclerView.Adapter<DictionaryWordAd
                         tv.setTextColor(Color.WHITE);
                         bar.show();
                     }).addOnFailureListener(e -> {
-                        Crashlytics.logException(e);
+//                        Crashlytics.logException(e);
                         ok.setEnabled(true);
                     });
                 }));

@@ -37,8 +37,6 @@ import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -75,12 +73,12 @@ public class smsRes extends AppCompatActivity {
                 getWindow().setStatusBarColor(ContextCompat.getColor(smsRes.this, R.color.OldPrimary));
             }
         }catch (OutOfMemoryError e) {
-            Crashlytics.log("error hiding action bar smsRes");
-            Crashlytics.logException(e);
+//            Crashlytics.log("error hiding action bar smsRes");
+//            Crashlytics.logException(e);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_res);
-        Crashlytics.log("SmsRes Has Been Opened!");
+//        Crashlytics.log("SmsRes Has Been Opened!");
         Bundle extras = getIntent().getExtras();
         int callT = extras != null ? extras.getInt("callT") : 1;
         switch (callT)  {
@@ -257,7 +255,7 @@ public class smsRes extends AppCompatActivity {
                 Stxt = Stxt.substring(0, Stxt.indexOf("//"));
             } catch (StringIndexOutOfBoundsException e) {
                 Log.getStackTraceString(e);
-                Crashlytics.logException(e);
+//                Crashlytics.logException(e);
             }
             try {
                     time = getBetweenStrings(Stxt, "בשעה ", " ");
@@ -414,11 +412,11 @@ public class smsRes extends AppCompatActivity {
             mMediaPlayer.start();
 
         } catch (IOException e) {
-            Crashlytics.log("error with play number 1");
-            Crashlytics.logException(e);
+//            Crashlytics.log("error with play number 1");
+//            Crashlytics.logException(e);
         } catch (RuntimeException e) {
-            Crashlytics.log("error with play number 2");
-            Crashlytics.logException(e);
+//            Crashlytics.log("error with play number 2");
+//            Crashlytics.logException(e);
         }
     }
     public static void newC(String C)  {

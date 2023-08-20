@@ -36,7 +36,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.splitinstall.SplitInstallManager;
@@ -159,7 +158,7 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
             if (label != 0)
                 setTitle(label);
         } catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.log(e.getMessage());
+//            Crashlytics.log(e.getMessage());
         }
     }
     @Override
@@ -309,7 +308,7 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                                     tv.setTextColor(Color.WHITE);
                                     bar.show();
                                 } catch (IllegalArgumentException il) {
-                                    Crashlytics.logException(il);
+//                                    Crashlytics.logException(il);
                                 }
                             });
                     //splitInstallManager.unregisterListener(listener);

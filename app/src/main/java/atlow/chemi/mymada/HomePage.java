@@ -34,7 +34,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -70,7 +69,7 @@ public class HomePage extends AppCompatActivity {
         Context context = HomePage.this;
         MyFirebaseMessagingService.getToken(getApplicationContext());
         String token = getSharedPreferences("Settings", 0).getString("fcm", "empty");
-        Crashlytics.setUserIdentifier(token);
+//        Crashlytics.setUserIdentifier(token);
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
         boolean Mapp = sharedPreferences.getBoolean("Mapp", false);
@@ -88,11 +87,11 @@ public class HomePage extends AppCompatActivity {
             mAdView = findViewById(R.id.adView);
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
-            Crashlytics.log("Ads Loaded");
+//            Crashlytics.log("Ads Loaded");
         }
         catch (Exception e) {
-            Crashlytics.log("Ads Not Loaded");
-            Crashlytics.logException(e);
+//            Crashlytics.log("Ads Not Loaded");
+//            Crashlytics.logException(e);
         }
 
         RecyclerView rv = findViewById(R.id.rv);
@@ -121,11 +120,11 @@ public class HomePage extends AppCompatActivity {
             albumList.add(Contact);
             HomeB Info = new HomeB("inf", R.drawable.new_inf);
             albumList.add(Info);
-            Crashlytics.log("HomeBtns Loaded properly!");
+//            Crashlytics.log("HomeBtns Loaded properly!");
         }
         catch (Exception e) {
-            Crashlytics.log("HomeBtns caused crash!");
-            Crashlytics.logException(e);
+//            Crashlytics.log("HomeBtns caused crash!");
+//            Crashlytics.logException(e);
         }
 
         adapter.notifyDataSetChanged();
@@ -189,7 +188,7 @@ public class HomePage extends AppCompatActivity {
                 setTitle(label);
         }
         catch (PackageManager.NameNotFoundException e) {
-            Crashlytics.log(e.getMessage());
+//            Crashlytics.log(e.getMessage());
         }
     }
     private class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
@@ -277,7 +276,7 @@ public class HomePage extends AppCompatActivity {
             return getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
         }
         catch (Exception e) {
-            Crashlytics.logException(e);
+//            Crashlytics.logException(e);
             return false;
         }
     }

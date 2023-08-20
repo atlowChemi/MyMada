@@ -15,7 +15,6 @@ import androidx.multidex.MultiDexApplication;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
 import atlow.chemi.mymada.helpers.FontsOverride;
@@ -52,8 +51,8 @@ public class Applicatio extends MultiDexApplication {
             try {
                 tryConnectService(getApplicationContext());
             } catch (NoClassDefFoundError e) {
-                Crashlytics.log("Connecting service failed");
-                Crashlytics.logException(e);
+//                Crashlytics.log("Connecting service failed");
+//                Crashlytics.logException(e);
             }
         }
         makeRec();

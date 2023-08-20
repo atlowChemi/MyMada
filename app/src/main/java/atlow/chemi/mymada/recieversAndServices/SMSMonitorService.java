@@ -15,8 +15,6 @@ import android.os.IBinder;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.crashlytics.android.Crashlytics;
-
 import atlow.chemi.mymada.HomePage;
 import atlow.chemi.mymada.R;
 
@@ -38,7 +36,7 @@ public class SMSMonitorService extends Service {
         Intent btn = new Intent(this, ActionReceiver.class);
         btn.putExtra("action", "runInBG");
         PendingIntent pBtn = PendingIntent.getBroadcast(SMSMonitorService.this, 13, btn, PendingIntent.FLAG_UPDATE_CURRENT);
-        Crashlytics.log("sending SmsMonitor notif");
+//        Crashlytics.log("sending SmsMonitor notif");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             setNotifChannels();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CnlBg)
@@ -56,17 +54,17 @@ public class SMSMonitorService extends Service {
                 .setOngoing(true);
         try {
             builder.setSmallIcon(R.drawable.ic_noti);
-            Crashlytics.log("Loaded small icon");
+//            Crashlytics.log("Loaded small icon");
         }catch (Exception e) {
-            Crashlytics.log("Error SmsMonitor Notification!");
-            Crashlytics.logException(e);
+//            Crashlytics.log("Error SmsMonitor Notification!");
+//            Crashlytics.logException(e);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             builder.setPriority(NotificationManager.IMPORTANCE_MIN);
         }
         Notification notification = builder.build();
         startForeground(78, notification);
-        Crashlytics.log("started foreground");
+//        Crashlytics.log("started foreground");
     }
 
     @Override

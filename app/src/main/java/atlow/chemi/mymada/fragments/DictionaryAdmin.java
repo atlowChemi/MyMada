@@ -3,7 +3,6 @@ package atlow.chemi.mymada.fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -24,9 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.DocumentReference;
@@ -147,7 +144,7 @@ public class DictionaryAdmin extends Fragment {
                         tv.setTextColor(Color.WHITE);
                         bar.show();
                     }).addOnFailureListener(e -> {
-                        Crashlytics.logException(e);
+//                        Crashlytics.logException(e);
                         ok.setEnabled(true);
                     });
                 }));

@@ -12,8 +12,6 @@ import android.service.quicksettings.TileService;
 
 import androidx.core.content.ContextCompat;
 
-import com.crashlytics.android.Crashlytics;
-
 @TargetApi(Build.VERSION_CODES.N)
 public class MyTileService extends TileService {
 
@@ -27,8 +25,8 @@ public class MyTileService extends TileService {
         try {
             setCurrentState(Tile.STATE_INACTIVE);
         } catch (NullPointerException e) {
-            Crashlytics.log("removing tile error");
-            Crashlytics.logException(e);
+//            Crashlytics.log("removing tile error");
+//            Crashlytics.logException(e);
         }
         super.onTileRemoved();
     }
@@ -62,8 +60,8 @@ public class MyTileService extends TileService {
                 try {
                     ContextCompat.startForegroundService(MyTileService.this, serviceIntent);
                 } catch (Exception e) {
-                    Crashlytics.log("failed starting metronome tile");
-                    Crashlytics.logException(e);
+//                    Crashlytics.log("failed starting metronome tile");
+//                    Crashlytics.logException(e);
                 }
                 /**/
                 setCurrentState(Tile.STATE_ACTIVE);
@@ -96,8 +94,8 @@ public class MyTileService extends TileService {
 
             }
         } catch (NullPointerException e) {
-            Crashlytics.log("Cant get tile icon!");
-            Crashlytics.logException(e);
+//            Crashlytics.log("Cant get tile icon!");
+//            Crashlytics.logException(e);
         }
         if (tile != null)
             tile.updateTile();

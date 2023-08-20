@@ -19,8 +19,6 @@ import androidx.core.app.NotificationCompat;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -83,7 +81,7 @@ public class GrobootRec extends BroadcastReceiver {
                 text = intent.getCharSequenceExtra("text").toString();
             } catch (NullPointerException e) {
                 text = "";
-                Crashlytics.log("text extra is null!\n" + e);
+//                Crashlytics.log("text extra is null!\n" + e);
             }
             callT = intent.getIntExtra("callT", 1);
             Log.d("callT", "" + callT);
