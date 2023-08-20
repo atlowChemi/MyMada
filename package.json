@@ -23,7 +23,8 @@
     "mobx": "^6.10.0",
     "mobx-react-lite": "^4.0.3",
     "react": "18.2.0",
-    "react-native": "0.72.4"
+    "react-native": "0.72.4",
+    "react-native-linear-gradient": "^3.0.0-alpha.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -42,5 +43,9 @@
     "prettier": "^2.4.1",
     "react-test-renderer": "18.2.0",
     "typescript": "5.1.6"
+  },
+  "packageManager": "yarn@3.6.2",
+  "resolutions": {
+    "react-native-linear-gradient@^3.0.0-alpha.1": "patch:react-native-linear-gradient@npm%3A3.0.0-alpha.1#./.yarn/patches/react-native-linear-gradient-npm-3.0.0-alpha.1-36c4006ed8.patch"
   }
 }
