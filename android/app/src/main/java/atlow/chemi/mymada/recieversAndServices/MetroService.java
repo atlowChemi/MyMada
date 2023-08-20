@@ -44,10 +44,10 @@ public class MetroService extends Service {
         Intent callSNI = new Intent(MetroService.this, UtillitiesAndTools.class);
         callSNI.putExtra("running", true);
         callSNI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 7, callSNI, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 7, callSNI, PendingIntent.FLAG_IMMUTABLE);
         Intent btn = new Intent(this, ActionReceiver.class);
         btn.putExtra("action", "stopM");
-        PendingIntent pBtn = PendingIntent.getBroadcast(MetroService.this, 9, btn, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pBtn = PendingIntent.getBroadcast(MetroService.this, 9, btn, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         String action = MetroService.this.getResources().getString(R.string.MetroStop);
 
 //        Crashlytics.log("Starting Metro Notification");

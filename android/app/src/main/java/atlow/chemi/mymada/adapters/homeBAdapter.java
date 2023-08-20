@@ -198,7 +198,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                                         PendingIntent testPI;
                                         if (launchIntent != null) {
                                             launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                                            testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0);
+                                            testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, PendingIntent.FLAG_IMMUTABLE);
                                         } else {
                                             testPI = null;
                                         }
@@ -223,7 +223,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                                         PendingIntent testPI;
                                         if (launchIntent != null) {
                                             launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                                            testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0);
+                                            testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, PendingIntent.FLAG_IMMUTABLE);
                                         } else {
                                             testPI = null;
                                         }
