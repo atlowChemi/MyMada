@@ -18,7 +18,7 @@ public class MetroWidget extends AppWidgetProvider {
         // Create an Intent to launch MainActivity when clicked
         Intent btn = new Intent(context, ActionReceiver.class);
         btn.putExtra("action", "widget");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, btn, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, btn, PendingIntent.FLAG_IMMUTABLE);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.metro_widget);
         // Widgets allow click handlers to only launch pending intents

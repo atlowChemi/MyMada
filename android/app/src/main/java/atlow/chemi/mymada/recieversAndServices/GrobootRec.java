@@ -74,8 +74,8 @@ public class GrobootRec extends BroadcastReceiver {
         if (launchIntent != null) {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         }
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), hachtava, 0);
-        PendingIntent testPI = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), launchIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), hachtava, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent testPI = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), launchIntent, PendingIntent.FLAG_IMMUTABLE);
         if (intent != null) {
             try {
                 text = intent.getCharSequenceExtra("text").toString();
