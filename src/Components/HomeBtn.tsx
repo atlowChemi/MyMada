@@ -1,28 +1,59 @@
 import React from 'react';
+import { observable } from 'mobx';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { Image, Pressable, StyleSheet } from 'react-native';
 import { colors } from '../consts';
 import type { GestureResponderEvent, PressableStateCallbackType, StyleProp, ViewStyle, ImageSourcePropType } from 'react-native';
 
-export const HomeBtn: React.FC<{ big?: boolean; img: ImageSourcePropType; onPress(event: GestureResponderEvent): void }> = ({ big, img, onPress }) => {
-    const pressableStyle = React.useCallback(
-        (state: PressableStateCallbackType): StyleProp<ViewStyle> => {
-            return [
-                styles.btnCard,
-                !big && { flexBasis: '50%' },
-                state.pressed && {
-                    opacity: 0.7,
-                },
-            ];
-        },
-        [big],
+interface HomeBtnProps {
+    big?: boolean;
+    img: ImageSourcePropType;
+    style?: StyleProp<ViewStyle>;
+    onPress(event: GestureResponderEvent): void;
+}
+
+export const HomeBtn = observer<HomeBtnProps>(({ big, img, style, onPress }) => {
+    const state = useLocalObservable(
+        () => ({
+            big,
+            style,
+            isPressed: false,
+            pressableStyle({ pressed }: PressableStateCallbackType): StyleProp<ViewStyle> {
+                return [
+                    styles.btnCard,
+                    !this.big && { flexBasis: '50%' },
+                    pressed && {
+                        opacity: 0.7,
+                    },
+                    this.style,
+                ];
+            },
+            onPressIn() {
+                this.isPressed = true;
+            },
+            onPressOut() {
+                this.isPressed = false;
+            },
+            get imageStyle() {
+                return [styles.image, this.isPressed && { opacity: 0.7 }];
+            },
+        }),
+        { style: observable.ref },
     );
 
+    React.useEffect(() => {
+        state.big = big;
+    }, [state, big]);
+    React.useEffect(() => {
+        state.style = style;
+    }, [state, style]);
+
     return (
-        <Pressable style={pressableStyle} onPress={onPress}>
+        <Pressable style={state.pressableStyle} onPressIn={state.onPressIn} onPressOut={state.onPressOut} onPress={onPress}>
             <Image source={img} style={styles.image} />
         </Pressable>
     );
-};
+});
 
 const styles = StyleSheet.create({
     btnCard: {

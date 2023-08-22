@@ -1,17 +1,22 @@
 import React from 'react';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { SafeAreaView, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { HomeBtn } from '../Components/HomeBtn';
 import { Toolbar } from '../Components/Toolbar';
 import { colors } from '../consts';
-import type { useNavigationBuilder } from '@react-navigation/native';
+import type { NavigatableScreenProps } from '../App';
 
-type Navigation = ReturnType<typeof useNavigationBuilder>['navigation'];
+export const HomePage = observer<NavigatableScreenProps>(({ navigation }) => {
+    const state = useLocalObservable(() => ({
+        goToInfo() {
+            navigation.navigate('About');
+        },
+    }));
 
-export const HomePage: React.FC<{ navigation: Navigation }> = () => {
     return (
         <SafeAreaView style={styles.homePage}>
             <StatusBar barStyle="light-content" backgroundColor={colors.ColorPrimary} />
-            <Toolbar showRoundBg />
+            <Toolbar navigation={navigation} hideBack showRoundBg />
             <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scroller} contentContainerStyle={styles.scrollContent}>
                 <View>
                     <HomeBtn big img={require('../assets/homeBtns/new_tol.png')} onPress={() => {}} />
@@ -22,12 +27,12 @@ export const HomePage: React.FC<{ navigation: Navigation }> = () => {
                 </View>
                 <View style={styles.buttonRow}>
                     <HomeBtn img={require('../assets/homeBtns/new_con.png')} onPress={() => {}} />
-                    <HomeBtn img={require('../assets/homeBtns/new_inf.png')} onPress={() => {}} />
+                    <HomeBtn img={require('../assets/homeBtns/new_inf.png')} onPress={state.goToInfo} />
                 </View>
             </ScrollView>
         </SafeAreaView>
     );
-};
+});
 
 const styles = StyleSheet.create({
     homePage: {
@@ -45,7 +50,7 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingBottom: 30,
         paddingHorizontal: 15,
-        height: '100%',
+        minHeight: '100%',
         rowGap: 10,
     },
     buttonRow: {
