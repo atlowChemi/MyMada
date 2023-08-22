@@ -1,17 +1,33 @@
 import React from 'react';
 import { View, Image, Pressable, StyleSheet, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { colors } from '../consts';
+import { NavigatableScreenProps } from '../App';
 
-export const Toolbar: React.FC<{ title?: string; hideSettings?: boolean; showRoundBg?: boolean }> = ({ title, hideSettings, showRoundBg }) => {
+interface ToolbarProps extends NavigatableScreenProps {
+    title?: string;
+    hideSettings?: boolean;
+    hideBack?: boolean;
+    showRoundBg?: boolean;
+}
+
+export const Toolbar: React.FC<ToolbarProps> = ({ title, hideSettings, hideBack, showRoundBg, navigation }) => {
+    const { t, i18n } = useTranslation();
+
     return (
         <>
             <View style={styles.toolbar}>
-                <Text style={styles.titleText}>{title || 'דיווחי מגן דוד אדום'}</Text>
+                {!hideBack && navigation.canGoBack() && (
+                    <Pressable style={[styles.backBtn, i18n.language === 'he' && styles.rotated]} onPress={navigation.goBack}>
+                        <Image source={require('../assets/icons/back_arrow.webp')} style={styles.toolbarIcon} />
+                    </Pressable>
+                )}
+                <Text style={styles.titleText}>{title || t('common:appName')}</Text>
                 <View style={styles.toolbarBtnWrapper}>
                     {!hideSettings && (
                         <Pressable style={styles.settingsBtn}>
-                            <Image source={require('../assets/icons/ic_settings.webp')} style={styles.settingsImg} />
+                            <Image source={require('../assets/icons/ic_settings.webp')} style={styles.toolbarIcon} />
                         </Pressable>
                     )}
                 </View>
@@ -29,6 +45,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignContent: 'center',
         backgroundColor: colors.ColorPrimary,
+        gap: 5,
+    },
+    backBtn: {
+        flexShrink: 0,
+    },
+    rotated: {
+        transform: [{ rotate: '180deg' }],
     },
     titleText: {
         flex: 1,
@@ -43,7 +66,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     settingsBtn: {},
-    settingsImg: {
+    toolbarIcon: {
         height: 30,
         width: 30,
     },
