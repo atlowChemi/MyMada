@@ -58,15 +58,7 @@ public class MainActivity3 extends Fragment implements View.OnTouchListener {
         newSendButton = view.findViewById(R.id.yourMsgBtnNew);
         if (getActivity() != null) {
             Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1)
-                newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
-            else {
-                int direction = getResources().getConfiguration().getLayoutDirection();
-                if (direction == Configuration.SCREENLAYOUT_LAYOUTDIR_RTL)
-                    newSendButton.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                else
-                    newSendButton.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
-            }
+            newSendButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         }
         newSendButton.setOnTouchListener(this);
         newSendButton.setOnClickListener(v -> {

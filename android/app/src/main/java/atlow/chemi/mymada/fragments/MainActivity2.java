@@ -99,15 +99,7 @@ public class MainActivity2 extends Fragment implements View.OnTouchListener {
             l.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         }
         Drawable img = VectorDrawableCompat.create(getResources(), R.drawable.ic_send, null);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1)
-            newSendButtonM2.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
-        else {
-            int direction = getResources().getConfiguration().getLayoutDirection();
-            if (direction == Configuration.SCREENLAYOUT_LAYOUTDIR_RTL)
-                newSendButtonM2.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-            else
-                newSendButtonM2.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
-        }
+        newSendButtonM2.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, img, null);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         albumList = new ArrayList<>();
         adapter = new VolunteerAdapter(getActivity(), albumList);

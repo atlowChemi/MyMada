@@ -336,33 +336,17 @@ public class HomePage extends AppCompatActivity {
             /*end new*/
             Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             boolean activityExists = isCallable(test);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                int REQUEST_PERMISSION_SETTING = 101;
-                if (activityExists) {
-                    try {
-                        if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                            ShowDialog(getString(R.string.dialog_help),
-                                    getString(R.string.dialog_yes),
-                                    new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
-                        }
-                        s.putBoolean("Mapp", true);
+            int REQUEST_PERMISSION_SETTING = 101;
+            if (activityExists) {
+                try {
+                    if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
+                        ShowDialog(getString(R.string.dialog_help),
+                                getString(R.string.dialog_yes),
+                                new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
                     }
-                    catch (ActivityNotFoundException e) {
-                        Intent intent = new Intent(this, NotificationService.class);
-                        Intent old = new Intent(this, NotificationServiceOld.class);
-                        stopService(intent);
-                        startService(old);
-                        if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                            ShowDialog(getString(R.string.dialog_help),
-                                    null,
-                                    getString(R.string.dialog_yes),
-                                    new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
-                                    true, REQUEST_PERMISSION_SETTING);
-                        }
-                        s.putBoolean("Mapp", true);
-                    }
+                    s.putBoolean("Mapp", true);
                 }
-                else {
+                catch (ActivityNotFoundException e) {
                     Intent intent = new Intent(this, NotificationService.class);
                     Intent old = new Intent(this, NotificationServiceOld.class);
                     stopService(intent);
@@ -378,6 +362,17 @@ public class HomePage extends AppCompatActivity {
                 }
             }
             else {
+                Intent intent = new Intent(this, NotificationService.class);
+                Intent old = new Intent(this, NotificationServiceOld.class);
+                stopService(intent);
+                startService(old);
+                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
+                    ShowDialog(getString(R.string.dialog_help),
+                            null,
+                            getString(R.string.dialog_yes),
+                            new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
+                            true, REQUEST_PERMISSION_SETTING);
+                }
                 s.putBoolean("Mapp", true);
             }
         }

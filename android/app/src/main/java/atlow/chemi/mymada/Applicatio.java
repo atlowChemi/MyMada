@@ -15,6 +15,13 @@ import androidx.multidex.MultiDexApplication;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.facebook.react.PackageList;
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactPackage;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactNativeHost;
+import com.facebook.soloader.SoLoader;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
 import atlow.chemi.mymada.helpers.FontsOverride;
@@ -25,10 +32,48 @@ import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 import static android.service.notification.NotificationListenerService.requestRebind;
 
-public class Applicatio extends MultiDexApplication {
+import java.util.List;
+
+public class Applicatio extends MultiDexApplication implements ReactApplication {
+    private final ReactNativeHost mReactNativeHost =
+            new DefaultReactNativeHost(this) {
+                @Override
+                public boolean getUseDeveloperSupport() {
+                    return BuildConfig.DEBUG;
+                }
+
+                @Override
+                protected List<ReactPackage> getPackages() {
+                    @SuppressWarnings("UnnecessaryLocalVariable")
+                    List<ReactPackage> packages = new PackageList(this).getPackages();
+                    // Packages that cannot be autolinked yet can be added manually here, for example:
+                    // packages.add(new MyReactNativePackage());
+                    return packages;
+                }
+
+                @Override
+                protected String getJSMainModuleName() {
+                    return "index";
+                }
+
+                @Override
+                protected boolean isNewArchEnabled() {
+                    return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+                }
+
+                @Override
+                protected Boolean isHermesEnabled() {
+                    return BuildConfig.IS_HERMES_ENABLED;
+                }
+            };
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
+    @Override
+    public ReactNativeHost getReactNativeHost() {
+        return mReactNativeHost;
+    }
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(LocalHelper.onAttach(base));
@@ -39,6 +84,12 @@ public class Applicatio extends MultiDexApplication {
         if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits())
             return;
         super.onCreate();
+        SoLoader.init(this, /* native exopackage */ false);
+        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+            // If you opted-in for the New Architecture, we load the native entry point for this app.
+            DefaultNewArchitectureEntryPoint.load();
+        }
+        ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
         FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SERIF", "fonts/opensanshebrew.ttf");
@@ -65,12 +116,10 @@ public class Applicatio extends MultiDexApplication {
         }
     }
     public static void toggleNotificationListenerService(Context mContext) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            PackageManager pm = mContext.getPackageManager();
-            ComponentName componentName = new ComponentName(mContext, NotificationService.class);
-            pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-            pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-        }
+        PackageManager pm = mContext.getPackageManager();
+        ComponentName componentName = new ComponentName(mContext, NotificationService.class);
+        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
     private void makeRec() {
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);

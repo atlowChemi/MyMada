@@ -69,9 +69,7 @@ public class smsRes extends AppCompatActivity {
             getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
             if (getSupportActionBar() != null)
                 getSupportActionBar().hide();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(ContextCompat.getColor(smsRes.this, R.color.OldPrimary));
-            }
+            getWindow().setStatusBarColor(ContextCompat.getColor(smsRes.this, R.color.OldPrimary));
         }catch (OutOfMemoryError e) {
 //            Crashlytics.log("error hiding action bar smsRes");
 //            Crashlytics.logException(e);

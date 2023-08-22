@@ -323,25 +323,13 @@ public class contactChatActivity extends AppCompatActivity {
                     /*end new*/
                     Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                     boolean activityExists = isCallable(test);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        if (activityExists) {
-                            try {
-                                if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName))
-                                    PermissionDialog(false);
-                                s.putBoolean("Mapp", true);
-                            }
-                            catch (ActivityNotFoundException e) {
-                                Intent intent = new Intent(this, NotificationService.class);
-                                Intent old = new Intent(this, NotificationServiceOld.class);
-                                stopService(intent);
-                                startService(old);
-                                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext()))
-                                    PermissionDialog(true);
-
-                                s.putBoolean("Mapp", true);
-                            }
+                    if (activityExists) {
+                        try {
+                            if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName))
+                                PermissionDialog(false);
+                            s.putBoolean("Mapp", true);
                         }
-                        else {
+                        catch (ActivityNotFoundException e) {
                             Intent intent = new Intent(this, NotificationService.class);
                             Intent old = new Intent(this, NotificationServiceOld.class);
                             stopService(intent);
@@ -353,6 +341,13 @@ public class contactChatActivity extends AppCompatActivity {
                         }
                     }
                     else {
+                        Intent intent = new Intent(this, NotificationService.class);
+                        Intent old = new Intent(this, NotificationServiceOld.class);
+                        stopService(intent);
+                        startService(old);
+                        if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext()))
+                            PermissionDialog(true);
+
                         s.putBoolean("Mapp", true);
                     }
                 }

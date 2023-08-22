@@ -134,61 +134,14 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
                     /*end new*/
                     val test = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
                     val activityExists = isCallable(test)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        if (activityExists) {
-                            try {
-                                if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                                    val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                                    builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(resources.getString(R.string.dialog_yes)) { _,_ ->
-                                                val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                                                startActivity(intent)
-                                            }
-                                            .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
-                                    val alert = builder.create()
-                                    alert.setOnShowListener {
-                                        val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
-                                        cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
-                                    }
-                                    alert.show()
-                                }
-                                s.putBoolean("Mapp", true)
-                            }
-                            catch (e: ActivityNotFoundException) {
-                                val intent = Intent(this, NotificationService::class.java)
-                                val old = Intent(this, NotificationServiceOld::class.java)
-                                stopService(intent)
-                                startService(old)
-                                if (!NotificationServiceOld.isAccessibilitySettingsOn(applicationContext)) {
-                                    val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                                    builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
-                                                val intent1 = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                                                startActivityForResult(intent1, _requestPermissionSetting)
-                                            }
-                                            .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
-                                    val alert = builder.create()
-                                    alert.setOnShowListener {
-                                        val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
-                                        cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
-                                    }
-                                    alert.show()
-                                }
-                                s.putBoolean("Mapp", true)
-                            }
-
-                        }
-                        else {
-                            val intent = Intent(this, NotificationService::class.java)
-                            val old = Intent(this, NotificationServiceOld::class.java)
-                            stopService(intent)
-                            startService(old)
-                            if (!NotificationServiceOld.isAccessibilitySettingsOn(applicationContext)) {
+                    if (activityExists) {
+                        try {
+                            if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
                                 val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
                                 builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
-                                        .setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
-                                            val inten = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                                            startActivityForResult(inten, _requestPermissionSetting)
+                                        .setPositiveButton(resources.getString(R.string.dialog_yes)) { _,_ ->
+                                            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                                            startActivity(intent)
                                         }
                                         .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
                                 val alert = builder.create()
@@ -200,7 +153,50 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
                             }
                             s.putBoolean("Mapp", true)
                         }
-                    } else {
+                        catch (e: ActivityNotFoundException) {
+                            val intent = Intent(this, NotificationService::class.java)
+                            val old = Intent(this, NotificationServiceOld::class.java)
+                            stopService(intent)
+                            startService(old)
+                            if (!NotificationServiceOld.isAccessibilitySettingsOn(applicationContext)) {
+                                val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
+                                builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
+                                        .setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
+                                            val intent1 = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                                            startActivityForResult(intent1, _requestPermissionSetting)
+                                        }
+                                        .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
+                                val alert = builder.create()
+                                alert.setOnShowListener {
+                                    val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
+                                    cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
+                                }
+                                alert.show()
+                            }
+                            s.putBoolean("Mapp", true)
+                        }
+
+                    }
+                    else {
+                        val intent = Intent(this, NotificationService::class.java)
+                        val old = Intent(this, NotificationServiceOld::class.java)
+                        stopService(intent)
+                        startService(old)
+                        if (!NotificationServiceOld.isAccessibilitySettingsOn(applicationContext)) {
+                            val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
+                            builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
+                                    .setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
+                                        val inten = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                                        startActivityForResult(inten, _requestPermissionSetting)
+                                    }
+                                    .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
+                            val alert = builder.create()
+                            alert.setOnShowListener {
+                                val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
+                                cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
+                            }
+                            alert.show()
+                        }
                         s.putBoolean("Mapp", true)
                     }
                 } else {
