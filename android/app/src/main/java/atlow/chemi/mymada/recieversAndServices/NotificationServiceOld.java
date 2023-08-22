@@ -107,11 +107,7 @@ public class NotificationServiceOld extends AccessibilityService {
         //{"com.appone.totest.accessibility", "com.apptwo.totest.accessibility"};
 
         // Set the type of feedback your service will provide.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            info.feedbackType = AccessibilityServiceInfo.FEEDBACK_ALL_MASK;
-        } else {
-            info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
-        }
+        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_ALL_MASK;
         // Default services are invoked only if no package-specific ones are present
         // for the type of AccessibilityEvent generated.  This service *is*
         // application-specific, so the flag isn't necessary.  If this was a

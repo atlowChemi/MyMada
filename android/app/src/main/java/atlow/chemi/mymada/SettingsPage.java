@@ -241,81 +241,76 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
         builder.setSingleChoiceItems(Langs, langToPick, (dialog, which) -> {
             String locale = which == 0 ? "iw" : "en";
             if (langToPick != which) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    SplitInstallStateUpdatedListener listener = state -> {
-                        Log.e("SPLIT MANAGER", "error code is: " + state.errorCode());
-                        Log.e("SPLIT MANAGER", "status code is: " + state.status());
-                        if (state.status() == SplitInstallSessionStatus.FAILED &&
-                                (state.errorCode() == SplitInstallErrorCode.SERVICE_DIED ||
-                                        state.errorCode() == SplitInstallErrorCode.NETWORK_ERROR)) {
-                            // Retry the request.
-                            HideProgressDialog(1);
-                            return;
-                        }
-                        if (state.sessionId() == mySessionId) {
-                            Log.e("SPLIT MANAGER", "status session is: " + state.sessionId());
-                            int totalBytes = (int)state.totalBytesToDownload();
-                            int progress = (int)state.bytesDownloaded();
-                            long percent = (state.totalBytesToDownload() / 100) * state.bytesDownloaded();
-                            switch (state.status()) {
-                                case SplitInstallSessionStatus.DOWNLOADING:
-                                    Log.e("SPLIT MANAGER", "downloading");
-                                    progressBar.setMax(totalBytes);
-                                    progressBar.setProgress(progress);
-                                    progressText.setText(getString(R.string.langLoad, percent + "%"));
-                                    //TODO:Update progress bar.
-                                    break;
-                                case SplitInstallSessionStatus.INSTALLED:
-                                    //Module is downloaded successfully
-                                    progressBar.setMax(1);
-                                    progressBar.setProgress(1);
-                                    HideProgressDialog(0);
-                                    LocalHelper.setLocale(getApplicationContext(), locale);
-                                    break;
-                                case SplitInstallSessionStatus.CANCELED:
-                                case SplitInstallSessionStatus.CANCELING:
-                                case SplitInstallSessionStatus.DOWNLOADED:
-                                case SplitInstallSessionStatus.FAILED:
-                                case SplitInstallSessionStatus.INSTALLING:
-                                case SplitInstallSessionStatus.PENDING:
-                                case SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION:
-                                case SplitInstallSessionStatus.UNKNOWN:
-                                    HideProgressDialog(1);
-                                    break;
-                            }
-                        }
-                    };
-                    splitInstallManager = SplitInstallManagerFactory.create(getApplicationContext());
-                    Set<String> langs = splitInstallManager.getInstalledLanguages();
-                    StringBuilder languages = new StringBuilder();
-                    for (String lng : langs) {
-                        languages.append(lng).append(", ");
+                SplitInstallStateUpdatedListener listener = state -> {
+                    Log.e("SPLIT MANAGER", "error code is: " + state.errorCode());
+                    Log.e("SPLIT MANAGER", "status code is: " + state.status());
+                    if (state.status() == SplitInstallSessionStatus.FAILED &&
+                            (state.errorCode() == SplitInstallErrorCode.SERVICE_DIED ||
+                                    state.errorCode() == SplitInstallErrorCode.NETWORK_ERROR)) {
+                        // Retry the request.
+                        HideProgressDialog(1);
+                        return;
                     }
-                    Log.e("SPLIT MANAGER", "available lang " + languages);
-                    Log.e("SPLIT MANAGER", "requested lang " + locale);
-                    splitInstallManager.registerListener(listener);
-                    SplitInstallRequest request = SplitInstallRequest.newBuilder().addLanguage(Locale.forLanguageTag(locale)).build();
-                    ShowProgressDialog();
-                    splitInstallManager.startInstall(request)
-                            .addOnSuccessListener(sessionId -> mySessionId = sessionId)
-                            .addOnFailureListener(e -> {
+                    if (state.sessionId() == mySessionId) {
+                        Log.e("SPLIT MANAGER", "status session is: " + state.sessionId());
+                        int totalBytes = (int)state.totalBytesToDownload();
+                        int progress = (int)state.bytesDownloaded();
+                        long percent = (state.totalBytesToDownload() / 100) * state.bytesDownloaded();
+                        switch (state.status()) {
+                            case SplitInstallSessionStatus.DOWNLOADING:
+                                Log.e("SPLIT MANAGER", "downloading");
+                                progressBar.setMax(totalBytes);
+                                progressBar.setProgress(progress);
+                                progressText.setText(getString(R.string.langLoad, percent + "%"));
+                                //TODO:Update progress bar.
+                                break;
+                            case SplitInstallSessionStatus.INSTALLED:
+                                //Module is downloaded successfully
+                                progressBar.setMax(1);
+                                progressBar.setProgress(1);
                                 HideProgressDialog(0);
-                                Log.e("SPLIT MANAGER", "error");
-                                try {
-                                    Snackbar bar = Snackbar.make(findViewById(android.R.id.content), R.string.langBad, Snackbar.LENGTH_LONG);
-                                    View viewSnk = bar.getView();
-                                    TextView tv = viewSnk.findViewById(com.google.android.material.R.id.snackbar_text);
-                                    tv.setTextColor(Color.WHITE);
-                                    bar.show();
-                                } catch (IllegalArgumentException il) {
-//                                    Crashlytics.logException(il);
-                                }
-                            });
-                    //splitInstallManager.unregisterListener(listener);
-                } else {
-                    LocalHelper.setLocale(getApplicationContext(), locale);
-                    recreate();
+                                LocalHelper.setLocale(getApplicationContext(), locale);
+                                break;
+                            case SplitInstallSessionStatus.CANCELED:
+                            case SplitInstallSessionStatus.CANCELING:
+                            case SplitInstallSessionStatus.DOWNLOADED:
+                            case SplitInstallSessionStatus.FAILED:
+                            case SplitInstallSessionStatus.INSTALLING:
+                            case SplitInstallSessionStatus.PENDING:
+                            case SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION:
+                            case SplitInstallSessionStatus.UNKNOWN:
+                                HideProgressDialog(1);
+                                break;
+                        }
+                    }
+                };
+                splitInstallManager = SplitInstallManagerFactory.create(getApplicationContext());
+                Set<String> langs = splitInstallManager.getInstalledLanguages();
+                StringBuilder languages = new StringBuilder();
+                for (String lng : langs) {
+                    languages.append(lng).append(", ");
                 }
+                Log.e("SPLIT MANAGER", "available lang " + languages);
+                Log.e("SPLIT MANAGER", "requested lang " + locale);
+                splitInstallManager.registerListener(listener);
+                SplitInstallRequest request = SplitInstallRequest.newBuilder().addLanguage(Locale.forLanguageTag(locale)).build();
+                ShowProgressDialog();
+                splitInstallManager.startInstall(request)
+                        .addOnSuccessListener(sessionId -> mySessionId = sessionId)
+                        .addOnFailureListener(e -> {
+                            HideProgressDialog(0);
+                            Log.e("SPLIT MANAGER", "error");
+                            try {
+                                Snackbar bar = Snackbar.make(findViewById(android.R.id.content), R.string.langBad, Snackbar.LENGTH_LONG);
+                                View viewSnk = bar.getView();
+                                TextView tv = viewSnk.findViewById(com.google.android.material.R.id.snackbar_text);
+                                tv.setTextColor(Color.WHITE);
+                                bar.show();
+                            } catch (IllegalArgumentException il) {
+//                                    Crashlytics.logException(il);
+                            }
+                        });
+                //splitInstallManager.unregisterListener(listener);
             }
             dialog.dismiss();
         });
@@ -453,57 +448,28 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
             /*end new*/
             Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             boolean activityExists = isCallable(test);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                if (activityExists) {
-                    try {
-                        if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                    .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
-                                        Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                                        startActivity(intent);
-                                    })
-                                    .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-                            final AlertDialog alert = builder.create();
-                            alert.setOnShowListener(dialogInterface -> {
-                                TextView textView = alert.findViewById(android.R.id.message);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                            });
-                            alert.show();
-                        }
-                        s.putBoolean("Mapp", true);
-                    } catch (ActivityNotFoundException e) {
-                        Intent intent = new Intent(this, NotificationService.class);
-                        Intent old = new Intent(this, NotificationServiceOld.class);
-                        stopService(intent);
-                        startService(old);
-                        if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                    .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
-                                        Intent intent1 = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                        startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
-                                    })
-                                    .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-                            final AlertDialog alert = builder.create();
-                            alert.setOnShowListener(dialogInterface -> {
-                                TextView textView = alert.findViewById(android.R.id.message);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                textView = alert.findViewById(android.R.id.title);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                            });
-                            alert.show();
-                        }
-                        s.putBoolean("Mapp", true);
+            if (activityExists) {
+                try {
+                    if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+                        builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
+                                .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                    Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                                    startActivity(intent);
+                                })
+                                .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
+                        final AlertDialog alert = builder.create();
+                        alert.setOnShowListener(dialogInterface -> {
+                            TextView textView = alert.findViewById(android.R.id.message);
+                            if (textView != null)
+                                textView.setTypeface(myTypeface);
+                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                        });
+                        alert.show();
                     }
-                } else {
+                    s.putBoolean("Mapp", true);
+                } catch (ActivityNotFoundException e) {
                     Intent intent = new Intent(this, NotificationService.class);
                     Intent old = new Intent(this, NotificationServiceOld.class);
                     stopService(intent);
@@ -512,8 +478,8 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                         builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
                                 .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
-                                    Intent intent12 = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                    startActivityForResult(intent12, REQUEST_PERMISSION_SETTING);
+                                    Intent intent1 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                    startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
                                 })
                                 .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                         final AlertDialog alert = builder.create();
@@ -524,14 +490,39 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                             textView = alert.findViewById(android.R.id.title);
                             if (textView != null)
                                 textView.setTypeface(myTypeface);
-                            Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                            cancelButton.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
                         });
                         alert.show();
                     }
                     s.putBoolean("Mapp", true);
                 }
             } else {
+                Intent intent = new Intent(this, NotificationService.class);
+                Intent old = new Intent(this, NotificationServiceOld.class);
+                stopService(intent);
+                startService(old);
+                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+                    builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
+                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                Intent intent12 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                startActivityForResult(intent12, REQUEST_PERMISSION_SETTING);
+                            })
+                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
+                    final AlertDialog alert = builder.create();
+                    alert.setOnShowListener(dialogInterface -> {
+                        TextView textView = alert.findViewById(android.R.id.message);
+                        if (textView != null)
+                            textView.setTypeface(myTypeface);
+                        textView = alert.findViewById(android.R.id.title);
+                        if (textView != null)
+                            textView.setTypeface(myTypeface);
+                        Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                        cancelButton.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                    });
+                    alert.show();
+                }
                 s.putBoolean("Mapp", true);
             }
         } else {

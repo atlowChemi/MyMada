@@ -181,7 +181,7 @@ public class CircularProgressButton extends AppCompatButton implements AnimatedB
                 gradientDrawable.setColor(colorDrawable.getColor());
                 mGradientDrawable.setBothDrawables(gradientDrawable);
             }
-            else if (drawable instanceof InsetDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            else if (drawable instanceof InsetDrawable) {
                 InsetDrawable insetDrawable = (InsetDrawable) drawable;
                 mGradientDrawable = loadGradientDrawable(insetDrawable.getDrawable());
                 // use the original inset as background to keep margins, and use the inner drawable for morphing

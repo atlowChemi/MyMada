@@ -1,4 +1,6 @@
 ext {
+    compileSdkVersion   = 33
+    targetSdkVersion    = 33
 }// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript { 

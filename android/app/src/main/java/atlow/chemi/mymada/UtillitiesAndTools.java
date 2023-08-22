@@ -325,57 +325,28 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
             /*end new*/
             Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             boolean activityExists = isCallable(test);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                if (activityExists) {
-                    try {
-                        if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                    .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
-                                        Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                                        startActivity(intent);
-                                    })
-                                    .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-                            final AlertDialog alert = builder.create();
-                            alert.setOnShowListener(dialogInterface -> {
-                                TextView textView = alert.findViewById(android.R.id.message);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                            });
-                            alert.show();
-                        }
-                        s.putBoolean("Mapp", true);
-                    } catch (ActivityNotFoundException e) {
-                        Intent intent = new Intent(this, NotificationService.class);
-                        Intent old = new Intent(this, NotificationServiceOld.class);
-                        stopService(intent);
-                        startService(old);
-                        if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-                            builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
-                                    .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
-                                        Intent intent1 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                        startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
-                                    })
-                                    .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-                            final AlertDialog alert = builder.create();
-                            alert.setOnShowListener(dialogInterface -> {
-                                TextView textView = alert.findViewById(android.R.id.message);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                textView = alert.findViewById(android.R.id.title);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
-                            });
-                            alert.show();
-                        }
-                        s.putBoolean("Mapp", true);
+            if (activityExists) {
+                try {
+                    if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+                        builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
+                                .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                    Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                                    startActivity(intent);
+                                })
+                                .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
+                        final AlertDialog alert = builder.create();
+                        alert.setOnShowListener(dialogInterface -> {
+                            TextView textView = alert.findViewById(android.R.id.message);
+                            if (textView != null)
+                                textView.setTypeface(myTypeface);
+                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                            canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                        });
+                        alert.show();
                     }
-                } else {
+                    s.putBoolean("Mapp", true);
+                } catch (ActivityNotFoundException e) {
                     Intent intent = new Intent(this, NotificationService.class);
                     Intent old = new Intent(this, NotificationServiceOld.class);
                     stopService(intent);
@@ -384,8 +355,8 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
                         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
                         builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
                                 .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
-                                    Intent intent12 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                    startActivityForResult(intent12, REQUEST_PERMISSION_SETTING);
+                                    Intent intent1 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                    startActivityForResult(intent1, REQUEST_PERMISSION_SETTING);
                                 })
                                 .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
                         final AlertDialog alert = builder.create();
@@ -404,6 +375,31 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
                     s.putBoolean("Mapp", true);
                 }
             } else {
+                Intent intent = new Intent(this, NotificationService.class);
+                Intent old = new Intent(this, NotificationServiceOld.class);
+                stopService(intent);
+                startService(old);
+                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+                    builder.setMessage(getResources().getString(R.string.dialog_help)).setCancelable(false)
+                            .setPositiveButton(getResources().getString(R.string.dialog_yes), (dialog, id) -> {
+                                Intent intent12 = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                                startActivityForResult(intent12, REQUEST_PERMISSION_SETTING);
+                            })
+                            .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
+                    final AlertDialog alert = builder.create();
+                    alert.setOnShowListener(dialogInterface -> {
+                        TextView textView = alert.findViewById(android.R.id.message);
+                        if (textView != null)
+                            textView.setTypeface(myTypeface);
+                        textView = alert.findViewById(android.R.id.title);
+                        if (textView != null)
+                            textView.setTypeface(myTypeface);
+                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                        canc.setTextColor(getApplicationContext().getResources().getColor(R.color.ColorPrimary));
+                    });
+                    alert.show();
+                }
                 s.putBoolean("Mapp", true);
             }
         } else {
