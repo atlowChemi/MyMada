@@ -2,11 +2,11 @@ import React from 'react';
 import { View, Image, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'react-native-linear-gradient';
-import { Text } from './Text';
+import { Text } from '../Components/Text';
 import { colors } from '../consts';
 import { NavigatableScreenProps } from '../App';
 
-interface ToolbarProps extends NavigatableScreenProps {
+export interface ToolbarProps extends NavigatableScreenProps {
     title?: string;
     hideSettings?: boolean;
     hideBack?: boolean;
@@ -50,6 +50,8 @@ const styles = StyleSheet.create({
     },
     backBtn: {
         flexShrink: 0,
+        alignContent: 'center',
+        justifyContent: 'center',
     },
     rotated: {
         transform: [{ rotate: '180deg' }],

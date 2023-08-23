@@ -1,11 +1,13 @@
 import aboutUs from './aboutUs';
 import common from './common';
 import errors from './errors';
+import privacy from './privacy';
 
 export default {
     aboutUs,
     common,
     errors,
+    privacy,
     smsMoni: 'הפעלת האפליקציה ברקע',
     notiMoni: 'זיהוי התראות ברקע',
     metroMoni: 'הפעלת מטרונום ברקע',
@@ -33,7 +35,6 @@ export default {
     test_beep: 'דמה קבלת מקרה',
     title_activity_msgaprove: 'אישור סופי',
     title_activity_sms_res: 'הודעה חדשה',
-    title_activity_privacy: 'מדיניות פרטיות',
     title_activity_main2: 'דיווח אנשי צוות',
     enjoy: 'משמרת מהנה!',
     Nteam: 'הוספת איש צוות',
