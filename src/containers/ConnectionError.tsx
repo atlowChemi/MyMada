@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Image, StyleSheet, View } from 'react-native';
-import { Text } from './Text';
+import { Text } from '../Components/Text';
 import { colors } from '../consts';
 
 export const ConnectionError = React.memo(() => {

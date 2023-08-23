@@ -1,13 +1,13 @@
 import React from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { ActivityIndicator, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { WebView } from 'react-native-webview';
-import { colors } from '../consts';
-import { Toolbar } from '../Components/Toolbar';
-import type { NavigatableScreenProps } from '../App';
+import { colors } from '../../consts';
+import type { NavigatableScreenProps } from '../../App';
 import { action } from 'mobx';
-import { ConnectionError } from '../Components/ConnectionError';
+import { ConnectionError } from '../ConnectionError';
+import { BasePageView } from '../../Components/BasePageView';
 
 const BASE_URL = 'https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o';
 const errorCompBuilder = () => <ConnectionError />;
@@ -40,11 +40,9 @@ export const Privacy = observer<NavigatableScreenProps>(({ navigation }) => {
     );
 
     return (
-        <SafeAreaView style={styles.privacyPage}>
-            <StatusBar barStyle="light-content" backgroundColor={colors.colorPrimary} />
-            <Toolbar navigation={navigation} title={t('aboutUs:toolbarTitle')} />
+        <BasePageView navigation={navigation} toolbarTitle={t('privacy:toolbarTitle')} noScroll>
             <WebView source={state.source} startInLoadingState renderError={errorCompBuilder} renderLoading={loaderBuilder} />
-        </SafeAreaView>
+        </BasePageView>
     );
 });
 
@@ -58,21 +56,5 @@ const styles = StyleSheet.create({
         left: 0,
         backgroundColor: colors.bgShadowEnd,
         justifyContent: 'center',
-    },
-    privacyPage: {
-        backgroundColor: colors.bgShadowEnd,
-        height: '100%',
-        flexGrow: 1,
-    },
-    scroller: {
-        height: '100%',
-        flex: 1,
-    },
-    scrollContent: {
-        paddingTop: 10,
-        paddingBottom: 30,
-        paddingHorizontal: 15,
-        minHeight: '100%',
-        rowGap: 20,
     },
 });
