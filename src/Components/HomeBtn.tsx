@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         justifyContent: 'center',
         textAlignVertical: 'center',
-        backgroundColor: colors.White,
+        backgroundColor: colors.white,
     },
     image: {
         maxWidth: '100%',

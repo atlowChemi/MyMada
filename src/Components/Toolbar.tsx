@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Image, Pressable, StyleSheet, Text } from 'react-native';
+import { View, Image, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'react-native-linear-gradient';
+import { Text } from './Text';
 import { colors } from '../consts';
 import { NavigatableScreenProps } from '../App';
 
@@ -32,7 +33,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ title, hideSettings, hideBack,
                     )}
                 </View>
             </View>
-            {showRoundBg && <LinearGradient colors={['#1f425f', colors.ColorPrimary, colors.ColorPrimary]} angle={0} useAngle style={styles.roundBg} />}
+            {showRoundBg && <LinearGradient colors={['#1f425f', colors.colorPrimary, colors.colorPrimary]} angle={0} useAngle style={styles.roundBg} />}
         </>
     );
 };
@@ -41,10 +42,10 @@ const styles = StyleSheet.create({
     toolbar: {
         height: 56,
         padding: 10,
-        color: colors.White,
+        color: colors.white,
         flexDirection: 'row',
         alignContent: 'center',
-        backgroundColor: colors.ColorPrimary,
+        backgroundColor: colors.colorPrimary,
         gap: 5,
     },
     backBtn: {
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 20,
         fontWeight: 'bold',
-        color: colors.White,
+        color: colors.white,
         textAlignVertical: 'center',
     },
     toolbarBtnWrapper: {

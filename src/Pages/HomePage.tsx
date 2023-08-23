@@ -15,7 +15,7 @@ export const HomePage = observer<NavigatableScreenProps>(({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.homePage}>
-            <StatusBar barStyle="light-content" backgroundColor={colors.ColorPrimary} />
+            <StatusBar barStyle="light-content" backgroundColor={colors.colorPrimary} />
             <Toolbar navigation={navigation} hideBack showRoundBg />
             <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scroller} contentContainerStyle={styles.scrollContent}>
                 <View>
