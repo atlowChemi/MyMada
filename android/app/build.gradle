@@ -17,11 +17,11 @@ android {
             storePassword 'REMOVED_SIGNING_PASSWORD'
         }
     }
-    compileSdkVersion 33
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "atlow.chemi.mymada"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 12800
         versionName '3.5.5'
         multiDexEnabled true

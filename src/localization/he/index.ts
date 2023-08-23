@@ -1,9 +1,11 @@
 import aboutUs from './aboutUs';
 import common from './common';
+import errors from './errors';
 
 export default {
     aboutUs,
     common,
+    errors,
     smsMoni: 'הפעלת האפליקציה ברקע',
     notiMoni: 'זיהוי התראות ברקע',
     metroMoni: 'הפעלת מטרונום ברקע',
