@@ -1,11 +1,13 @@
 import aboutUs from './aboutUs';
 import common from './common';
+import contact from './contact';
 import errors from './errors';
 import privacy from './privacy';
 
 export default {
     aboutUs,
     common,
+    contact,
     errors,
     privacy,
     smsMoni: 'הפעלת האפליקציה ברקע',
@@ -49,15 +51,8 @@ export default {
     dialog_no: 'לא כרגע',
     dialog_rate_yes: 'דרג כעת',
     dialog_never: 'לא תודה',
-    title_activity_contact: 'יצירת קשר',
     title_activity_code: 'בקשת קוד הפעלה',
     title_code: 'הכנסת קוד הפעלה',
-    contactUs: 'צור קשר',
-    from: 'כתובת המייל שלך',
-    name: 'שם',
-    writeName: 'רשום את שמך',
-    subjectT: 'נושא ההודעה',
-    mailBT: 'כתוב הודעתך פה',
     codeNote: 'כתוב את פרטיך והוסף בהערות את פרטי ההתנדבות שלך (מרחב ותפקיד) ואנו נבחן את הפרטים ונשלח קוד הפעלה בהקדם.',
     driverQ: 'נהג',
     aQ: 'מתנדב 1',
@@ -389,7 +384,6 @@ export default {
 //     <string name="numberNone">לא רשמת מספר!</string>
 //     <string name="admin">מנהל:</string>
 //     <string name="user">אתה:</string>
-//     <string name="changeName">לחץ כאן לשינוי שם התצוגה שלך</string>
 //     <string name="msgSeen">מנהל ראה את הודעתך</string>
 //     <string name="msgNotSeen">מנהל טרם ראה את הודעתך</string>
 //     <string name="add_word">הוסף מונח למילון</string>
