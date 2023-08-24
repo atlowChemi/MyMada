@@ -6,6 +6,8 @@ import type { StyleProp, ViewStyle } from 'react-native';
 
 interface BasePageViewProps extends Pick<ToolbarProps, 'navigation' | 'hideBack' | 'hideSettings' | 'showRoundBg'> {
     children: React.ReactNode;
+    preScroll?: React.ReactNode;
+    postScroll?: React.ReactNode;
     noScroll?: boolean;
     toolbarTitle?: string;
     pageStyle?: StyleProp<ViewStyle>;
@@ -13,11 +15,12 @@ interface BasePageViewProps extends Pick<ToolbarProps, 'navigation' | 'hideBack'
     scrollContentStyle?: StyleProp<ViewStyle>;
 }
 
-export const BasePageView = React.memo<BasePageViewProps>(({ navigation, hideBack, hideSettings, showRoundBg, toolbarTitle, noScroll, children, ...styleProps }) => {
+export const BasePageView = React.memo<BasePageViewProps>(({ navigation, hideBack, hideSettings, showRoundBg, toolbarTitle, noScroll, preScroll, postScroll, children, ...styleProps }) => {
     return (
         <SafeAreaView style={[styles.basePage, styleProps.pageStyle]}>
             <StatusBar barStyle="light-content" backgroundColor={colors.colorPrimary} />
             <Toolbar {...{ navigation, hideBack, hideSettings, showRoundBg }} title={toolbarTitle} />
+            {!noScroll && preScroll}
             {noScroll ? (
                 children
             ) : (
@@ -25,6 +28,7 @@ export const BasePageView = React.memo<BasePageViewProps>(({ navigation, hideBac
                     {children}
                 </ScrollView>
             )}
+            {!noScroll && postScroll}
             {/* TODO: show adds when relevant */}
         </SafeAreaView>
     );
