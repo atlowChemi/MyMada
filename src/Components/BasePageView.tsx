@@ -1,25 +1,25 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, StatusBar, StyleSheet } from 'react-native';
 import { colors } from '../consts';
-import { Toolbar, ToolbarProps } from '../containers/Toolbar';
+import { Toolbar } from '../containers/Toolbar';
 import type { StyleProp, ViewStyle } from 'react-native';
+import type { NavigatableScreenProps } from '../App';
 
-interface BasePageViewProps extends Pick<ToolbarProps, 'navigation' | 'hideBack' | 'hideSettings' | 'showRoundBg'> {
+interface BasePageViewProps extends NavigatableScreenProps {
     children: React.ReactNode;
     preScroll?: React.ReactNode;
     postScroll?: React.ReactNode;
     noScroll?: boolean;
-    toolbarTitle?: string;
     pageStyle?: StyleProp<ViewStyle>;
     scrollViewStyle?: StyleProp<ViewStyle>;
     scrollContentStyle?: StyleProp<ViewStyle>;
 }
 
-export const BasePageView = React.memo<BasePageViewProps>(({ navigation, hideBack, hideSettings, showRoundBg, toolbarTitle, noScroll, preScroll, postScroll, children, ...styleProps }) => {
+export const BasePageView = React.memo<BasePageViewProps>(({ navigation, noScroll, preScroll, postScroll, children, ...styleProps }) => {
     return (
         <SafeAreaView style={[styles.basePage, styleProps.pageStyle]}>
             <StatusBar barStyle="light-content" backgroundColor={colors.colorPrimary} />
-            <Toolbar {...{ navigation, hideBack, hideSettings, showRoundBg }} title={toolbarTitle} />
+            <Toolbar navigation={navigation} />
             {!noScroll && preScroll}
             {noScroll ? (
                 children

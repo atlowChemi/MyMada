@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ const loaderBuilder = () => (
 );
 
 export const Privacy = observer<NavigatableScreenProps>(({ navigation }) => {
-    const { t, i18n } = useTranslation();
+    const { i18n } = useTranslation();
     const state = useLocalObservable(() => ({
         language: i18n.language,
         get uri() {
@@ -32,7 +32,7 @@ export const Privacy = observer<NavigatableScreenProps>(({ navigation }) => {
         },
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useEffect(
+    useEffect(
         action(() => {
             state.language = i18n.language;
         }),
@@ -40,7 +40,7 @@ export const Privacy = observer<NavigatableScreenProps>(({ navigation }) => {
     );
 
     return (
-        <BasePageView navigation={navigation} toolbarTitle={t('privacy:toolbarTitle')} noScroll>
+        <BasePageView navigation={navigation} noScroll>
             <WebView source={state.source} startInLoadingState renderError={errorCompBuilder} renderLoading={loaderBuilder} />
         </BasePageView>
     );

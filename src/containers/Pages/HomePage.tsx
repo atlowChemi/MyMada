@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { HomeBtn } from '../HomeBtn';
@@ -7,6 +6,11 @@ import type { NavigatableScreenProps } from '../../App';
 
 export const HomePage = observer<NavigatableScreenProps>(({ navigation }) => {
     const state = useLocalObservable(() => ({
+        goToContactUs() {
+            // TODO: show add popup
+            // TODO: if is not detected as volunteer, show popup offering to request activation code.
+            navigation.navigate('ContactUs');
+        },
         goToInfo() {
             // TODO: show add popup
             navigation.navigate('About');
@@ -14,7 +18,7 @@ export const HomePage = observer<NavigatableScreenProps>(({ navigation }) => {
     }));
 
     return (
-        <BasePageView scrollViewStyle={styles.scroller} scrollContentStyle={styles.scrollContent} navigation={navigation} hideBack showRoundBg>
+        <BasePageView scrollViewStyle={styles.scroller} scrollContentStyle={styles.scrollContent} navigation={navigation}>
             <View>
                 <HomeBtn big img={require('../../assets/homeBtns/new_tol.png')} onPress={() => {}} />
             </View>
@@ -23,7 +27,7 @@ export const HomePage = observer<NavigatableScreenProps>(({ navigation }) => {
                 <HomeBtn img={require('../../assets/homeBtns/new_tes.png')} onPress={() => {}} />
             </View>
             <View style={styles.buttonRow}>
-                <HomeBtn img={require('../../assets/homeBtns/new_con.png')} onPress={() => {}} />
+                <HomeBtn img={require('../../assets/homeBtns/new_con.png')} onPress={state.goToContactUs} />
                 <HomeBtn img={require('../../assets/homeBtns/new_inf.png')} onPress={state.goToInfo} />
             </View>
         </BasePageView>

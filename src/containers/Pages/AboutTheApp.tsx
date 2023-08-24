@@ -12,7 +12,7 @@ export const AboutTheApp = React.memo<NavigatableScreenProps>(({ navigation }) =
     const navigateToPrivacy = React.useCallback(() => navigation.navigate('Privacy'), [navigation]);
 
     return (
-        <BasePageView navigation={navigation} toolbarTitle={t('aboutUs:toolbarTitle')}>
+        <BasePageView navigation={navigation}>
             <Text style={styles.text}>{t('aboutUs:message', { version: BuildConfig.VERSION_NAME || 'TEST VERSION' })}</Text>
             <HomeBtn style={styles.privacyButton} img={require('../../assets/homeBtns/privacy.png')} onPress={navigateToPrivacy} />
         </BasePageView>
