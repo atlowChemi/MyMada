@@ -5,16 +5,18 @@ import { useTranslation } from 'react-i18next';
 import { HomeBtn } from '../HomeBtn';
 import { Text } from '../../Components/Text';
 import { BasePageView } from '../../Components/BasePageView';
+import { useDependencyInjector } from '../../services/container';
+import { NavigationStore } from '../../services/NavigationStore';
 import type { NavigatableScreenProps } from '../../App';
 
-export const AboutTheApp = React.memo<NavigatableScreenProps>(({ navigation }) => {
+export const AboutTheApp = React.memo<NavigatableScreenProps>(() => {
     const { t } = useTranslation();
-    const navigateToPrivacy = React.useCallback(() => navigation.navigate('Privacy'), [navigation]);
+    const navigationStore = useDependencyInjector(NavigationStore);
 
     return (
-        <BasePageView navigation={navigation}>
+        <BasePageView>
             <Text style={styles.text}>{t('aboutUs:message', { version: BuildConfig.VERSION_NAME || 'TEST VERSION' })}</Text>
-            <HomeBtn style={styles.privacyButton} img={require('../../assets/homeBtns/privacy.png')} onPress={navigateToPrivacy} />
+            <HomeBtn style={styles.privacyButton} img={require('../../assets/homeBtns/privacy.png')} onPress={navigationStore.goToPrivacyPolicy} />
         </BasePageView>
     );
 });

@@ -3,20 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { Text } from '../Components/Text';
 import { colors } from '../consts';
-import { NavigatableScreenProps } from '../App';
 import { useDependencyInjector } from '../services/container';
 import { ToolbarStore } from '../services/ToolbarStore';
 import { observer } from 'mobx-react-lite';
+import { NavigationStore } from '../services/NavigationStore';
 
-export const Toolbar = observer<NavigatableScreenProps>(({ navigation }) => {
+export const Toolbar = observer(() => {
     const { i18n } = useTranslation();
     const toolbarStore = useDependencyInjector(ToolbarStore);
+    const navigationStore = useDependencyInjector(NavigationStore);
 
     return (
         <>
             <View style={styles.toolbar}>
-                {!toolbarStore.hideBack && navigation.canGoBack() && (
-                    <Pressable style={[styles.backBtn, i18n.language === 'he' && styles.rotated]} onPress={navigation.goBack}>
+                {!toolbarStore.hideBack && navigationStore.canGoBack && (
+                    <Pressable style={[styles.backBtn, i18n.language === 'he' && styles.rotated]} onPress={navigationStore.goBack}>
                         <Image source={require('../assets/icons/back_arrow.webp')} style={styles.toolbarIcon} />
                     </Pressable>
                 )}

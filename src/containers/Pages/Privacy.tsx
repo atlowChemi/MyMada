@@ -17,7 +17,7 @@ const loaderBuilder = () => (
     </View>
 );
 
-export const Privacy = observer<NavigatableScreenProps>(({ navigation }) => {
+export const Privacy = observer<NavigatableScreenProps>(() => {
     const { i18n } = useTranslation();
     const state = useLocalObservable(() => ({
         language: i18n.language,
@@ -40,7 +40,7 @@ export const Privacy = observer<NavigatableScreenProps>(({ navigation }) => {
     );
 
     return (
-        <BasePageView navigation={navigation} noScroll>
+        <BasePageView noScroll>
             <WebView source={state.source} startInLoadingState renderError={errorCompBuilder} renderLoading={loaderBuilder} />
         </BasePageView>
     );

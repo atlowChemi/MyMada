@@ -1,24 +1,16 @@
 import { StyleSheet, View } from 'react-native';
-import { observer, useLocalObservable } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { HomeBtn } from '../HomeBtn';
 import { BasePageView } from '../../Components/BasePageView';
 import type { NavigatableScreenProps } from '../../App';
+import { NavigationStore } from '../../services/NavigationStore';
+import { useDependencyInjector } from '../../services/container';
 
-export const HomePage = observer<NavigatableScreenProps>(({ navigation }) => {
-    const state = useLocalObservable(() => ({
-        goToContactUs() {
-            // TODO: show add popup
-            // TODO: if is not detected as volunteer, show popup offering to request activation code.
-            navigation.navigate('ContactUs');
-        },
-        goToInfo() {
-            // TODO: show add popup
-            navigation.navigate('About');
-        },
-    }));
+export const HomePage = observer<NavigatableScreenProps>(() => {
+    const navigationStore = useDependencyInjector(NavigationStore);
 
     return (
-        <BasePageView scrollViewStyle={styles.scroller} scrollContentStyle={styles.scrollContent} navigation={navigation}>
+        <BasePageView scrollViewStyle={styles.scroller} scrollContentStyle={styles.scrollContent}>
             <View>
                 <HomeBtn big img={require('../../assets/homeBtns/new_tol.png')} onPress={() => {}} />
             </View>
@@ -27,8 +19,8 @@ export const HomePage = observer<NavigatableScreenProps>(({ navigation }) => {
                 <HomeBtn img={require('../../assets/homeBtns/new_tes.png')} onPress={() => {}} />
             </View>
             <View style={styles.buttonRow}>
-                <HomeBtn img={require('../../assets/homeBtns/new_con.png')} onPress={state.goToContactUs} />
-                <HomeBtn img={require('../../assets/homeBtns/new_inf.png')} onPress={state.goToInfo} />
+                <HomeBtn img={require('../../assets/homeBtns/new_con.png')} onPress={navigationStore.goToContactUs} />
+                <HomeBtn img={require('../../assets/homeBtns/new_inf.png')} onPress={navigationStore.goToAboutTheApp} />
             </View>
         </BasePageView>
     );

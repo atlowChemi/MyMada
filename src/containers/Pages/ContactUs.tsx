@@ -1,32 +1,36 @@
 import React from 'react';
-import BuildConfig from 'react-native-build-config';
 import { Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import database from '@react-native-firebase/database';
 import { Text } from '../../Components/Text';
 import { BasePageView } from '../../Components/BasePageView';
+import { colors } from '../../consts';
 import type { NavigatableScreenProps } from '../../App';
 
-export const ContactUs = React.memo<NavigatableScreenProps>(({ navigation }) => {
+export const ContactUs = React.memo<NavigatableScreenProps>(() => {
     const { t } = useTranslation();
+    // const a = database().ref('chats').ref();
 
     return (
-        <BasePageView navigation={navigation}>
-            <Pressable onPress={() => null}>
-                <Text style={styles.text}>{t('contact:changeName', { version: BuildConfig.VERSION_NAME || 'TEST VERSION' })}</Text>
+        <BasePageView scrollContentStyle={styles.scrollContent}>
+            <Pressable onPress={() => null} style={styles.contactChatCard}>
+                <Text style={styles.text}>{t('contact:changeName')}</Text>
             </Pressable>
         </BasePageView>
     );
 });
 
 const styles = StyleSheet.create({
-    text: {
-        fontSize: 18,
+    scrollContent: {
+        rowGap: 10,
     },
-    privacyButton: {
-        height: 85,
-        maxHeight: 85,
-        borderRadius: 23,
-        alignSelf: 'center',
-        maxWidth: 390,
+    text: {
+        fontSize: 20,
+    },
+    contactChatCard: {
+        padding: 10,
+        backgroundColor: colors.white,
+        borderRadius: 6,
+        elevation: 5,
     },
 });
