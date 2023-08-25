@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import './src/localization/index';
+import 'react-native-gesture-handler';
 import { AppRegistry } from 'react-native';
 import { App } from './src/App';
 

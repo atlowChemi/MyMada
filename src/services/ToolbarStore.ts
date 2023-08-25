@@ -1,18 +1,8 @@
+import i18n from '../localization';
 import { inject, injectable } from 'inversify';
 import { computed, makeObservable } from 'mobx';
-import i18n, { CustomTypeOptions } from 'i18next';
 import { NavigationStore } from './NavigationStore';
-
-type PathsToStringProps<T> = T extends string ? [] : { [K in Extract<keyof T, string>]: [K, ...PathsToStringProps<T[K]>] }[Extract<keyof T, string>];
-type Join<T extends string[], D extends string> = T extends []
-    ? never
-    : T extends [infer F]
-    ? F
-    : T extends [infer F, ...infer R]
-    ? F extends string
-        ? `${F}${D}${Join<Extract<R, string[]>, D>}`
-        : never
-    : string;
+import type { TranslationKeys } from '../localization';
 
 @injectable()
 export class ToolbarStore {
@@ -22,12 +12,13 @@ export class ToolbarStore {
             titleTranslationKey: computed,
             title: computed,
             hideBack: computed,
+            showDrawer: computed,
             showRoundBg: computed,
             hideSettings: computed,
         });
     }
 
-    private get titleTranslationKey(): Join<PathsToStringProps<CustomTypeOptions['resources']['he']>, ':'> {
+    private get titleTranslationKey(): TranslationKeys {
         if (this.navigationStore.currentPage === 'ContactUs') {
             return 'contact:toolbarTitle';
         }
@@ -45,11 +36,15 @@ export class ToolbarStore {
     }
 
     public get hideBack() {
-        return this.navigationStore.currentPage === 'Home';
+        return ['Home', 'Tools'].includes(this.navigationStore.currentPage);
     }
 
     public get showRoundBg() {
         return this.navigationStore.currentPage === 'Home';
+    }
+
+    public get showDrawer() {
+        return this.navigationStore.currentPage === 'Tools';
     }
 
     public get hideSettings() {

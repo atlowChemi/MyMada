@@ -21,6 +21,11 @@ export const Toolbar = observer(() => {
                         <Image source={require('../assets/icons/back_arrow.webp')} style={styles.toolbarIcon} />
                     </Pressable>
                 )}
+                {toolbarStore.showDrawer && (
+                    <Pressable style={styles.backBtn} onPress={navigationStore.openDrawer}>
+                        <Image source={require('../assets/icons/menu.webp')} style={styles.toolbarIcon} />
+                    </Pressable>
+                )}
                 <Text style={styles.titleText}>{toolbarStore.title}</Text>
                 <View style={styles.toolbarBtnWrapper}>
                     {!toolbarStore.hideSettings && (

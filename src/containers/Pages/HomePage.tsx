@@ -12,7 +12,7 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
     return (
         <BasePageView scrollViewStyle={styles.scroller} scrollContentStyle={styles.scrollContent}>
             <View>
-                <HomeBtn big img={require('../../assets/homeBtns/new_tol.png')} onPress={() => {}} />
+                <HomeBtn big img={require('../../assets/homeBtns/new_tol.png')} onPress={navigationStore.goToTools} />
             </View>
             <View style={styles.buttonRow}>
                 <HomeBtn img={require('../../assets/homeBtns/new_mok.png')} onPress={() => {}} />

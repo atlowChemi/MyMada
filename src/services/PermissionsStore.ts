@@ -16,16 +16,18 @@ export class PermissionsStore {
     private handlePermissionResult(permission: Permission, result: PermissionStatus) {
         if (result === PermissionsAndroid.RESULTS.GRANTED) {
             this.grantedPermissions.add(permission);
+            return true;
         }
         if (result === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
             this.blockedPermissions.add(permission);
         }
+        return false;
     }
 
     private async requestMultiplePermissions(permissions: Permission[]) {
         const results = await PermissionsAndroid.requestMultiple(permissions);
         const entries = Object.entries(results) as [Permission, PermissionStatus][];
-        entries.forEach(entry => this.handlePermissionResult(...entry));
+        return entries.map(entry => this.handlePermissionResult(...entry)).every(Boolean);
     }
 
     public async requestPermission(permission: Permission | Permission[]) {
@@ -33,6 +35,6 @@ export class PermissionsStore {
             return this.requestMultiplePermissions(permission);
         }
         const result = await PermissionsAndroid.request(permission);
-        this.handlePermissionResult(permission, result);
+        return this.handlePermissionResult(permission, result);
     }
 }

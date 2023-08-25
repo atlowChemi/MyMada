@@ -13,7 +13,7 @@ const BASE_URL = 'https://firebasestorage.googleapis.com/v0/b/project-3918384647
 const errorCompBuilder = () => <ConnectionError />;
 const loaderBuilder = () => (
     <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color={colors.colorPrimaryDark} />
+        <ActivityIndicator size={60} color={colors.colorPrimaryDark} />
     </View>
 );
 

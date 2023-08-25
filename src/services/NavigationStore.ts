@@ -1,16 +1,32 @@
-import { injectable } from 'inversify';
+import i18n from '../localization';
+import { inject, injectable } from 'inversify';
+import { Alert } from 'react-native';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { action, computed, makeObservable, observable, reaction } from 'mobx';
+import { PermissionsStore } from './PermissionsStore';
 
-export type Page = 'Home' | 'ContactUs' | 'About' | 'Privacy';
+export type Tools =
+    | 'ContractionTimer'
+    | 'PulseCalc'
+    | 'MetronomeActivity'
+    | 'VitalsChecker'
+    | 'OxygenCalculator'
+    | 'ApgarCalculator'
+    | 'GlazgoCalculator'
+    | 'Dictionary'
+    | 'BlsProtocoles'
+    | 'AlsProtocoles'
+    | 'Kuntres';
+export type Page = 'Home' | 'Tools' | 'ContactUs' | 'About' | 'Privacy';
 
 @injectable()
 export class NavigationStore {
-    [Symbol.toStringTag] = 'NavigationStore';
     private page: Page = 'Home';
     public canGoBack = false;
     private eventListenerCleanup?: () => void;
     private navigator?: NavigationContainerRef<Record<Page, undefined>>;
+    private toolsNavigator?: { toggleDrawer(): void };
+    @inject(PermissionsStore) private readonly permissionsStore!: PermissionsStore;
 
     constructor() {
         makeObservable<NavigationStore, 'page' | 'onNavigate'>(this, {
@@ -19,6 +35,7 @@ export class NavigationStore {
             currentPage: computed,
             onNavigate: action.bound,
             setNavigator: action.bound,
+            setToolsNavigator: action.bound,
         });
         reaction(
             () => this.page,
@@ -39,12 +56,43 @@ export class NavigationStore {
         this.eventListenerCleanup = navigator?.addListener('state', this.onNavigate);
     }
 
-    public goToContactUs = () => this.navigator?.navigate('ContactUs');
+    public setToolsNavigator(navigator: { toggleDrawer(): void }) {
+        this.toolsNavigator = navigator;
+        return () => {
+            this.toolsNavigator = undefined;
+        };
+    }
+
+    public goToTools = () => this.navigator?.navigate('Tools');
+    public goToContactUs = async () => {
+        const shouldNavigate = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS');
+        if (!shouldNavigate) {
+            Alert.alert(i18n.t('permissions:alertTitle'), i18n.t('permissions:blocked'), [{ text: i18n.t('common:ok') }]);
+            return;
+        }
+        this.navigator?.navigate('ContactUs');
+    };
     public goToAboutTheApp = () => this.navigator?.navigate('About');
     public goToPrivacyPolicy = () => this.navigator?.navigate('Privacy');
     public goBack = () => this.navigator?.goBack();
+    public openDrawer = () => this.toolsNavigator?.toggleDrawer();
 
     private onNavigate = () => {
-        this.page = (this.navigator?.getCurrentRoute()?.name || 'Home') as Page;
+        const route = this.navigator?.getCurrentRoute()?.name;
+        const innerNavigationMap: Record<string, Page> = {
+            ContractionTimer: 'Tools',
+            PulseCalc: 'Tools',
+            MetronomeActivity: 'Tools',
+            VitalsChecker: 'Tools',
+            OxygenCalculator: 'Tools',
+            ApgarCalculator: 'Tools',
+            GlazgoCalculator: 'Tools',
+            Dictionary: 'Tools',
+            BlsProtocoles: 'Tools',
+            AlsProtocoles: 'Tools',
+            Kuntres: 'Tools',
+        } satisfies Record<Tools, Page>;
+        const pageParent = innerNavigationMap[route || ''];
+        this.page = pageParent || route || 'Home';
     };
 }

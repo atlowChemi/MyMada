@@ -4,7 +4,7 @@
         "@babel/plugin-transform-export-namespace-from",
         "babel-plugin-transform-typescript-metadata",
         "@babel/plugin-transform-class-static-block",
-        ["@babel/plugin-proposal-decorators", { "legacy": true }]
-        // ["@babel/plugin-proposal-decorators", { "version": "2023-05" }]
+        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+        "react-native-reanimated/plugin"
     ]
 }
