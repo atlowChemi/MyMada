@@ -24,7 +24,6 @@ export class NavigationStore {
             () => this.page,
             () => {
                 this.canGoBack = this.navigator?.canGoBack() || false;
-                console.log('YOSIII', this.canGoBack, this.page);
             },
         );
     }
