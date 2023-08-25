@@ -2,6 +2,7 @@ import aboutUs from './aboutUs';
 import common from './common';
 import contact from './contact';
 import errors from './errors';
+import permissions from './permissions';
 import privacy from './privacy';
 
 export default {
@@ -9,6 +10,7 @@ export default {
     common,
     contact,
     errors,
+    permissions,
     privacy,
     smsMoni: 'הפעלת האפליקציה ברקע',
     notiMoni: 'זיהוי התראות ברקע',
@@ -160,12 +162,6 @@ export default {
 //     <string name="emailSubjNone">לא רשמת נושא להודעה!</string>
 //     <string name="emailMsgNone">לא רשמת תוכן בהודעה!</string>
 //     <string name="load">טוען. אנא המתן…</string>
-//     <string name="permTitle">נדרשות לאפלקציה הרשאות מסוימות</string>
-//     <string name="permDes">האפליקציה זקוקה להרשאות מסוימות כדי לפעול כראוי.</string>
-//     <string name="permDesCamera">האפליקציה זקוקה להרשאות שימוש במצלמה כדי לאפשר סריקת ברקודים.</string>
-//     <string name="permDesOverlay">האפליקציה זקוקה להרשאה להיות מוצגת מעל אפליקציות אחרות, כדי לאפשר התראה עם צליל ורטט גם כשהמכשיר במצב שקט.</string>
-//     <string name="permDesSD">האפליקציה זקוקה לגישה לקבצים בטלפון כדי להפעיל צלצולים כראוי.</string>
-//     <string name="permYes">אישור הרשאות</string>
 //     <string name="requestGood">הבקשה הגיעה אלינו ונרשמה.\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
 //     <string name="plsNote">שים לב!</string>
 //     <string name="plsNoteT">קוד הפעלה מאפשר שליחת הודעות למוקד מד\"א.\nבמידה ואינך מתנדב פעיל במד\"א, אין לך צורך בקוד הפעלה!</string>
