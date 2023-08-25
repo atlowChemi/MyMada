@@ -45,7 +45,7 @@ export class ToolbarStore {
     }
 
     public get hideBack() {
-        return this.navigationStore.currentPage !== 'Home';
+        return this.navigationStore.currentPage === 'Home';
     }
 
     public get showRoundBg() {
