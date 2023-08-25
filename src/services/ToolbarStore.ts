@@ -1,7 +1,7 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
+import { computed, makeObservable } from 'mobx';
 import i18n, { CustomTypeOptions } from 'i18next';
-import { action, observable, computed, makeObservable } from 'mobx';
-import type { NavigationState } from '@react-navigation/native';
+import { NavigationStore } from './NavigationStore';
 
 type PathsToStringProps<T> = T extends string ? [] : { [K in Extract<keyof T, string>]: [K, ...PathsToStringProps<T[K]>] }[Extract<keyof T, string>];
 type Join<T extends string[], D extends string> = T extends []
@@ -14,32 +14,27 @@ type Join<T extends string[], D extends string> = T extends []
         : never
     : string;
 
-type Page = 'Home' | 'ContactUs' | 'About' | 'Privacy';
-
 @injectable()
 export class ToolbarStore {
-    private currentPage: Page = 'Home';
-
+    @inject(NavigationStore) private readonly navigationStore!: NavigationStore;
     constructor() {
-        makeObservable<this, 'currentPage' | 'titleTranslationKey'>(this, {
-            currentPage: observable.ref,
+        makeObservable<this, 'titleTranslationKey'>(this, {
             titleTranslationKey: computed,
             title: computed,
             hideBack: computed,
             showRoundBg: computed,
             hideSettings: computed,
-            onNavigate: action.bound,
         });
     }
 
     private get titleTranslationKey(): Join<PathsToStringProps<CustomTypeOptions['resources']['he']>, ':'> {
-        if (this.currentPage === 'ContactUs') {
+        if (this.navigationStore.currentPage === 'ContactUs') {
             return 'contact:toolbarTitle';
         }
-        if (this.currentPage === 'About') {
+        if (this.navigationStore.currentPage === 'About') {
             return 'aboutUs:toolbarTitle';
         }
-        if (this.currentPage === 'Privacy') {
+        if (this.navigationStore.currentPage === 'Privacy') {
             return 'privacy:toolbarTitle';
         }
         return 'common:appName';
@@ -50,22 +45,14 @@ export class ToolbarStore {
     }
 
     public get hideBack() {
-        return this.currentPage === 'Home';
+        return this.navigationStore.currentPage !== 'Home';
     }
 
     public get showRoundBg() {
-        return this.currentPage === 'Home';
+        return this.navigationStore.currentPage === 'Home';
     }
 
     public get hideSettings() {
         return false;
-    }
-
-    public onNavigate({ routes }: Pick<NavigationState, 'routes'> = { routes: [] }) {
-        const currentRoute = routes?.at(-1);
-        if (!currentRoute) {
-            return;
-        }
-        this.currentPage = currentRoute.name as Page;
     }
 }
