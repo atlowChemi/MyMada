@@ -1,7 +1,6 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { colors } from '../consts';
-import { Toolbar } from '../containers/Toolbar';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 interface BasePageViewProps {
@@ -17,8 +16,6 @@ interface BasePageViewProps {
 export const BasePageView = React.memo<BasePageViewProps>(({ noScroll, preScroll, postScroll, children, ...styleProps }) => {
     return (
         <SafeAreaView style={[styles.basePage, styleProps.pageStyle]}>
-            <StatusBar barStyle="light-content" backgroundColor={colors.colorPrimary} />
-            <Toolbar />
             {!noScroll && preScroll}
             {noScroll ? (
                 children
