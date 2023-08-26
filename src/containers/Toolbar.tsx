@@ -1,6 +1,5 @@
 import { View, Image, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'react-native-linear-gradient';
 import { Text } from '../Components/Text';
 import { colors } from '../consts';
 import { useDependencyInjector } from '../services/container';
@@ -14,29 +13,26 @@ export const Toolbar = observer(() => {
     const navigationStore = useDependencyInjector(NavigationStore);
 
     return (
-        <>
-            <View style={styles.toolbar}>
-                {!toolbarStore.hideBack && navigationStore.canGoBack && (
-                    <Pressable style={[styles.backBtn, i18n.language === 'he' && styles.rotated]} onPress={navigationStore.goBack}>
-                        <Image source={require('../assets/icons/back_arrow.webp')} style={styles.toolbarIcon} />
+        <View style={styles.toolbar}>
+            {!toolbarStore.hideBack && navigationStore.canGoBack && (
+                <Pressable style={[styles.backBtn, i18n.language === 'he' && styles.rotated]} onPress={navigationStore.goBack}>
+                    <Image source={require('../assets/icons/back_arrow.webp')} style={styles.toolbarIcon} />
+                </Pressable>
+            )}
+            {toolbarStore.showDrawer && (
+                <Pressable style={styles.backBtn} onPress={navigationStore.openDrawer}>
+                    <Image source={require('../assets/icons/menu.webp')} style={styles.toolbarIcon} />
+                </Pressable>
+            )}
+            <Text style={styles.titleText}>{toolbarStore.title}</Text>
+            <View style={styles.toolbarBtnWrapper}>
+                {!toolbarStore.hideSettings && (
+                    <Pressable style={styles.settingsBtn}>
+                        <Image source={require('../assets/icons/ic_settings.webp')} style={styles.toolbarIcon} />
                     </Pressable>
                 )}
-                {toolbarStore.showDrawer && (
-                    <Pressable style={styles.backBtn} onPress={navigationStore.openDrawer}>
-                        <Image source={require('../assets/icons/menu.webp')} style={styles.toolbarIcon} />
-                    </Pressable>
-                )}
-                <Text style={styles.titleText}>{toolbarStore.title}</Text>
-                <View style={styles.toolbarBtnWrapper}>
-                    {!toolbarStore.hideSettings && (
-                        <Pressable style={styles.settingsBtn}>
-                            <Image source={require('../assets/icons/ic_settings.webp')} style={styles.toolbarIcon} />
-                        </Pressable>
-                    )}
-                </View>
             </View>
-            {toolbarStore.showRoundBg && <LinearGradient colors={['#1f425f', colors.colorPrimary, colors.colorPrimary]} angle={0} useAngle style={styles.roundBg} />}
-        </>
+        </View>
     );
 });
 

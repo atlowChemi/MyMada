@@ -13,7 +13,6 @@ export class ToolbarStore {
             title: computed,
             hideBack: computed,
             showDrawer: computed,
-            showRoundBg: computed,
             hideSettings: computed,
         });
     }
@@ -37,10 +36,6 @@ export class ToolbarStore {
 
     public get hideBack() {
         return ['Home', 'Tools'].includes(this.navigationStore.currentPage);
-    }
-
-    public get showRoundBg() {
-        return this.navigationStore.currentPage === 'Home';
     }
 
     public get showDrawer() {

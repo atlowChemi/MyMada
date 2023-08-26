@@ -1,12 +1,15 @@
+import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomePage } from './containers/Pages/HomePage';
 import { Tools } from './containers/Pages/Tools';
-import { AboutTheApp } from './containers/Pages/AboutTheApp';
-import { ContactUs } from './containers/Pages/ContactUs';
 import { Privacy } from './containers/Pages/Privacy';
-import { DependencyInjectionProvider, container } from './services/container';
+import { HomePage } from './containers/Pages/HomePage';
+import { ContactUs } from './containers/Pages/ContactUs';
+import { AboutTheApp } from './containers/Pages/AboutTheApp';
 import { NavigationStore } from './services/NavigationStore';
+import { DependencyInjectionProvider, container } from './services/container';
+import { colors } from './consts';
+import { Toolbar } from './containers/Toolbar';
 import type { useNavigationBuilder } from '@react-navigation/native';
 
 type Navigation = ReturnType<typeof useNavigationBuilder>['navigation'];
@@ -20,6 +23,8 @@ export const App: React.FC = () => {
 
     return (
         <DependencyInjectionProvider container={container}>
+            <StatusBar barStyle="light-content" backgroundColor={colors.colorPrimary} />
+            <Toolbar />
             <NavigationContainer ref={navigationStore.setNavigator}>
                 <Stack.Navigator initialRouteName="Home" screenOptions={{ animation: 'none', headerShown: false }}>
                     <Stack.Screen name="Home" component={HomePage} options={{ orientation: 'portrait' }} />
