@@ -1,10 +1,12 @@
 import messaging from '@react-native-firebase/messaging';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { computed, makeObservable } from 'mobx';
 import { fromPromise } from 'mobx-utils';
+import { SharedPreferencesStore } from './SharedPreferencesStore';
 
 @injectable()
 export class MessagingStore {
+    @inject(SharedPreferencesStore) private readonly sharedPreferencesStore!: SharedPreferencesStore;
     private readonly messaging = messaging();
     private registerDeviceForRemoteMessagesPromise = fromPromise(this.messaging.registerDeviceForRemoteMessages());
 
@@ -12,7 +14,13 @@ export class MessagingStore {
         makeObservable(this, {
             token: computed,
         });
+        this.messaging.onTokenRefresh(this.updatePreferences);
     }
+
+    private updatePreferences = async (token: string) => {
+        this.sharedPreferencesStore.name = 'Settings';
+        return await this.sharedPreferencesStore.setItem('fcm', token);
+    };
 
     public get token() {
         return fromPromise(this.getToken());
@@ -20,6 +28,8 @@ export class MessagingStore {
 
     private async getToken() {
         await this.registerDeviceForRemoteMessagesPromise;
-        return await this.messaging.getToken();
+        const token = await this.messaging.getToken();
+        await this.updatePreferences(token);
+        return token;
     }
 }
