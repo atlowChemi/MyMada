@@ -4,6 +4,7 @@ import contact from './contact';
 import errors from './errors';
 import permissions from './permissions';
 import privacy from './privacy';
+import tools from './tools';
 
 export default {
     aboutUs,
@@ -12,4 +13,5 @@ export default {
     errors,
     permissions,
     privacy,
+    tools,
 } as const;

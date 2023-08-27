@@ -4,6 +4,7 @@ import contact from './contact';
 import errors from './errors';
 import permissions from './permissions';
 import privacy from './privacy';
+import tools from './tools';
 
 export default {
     aboutUs,
@@ -12,6 +13,7 @@ export default {
     errors,
     permissions,
     privacy,
+    tools,
     smsMoni: 'הפעלת האפליקציה ברקע',
     notiMoni: 'זיהוי התראות ברקע',
     metroMoni: 'הפעלת מטרונום ברקע',
@@ -239,9 +241,6 @@ export default {
 //     <string name="pref_title_sleep">מצב יום-לילה</string>
 //     <string name="pref_description_sleep_off">פיצול סגנון התראה בהתאם לשעה (לילה מ23:00 עד 7:00).\\\\nשימו לב!\\\\nהגדרה זו לא מפעילה צליל ורטט, אלא מאפשרת אותם אם הם פעילים.</string>
 //     <string name="time">התקבל בשעה: %1$s</string>
-//     <string name="pulse">דופק ב15 שניות</string>
-//     <string name="fullPulse">דופק בדקה</string>
-//     <string name="err_pulse">יש לרשום מספר פעימות ב15 שניות!</string>
 //     <string name="psi_1500" translatable="false">1500</string>
 //     <string name="atm_100" translatable="false">100</string>
 //     <string name="atm">לחץ אטמוספרי בבלון</string>
@@ -260,7 +259,6 @@ export default {
 
 //     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-7600269766434003/5732229370</string>
 //     <string name="service_exp">בכדי שנוכל לזהות את המקרים המגיעים למכשיר, אפשרות זו צריכה להיות דולקת.\nבמידה ואפשרות זו לא דולקת, לא יזוהו מקרים כלל.</string>
-//     <string name="pulseClickHint">לחץ על האזור האפור כדי למדוד דופק</string>
 //     <string name="seconds">שניות</string>
 //     <string name="startContract">תחילת ציר</string>
 //     <string name="endContract">סוף ציר</string>
