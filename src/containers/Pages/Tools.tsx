@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { BasePageView } from '../../Components/BasePageView';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Metronome } from '../Tools/Metronome';
+import { PulseCalculator } from '../Tools/Pulse';
 import type { NavigatableScreenProps } from '../../App';
 
 const Drawer = createDrawerNavigator();
@@ -11,7 +12,7 @@ export const Tools = observer<NavigatableScreenProps>(() => {
         <BasePageView noScroll>
             <Drawer.Navigator backBehavior="none" screenOptions={{ headerShown: false }} initialRouteName="Metronome">
                 <Drawer.Screen name="ContractionTimer" component={Metronome} />
-                <Drawer.Screen name="PulseCalc" component={Metronome} />
+                <Drawer.Screen name="PulseCalc" component={PulseCalculator} />
                 <Drawer.Screen name="MetronomeActivity" component={Metronome} />
                 <Drawer.Screen name="VitalsChecker" component={Metronome} />
                 <Drawer.Screen name="OxygenCalculator" component={Metronome} />
