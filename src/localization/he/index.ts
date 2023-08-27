@@ -157,17 +157,9 @@ export default {
 //     <string name="emailBad">שליחה הופסקה בשל תקלה. נסה שוב!</string>
 //     <string name="emailInvalid">כתובת המייל שהזנת אינה תקינה!</string>
 //     <string name="emailNone">לא רשמת כתובת מייל!</string>
-//     <string name="emailNameNone">לא רשמת שם!</string>
-//     <string name="chatNameNum">רשמת רק מספרים!</string>
 //     <string name="emailSubjNone">לא רשמת נושא להודעה!</string>
-//     <string name="emailMsgNone">לא רשמת תוכן בהודעה!</string>
 //     <string name="load">טוען. אנא המתן…</string>
 //     <string name="requestGood">הבקשה הגיעה אלינו ונרשמה.\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
-//     <string name="plsNote">שים לב!</string>
-//     <string name="plsNoteT">קוד הפעלה מאפשר שליחת הודעות למוקד מד\"א.\nבמידה ואינך מתנדב פעיל במד\"א, אין לך צורך בקוד הפעלה!</string>
-//     <string name="contactMsg">אנו גוף עצמאי שאינו בקשר עם מד\"א. לכן אין לשלוח לנו פניות למקרים דחופים הדורשים מענה רפואי.\nכמו כן, איננו קשורים לאפליקציית הצוותים. אין ביכולתנו לסייע בה, או לשלוח מקרים.\nעיזרו לנו, ואל תיפנו בנושאים שאינם תחום אחריותנו, כדי שנוכל לתת לכם את המענה המיטבי!</string>
-//     <string name="plsNoteCon">האפליקציה לא מזהה אותך כמתנדב. האם אתה מעוניין בקוד הפעלה או ביצירת קשר רגילה?</string>
-//     <string name="plsNoteConCode">אני רוצה קוד הפעלה</string>
 //     <string name="pickMokTtl">מוקד ברירת מחדל</string>
 //     <string name="pickMokTxt">בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. אנא עבור להגדרות והגדר מרחב ברירת מחדל</string>
 //     <string name="goToSet">עבור להגדרות</string>
@@ -380,8 +372,6 @@ export default {
 //     <string name="numberNone">לא רשמת מספר!</string>
 //     <string name="admin">מנהל:</string>
 //     <string name="user">אתה:</string>
-//     <string name="msgSeen">מנהל ראה את הודעתך</string>
-//     <string name="msgNotSeen">מנהל טרם ראה את הודעתך</string>
 //     <string name="add_word">הוסף מונח למילון</string>
 //     <string name="successAddWord">הגדרה נוספה בהצלחה ונשלחה לאישורינו!</string>
 //     <string name="successEditWord">הגדרה נערכה בהצלחה ונשלחה לאישורינו!</string>
