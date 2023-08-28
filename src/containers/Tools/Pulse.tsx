@@ -4,14 +4,15 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet } from 'react-native';
 import { action, computed, makeObservable, observable } from 'mobx';
+import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { TextInput } from '../../Components/TextInput';
 import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
 import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
+import { audioGenerator } from '../../services/AudioGenerator';
 import type { NavigatableScreenProps } from '../../App';
-import i18n from '../../localization';
 
 @injectable()
 class PulseCalculatorLocalStore {
@@ -88,6 +89,18 @@ class PulseCalculatorLocalStore {
         this.countdownValue = value ?? 15;
     };
 
+    private beep = async () => {
+        const playerId = await audioGenerator.createPlayer();
+        const waves = await Promise.all([audioGenerator.getSineWave(3000, 0), audioGenerator.getSineWave(3000, 9000.25)]);
+        // Maximize volume.
+        const originalVolume = await audioGenerator.maximizeVolume();
+        await Promise.all(waves.map(wave => audioGenerator.writeSound(playerId, wave)));
+        await audioGenerator.destroyAudioTrack(playerId);
+        waves.forEach(w => audioGenerator.destroyWave(w));
+        await audioGenerator.setVolume(originalVolume);
+        // Lower volume.
+    };
+
     private intervalTick = () => {
         if (!this.deadline) {
             this.clearTimer();
@@ -96,7 +109,7 @@ class PulseCalculatorLocalStore {
         const now = Date.now();
         const diff = this.deadline - now;
         if (diff <= 0) {
-            // make beep.
+            this.beep();
             this.clearTimer(0);
             return;
         }
