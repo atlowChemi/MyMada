@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import RadialGradient from 'react-native-radial-gradient';
 import { Animated, Image, StyleSheet, View } from 'react-native';
 import { Text } from '../Components/Text';
 import { colors } from '../consts';
@@ -14,14 +15,14 @@ export const ConnectionError = React.memo(() => {
     }, [left]);
 
     return (
-        <View style={styles.connectionErrorPage}>
+        <RadialGradient colors={[colors.white, colors.bgShadowEnd]} stops={[0.9]} style={styles.connectionErrorPage}>
             <Text style={styles.title}>{t('errors:connection:title')}</Text>
             <View style={styles.slider}>
                 <Image style={styles.ecg} source={require('../assets/images/ecg.png')} />
                 <Animated.View style={[styles.sliderBar, { left: left.interpolate({ inputRange: [0, 1], outputRange: ['100%', '0%'] }) }]} />
             </View>
             <Text style={styles.message}>{t('errors:connection:message')}</Text>
-        </View>
+        </RadialGradient>
     );
 });
 
