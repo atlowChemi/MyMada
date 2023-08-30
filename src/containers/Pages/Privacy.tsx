@@ -1,20 +1,21 @@
-import { useEffect } from 'react';
-import { observer, useLocalObservable } from 'mobx-react-lite';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { WebView } from 'react-native-webview';
-import { colors } from '../../consts';
-import type { NavigatableScreenProps } from '../../App';
 import { action } from 'mobx';
+import { useEffect } from 'react';
+import { WebView } from 'react-native-webview';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, StyleSheet } from 'react-native';
+import { observer, useLocalObservable } from 'mobx-react-lite';
+import RadialGradient from 'react-native-radial-gradient';
+import { colors } from '../../consts';
 import { ConnectionError } from '../ConnectionError';
 import { BasePageView } from '../../Components/BasePageView';
+import type { NavigatableScreenProps } from '../../App';
 
 const BASE_URL = 'https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o';
 const errorCompBuilder = () => <ConnectionError />;
 const loaderBuilder = () => (
-    <View style={styles.loaderContainer}>
+    <RadialGradient colors={[colors.white, colors.bgShadowEnd]} stops={[0.9]} style={styles.loaderContainer}>
         <ActivityIndicator size={60} color={colors.colorPrimaryDark} />
-    </View>
+    </RadialGradient>
 );
 
 export const Privacy = observer<NavigatableScreenProps>(() => {
@@ -54,7 +55,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         right: 0,
         left: 0,
-        backgroundColor: colors.bgShadowEnd,
         justifyContent: 'center',
     },
 });

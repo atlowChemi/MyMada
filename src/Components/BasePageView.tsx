@@ -1,6 +1,7 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { colors } from '../consts';
+import RadialGradient from 'react-native-radial-gradient';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 interface BasePageViewProps {
@@ -16,24 +17,32 @@ interface BasePageViewProps {
 export const BasePageView = React.memo<BasePageViewProps>(({ noScroll, preScroll, postScroll, children, ...styleProps }) => {
     return (
         <SafeAreaView style={[styles.basePage, styleProps.pageStyle]}>
-            {!noScroll && preScroll}
-            {noScroll ? (
-                children
-            ) : (
-                <ScrollView style={[styles.scroller, styleProps.scrollViewStyle]} contentContainerStyle={[styles.scrollContent, styleProps.scrollContentStyle]} showsHorizontalScrollIndicator={false}>
-                    {children}
-                </ScrollView>
-            )}
-            {!noScroll && postScroll}
+            <RadialGradient colors={[colors.white, colors.bgShadowEnd]} stops={[0.9]} style={styles.radialBg}>
+                {!noScroll && preScroll}
+                {noScroll ? (
+                    children
+                ) : (
+                    <ScrollView
+                        style={[styles.scroller, styleProps.scrollViewStyle]}
+                        contentContainerStyle={[styles.scrollContent, styleProps.scrollContentStyle]}
+                        showsHorizontalScrollIndicator={false}>
+                        {children}
+                    </ScrollView>
+                )}
+                {!noScroll && postScroll}
+            </RadialGradient>
             {/* TODO: show adds when relevant */}
         </SafeAreaView>
     );
 });
+BasePageView.displayName = 'BasePageView';
 
 const styles = StyleSheet.create({
     basePage: {
-        backgroundColor: colors.bgShadowEnd,
         height: '100%',
+        flexGrow: 1,
+    },
+    radialBg: {
         flexGrow: 1,
     },
     scroller: {
