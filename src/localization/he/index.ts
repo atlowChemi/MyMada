@@ -196,13 +196,6 @@ export default {
 //     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
 //     <string name="importanceMsg">זיהינו כי התראה על זיהוי הודעות ברקע מופיעה במסך.\nלידיעתך, ניתן להעלים אותו על ידי העברה לדחיפות נמוכה.</string>
 //     <string name="importance">הורד דחיפות</string>
-//     <string name="Apgar">ציון אפגאר הוא: %d</string>
-//     <string name="ApgarInfo">יילוד בציון נמוך מ4 זקוק להחייאה מיידית.\nניקוד בין 4 ל6 מסמן על יילוד במצוקה בינונית הזקוק לחמצון והמרצה.\nניקוד גבוה מ6 הינו אינדיקציה ליילוד תקין.</string>
-//     <string name="Glasgow">ציון גלאזגו הוא: %s</string>
-//     <string name="GlasgowInfo">ציון נמוך מ9 מוגדר כתרדמת חמורה.\nציון בין 9 ל12 מוגדר כתרדמת בינונית.\nציון גבוה מ12 מוגדר כתרדמת מינורית.</string>
-//     <string name="GlasgowHigh">תרדמת חמורה</string>
-//     <string name="GlasgowMed">תרדמת בינונית</string>
-//     <string name="GlasgowLow">תרדמת מינורית</string>
 //     <string name="TEAMTest">הודעת צוות. 02:34 מונה:1325 כתובת: בדיקה!!! ירושלים בורוכוב. קוד הזנקה: מחלה מבוגר, קוד רפואי: חוסר הכרה</string>
 //     <string name="CONANTest">אירוע חדש. 14:18 מונה:267 כתובת: בדיקה!!!ירושלים המ\"ג, קוד הזנקה: מחלה מבוגר, קוד רפואי: דום לב</string>
 //     <string name="APP_reco_off">איתור הודעות כבוי.</string>
@@ -278,67 +271,6 @@ export default {
 
 //     <string name="navigation_drawer_open">פתח מגירה</string>
 //     <string name="navigation_drawer_close">סגור מגירה</string>
-
-//     <string name="Appe">הופעה/צבע</string>
-//     <string-array name="Appes">
-//         <item>כחול - חיוור</item>
-//         <item>ורוד - גפיים כחולים</item>
-//         <item>ורוד</item>
-//     </string-array>
-
-//     <string name="Puls">דופק</string>
-//     <string-array name="Pulss">
-//         <item>אין דופק</item>
-//         <item>פחות מ100</item>
-//         <item>מעל 100</item>
-//     </string-array>
-
-//     <string name="Grim">העוויות</string>
-//     <string-array name="Grims">
-//         <item>אין תגובה</item>
-//         <item>העוויות</item>
-//         <item>בכי / שיעול</item>
-//     </string-array>
-
-//     <string name="Acti">הנעת גפיים</string>
-//     <string-array name="Actis">
-//         <item>גפיים רפויות</item>
-//         <item>תנועות קלות</item>
-//         <item>תנועות נמרצות</item>
-//     </string-array>
-
-//     <string name="Resp">נשימה</string>
-//     <string-array name="Resps">
-//         <item>אין נשימה</item>
-//         <item>נשימה חלשה / איטית</item>
-//         <item>בכי חזק</item>
-//     </string-array>
-//     <string name="eyeOpening">פקיחת עיניים</string>
-//     <string-array name="eyes">
-//         <item>אין</item>
-//         <item>פתיחת עיניים בכאב</item>
-//         <item>ציות להוראה</item>
-//         <item>ספונטנית</item>
-//     </string-array>
-
-//     <string name="verbal">דיבור</string>
-//     <string-array name="verb">
-//         <item>אין דיבור</item>
-//         <item>השמעת קולות</item>
-//         <item>מילים ללא הקשר</item>
-//         <item>בילבול, חוסר התמצאות</item>
-//         <item>מתמצא ומדבר לעניין</item>
-//     </string-array>
-//     <string name="motor">תנועה</string>
-//     <string-array name="moto">
-//         <item>אין תנועה</item>
-//         <item>יישור גפיים בכאב</item>
-//         <item>כיפוף גפיים בכאב</item>
-//         <item>רתיעה מכאב</item>
-//         <item>תגובה לפי מיקום הכאב</item>
-//         <item>ציות לפקודות</item>
-//     </string-array>
-//     <string name="section_format" translatable="false">Hello World from section: %1$d</string>
 
 //     <string name="title_mda">הורדת יישומון מד\"א</string>
 //     <string name="BGServiceTtl">מאזין ברקע להודעות</string>

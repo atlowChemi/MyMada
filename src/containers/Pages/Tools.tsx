@@ -5,6 +5,7 @@ import { Metronome } from '../Tools/Metronome';
 import { ApgarCalculator } from '../Tools/Apgar';
 import { PulseCalculator } from '../Tools/Pulse';
 import { OxygenCalculator } from '../Tools/Oxygen';
+import { GlazgowCalculator } from '../Tools/Glazgow';
 import type { NavigatableScreenProps } from '../../App';
 
 const Drawer = createDrawerNavigator();
@@ -19,7 +20,7 @@ export const Tools = observer<NavigatableScreenProps>(() => {
                 <Drawer.Screen name="VitalsChecker" component={Metronome} />
                 <Drawer.Screen name="OxygenCalculator" component={OxygenCalculator} />
                 <Drawer.Screen name="ApgarCalculator" component={ApgarCalculator} />
-                <Drawer.Screen name="GlazgoCalculator" component={Metronome} />
+                <Drawer.Screen name="GlazgowCalculator" component={GlazgowCalculator} />
                 <Drawer.Screen name="Dictionary" component={Metronome} />
                 <Drawer.Screen name="BlsProtocoles" component={Metronome} />
                 <Drawer.Screen name="AlsProtocoles" component={Metronome} />

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { injectable } from 'inversify';
+import { computedFn } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Animated, Image, StyleSheet, View } from 'react-native';
@@ -11,8 +12,8 @@ import { Text } from '../../Components/Text';
 import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
 import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
-import type { NavigatableScreenProps } from '../../App';
 import { useColorAnimation } from '../../utils/colorAnimation';
+import type { NavigatableScreenProps } from '../../App';
 
 @injectable()
 class ApgarCalculatorLocalStore {
@@ -53,47 +54,29 @@ class ApgarCalculatorLocalStore {
         return colors.calcB;
     }
 
-    public get appearanceOptions() {
-        return this.optionsBuilder('appearance');
+    public get options() {
+        return computedFn((kind: 'appearance' | 'pulse' | 'grimace' | 'activity' | 'respiration') => {
+            return Array.from({ length: 3 }, (_, i) => ({ label: i18n.t(`tools:apgar:${kind}:options:${i}`) as string, value: i }));
+        });
     }
 
-    public get pulseOptions() {
-        return this.optionsBuilder('pulse');
-    }
-
-    public get grimaceOptions() {
-        return this.optionsBuilder('grimace');
-    }
-
-    public get activityOptions() {
-        return this.optionsBuilder('activity');
-    }
-
-    public get respirationOptions() {
-        return this.optionsBuilder('respiration');
-    }
-
-    private optionsBuilder(kind: string) {
-        return Array.from({ length: 3 }, (_, i) => ({ label: i18n.t(`tools:apgar:${kind}:options:${i}`) as string, value: i }));
-    }
-
-    public setAppearanceValue({ value }: (typeof this)['appearanceOptions'][number]) {
+    public setAppearanceValue({ value }: ReturnType<this['options']>[number]) {
         this.appearance = value;
     }
 
-    public setPulseValue({ value }: (typeof this)['pulseOptions'][number]) {
+    public setPulseValue({ value }: ReturnType<this['options']>[number]) {
         this.pulse = value;
     }
 
-    public setGrimaceValue({ value }: (typeof this)['grimaceOptions'][number]) {
+    public setGrimaceValue({ value }: ReturnType<this['options']>[number]) {
         this.grimace = value;
     }
 
-    public setActivityValue({ value }: (typeof this)['activityOptions'][number]) {
+    public setActivityValue({ value }: ReturnType<this['options']>[number]) {
         this.activity = value;
     }
 
-    public setRespirationValue({ value }: (typeof this)['respirationOptions'][number]) {
+    public setRespirationValue({ value }: ReturnType<this['options']>[number]) {
         this.respiration = value;
     }
 }
@@ -124,7 +107,7 @@ export const ApgarCalculator = observer<NavigatableScreenProps>(({ navigation })
             }>
             <Text style={styles.dropdownTitle}>{t('tools:apgar:appearance:title')}</Text>
             <Dropdown
-                data={localStore.appearanceOptions}
+                data={localStore.options('appearance')}
                 labelField="label"
                 valueField="value"
                 fontFamily="opensanshebrew"
@@ -134,7 +117,7 @@ export const ApgarCalculator = observer<NavigatableScreenProps>(({ navigation })
             />
             <Text style={styles.dropdownTitle}>{t('tools:apgar:pulse:title')}</Text>
             <Dropdown
-                data={localStore.pulseOptions}
+                data={localStore.options('pulse')}
                 labelField="label"
                 valueField="value"
                 fontFamily="opensanshebrew"
@@ -144,7 +127,7 @@ export const ApgarCalculator = observer<NavigatableScreenProps>(({ navigation })
             />
             <Text style={styles.dropdownTitle}>{t('tools:apgar:grimace:title')}</Text>
             <Dropdown
-                data={localStore.grimaceOptions}
+                data={localStore.options('grimace')}
                 labelField="label"
                 valueField="value"
                 fontFamily="opensanshebrew"
@@ -154,7 +137,7 @@ export const ApgarCalculator = observer<NavigatableScreenProps>(({ navigation })
             />
             <Text style={styles.dropdownTitle}>{t('tools:apgar:activity:title')}</Text>
             <Dropdown
-                data={localStore.activityOptions}
+                data={localStore.options('activity')}
                 labelField="label"
                 valueField="value"
                 fontFamily="opensanshebrew"
@@ -164,7 +147,7 @@ export const ApgarCalculator = observer<NavigatableScreenProps>(({ navigation })
             />
             <Text style={styles.dropdownTitle}>{t('tools:apgar:respiration:title')}</Text>
             <Dropdown
-                data={localStore.respirationOptions}
+                data={localStore.options('respiration')}
                 labelField="label"
                 valueField="value"
                 fontFamily="opensanshebrew"
