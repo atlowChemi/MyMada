@@ -17,4 +17,30 @@ export default {
         minLeft: 'Minutes left',
         clarify: 'Assuming oxygen using 10-lpm.',
     },
+    apgar: {
+        score: 'Apgar is: {{ score }}',
+        info: `If Apgar score is between 0 - 3, start CPR immediately.
+If Apgar score is between 4 - 6, you should oxygenate baby.
+Apgar score above 7 is considered normal.`,
+        appearance: {
+            title: 'Appearance',
+            options: ['Blue or pale', 'Blue at extremities, pink body', 'Pink'],
+        },
+        pulse: {
+            title: 'Pulse',
+            options: ['Absent', 'Less than 100 bpm', 'More than 100 bpm'],
+        },
+        grimace: {
+            title: 'Grimace',
+            options: ['No response to stimulation', 'Slight grimace upon stimulation', 'Cry on stimulation'],
+        },
+        activity: {
+            title: 'Activity (Muscle tone)',
+            options: ['None', 'Some flexion', 'Flexed arms and legs'],
+        },
+        respiration: {
+            title: 'Respiration',
+            options: ['None', 'Slow, irregular, gasping', 'Strong, vigorous cry'],
+        },
+    },
 } as const;
