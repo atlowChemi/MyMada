@@ -1,10 +1,12 @@
-import { memo, useMemo } from 'react';
+import { useEffect } from 'react';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { StyleSheet, TextInput as NativeTextInput, View } from 'react-native';
 import { Text } from './Text';
 import { colors } from '../consts';
-import type { StyleProp, ViewStyle, TextStyle, KeyboardTypeOptions } from 'react-native';
+import type { ComponentProps } from 'react';
+import type { StyleProp, ViewStyle, TextStyle } from 'react-native';
 
-interface TextInputProps {
+interface TextInputProps extends ComponentProps<typeof NativeTextInput> {
     label: string;
     error?: string;
     numberOfLines?: number;
@@ -13,23 +15,59 @@ interface TextInputProps {
     errorStyle?: StyleProp<TextStyle>;
     inputStyle?: StyleProp<TextStyle>;
     onChangeText?(text: string): void;
-    value?: string;
-    keyboardType?: KeyboardTypeOptions;
-    editable?: boolean;
 }
 
-export const TextInput = memo<TextInputProps>(({ label, error, numberOfLines, wrapperStyle, labelStyle, errorStyle, inputStyle, ...props }) => {
-    const height = useMemo(() => (numberOfLines ? numberOfLines * 27 : undefined), [numberOfLines]);
-    const color = useMemo(() => {
-        if (error) {
-            return colors.oldPrimaryDark;
-        }
-        return props.editable ?? true ? colors.colorNice : colors.buttonMaterialDark;
-    }, [error, props.editable]);
+export const TextInput = observer<TextInputProps>(({ label, error, numberOfLines, wrapperStyle, labelStyle, errorStyle, inputStyle, ...props }) => {
+    const localStore = useLocalObservable(() => ({
+        error,
+        numberOfLines,
+        focused: false,
+        editable: props.editable,
+        updateValues(err?: string, editable?: boolean, numOfLines?: number) {
+            this.error = err;
+            this.editable = editable;
+            this.numberOfLines = numOfLines;
+        },
+        onFocus() {
+            this.focused = true;
+        },
+        onBlur() {
+            this.focused = false;
+        },
+        get height() {
+            return this.numberOfLines ? this.numberOfLines * 27 : undefined;
+        },
+        get color() {
+            if (this.error) {
+                return colors.oldPrimaryDark;
+            }
+            return this.editable ?? true ? colors.colorNice : colors.buttonMaterialDark;
+        },
+        get underlineColor() {
+            if (this.error) {
+                return colors.oldPrimaryDark;
+            }
+            if (this.focused && (this.editable ?? true)) {
+                return colors.colorNice;
+            }
+            return colors.buttonMaterialDark;
+        },
+    }));
+    useEffect(() => {
+        localStore.updateValues(error, props.editable, numberOfLines);
+    }, [error, props.editable, numberOfLines, localStore]);
     return (
         <View style={[styles.wrapper, wrapperStyle]}>
-            <Text style={[styles.label, { color }, labelStyle]}>{label}</Text>
-            <NativeTextInput style={[styles.input, inputStyle, { height }]} numberOfLines={numberOfLines} multiline={Boolean(numberOfLines)} underlineColorAndroid={color} {...props} />
+            <Text style={[styles.label, { color: localStore.color }, labelStyle]}>{label}</Text>
+            <NativeTextInput
+                {...props}
+                onBlur={localStore.onBlur}
+                onFocus={localStore.onFocus}
+                numberOfLines={numberOfLines}
+                underlineColorAndroid={localStore.underlineColor}
+                multiline={Boolean(numberOfLines)}
+                style={[styles.input, inputStyle, { height: localStore.height }]}
+            />
             {error && <Text style={[styles.error, errorStyle]}>{error}</Text>}
         </View>
     );

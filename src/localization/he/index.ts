@@ -141,10 +141,6 @@ export default {
 //         <item>ילד</item>
 //         <item>תינוק</item>
 //     </string-array>
-//     <string-array name="oxySizes">
-//         <item>בלון קטן</item>
-//         <item>בלון גדול</item>
-//     </string-array>
 //     <string name="Mcode">קודים רפואיים</string>
 //     <string name="langSwitched">השינוי יכנס לתוקף בכניסה הבאה לאפליקציה.</string>
 //     <string name="err">תקלה</string>
@@ -243,8 +239,6 @@ export default {
 //     <string name="time">התקבל בשעה: %1$s</string>
 //     <string name="psi_1500" translatable="false">1500</string>
 //     <string name="atm_100" translatable="false">100</string>
-//     <string name="atm">לחץ אטמוספרי בבלון</string>
-//     <string name="psi">לחץ psi בבלון</string>
 
 //     <string name="startT">לחץ בכל נקודה להתחלת החייאה</string>
 //     <string name="start">הפעלה</string>
@@ -268,8 +262,6 @@ export default {
 //     <string name="nightStart">תחילת משמרת לילה</string>
 //     <string name="nightStartDesc">בחר מאיזו שעה יתריעו מקרים לפי הגדרת הלילה</string>
 //     <string name="nightEndDesc">בחר מאיזו שעה יחזרו מקרים להתריע לפי הגדרת יום</string>
-//     <string name="oxyLeft">דקות חמצן</string>
-//     <string name="lpmExp">בחישוב של 10-lpm זרימה.</string>
 //     <string name="vitalsAlert">טווח המדדים המופיעים כאן הינו על פי הנתונים מספרי מד\\\"א ואינו מדויק אצל מטופלים בעלי רקע רפואי. האמור כאן אינו מהווה ייעוץ רפואי.</string>
 //     <string name="vitalsBreath">"הנשימה בקצב "</string>
 //     <string name="vitalsBP">"לחץ הדם "</string>
@@ -346,7 +338,6 @@ export default {
 //         <item>תגובה לפי מיקום הכאב</item>
 //         <item>ציות לפקודות</item>
 //     </string-array>
-//     <string name="title_activity_utills_and_tools">כלי עזר</string>
 //     <string name="section_format" translatable="false">Hello World from section: %1$d</string>
 
 //     <string name="title_mda">הורדת יישומון מד\"א</string>

@@ -18,6 +18,9 @@ export class ToolbarStore {
     }
 
     private get titleTranslationKey(): TranslationKeys {
+        if (this.navigationStore.currentPage === 'Tools') {
+            return 'tools:toolbarTitle';
+        }
         if (this.navigationStore.currentPage === 'ContactUs') {
             return 'contact:toolbarTitle';
         }
