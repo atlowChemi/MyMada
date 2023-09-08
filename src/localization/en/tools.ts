@@ -43,4 +43,23 @@ Apgar score above 7 is considered normal.`,
             options: ['None', 'Slow, irregular, gasping', 'Strong, vigorous cry'],
         },
     },
+    glazgow: {
+        score: 'Glazgow is: {{ score }} ({{ scoreDesc }})',
+        scoreDesc: ['Deep coma', 'Moderate coma', 'Light coma'],
+        info: `If Glazgow score is between 0 - 8, patient is in a deep coma.
+If Glazgow score is between 9 - 12, patient is in a moderate coma.
+If Glazgow score is above 12, patient is in a light coma.`,
+        eyes: {
+            title: 'Eye Opening',
+            options: ['None', 'To pain', 'To speech', 'Spontaneous'],
+        },
+        verbal: {
+            title: 'Verbal Response',
+            options: ['None', 'Incomprehensible sounds', 'Inappropriate words', 'Confused', 'Orientated'],
+        },
+        motor: {
+            title: 'Motor Response',
+            options: ['None', 'Abnormal Extension', 'Abnormal Flexion', 'Flexion withdrawal from pain', 'Moves to localized pain', 'Obeying Commands'],
+        },
+    },
 } as const;
