@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { I18nManager } from 'react-native';
 import he from './he';
 import en from './en';
 
@@ -29,3 +30,14 @@ i18n.use(initReactI18next).init({
 });
 export default i18n;
 export type TranslationKeys = Join<PathsToStringProps<typeof he>, ':'>;
+export function setLanguage(lang: keyof typeof resources) {
+    return new Promise<void>((res, rej) => {
+        i18n.changeLanguage(lang, err => {
+            if (err) {
+                return rej(err);
+            }
+            I18nManager.forceRTL(lang === 'he');
+            res();
+        });
+    });
+}

@@ -11,6 +11,7 @@ import { DependencyInjectionProvider, container } from './services/container';
 import { colors } from './consts';
 import { Toolbar } from './containers/Toolbar';
 import type { useNavigationBuilder } from '@react-navigation/native';
+import { setLanguage } from './localization';
 
 type Navigation = ReturnType<typeof useNavigationBuilder>['navigation'];
 export interface NavigatableScreenProps {
@@ -20,6 +21,7 @@ const Stack = createNativeStackNavigator();
 
 export const App: React.FC = () => {
     const navigationStore = container.get(NavigationStore);
+    setLanguage('he');
 
     return (
         <DependencyInjectionProvider container={container}>

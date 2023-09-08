@@ -3,6 +3,7 @@ import { BasePageView } from '../../Components/BasePageView';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Metronome } from '../Tools/Metronome';
 import { PulseCalculator } from '../Tools/Pulse';
+import { OxygenCalculator } from '../Tools/Oxygen';
 import type { NavigatableScreenProps } from '../../App';
 
 const Drawer = createDrawerNavigator();
@@ -15,7 +16,7 @@ export const Tools = observer<NavigatableScreenProps>(() => {
                 <Drawer.Screen name="PulseCalc" component={PulseCalculator} />
                 <Drawer.Screen name="MetronomeActivity" component={Metronome} />
                 <Drawer.Screen name="VitalsChecker" component={Metronome} />
-                <Drawer.Screen name="OxygenCalculator" component={Metronome} />
+                <Drawer.Screen name="OxygenCalculator" component={OxygenCalculator} />
                 <Drawer.Screen name="ApgarCalculator" component={Metronome} />
                 <Drawer.Screen name="GlazgoCalculator" component={Metronome} />
                 <Drawer.Screen name="Dictionary" component={Metronome} />
