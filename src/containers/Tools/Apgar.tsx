@@ -4,7 +4,6 @@ import { computedFn } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Animated, Image, StyleSheet, View } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
 import { action, computed, makeObservable, observable } from 'mobx';
 import i18n from '../../localization';
 import { colors } from '../../consts';
@@ -14,6 +13,10 @@ import { NavigationStore } from '../../services/NavigationStore';
 import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { useColorAnimation } from '../../utils/colorAnimation';
 import type { NavigatableScreenProps } from '../../App';
+import { ToolsDropDown } from '../../Components/ToolsDropdown';
+
+const APGAR_PARAMS = ['appearance', 'pulse', 'grimace', 'activity', 'respiration'] as const;
+type ApgarParam = (typeof APGAR_PARAMS)[number];
 
 @injectable()
 class ApgarCalculatorLocalStore {
@@ -55,7 +58,7 @@ class ApgarCalculatorLocalStore {
     }
 
     public get options() {
-        return computedFn((kind: 'appearance' | 'pulse' | 'grimace' | 'activity' | 'respiration') => {
+        return computedFn((kind: ApgarParam) => {
             return Array.from({ length: 3 }, (_, i) => ({ label: i18n.t(`tools:apgar:${kind}:options:${i}`) as string, value: i }));
         });
     }
@@ -105,56 +108,11 @@ export const ApgarCalculator = observer<NavigatableScreenProps>(({ navigation })
                     </View>
                 </>
             }>
-            <Text style={styles.dropdownTitle}>{t('tools:apgar:appearance:title')}</Text>
-            <Dropdown
-                data={localStore.options('appearance')}
-                labelField="label"
-                valueField="value"
-                fontFamily="opensanshebrew"
-                style={styles.dropdown}
-                value={localStore.appearance as unknown as string}
-                onChange={localStore.setAppearanceValue}
-            />
-            <Text style={styles.dropdownTitle}>{t('tools:apgar:pulse:title')}</Text>
-            <Dropdown
-                data={localStore.options('pulse')}
-                labelField="label"
-                valueField="value"
-                fontFamily="opensanshebrew"
-                style={styles.dropdown}
-                value={localStore.pulse as unknown as string}
-                onChange={localStore.setPulseValue}
-            />
-            <Text style={styles.dropdownTitle}>{t('tools:apgar:grimace:title')}</Text>
-            <Dropdown
-                data={localStore.options('grimace')}
-                labelField="label"
-                valueField="value"
-                fontFamily="opensanshebrew"
-                style={styles.dropdown}
-                value={localStore.grimace as unknown as string}
-                onChange={localStore.setGrimaceValue}
-            />
-            <Text style={styles.dropdownTitle}>{t('tools:apgar:activity:title')}</Text>
-            <Dropdown
-                data={localStore.options('activity')}
-                labelField="label"
-                valueField="value"
-                fontFamily="opensanshebrew"
-                style={styles.dropdown}
-                value={localStore.activity as unknown as string}
-                onChange={localStore.setActivityValue}
-            />
-            <Text style={styles.dropdownTitle}>{t('tools:apgar:respiration:title')}</Text>
-            <Dropdown
-                data={localStore.options('respiration')}
-                labelField="label"
-                valueField="value"
-                fontFamily="opensanshebrew"
-                style={styles.dropdown}
-                value={localStore.respiration as unknown as string}
-                onChange={localStore.setRespirationValue}
-            />
+            {APGAR_PARAMS.map(kind => {
+                const upperCased = (kind[0].toUpperCase() + kind.slice(1)) as 'Appearance' | 'Pulse' | 'Grimace' | 'Activity' | 'Respiration';
+                const onChange = localStore[`set${upperCased}Value`];
+                return <ToolsDropDown key={kind} title={t(`tools:apgar:${kind}:title`)} options={localStore.options(kind)} value={localStore[kind]} onChange={onChange} />;
+            })}
         </BasePageView>
     );
 });
