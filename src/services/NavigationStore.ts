@@ -12,7 +12,7 @@ export type Tools =
     | 'VitalsChecker'
     | 'OxygenCalculator'
     | 'ApgarCalculator'
-    | 'GlazgoCalculator'
+    | 'GlazgowCalculator'
     | 'Dictionary'
     | 'BlsProtocoles'
     | 'AlsProtocoles'
@@ -86,7 +86,7 @@ export class NavigationStore {
             VitalsChecker: 'Tools',
             OxygenCalculator: 'Tools',
             ApgarCalculator: 'Tools',
-            GlazgoCalculator: 'Tools',
+            GlazgowCalculator: 'Tools',
             Dictionary: 'Tools',
             BlsProtocoles: 'Tools',
             AlsProtocoles: 'Tools',
