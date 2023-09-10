@@ -10,11 +10,12 @@ import { NavigationStore } from './services/NavigationStore';
 import { DependencyInjectionProvider, container } from './services/container';
 import { colors } from './consts';
 import { Toolbar } from './containers/Toolbar';
-import type { useNavigationBuilder } from '@react-navigation/native';
 import { setLanguage } from './localization';
+import type { ParamListBase, RouteProp, useNavigationBuilder } from '@react-navigation/native';
 
 type Navigation = ReturnType<typeof useNavigationBuilder>['navigation'];
 export interface NavigatableScreenProps {
+    route: RouteProp<ParamListBase>;
     navigation: Navigation;
 }
 const Stack = createNativeStackNavigator();

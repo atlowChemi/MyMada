@@ -2478,6 +2478,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-firebase/storage@npm:^18.3.2":
+  version: 18.3.2
+  resolution: "@react-native-firebase/storage@npm:18.3.2"
+  peerDependencies:
+    "@react-native-firebase/app": 18.3.2
+  checksum: 1c6f0f25af36fd9328a7d1e02a270cfa21ba2723cc1779d3bbf0035b7b3636aa187bdbc87c370ec7889b71547dfa2fd2822d550db2d81b874f62ac524aedcd73
+  languageName: node
+  linkType: hard
+
 "@react-native/assets-registry@npm:^0.72.0":
   version: 0.72.0
   resolution: "@react-native/assets-registry@npm:0.72.0"
@@ -7843,6 +7852,7 @@ __metadata:
     "@react-native-firebase/app": ^18.3.1
     "@react-native-firebase/database": ^18.3.1
     "@react-native-firebase/messaging": ^18.3.1
+    "@react-native-firebase/storage": ^18.3.2
     "@react-native/eslint-config": ^0.72.2
     "@react-native/metro-config": ^0.72.11
     "@react-navigation/drawer": ^6.6.3
@@ -7875,6 +7885,7 @@ __metadata:
     react-native-safe-area-context: ^4.7.1
     react-native-screens: 3.22.0
     react-native-shared-preferences: ^1.0.2
+    react-native-view-pdf: ^0.14.0
     react-native-webview: ^13.3.1
     react-test-renderer: 18.2.0
     reflect-metadata: ^0.1.13
@@ -8794,6 +8805,26 @@ __metadata:
   version: 1.0.2
   resolution: "react-native-shared-preferences@patch:react-native-shared-preferences@npm%3A1.0.2#./.yarn/patches/react-native-shared-preferences-npm-1.0.2-0232c65960.patch::version=1.0.2&hash=ac306b&locator=mymada%40workspace%3A."
   checksum: 02d6c62c66f5c861df32b2b5c7e21704055db3b6f2200cdb437f0ebf9da1ef0d23396e8e51cff2aad1302e94e0b6ccce22667239d33474296608daddc4953b95
+  languageName: node
+  linkType: hard
+
+"react-native-view-pdf@npm:0.14.0":
+  version: 0.14.0
+  resolution: "react-native-view-pdf@npm:0.14.0"
+  peerDependencies:
+    react: ">=16.8.6"
+    react-native: ">=0.60"
+  checksum: a6217ab2f8565dc80b383edbf1b073fae5fdf76bffb9a5b8697ad2b12c3eb81325c2f13ae9ec78c35e17940cf6e3c95600775428e040118ab0b636bd5f44fd45
+  languageName: node
+  linkType: hard
+
+"react-native-view-pdf@patch:react-native-view-pdf@npm%3A0.14.0#./.yarn/patches/react-native-view-pdf-npm-0.14.0-d0f63f1efe.patch::locator=mymada%40workspace%3A.":
+  version: 0.14.0
+  resolution: "react-native-view-pdf@patch:react-native-view-pdf@npm%3A0.14.0#./.yarn/patches/react-native-view-pdf-npm-0.14.0-d0f63f1efe.patch::version=0.14.0&hash=974776&locator=mymada%40workspace%3A."
+  peerDependencies:
+    react: ">=16.8.6"
+    react-native: ">=0.60"
+  checksum: 15f2afa682f3862b7f79d90eb08e7aec188cc58779d582d5a5e0056b96b287ce8ad7accd65895d3d40b4455ddab3a93ac50d592c30caa44e1e280b2d1404dedf
   languageName: node
   linkType: hard
 
