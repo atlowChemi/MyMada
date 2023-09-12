@@ -59,7 +59,7 @@ export const DocsViewer = observer<NavigatableScreenProps>(({ navigation, route 
     }
 
     return (
-        <BasePageView noScroll>
+        <BasePageView scrollType="none">
             {localStore.docUrl.state === 'fulfilled' && (
                 <PDFView style={styles.pdf} fadeInDuration={250.0} onLoad={localStore.onLoad} onError={localStore.onError} resource={localStore.docUrl.value} />
             )}

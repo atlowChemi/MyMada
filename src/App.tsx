@@ -6,6 +6,7 @@ import { Privacy } from './containers/Pages/Privacy';
 import { HomePage } from './containers/Pages/HomePage';
 import { ContactUs } from './containers/Pages/ContactUs';
 import { AboutTheApp } from './containers/Pages/AboutTheApp';
+import { SnackbarWrapper } from './services/SnackbarStore';
 import { NavigationStore } from './services/NavigationStore';
 import { DependencyInjectionProvider, container } from './services/container';
 import { colors } from './consts';
@@ -37,6 +38,8 @@ export const App: React.FC = () => {
                     <Stack.Screen name="Privacy" component={Privacy} />
                 </Stack.Navigator>
             </NavigationContainer>
+            <SnackbarWrapper />
         </DependencyInjectionProvider>
     );
 };
+App.displayName = 'App';

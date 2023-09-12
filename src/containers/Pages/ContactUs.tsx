@@ -352,7 +352,7 @@ export const ContactUs = observer<NavigatableScreenProps>(() => {
 
     if (localStore.isNotFulfilled) {
         return (
-            <BasePageView noScroll>
+            <BasePageView scrollType="none">
                 {messagingStore.token.state === 'rejected' ? (
                     <ConnectionError />
                 ) : (
