@@ -62,4 +62,19 @@ If Glazgow score is above 12, patient is in a light coma.`,
             options: ['None', 'Abnormal Extension', 'Abnormal Flexion', 'Flexion withdrawal from pain', 'Moves to localized pain', 'Obeying Commands'],
         },
     },
+    dictionary: {
+        create: {
+            title: 'Create term',
+            success: 'Added successfully, sent for our approval!',
+            failure: 'Term creation failed, please try again.',
+        },
+        edit: {
+            title: 'Edit term',
+            btn: 'Edit Term',
+            success: 'Edited successfully, sent for our approval!',
+            failure: 'Editing failed, please try again.',
+        },
+        name: 'Medical term',
+        definition: "Term's definition",
+    },
 } as const;

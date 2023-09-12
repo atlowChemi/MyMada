@@ -1,41 +1,91 @@
-import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
-import { colors } from '../consts';
+import { memo } from 'react';
+import { FlatList, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import type { StyleProp, ViewStyle } from 'react-native';
+import { colors } from '../consts';
+import type { ReactNode } from 'react';
+import type { ListRenderItem, StyleProp, ViewStyle } from 'react-native';
 
-interface BasePageViewProps {
-    children: React.ReactNode;
-    preScroll?: React.ReactNode;
-    postScroll?: React.ReactNode;
-    noScroll?: boolean;
+interface CommonProps<T extends {} = any> {
+    data?: T[];
+    scrollType?: 'scroll' | 'flat' | 'none';
     pageStyle?: StyleProp<ViewStyle>;
     scrollViewStyle?: StyleProp<ViewStyle>;
     scrollContentStyle?: StyleProp<ViewStyle>;
 }
 
-export const BasePageView = React.memo<BasePageViewProps>(({ noScroll, preScroll, postScroll, children, ...styleProps }) => {
+interface NoScrollProps {
+    preScroll?: never;
+    postScroll?: never;
+    scrollViewStyle?: never;
+    scrollContentStyle?: never;
+    children: ReactNode;
+    scrollType: 'none';
+    data?: never;
+}
+
+interface ScrollProps {
+    preScroll?: ReactNode;
+    postScroll?: ReactNode;
+    scrollViewStyle?: StyleProp<ViewStyle>;
+    scrollContentStyle?: StyleProp<ViewStyle>;
+    children: ReactNode;
+    scrollType?: 'scroll';
+    data?: never;
+}
+
+interface FlatScrollProps<T extends {}> {
+    children?: never;
+    preScroll?: ReactNode;
+    postScroll?: ReactNode;
+    scrollType: 'flat';
+    data: T[];
+    renderItem: ListRenderItem<T>;
+    keyExtractor?: ((item: T, index: number) => string) | undefined;
+}
+
+const Separator = memo(() => <View style={styles.separator} />);
+
+type BasePageViewProps<T extends {} = any> = CommonProps<T> & (NoScrollProps | ScrollProps | FlatScrollProps<T>);
+const contentFn = <T extends {} = {}>(props: BasePageViewProps<T>) => {
+    if (props.scrollType === 'none') {
+        return props.children;
+    }
+    if (props.scrollType === 'flat') {
+        return (
+            <FlatList
+                data={props.data}
+                renderItem={props.renderItem}
+                keyExtractor={props.keyExtractor}
+                ItemSeparatorComponent={Separator}
+                style={[styles.scroller, props.scrollViewStyle]}
+                contentContainerStyle={props.scrollContentStyle}
+            />
+        );
+    }
     return (
-        <SafeAreaView style={[styles.basePage, styleProps.pageStyle]}>
+        <ScrollView style={[styles.scroller, props.scrollViewStyle]} contentContainerStyle={[styles.scrollContent, props.scrollContentStyle]} showsHorizontalScrollIndicator={false}>
+            {props.children}
+        </ScrollView>
+    );
+};
+
+const Content = memo(contentFn) as typeof contentFn;
+
+const BasePageViewFn = <T extends {} = {}>(props: BasePageViewProps<T>) => {
+    const { scrollType = 'scroll', preScroll, postScroll } = props;
+    const noScroll = scrollType === 'none';
+    return (
+        <SafeAreaView style={[styles.basePage, props.pageStyle]}>
             <RadialGradient colors={[colors.white, colors.bgShadowEnd]} stops={[0.9]} style={styles.radialBg}>
                 {!noScroll && preScroll}
-                {noScroll ? (
-                    children
-                ) : (
-                    <ScrollView
-                        style={[styles.scroller, styleProps.scrollViewStyle]}
-                        contentContainerStyle={[styles.scrollContent, styleProps.scrollContentStyle]}
-                        showsHorizontalScrollIndicator={false}>
-                        {children}
-                    </ScrollView>
-                )}
+                <Content {...props} />
                 {!noScroll && postScroll}
             </RadialGradient>
             {/* TODO: show adds when relevant */}
         </SafeAreaView>
     );
-});
-BasePageView.displayName = 'BasePageView';
+};
+export const BasePageView = memo(BasePageViewFn) as typeof BasePageViewFn;
 
 const styles = StyleSheet.create({
     basePage: {
@@ -55,5 +105,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         flex: 1,
         rowGap: 20,
+    },
+    separator: {
+        backgroundColor: colors.bgShadowEnd,
+        height: 1,
     },
 });

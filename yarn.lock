@@ -2408,9 +2408,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/app@npm:18.3.1":
-  version: 18.3.1
-  resolution: "@react-native-firebase/app@npm:18.3.1"
+"@react-native-firebase/app@npm:18.3.2":
+  version: 18.3.2
+  resolution: "@react-native-firebase/app@npm:18.3.2"
   dependencies:
     opencollective-postinstall: ^2.0.1
     superstruct: ^0.6.2
@@ -2421,64 +2421,38 @@ __metadata:
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 24b59ee26dcf745c48b4aaf80926ea1bd3e571c98075de8a7b54f53be7dc19b01b1ba556de8b1aa6a13719200ade7a7819c39ea9025399174a30e3059e857415
+  checksum: d6be1c1dec448436bbff6f3f7f393044c0622ba5ff5d7274aa257765705c763a45cb4306968d63874eb21436b6ea1bec74264c02a8a6fd7a46f23e7a8c1c60f3
   languageName: node
   linkType: hard
 
-"@react-native-firebase/app@patch:@react-native-firebase/app@npm%3A18.3.1#./.yarn/patches/@react-native-firebase-app-npm-18.3.1-c46d770cdf.patch::locator=mymada%40workspace%3A.":
-  version: 18.3.1
-  resolution: "@react-native-firebase/app@patch:@react-native-firebase/app@npm%3A18.3.1#./.yarn/patches/@react-native-firebase-app-npm-18.3.1-c46d770cdf.patch::version=18.3.1&hash=905018&locator=mymada%40workspace%3A."
-  dependencies:
-    opencollective-postinstall: ^2.0.1
-    superstruct: ^0.6.2
+"@react-native-firebase/database@npm:18.3.2":
+  version: 18.3.2
+  resolution: "@react-native-firebase/database@npm:18.3.2"
   peerDependencies:
-    expo: ">=47.0.0"
-    react: "*"
-    react-native: "*"
-  peerDependenciesMeta:
-    expo:
-      optional: true
-  checksum: 172346f72afbee819c52df874f2b4ecd6263c1381848fb92817c0349489a831f8043b4b25ffc1778b0ff6f2e50438aa73bcb089ded5b096c50794d04c5ac844d
+    "@react-native-firebase/app": 18.3.2
+  checksum: 7e0624e1a5cb770bcb92d96df711e2a6f349fa86ec65745ec944f142770b9b97607ba022ed8d724bec4db00be2d95d02904a4ea3b6348a285f769652755cb929
   languageName: node
   linkType: hard
 
-"@react-native-firebase/database@npm:18.3.1":
-  version: 18.3.1
-  resolution: "@react-native-firebase/database@npm:18.3.1"
+"@react-native-firebase/firestore@npm:18.3.2":
+  version: 18.3.2
+  resolution: "@react-native-firebase/firestore@npm:18.3.2"
   peerDependencies:
-    "@react-native-firebase/app": 18.3.1
-  checksum: 4ef36254df88616b506d6f0c1f28a1ce54988419dc0a3de96235389081cf3835106af901b03f9bf300dbde5884bf5de2d70ac7ba94e5b8d02fc31ed88a4e5cc8
+    "@react-native-firebase/app": 18.3.2
+  checksum: d1cb60c738e4ff1607e299a66ed05605c15eb9ea224b93801f9f8a50089b4530907df66a24c5ee2b8ce54018589638d4858db3ead8d1048a18688ea1a2d4640b
   languageName: node
   linkType: hard
 
-"@react-native-firebase/database@patch:@react-native-firebase/database@npm%3A18.3.1#./.yarn/patches/@react-native-firebase-database-npm-18.3.1-2414a7c201.patch::locator=mymada%40workspace%3A.":
-  version: 18.3.1
-  resolution: "@react-native-firebase/database@patch:@react-native-firebase/database@npm%3A18.3.1#./.yarn/patches/@react-native-firebase-database-npm-18.3.1-2414a7c201.patch::version=18.3.1&hash=e0b4a9&locator=mymada%40workspace%3A."
+"@react-native-firebase/messaging@npm:18.3.2":
+  version: 18.3.2
+  resolution: "@react-native-firebase/messaging@npm:18.3.2"
   peerDependencies:
-    "@react-native-firebase/app": 18.3.1
-  checksum: c49a26dbec2dea04f62bc6959b4388f4223eba137c4fa5a2888a20bdd5301a576fa5fb15ebc4a21e1882577e9f9b45d716ab7209ccbcc4e97af10fac10915e07
+    "@react-native-firebase/app": 18.3.2
+  checksum: ec9ec6721d956e47389c295ca91762bb844ec398d1efcd862c3a8c113a6bcc7572902d4e83aed137537cb73f1e862178ded2bf12c67483b43d80e1cf46c419ea
   languageName: node
   linkType: hard
 
-"@react-native-firebase/messaging@npm:18.3.1":
-  version: 18.3.1
-  resolution: "@react-native-firebase/messaging@npm:18.3.1"
-  peerDependencies:
-    "@react-native-firebase/app": 18.3.1
-  checksum: 66b255fac48854974341f52b1a204305a357a25e0b7569dd07df87d898fd7747fbe328c9779dbe2394b8998a2388b653669f865e5a53e5eaa47ac721e72eb6e8
-  languageName: node
-  linkType: hard
-
-"@react-native-firebase/messaging@patch:@react-native-firebase/messaging@npm%3A18.3.1#./.yarn/patches/@react-native-firebase-messaging-npm-18.3.1-4d7bc8f6f1.patch::locator=mymada%40workspace%3A.":
-  version: 18.3.1
-  resolution: "@react-native-firebase/messaging@patch:@react-native-firebase/messaging@npm%3A18.3.1#./.yarn/patches/@react-native-firebase-messaging-npm-18.3.1-4d7bc8f6f1.patch::version=18.3.1&hash=e22edb&locator=mymada%40workspace%3A."
-  peerDependencies:
-    "@react-native-firebase/app": 18.3.1
-  checksum: d4818d9286ff8994aa4b2d6ccacf0cfb82d2d2e3d5cfa78719d39e1d93e71449e7493d582c527ddb4dd05fd400c253b8e12869250f696a402dbd9997b5abd092
-  languageName: node
-  linkType: hard
-
-"@react-native-firebase/storage@npm:^18.3.2":
+"@react-native-firebase/storage@npm:18.3.2":
   version: 18.3.2
   resolution: "@react-native-firebase/storage@npm:18.3.2"
   peerDependencies:
@@ -7849,10 +7823,11 @@ __metadata:
     "@babel/plugin-transform-export-namespace-from": ^7.22.5
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
-    "@react-native-firebase/app": ^18.3.1
-    "@react-native-firebase/database": ^18.3.1
-    "@react-native-firebase/messaging": ^18.3.1
-    "@react-native-firebase/storage": ^18.3.2
+    "@react-native-firebase/app": 18.3.2
+    "@react-native-firebase/database": 18.3.2
+    "@react-native-firebase/firestore": 18.3.2
+    "@react-native-firebase/messaging": 18.3.2
+    "@react-native-firebase/storage": 18.3.2
     "@react-native/eslint-config": ^0.72.2
     "@react-native/metro-config": ^0.72.11
     "@react-navigation/drawer": ^6.6.3

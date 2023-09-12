@@ -41,7 +41,7 @@ export const Privacy = observer<NavigatableScreenProps>(() => {
     );
 
     return (
-        <BasePageView noScroll>
+        <BasePageView scrollType="none">
             <WebView source={state.source} startInLoadingState renderError={errorCompBuilder} renderLoading={loaderBuilder} />
         </BasePageView>
     );
