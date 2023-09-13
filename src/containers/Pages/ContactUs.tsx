@@ -3,14 +3,16 @@ import { injectable } from 'inversify';
 import { fromPromise } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { action, computed, makeObservable, observable, reaction, runInAction } from 'mobx';
+import { action, makeAutoObservable, observable, reaction, runInAction } from 'mobx';
 import { ActivityIndicator, Image, Pressable, StyleSheet, View } from 'react-native';
 import database from '@react-native-firebase/database';
 import Dialog from 'react-native-dialog';
 import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
+import { BaseDialog } from '../dialogs/BaseDialog';
 import { TextInput } from '../../Components/TextInput';
+import { DialogStore } from '../../services/DialogStore';
 import { BasePageView } from '../../Components/BasePageView';
 import { MessagingStore } from '../../services/MessagingStore';
 import { ConnectionError } from '../ConnectionError';
@@ -30,12 +32,11 @@ interface Message {
 
 @injectable()
 class ContactUsLocalStore {
-    #cancelable = true;
+    private cancelable = true;
     private message: string = '';
     private name?: string = undefined;
-    private _showDisclaimer = true;
+    private showDisclaimer = true;
     private _showNameDialog = false;
-    private _showEmptyMsgError = false;
     private _nameChangeError?: string = undefined;
     private lastSeenByAdminStatus = false;
     public readonly messages: Message[] = [];
@@ -50,44 +51,20 @@ class ContactUsLocalStore {
         second: '2-digit',
     });
 
-    constructor(private readonly messagingStore: MessagingStore, private readonly sharedPreferencesStore: SharedPreferencesStore) {
-        type PrivateKeys =
-            | 'sharedPreferences'
-            | '_showDisclaimer'
-            | '_showNameDialog'
-            | '_showEmptyMsgError'
-            | '_nameChangeError'
-            | 'name'
-            | 'message'
-            | 'chatRootDocument'
-            | 'lastSeenByAdminStatus'
-            | 'onChildAdded';
-        makeObservable<ContactUsLocalStore, PrivateKeys>(this, {
-            hasError: computed,
-            savedName: computed,
+    constructor(private readonly messagingStore: MessagingStore, private readonly sharedPreferencesStore: SharedPreferencesStore, private readonly dialogStore: DialogStore) {
+        type PrivateKeys = '_showNameDialog' | '_nameChangeError' | 'name' | 'message' | 'lastSeenByAdminStatus' | 'onChildAdded';
+        makeAutoObservable<ContactUsLocalStore, PrivateKeys>(this, {
             name: observable.ref,
-            seenByAdmin: computed,
-            messageValue: computed,
             message: observable.ref,
-            showDisclaimer: computed,
-            showNameDialog: computed,
-            isNotFulfilled: computed,
             askForName: action.bound,
             nameChanged: action.bound,
-            chatRootDocument: computed,
             onChildAdded: action.bound,
-            sharedPreferences: computed,
             messageChanged: action.bound,
             messages: observable.shallow,
-            showEmptyMsgDialog: computed,
-            closeDisclaimer: action.bound,
             closeNameDialog: action.bound,
             acceptNameDialog: action.bound,
-            _showDisclaimer: observable.ref,
             _showNameDialog: observable.ref,
             _nameChangeError: observable.ref,
-            closeEmptyMsgDialog: action.bound,
-            _showEmptyMsgError: observable.ref,
             lastSeenByAdminStatus: observable.ref,
         });
         this.disposers = [
@@ -107,6 +84,7 @@ class ContactUsLocalStore {
                 { fireImmediately: true },
             ),
         ];
+        this.openDisclaimerDialog();
         sharedPreferencesStore.name = 'Settings';
     }
 
@@ -141,21 +119,32 @@ class ContactUsLocalStore {
         return this._nameChangeError;
     }
 
-    public get showDisclaimer() {
-        return this._showDisclaimer;
-    }
-
     public get showNameDialog() {
-        return !this._showDisclaimer && this._showNameDialog;
-    }
-
-    public get showEmptyMsgDialog() {
-        return !this._showDisclaimer && this._showEmptyMsgError;
+        return !this.showDisclaimer && this._showNameDialog;
     }
 
     public dispose() {
         this.disposers.forEach(disposer => disposer());
         this.eventCleanups.forEach(cleanup => cleanup());
+    }
+
+    private *openDisclaimerDialog() {
+        yield this.dialogStore.openDialog(BaseDialog, {
+            title: i18n.t('contact:plsNote'),
+            description: i18n.t('contact:disclaimer'),
+            okText: i18n.t('common:ok'),
+            blockBackBtn: true,
+            blockBackdropPress: true,
+        });
+        if (this.sharedPreferences.state !== 'fulfilled') {
+            // Log error
+            return;
+        }
+        if (!this.sharedPreferences.value.UserName?.length) {
+            this.cancelable = false;
+            this.askForName();
+        }
+        this.showDisclaimer = false;
     }
 
     private onChildAdded = (data: FirebaseDatabaseTypes.DataSnapshot) => {
@@ -193,27 +182,11 @@ class ContactUsLocalStore {
         this._showNameDialog = true;
     }
 
-    public closeDisclaimer() {
-        this._showDisclaimer = false;
-        if (this.sharedPreferences.state !== 'fulfilled') {
-            // Log error
-            return;
-        }
-        if (!this.sharedPreferences.value.UserName?.length) {
-            this.#cancelable = false;
-            this.askForName();
-        }
-    }
-
     public closeNameDialog() {
-        if (!this.#cancelable) {
+        if (!this.cancelable) {
             return;
         }
         this._showNameDialog = false;
-    }
-
-    public closeEmptyMsgDialog() {
-        this._showEmptyMsgError = false;
     }
 
     public async acceptNameDialog() {
@@ -228,7 +201,7 @@ class ContactUsLocalStore {
         }
         this._nameChangeError = undefined;
         this._showNameDialog = false;
-        this.#cancelable = true;
+        this.cancelable = true;
         const root = await this.chatRootDocument;
         await Promise.all([this.sharedPreferencesStore.setItem('UserName', name), root.child('Name').set(name)]);
     }
@@ -244,14 +217,19 @@ class ContactUsLocalStore {
     public sendMessage = async () => {
         if (!this.savedName || this.savedName.trim().length < 1) {
             runInAction(() => {
-                this.#cancelable = false;
+                this.cancelable = false;
                 this.askForName();
             });
             return;
         }
         const msg = this.message?.trim() || '';
         if (!msg.length) {
-            runInAction(() => (this._showEmptyMsgError = true));
+            this.dialogStore.openDialog(BaseDialog, {
+                title: i18n.t('common:error'),
+                description: i18n.t('contact:emptyMsg'),
+                okText: i18n.t('common:ok'),
+                blockBackdropPress: true,
+            });
             return;
         }
         const [root, fcmToken] = await Promise.all([this.chatRootDocument, this.messagingStore.token]);
@@ -285,30 +263,6 @@ const AskForNameDialog = observer<{ localStore: ContactUsLocalStore }>(({ localS
             />
             {localStore.hasError && <Text style={styles.errorHint}>{localStore.hasError}</Text>}
             <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:ok')} onPress={localStore.acceptNameDialog} />
-        </Dialog.Container>
-    );
-});
-
-const AnnounceWeAreNotMada = observer<{ localStore: ContactUsLocalStore }>(({ localStore }) => {
-    const { t } = useTranslation();
-
-    return (
-        <Dialog.Container visible={localStore.showDisclaimer}>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t('contact:plsNote')}</Dialog.Title>
-            <Dialog.Description style={[styles.font, styles.dialogColorDark]}>{t('contact:disclaimer')}</Dialog.Description>
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:ok')} onPress={localStore.closeDisclaimer} />
-        </Dialog.Container>
-    );
-});
-
-const EmptyMessageSendFailure = observer<{ localStore: ContactUsLocalStore }>(({ localStore }) => {
-    const { t } = useTranslation();
-
-    return (
-        <Dialog.Container visible={localStore.showEmptyMsgDialog}>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t('common:error')}</Dialog.Title>
-            <Dialog.Description style={[styles.font, styles.dialogColorDark]}>{t('contact:emptyMsg')}</Dialog.Description>
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:ok')} onPress={localStore.closeEmptyMsgDialog} />
         </Dialog.Container>
     );
 });
@@ -366,9 +320,7 @@ export const ContactUs = observer<NavigatableScreenProps>(() => {
 
     return (
         <>
-            <AnnounceWeAreNotMada localStore={localStore} />
             <AskForNameDialog localStore={localStore} />
-            <EmptyMessageSendFailure localStore={localStore} />
             <BasePageView scrollContentStyle={styles.scrollContent} postScroll={<ChatFooter localStore={localStore} />}>
                 <Pressable onPress={localStore.askForName} style={styles.contactChatCard}>
                     <Text style={styles.text}>{t('contact:changeName')}</Text>

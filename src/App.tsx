@@ -6,6 +6,7 @@ import { Privacy } from './containers/Pages/Privacy';
 import { HomePage } from './containers/Pages/HomePage';
 import { ContactUs } from './containers/Pages/ContactUs';
 import { AboutTheApp } from './containers/Pages/AboutTheApp';
+import { DialogWrapper } from './services/DialogStore';
 import { SnackbarWrapper } from './services/SnackbarStore';
 import { NavigationStore } from './services/NavigationStore';
 import { DependencyInjectionProvider, container } from './services/container';
@@ -29,6 +30,7 @@ export const App: React.FC = () => {
         <DependencyInjectionProvider container={container}>
             <StatusBar barStyle="light-content" backgroundColor={colors.colorPrimary} />
             <Toolbar />
+            <DialogWrapper />
             <NavigationContainer ref={navigationStore.setNavigator}>
                 <Stack.Navigator initialRouteName="Home" screenOptions={{ animation: 'none', headerShown: false }}>
                     <Stack.Screen name="Home" component={HomePage} options={{ orientation: 'portrait' }} />

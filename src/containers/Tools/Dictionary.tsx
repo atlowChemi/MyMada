@@ -1,19 +1,19 @@
 import { injectable } from 'inversify';
 import { computedFn } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import { computed, makeAutoObservable, observable, runInAction } from 'mobx';
-import Dialog from 'react-native-dialog';
+import { computed, makeAutoObservable, observable } from 'mobx';
 import firestore from '@react-native-firebase/firestore';
 import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
+import { BaseDialog } from '../dialogs/BaseDialog';
 import { Snackbar } from '../../Components/Snackbar';
 import { ConnectionError } from '../ConnectionError';
 import { BasePageView } from '../../Components/BasePageView';
-import { DictionaryForm } from '../../Components/DictionaryForm';
+import { DictionaryForm } from '../dialogs/DictionaryForm';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
+import { DialogStore } from '../../services/DialogStore';
 import { SnackbarStore } from '../../services/SnackbarStore';
 import type { ListRenderItemInfo } from 'react-native';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
@@ -30,14 +30,13 @@ export interface DictionaryEntry {
 @injectable()
 class DictionaryLocalStore {
     public hasError = false;
-    public isEditing = false;
-    private _selectedItem?: string = undefined;
+    public selectedItem?: DictionaryEntry = undefined;
     private readonly dictionaryOrder = observable.map<string, string>();
     private readonly dictionary = observable.map<string, DictionaryEntry>();
     private readonly dictionaryCollection = firestore().collection<DictionaryEntry>('dictionary');
     private disposers: (() => void)[] = [];
 
-    constructor(private readonly snackbarStore: SnackbarStore) {
+    constructor(private readonly snackbarStore: SnackbarStore, private readonly dialogStore: DialogStore) {
         makeAutoObservable<DictionaryLocalStore, 'selectItem'>(this, {
             selectItem: false,
             dictionaryValues: computed.struct,
@@ -56,52 +55,44 @@ class DictionaryLocalStore {
         return Array.from(this.dictionaryKeysOrder, key => this.dictionary.get(key)!);
     }
 
-    public get selectedItem() {
-        if (!this._selectedItem || !this.dictionary.has(this._selectedItem)) {
-            return undefined;
-        }
-        return this.dictionary.get(this._selectedItem);
-    }
-
     public get selectItem() {
-        return computedFn(
-            (key?: string) => () =>
-                runInAction(() => {
-                    this._selectedItem = key;
-                }),
-        );
+        return computedFn((key: string) => async () => {
+            if (!this.dictionary.has(key)) {
+                return;
+            }
+            const item = this.dictionary.get(key)!;
+            const shouldEdit = await this.dialogStore.openDialog(BaseDialog, {
+                title: item.name,
+                description: item.definition,
+                okText: i18n.t('tools:dictionary:edit:btn'),
+                cancelText: i18n.t('common:cancel'),
+            });
+            if (shouldEdit) {
+                this.edit(item);
+            }
+        });
     }
 
     public dispose() {
         this.disposers.forEach(disposer => disposer());
     }
 
-    public edit = () => {
-        this.isEditing = true;
-    };
-
-    public onEditorClose = async (item?: DictionaryEntry) => {
+    public edit = async (item: DictionaryEntry) => {
+        const edited = await this.dialogStore.openDialog(DictionaryForm, { item });
+        if (!edited) {
+            return;
+        }
         try {
-            if (!item) {
-                return true;
-            }
-            const doc = this.dictionaryCollection.doc(item.key);
+            const doc = this.dictionaryCollection.doc(edited.key);
             const { name, definition } = (await doc.get()).data() || {};
             await doc.update({
-                ...(name !== item.name && { newName: item.name }),
-                ...(definition !== item.definition && { newDefinition: item.definition }),
+                ...(name !== edited.name && { newName: edited.name }),
+                ...(definition !== edited.definition && { newDefinition: edited.definition }),
             });
             this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:edit:success'), timeout: 5000 });
-            return true;
         } catch (error) {
             this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:edit:success'), timeout: 5000 });
             // Crashlytics
-            return false;
-        } finally {
-            runInAction(() => {
-                this.isEditing = false;
-                this._selectedItem = undefined;
-            });
         }
     };
 
@@ -133,19 +124,6 @@ class DictionaryLocalStore {
     };
 }
 
-const DictionaryEntryDialog = observer<{ localStore: DictionaryLocalStore }>(({ localStore }) => {
-    const { t } = useTranslation();
-
-    return (
-        <Dialog.Container visible onBackdropPress={localStore.selectItem()} onRequestClose={localStore.selectItem()}>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{localStore.selectedItem?.name}</Dialog.Title>
-            <Dialog.Description style={[styles.font, styles.dialogColorDark]}>{localStore.selectedItem?.definition}</Dialog.Description>
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:cancel')} onPress={localStore.selectItem()} />
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('tools:dictionary:edit:btn')} onPress={localStore.edit} />
-        </Dialog.Container>
-    );
-});
-
 const Item = observer<ListRenderItemInfo<DictionaryEntry> & { localStore: DictionaryLocalStore }>(({ item, localStore }) => {
     return (
         <TouchableOpacity style={styles.item} activeOpacity={0.7} onPress={localStore.selectItem(item.key)}>
@@ -161,13 +139,7 @@ export const Dictionary = observer(() => {
         return <ConnectionError />;
     }
 
-    return (
-        <>
-            {localStore.selectedItem && !localStore.isEditing && <DictionaryEntryDialog localStore={localStore} />}
-            {localStore.selectedItem && localStore.isEditing && <DictionaryForm item={localStore.selectedItem} onClose={localStore.onEditorClose} />}
-            <BasePageView scrollType="flat" data={localStore.dictionaryValues} renderItem={props => <Item localStore={localStore} {...props} />} keyExtractor={item => item.key} />
-        </>
-    );
+    return <BasePageView scrollType="flat" data={localStore.dictionaryValues} renderItem={props => <Item localStore={localStore} {...props} />} keyExtractor={item => item.key} />;
 });
 
 const styles = StyleSheet.create({

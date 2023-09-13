@@ -1,9 +1,10 @@
 import i18n from '../localization';
 import { inject, injectable } from 'inversify';
-import { Alert } from 'react-native';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { PermissionsStore } from './PermissionsStore';
+import { DialogStore } from './DialogStore';
+import { BaseDialog } from '../containers/dialogs/BaseDialog';
 
 export type Tools =
     | 'ContractionTimer'
@@ -26,6 +27,7 @@ export class NavigationStore {
     private eventListenerCleanup?: () => void;
     private navigator?: NavigationContainerRef<Record<Page, undefined>>;
     private toolsNavigator?: { toggleDrawer(): void };
+    @inject(DialogStore) private readonly dialogStore!: DialogStore;
     @inject(PermissionsStore) private readonly permissionsStore!: PermissionsStore;
 
     constructor() {
@@ -67,7 +69,12 @@ export class NavigationStore {
     public goToContactUs = async () => {
         const shouldNavigate = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS');
         if (!shouldNavigate) {
-            Alert.alert(i18n.t('permissions:alertTitle'), i18n.t('permissions:blocked'), [{ text: i18n.t('common:ok') }]);
+            // TODO: add a link to the permissions page
+            this.dialogStore.openDialog(BaseDialog, {
+                title: i18n.t('permissions:alertTitle'),
+                description: i18n.t('permissions:blocked'),
+                okText: i18n.t('common:ok'),
+            });
             return;
         }
         this.navigator?.navigate('ContactUs');
