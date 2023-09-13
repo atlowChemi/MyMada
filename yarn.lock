@@ -2408,9 +2408,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/app@npm:18.3.2":
-  version: 18.3.2
-  resolution: "@react-native-firebase/app@npm:18.3.2"
+"@react-native-firebase/app@npm:18.4.0":
+  version: 18.4.0
+  resolution: "@react-native-firebase/app@npm:18.4.0"
   dependencies:
     opencollective-postinstall: ^2.0.1
     superstruct: ^0.6.2
@@ -2421,43 +2421,43 @@ __metadata:
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: d6be1c1dec448436bbff6f3f7f393044c0622ba5ff5d7274aa257765705c763a45cb4306968d63874eb21436b6ea1bec74264c02a8a6fd7a46f23e7a8c1c60f3
+  checksum: 27bdd9b4709a2fae3a7aac42486b529e2a82b0f36a2976a9e09193714d7f10cde09353ed3f079afdc2e116f83038d79016db5a6dcfcfee9c9888d384e90d29b8
   languageName: node
   linkType: hard
 
-"@react-native-firebase/database@npm:18.3.2":
-  version: 18.3.2
-  resolution: "@react-native-firebase/database@npm:18.3.2"
+"@react-native-firebase/database@npm:18.4.0":
+  version: 18.4.0
+  resolution: "@react-native-firebase/database@npm:18.4.0"
   peerDependencies:
-    "@react-native-firebase/app": 18.3.2
-  checksum: 7e0624e1a5cb770bcb92d96df711e2a6f349fa86ec65745ec944f142770b9b97607ba022ed8d724bec4db00be2d95d02904a4ea3b6348a285f769652755cb929
+    "@react-native-firebase/app": 18.4.0
+  checksum: 04cf462761246087cd3bd925eddfb01300dbb770b67b1d920354a8aa51b241bf93146dc2d38b97f54522ff5fa9ce13ba2c4d13369fcc773581f161a321eab2c8
   languageName: node
   linkType: hard
 
-"@react-native-firebase/firestore@npm:18.3.2":
-  version: 18.3.2
-  resolution: "@react-native-firebase/firestore@npm:18.3.2"
+"@react-native-firebase/firestore@npm:18.4.0":
+  version: 18.4.0
+  resolution: "@react-native-firebase/firestore@npm:18.4.0"
   peerDependencies:
-    "@react-native-firebase/app": 18.3.2
-  checksum: d1cb60c738e4ff1607e299a66ed05605c15eb9ea224b93801f9f8a50089b4530907df66a24c5ee2b8ce54018589638d4858db3ead8d1048a18688ea1a2d4640b
+    "@react-native-firebase/app": 18.4.0
+  checksum: 52b44738507355f32825cb3ca0de0bd0dbdf0c0ac2c5115afc0920cb3d6dacff70162ae09ec041513f7e6e9e02723b2266a34b3145a5eacb9c74b71234005c2d
   languageName: node
   linkType: hard
 
-"@react-native-firebase/messaging@npm:18.3.2":
-  version: 18.3.2
-  resolution: "@react-native-firebase/messaging@npm:18.3.2"
+"@react-native-firebase/messaging@npm:18.4.0":
+  version: 18.4.0
+  resolution: "@react-native-firebase/messaging@npm:18.4.0"
   peerDependencies:
-    "@react-native-firebase/app": 18.3.2
-  checksum: ec9ec6721d956e47389c295ca91762bb844ec398d1efcd862c3a8c113a6bcc7572902d4e83aed137537cb73f1e862178ded2bf12c67483b43d80e1cf46c419ea
+    "@react-native-firebase/app": 18.4.0
+  checksum: 5c55378224f6b57893b0df208244882bf7382cd6380c733a838cc7aa747fa0e008f3157d1394436d19a5b3a913b7d6f8888a390e7109712a6e3da76a1f71f680
   languageName: node
   linkType: hard
 
-"@react-native-firebase/storage@npm:18.3.2":
-  version: 18.3.2
-  resolution: "@react-native-firebase/storage@npm:18.3.2"
+"@react-native-firebase/storage@npm:18.4.0":
+  version: 18.4.0
+  resolution: "@react-native-firebase/storage@npm:18.4.0"
   peerDependencies:
-    "@react-native-firebase/app": 18.3.2
-  checksum: 1c6f0f25af36fd9328a7d1e02a270cfa21ba2723cc1779d3bbf0035b7b3636aa187bdbc87c370ec7889b71547dfa2fd2822d550db2d81b874f62ac524aedcd73
+    "@react-native-firebase/app": 18.4.0
+  checksum: 0bdcf00e425e8d873770934318d6ef12e63554a689f747b8c766492809c997c20eb5268248528adeb345757a6b72f66b4fb956cb211b08d9b77e119c4c69bb07
   languageName: node
   linkType: hard
 
@@ -7823,11 +7823,11 @@ __metadata:
     "@babel/plugin-transform-export-namespace-from": ^7.22.5
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
-    "@react-native-firebase/app": 18.3.2
-    "@react-native-firebase/database": 18.3.2
-    "@react-native-firebase/firestore": 18.3.2
-    "@react-native-firebase/messaging": 18.3.2
-    "@react-native-firebase/storage": 18.3.2
+    "@react-native-firebase/app": 18.4.0
+    "@react-native-firebase/database": 18.4.0
+    "@react-native-firebase/firestore": 18.4.0
+    "@react-native-firebase/messaging": 18.4.0
+    "@react-native-firebase/storage": 18.4.0
     "@react-native/eslint-config": ^0.72.2
     "@react-native/metro-config": ^0.72.11
     "@react-navigation/drawer": ^6.6.3

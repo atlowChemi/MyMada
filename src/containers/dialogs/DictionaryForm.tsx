@@ -1,12 +1,17 @@
+import { computedFn } from 'mobx-utils';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import Dialog from 'react-native-dialog/';
-import { colors } from '../consts';
-import type { DictionaryEntry } from '../containers/Tools/Dictionary';
-import { computedFn } from 'mobx-utils';
+import { colors } from '../../consts';
+import type { DictionaryEntry } from '../Tools/Dictionary';
+import type { IDialogInstance } from '../../services/DialogStore';
 
-export const DictionaryForm = observer<{ item?: DictionaryEntry; onClose(val?: DictionaryEntry): PromiseLike<boolean> }>(({ item, onClose }) => {
+interface DictionaryFormProps extends IDialogInstance<DictionaryEntry> {
+    item?: DictionaryEntry;
+}
+
+export const DictionaryForm = observer<DictionaryFormProps>(({ item, closeDialog }) => {
     const { t } = useTranslation();
     const localStore = useLocalObservable(() => ({
         name: item?.name ?? '',
@@ -33,11 +38,11 @@ export const DictionaryForm = observer<{ item?: DictionaryEntry; onClose(val?: D
         nameChanged(val: string) {
             this.name = val;
         },
-        defintionChanged(val: string) {
+        definitionChanged(val: string) {
             this.definition = val;
         },
         onClose() {
-            onClose();
+            closeDialog();
         },
         *onSave() {
             if (this.disabled) {
@@ -45,15 +50,13 @@ export const DictionaryForm = observer<{ item?: DictionaryEntry; onClose(val?: D
             }
             this.showErrors = true;
             this.isActing = true;
-            const isDone = yield onClose({
+            yield closeDialog({
                 name: this.name,
                 definition: this.definition,
                 key: item?.key ?? '',
                 approved: false,
             });
-            if (!isDone) {
-                this.isActing = false;
-            }
+            this.isActing = false;
         },
     }));
 
@@ -80,7 +83,7 @@ export const DictionaryForm = observer<{ item?: DictionaryEntry; onClose(val?: D
                 label={t('tools:dictionary:definition')}
                 unstableLabelStyle={{ color: localStore.nameHasError ? colors.oldPrimaryDark : colors.colorNice }}
                 underlineColorAndroid={localStore.definitionHasError ? colors.oldPrimaryDark : colors.colorNice}
-                onChangeText={localStore.defintionChanged}
+                onChangeText={localStore.definitionChanged}
             />
             <Dialog.Button style={[styles.font, { color: localStore.buttonColor(localStore.isActing) }]} label={t('common:cancel')} onPress={localStore.onClose} disabled={localStore.isActing} />
             <Dialog.Button style={[styles.font, { color: localStore.buttonColor(localStore.disabled) }]} label={t('common:save')} onPress={localStore.onSave} disabled={localStore.disabled} />
