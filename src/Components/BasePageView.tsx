@@ -4,6 +4,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import { colors } from '../consts';
 import type { ReactNode } from 'react';
 import type { ListRenderItem, StyleProp, ViewStyle } from 'react-native';
+import { observer } from 'mobx-react-lite';
 
 interface CommonProps<T extends {} = any> {
     data?: T[];
@@ -46,7 +47,8 @@ interface FlatScrollProps<T extends {}> {
 const Separator = memo(() => <View style={styles.separator} />);
 
 type BasePageViewProps<T extends {} = any> = CommonProps<T> & (NoScrollProps | ScrollProps | FlatScrollProps<T>);
-const contentFn = <T extends {} = {}>(props: BasePageViewProps<T>) => {
+
+const Content = observer(<T extends {} = {}>(props: BasePageViewProps<T>) => {
     if (props.scrollType === 'none') {
         return props.children;
     }
@@ -67,9 +69,7 @@ const contentFn = <T extends {} = {}>(props: BasePageViewProps<T>) => {
             {props.children}
         </ScrollView>
     );
-};
-
-const Content = memo(contentFn) as typeof contentFn;
+});
 
 const BasePageViewFn = <T extends {} = {}>(props: BasePageViewProps<T>) => {
     const { scrollType = 'scroll', preScroll, postScroll } = props;
@@ -85,7 +85,8 @@ const BasePageViewFn = <T extends {} = {}>(props: BasePageViewProps<T>) => {
         </SafeAreaView>
     );
 };
-export const BasePageView = memo(BasePageViewFn) as typeof BasePageViewFn;
+export const BasePageView = memo(BasePageViewFn) as typeof BasePageViewFn & { displayName: string };
+BasePageView.displayName = 'BasePageView';
 
 const styles = StyleSheet.create({
     basePage: {
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
     },
     scroller: {
-        height: '100%',
+        maxHeight: '100%',
         flex: 1,
     },
     scrollContent: {

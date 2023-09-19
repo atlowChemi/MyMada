@@ -77,4 +77,20 @@ If Glazgow score is above 12, patient is in a light coma.`,
         name: 'Medical term',
         definition: "Term's definition",
     },
+    vitals: {
+        ageRange: {
+            adult: 'Adult',
+            child: 'Child',
+            baby: 'Baby',
+        },
+        msg: `{{ ageRange }} vitals normal range:
+pulse: {{ pulseLow }}-{{ pulseHigh }}
+breathing: {{ breathLow }}-{{ breathHigh }}
+blood pressure: {{ systolicLow }}-{{ systolicHigh }}/{{ diastolicLow }}-{{ diastolicHigh }}`,
+        disclaimer: "The information brought here is based on MDA's books, and may vary between patients. This information is not medical advice.",
+        pulse: 'Beats per minute',
+        breathing: 'Breaths per minute',
+        systolic: 'Systolic',
+        diastolic: 'Diastolic',
+    },
 } as const;

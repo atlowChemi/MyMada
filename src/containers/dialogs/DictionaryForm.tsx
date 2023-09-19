@@ -90,6 +90,7 @@ export const DictionaryForm = observer<DictionaryFormProps>(({ item, closeDialog
         </Dialog.Container>
     );
 });
+DictionaryForm.displayName = 'DictionaryForm';
 
 const styles = StyleSheet.create({
     item: {

@@ -44,6 +44,7 @@ export const BaseDialog = observer<BaseDialogProps>(({ title, description, okTex
         </Dialog.Container>
     );
 });
+BaseDialog.displayName = 'BaseDialog';
 
 const styles = StyleSheet.create({
     font: {

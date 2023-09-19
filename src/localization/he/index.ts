@@ -135,11 +135,6 @@ export default {
 //         <item>שרון</item>
 //         <item>מוקד 4</item>
 //     </string-array>
-//     <string name="goodVitalsOLD">מדדים תקינים ב%9$s הם:\nדופק: %1$d-%2$d\nנשימות: %3$d-%4$d\nלחץ דם: %5$d-%6$d/%7$d-%8$d</string>
-//     <string-array name="goodVitals">
-//         <item>מבוגר</item>
-//         <item>ילד</item>
-//         <item>תינוק</item>
 //     </string-array>
 //     <string name="Mcode">קודים רפואיים</string>
 //     <string name="langSwitched">השינוי יכנס לתוקף בכניסה הבאה לאפליקציה.</string>
@@ -230,19 +225,10 @@ export default {
 //     <string name="pref_title_sleep">מצב יום-לילה</string>
 //     <string name="pref_description_sleep_off">פיצול סגנון התראה בהתאם לשעה (לילה מ23:00 עד 7:00).\\\\nשימו לב!\\\\nהגדרה זו לא מפעילה צליל ורטט, אלא מאפשרת אותם אם הם פעילים.</string>
 //     <string name="time">התקבל בשעה: %1$s</string>
-//     <string name="psi_1500" translatable="false">1500</string>
-//     <string name="atm_100" translatable="false">100</string>
 
 //     <string name="startT">לחץ בכל נקודה להתחלת החייאה</string>
 //     <string name="start">הפעלה</string>
 //     <string name="stop">עצור</string>
-
-//     <string name="radio_old">מבוגר</string>
-//     <string name="radio_kid">ילד</string>
-//     <string name="radio_baby">תינוק</string>
-//     <string name="breathing">נשימות בדקה</string>
-//     <string name="systolic">סיסטולי</string>
-//     <string name="diastolic">דיאסטולי</string>
 
 //     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-7600269766434003/5732229370</string>
 //     <string name="service_exp">בכדי שנוכל לזהות את המקרים המגיעים למכשיר, אפשרות זו צריכה להיות דולקת.\nבמידה ואפשרות זו לא דולקת, לא יזוהו מקרים כלל.</string>
@@ -255,12 +241,6 @@ export default {
 //     <string name="nightStart">תחילת משמרת לילה</string>
 //     <string name="nightStartDesc">בחר מאיזו שעה יתריעו מקרים לפי הגדרת הלילה</string>
 //     <string name="nightEndDesc">בחר מאיזו שעה יחזרו מקרים להתריע לפי הגדרת יום</string>
-//     <string name="vitalsAlert">טווח המדדים המופיעים כאן הינו על פי הנתונים מספרי מד\\\"א ואינו מדויק אצל מטופלים בעלי רקע רפואי. האמור כאן אינו מהווה ייעוץ רפואי.</string>
-//     <string name="vitalsBreath">"הנשימה בקצב "</string>
-//     <string name="vitalsBP">"לחץ הדם "</string>
-//     <string name="vitalsPulse">"הדופק בקצב "</string>
-//     <string name="vitalsTakin">תקין</string>
-//     <string name="vitalsNotTakin">לא תקין</string>
 //     <string name="toDispatch">"ישלח למוקד: "</string>
 //     <string name="sender">"שולח: "</string>
 //     <string name="subject">"נושא: "</string>

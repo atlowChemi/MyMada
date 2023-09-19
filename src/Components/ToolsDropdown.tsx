@@ -1,23 +1,14 @@
-import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Text } from './Text';
 import { colors } from '../consts';
+import { observer } from 'mobx-react-lite';
 
 interface ToolsDropDownProps<T> {
     title: string;
     options: { label: string; value: T }[];
     value: T;
     onChange: (item: { label: string; value: T }) => void;
-}
-
-function compFn<T extends string | number>({ title, options, value, onChange }: ToolsDropDownProps<T>) {
-    return (
-        <>
-            <Text style={styles.dropdownTitle}>{title}</Text>
-            <Dropdown data={options} labelField="label" valueField="value" fontFamily="opensanshebrew" style={styles.dropdown} value={value as any} onChange={onChange} />
-        </>
-    );
 }
 
 const styles = StyleSheet.create({
@@ -34,4 +25,10 @@ const styles = StyleSheet.create({
     },
 });
 
-export const ToolsDropDown = memo(compFn) as typeof compFn;
+export const ToolsDropDown = observer(<T extends string | number>({ title, options, value, onChange }: ToolsDropDownProps<T>) => (
+    <>
+        <Text style={styles.dropdownTitle}>{title}</Text>
+        <Dropdown data={options} labelField="label" valueField="value" fontFamily="opensanshebrew" style={styles.dropdown} value={value as any} onChange={onChange} />
+    </>
+));
+ToolsDropDown.displayName = 'ToolsDropDown';

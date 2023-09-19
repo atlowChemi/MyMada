@@ -6,6 +6,7 @@ import { DocsViewer } from '../Tools/DocsViewer';
 import { Dictionary } from '../Tools/Dictionary';
 import { ApgarCalculator } from '../Tools/Apgar';
 import { PulseCalculator } from '../Tools/Pulse';
+import { VitalsCalculator } from '../Tools/Vitals';
 import { OxygenCalculator } from '../Tools/Oxygen';
 import { GlazgowCalculator } from '../Tools/Glazgow';
 import type { NavigatableScreenProps } from '../../App';
@@ -19,7 +20,7 @@ export const Tools = observer<NavigatableScreenProps>(() => {
                 <Drawer.Screen name="ContractionTimer" component={Metronome} />
                 <Drawer.Screen name="PulseCalc" component={PulseCalculator} />
                 <Drawer.Screen name="MetronomeActivity" component={Metronome} />
-                <Drawer.Screen name="VitalsChecker" component={Metronome} />
+                <Drawer.Screen name="VitalsChecker" component={VitalsCalculator} />
                 <Drawer.Screen name="OxygenCalculator" component={OxygenCalculator} />
                 <Drawer.Screen name="ApgarCalculator" component={ApgarCalculator} />
                 <Drawer.Screen name="GlazgowCalculator" component={GlazgowCalculator} />
@@ -31,3 +32,4 @@ export const Tools = observer<NavigatableScreenProps>(() => {
         </BasePageView>
     );
 });
+Tools.displayName = 'Tools';

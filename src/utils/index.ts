@@ -21,6 +21,36 @@ export const randomString = (length = 16) => {
     return result;
 };
 
+export const roundLayoutSize = (size: number) => Math.round(size * 1000) / 1000;
+
+const isNumber = (value: any): value is number => typeof value === 'number' && !Number.isNaN(value);
+
+export const inRange = (input: number, min?: number, max?: number) => {
+    if (!isNumber(input)) {
+        throw new Error('input was not a number!');
+    }
+    if (min != null && !isNumber(min)) {
+        throw new Error('min was not a number');
+    }
+    if (max != null && !isNumber(max)) {
+        throw new Error('max was not a number');
+    }
+    min ??= undefined;
+    max ??= undefined;
+    if (typeof min === 'undefined' && typeof max === 'undefined') {
+        return true;
+    }
+    let gt = true;
+    let lte = true;
+    if (typeof min === 'number') {
+        gt = input > min;
+    }
+    if (typeof max === 'number') {
+        lte = input <= max;
+    }
+    return gt && lte;
+};
+
 interface EffectFn<T> {
     (isMounted: () => boolean): T | undefined | PromiseLike<T>;
 }
