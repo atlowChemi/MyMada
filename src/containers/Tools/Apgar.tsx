@@ -3,7 +3,7 @@ import { injectable } from 'inversify';
 import { computedFn } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { Animated, Image, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 import { action, computed, makeObservable, observable } from 'mobx';
 import i18n from '../../localization';
 import { colors } from '../../consts';
@@ -14,6 +14,7 @@ import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '..
 import { useColorAnimation } from '../../utils/colorAnimation';
 import type { NavigatableScreenProps } from '../../App';
 import { ToolsDropDown } from '../../Components/ToolsDropdown';
+import { InfoCard } from '../../Components/InfoCard';
 
 const APGAR_PARAMS = ['appearance', 'pulse', 'grimace', 'activity', 'respiration'] as const;
 type ApgarParam = (typeof APGAR_PARAMS)[number];
@@ -101,11 +102,7 @@ export const ApgarCalculator = observer<NavigatableScreenProps>(({ navigation })
                     <Animated.View style={[styles.score, { backgroundColor }]}>
                         <Text style={styles.scoreTxt}>{t('tools:apgar:score', { score: localStore.score })}</Text>
                     </Animated.View>
-                    <View style={styles.info}>
-                        <Image style={styles.infoIcon} source={require('../../assets/icons/info.webp')} />
-                        <View style={styles.border} />
-                        <Text style={styles.infoTxt}>{t('tools:apgar:info')}</Text>
-                    </View>
+                    <InfoCard text={t('tools:apgar:info')} />
                 </>
             }>
             {APGAR_PARAMS.map(kind => {
@@ -116,6 +113,7 @@ export const ApgarCalculator = observer<NavigatableScreenProps>(({ navigation })
         </BasePageView>
     );
 });
+ApgarCalculator.displayName = 'ApgarCalculator';
 
 const styles = StyleSheet.create({
     dropdownTitle: {
@@ -139,30 +137,5 @@ const styles = StyleSheet.create({
     },
     scoreTxt: {
         fontSize: 17,
-    },
-    info: {
-        padding: 14,
-        elevation: 1,
-        paddingStart: 7,
-        marginBottom: 8,
-        borderRadius: 15,
-        marginHorizontal: 10,
-        flexDirection: 'row',
-        backgroundColor: colors.white,
-    },
-    infoIcon: {
-        height: 24,
-        width: 24,
-    },
-    border: {
-        width: 1,
-        height: '100%',
-        backgroundColor: colors.buttonMaterialDark,
-        marginStart: 2,
-        marginEnd: 10,
-    },
-    infoTxt: {
-        flexWrap: 'wrap',
-        fontSize: 16,
     },
 });

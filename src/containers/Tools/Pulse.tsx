@@ -151,6 +151,7 @@ export const PulseCalculator = observer<NavigatableScreenProps>(({ navigation })
         </BasePageView>
     );
 });
+PulseCalculator.displayName = 'PulseCalculator';
 
 const styles = StyleSheet.create({
     field: {

@@ -131,6 +131,7 @@ const Item = observer<ListRenderItemInfo<DictionaryEntry> & { localStore: Dictio
         </TouchableOpacity>
     );
 });
+Item.displayName = 'DictionaryItem';
 
 export const Dictionary = observer(() => {
     const localStore = useLocalStoreWithInjectedDependencies(DictionaryLocalStore);
@@ -141,6 +142,7 @@ export const Dictionary = observer(() => {
 
     return <BasePageView scrollType="flat" data={localStore.dictionaryValues} renderItem={props => <Item localStore={localStore} {...props} />} keyExtractor={item => item.key} />;
 });
+Dictionary.displayName = 'Dictionary';
 
 const styles = StyleSheet.create({
     item: {

@@ -30,6 +30,7 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
         </BasePageView>
     );
 });
+HomePage.displayName = 'HomePage';
 
 const styles = StyleSheet.create({
     scroller: {

@@ -54,6 +54,7 @@ export const HomeBtn = observer<HomeBtnProps>(({ big, img, style, onPress }) => 
         </Pressable>
     );
 });
+HomeBtn.displayName = 'HomeBtn';
 
 const styles = StyleSheet.create({
     btnCard: {

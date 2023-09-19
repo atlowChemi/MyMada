@@ -133,6 +133,7 @@ export const OxygenCalculator = observer<NavigatableScreenProps>(({ navigation }
         </BasePageView>
     );
 });
+OxygenCalculator.displayName = 'OxygenCalculator';
 
 const styles = StyleSheet.create({
     dropdown: {

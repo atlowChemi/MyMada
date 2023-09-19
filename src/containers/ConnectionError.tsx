@@ -25,6 +25,7 @@ export const ConnectionError = React.memo(() => {
         </RadialGradient>
     );
 });
+ConnectionError.displayName = 'ConnectionError';
 
 const styles = StyleSheet.create({
     connectionErrorPage: {

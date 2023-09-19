@@ -78,4 +78,25 @@ export default {
         name: 'מונח רפואי',
         definition: 'משמעות המונח',
     },
+    vitals: {
+        ageRange: {
+            adult: 'מבוגר',
+            child: 'ילד',
+            baby: 'תינוק',
+        },
+        msg: `מדדים תקינים ב{{ ageRange }} הם:
+דופק: {{ pulseLow }}-{{ pulseHigh }}
+נשימות: {{ breathLow }}-{{ breathHigh }}
+לחץ דם: {{ systolicLow }}-{{ systolicHigh }}/{{ diastolicLow }}-{{ diastolicHigh }}`,
+        disclaimer: 'טווח המדדים המופיעים כאן הינו על פי הנתונים מספרי מד"א ואינו מדויק אצל מטופלים בעלי רקע רפואי. האמור כאן אינו מהווה ייעוץ רפואי.',
+        pulse: 'דופק בדקה',
+        breathing: 'נשימות בדקה',
+        systolic: 'סיסטולי',
+        diastolic: 'דיאסטולי',
+    },
 } as const;
+//     <string name="vitalsBreath">"הנשימה בקצב "</string>
+//     <string name="vitalsBP">"לחץ הדם "</string>
+//     <string name="vitalsPulse">"הדופק בקצב "</string>
+//     <string name="vitalsTakin">תקין</string>
+//     <string name="vitalsNotTakin">לא תקין</string>

@@ -71,6 +71,7 @@ export const DocsViewer = observer<NavigatableScreenProps>(({ navigation, route 
         </BasePageView>
     );
 });
+DocsViewer.displayName = 'DocsViewer';
 
 const styles = StyleSheet.create({
     loadingWrapper: {

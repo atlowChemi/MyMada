@@ -35,6 +35,7 @@ export const Toolbar = observer(() => {
         </View>
     );
 });
+Toolbar.displayName = 'Toolbar';
 
 const styles = StyleSheet.create({
     toolbar: {

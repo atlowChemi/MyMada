@@ -282,6 +282,7 @@ const ChatFooter = observer<{ localStore: ContactUsLocalStore }>(({ localStore }
         </View>
     );
 });
+ChatFooter.displayName = 'ChatFooter';
 
 const ChatMessage = observer<{ localStore: ContactUsLocalStore; message: Message }>(({ localStore, message }) => {
     const { t } = useTranslation();
@@ -298,6 +299,7 @@ const ChatMessage = observer<{ localStore: ContactUsLocalStore; message: Message
         </View>
     );
 });
+ChatMessage.displayName = 'ChatMessage';
 
 export const ContactUs = observer<NavigatableScreenProps>(() => {
     const { t } = useTranslation();
@@ -332,6 +334,7 @@ export const ContactUs = observer<NavigatableScreenProps>(() => {
         </>
     );
 });
+ContactUs.displayName = 'ContactUs';
 
 const styles = StyleSheet.create({
     font: {

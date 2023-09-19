@@ -46,6 +46,7 @@ export const Privacy = observer<NavigatableScreenProps>(() => {
         </BasePageView>
     );
 });
+Privacy.displayName = 'Privacy';
 
 const styles = StyleSheet.create({
     loaderContainer: {

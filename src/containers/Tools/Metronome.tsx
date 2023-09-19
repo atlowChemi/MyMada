@@ -19,3 +19,4 @@ export const Metronome = observer<NavigatableScreenProps>(({ navigation }) => {
         </>
     );
 });
+Metronome.displayName = 'Metronome';

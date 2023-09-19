@@ -20,6 +20,7 @@ export const AboutTheApp = React.memo<NavigatableScreenProps>(() => {
         </BasePageView>
     );
 });
+AboutTheApp.displayName = 'AboutTheApp';
 
 const styles = StyleSheet.create({
     text: {

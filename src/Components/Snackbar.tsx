@@ -45,6 +45,7 @@ export const Snackbar: React.FC<SnackbarProps> = ({ msg, action, style, closeSna
         </Animated.View>
     );
 };
+Snackbar.displayName = 'Snackbar';
 
 const styles = StyleSheet.create({
     snackbar: {
