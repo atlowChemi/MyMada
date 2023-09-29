@@ -44,13 +44,13 @@ export const DictionaryForm = observer<DictionaryFormProps>(({ item, closeDialog
         onClose() {
             closeDialog();
         },
-        *onSave() {
+        onSave() {
             if (this.disabled) {
                 return;
             }
             this.showErrors = true;
             this.isActing = true;
-            yield closeDialog({
+            closeDialog({
                 name: this.name,
                 definition: this.definition,
                 key: item?.key ?? '',

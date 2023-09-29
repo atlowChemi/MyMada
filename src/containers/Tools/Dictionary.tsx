@@ -15,6 +15,7 @@ import { DictionaryForm } from '../dialogs/DictionaryForm';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { DialogStore } from '../../services/DialogStore';
 import { SnackbarStore } from '../../services/SnackbarStore';
+import { ToolbarStore } from '../../services/ToolbarStore';
 import type { ListRenderItemInfo } from 'react-native';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
@@ -36,12 +37,12 @@ class DictionaryLocalStore {
     private readonly dictionaryCollection = firestore().collection<DictionaryEntry>('dictionary');
     private disposers: (() => void)[] = [];
 
-    constructor(private readonly snackbarStore: SnackbarStore, private readonly dialogStore: DialogStore) {
+    constructor(private readonly dialogStore: DialogStore, private readonly snackbarStore: SnackbarStore, private readonly toolbarStore: ToolbarStore) {
         makeAutoObservable<DictionaryLocalStore, 'selectItem'>(this, {
             selectItem: false,
             dictionaryValues: computed.struct,
         });
-        this.disposers.push(this.dictionaryCollection.where('approved', '==', true).onSnapshot(this.onSnapshot, this.onError));
+        this.disposers.push(this.dictionaryCollection.where('approved', '==', true).onSnapshot(this.onSnapshot, this.onError), this.toolbarStore.setDictionaryItemAdder(this.create));
     }
 
     private get dictionaryKeysOrder() {
@@ -77,6 +78,26 @@ class DictionaryLocalStore {
         this.disposers.forEach(disposer => disposer());
     }
 
+    public create = async () => {
+        const item = await this.dialogStore.openDialog(DictionaryForm);
+        if (!item) {
+            return;
+        }
+        try {
+            const doc = this.dictionaryCollection.doc();
+            await doc.set({
+                key: doc.id,
+                approved: false,
+                name: item.name,
+                definition: item.definition,
+            });
+            this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:create:success'), timeout: 5000 });
+        } catch (error) {
+            // Crashlytics
+            this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:create:failure'), timeout: 5000 });
+        }
+    };
+
     public edit = async (item: DictionaryEntry) => {
         const edited = await this.dialogStore.openDialog(DictionaryForm, { item });
         if (!edited) {
@@ -91,8 +112,8 @@ class DictionaryLocalStore {
             });
             this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:edit:success'), timeout: 5000 });
         } catch (error) {
-            this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:edit:success'), timeout: 5000 });
             // Crashlytics
+            this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:edit:failure'), timeout: 5000 });
         }
     };
 
