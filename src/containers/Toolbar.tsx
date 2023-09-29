@@ -1,36 +1,27 @@
 import { View, Image, Pressable, StyleSheet } from 'react-native';
-import { useTranslation } from 'react-i18next';
 import { Text } from '../Components/Text';
 import { colors } from '../consts';
 import { useDependencyInjector } from '../services/container';
 import { ToolbarStore } from '../services/ToolbarStore';
 import { observer } from 'mobx-react-lite';
-import { NavigationStore } from '../services/NavigationStore';
 
 export const Toolbar = observer(() => {
-    const { i18n } = useTranslation();
     const toolbarStore = useDependencyInjector(ToolbarStore);
-    const navigationStore = useDependencyInjector(NavigationStore);
 
     return (
         <View style={styles.toolbar}>
-            {!toolbarStore.hideBack && navigationStore.canGoBack && (
-                <Pressable style={[styles.backBtn, i18n.language === 'he' && styles.rotated]} onPress={navigationStore.goBack}>
-                    <Image source={require('../assets/icons/back_arrow.webp')} style={styles.toolbarIcon} />
-                </Pressable>
-            )}
-            {toolbarStore.showDrawer && (
-                <Pressable style={styles.backBtn} onPress={navigationStore.openDrawer}>
-                    <Image source={require('../assets/icons/menu.webp')} style={styles.toolbarIcon} />
+            {toolbarStore.navBtn && (
+                <Pressable style={[styles.backBtn, toolbarStore.navBtn.rotatable && styles.rotated]} onPress={toolbarStore.navBtn.onPress}>
+                    <Image source={toolbarStore.navBtn.icon} style={styles.toolbarIcon} />
                 </Pressable>
             )}
             <Text style={styles.titleText}>{toolbarStore.title}</Text>
             <View style={styles.toolbarBtnWrapper}>
-                {!toolbarStore.hideSettings && (
-                    <Pressable style={styles.settingsBtn}>
-                        <Image source={require('../assets/icons/ic_settings.webp')} style={styles.toolbarIcon} />
+                {toolbarStore.navIcons.map(({ key, icon, onPress }) => (
+                    <Pressable style={styles.settingsBtn} key={key} onPress={onPress}>
+                        <Image source={icon} style={styles.toolbarIcon} />
                     </Pressable>
-                )}
+                ))}
             </View>
         </View>
     );
@@ -63,6 +54,8 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
     },
     toolbarBtnWrapper: {
+        flexDirection: 'row',
+        gap: 10,
         flexShrink: 0,
         alignContent: 'center',
         justifyContent: 'center',

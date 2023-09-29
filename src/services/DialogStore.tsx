@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { observer } from 'mobx-react-lite';
 import { StyleSheet, View } from 'react-native';
-import { makeAutoObservable, observable } from 'mobx';
+import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { useDependencyInjector } from './container';
 import { randomString, createDeferredPromise } from '../utils';
 
@@ -12,7 +12,7 @@ export interface IDialogInstance<T extends {} = any> {
     closeDialog(value?: T): void;
 }
 type CloseDialog<T extends IDialogInstance> = Parameters<T['closeDialog']>[0];
-interface DialogPromise<T extends IDialogInstance> extends Promise<CloseDialog<T>>, Dialog<T> {}
+export interface DialogPromise<T extends IDialogInstance> extends Promise<CloseDialog<T>>, Dialog<T> {}
 
 export class Dialog<T extends IDialogInstance> {
     public [kPromise]: DialogPromise<T>;
@@ -37,7 +37,9 @@ export class DialogStore {
     public openDialog<T extends IDialogInstance>(Component: React.FC<T>, props: Omit<T, 'closeDialog'> = {} as any) {
         const dialog = new Dialog<T>(Component, props, (value: CloseDialog<T>) => {
             dialog[kResolve](value);
-            this[kDialogInstances].delete(dialog.id);
+            runInAction(() => {
+                this[kDialogInstances].delete(dialog.id);
+            });
         });
 
         this[kDialogInstances].set(dialog.id, dialog);

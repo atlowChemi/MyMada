@@ -1,7 +1,7 @@
 import i18n from '../localization';
 import { inject, injectable } from 'inversify';
+import { makeAutoObservable, reaction } from 'mobx';
 import { NavigationContainerRef } from '@react-navigation/native';
-import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { PermissionsStore } from './PermissionsStore';
 import { DialogStore } from './DialogStore';
 import { BaseDialog } from '../containers/dialogs/BaseDialog';
@@ -20,9 +20,24 @@ export type Tools =
     | 'Kuntres';
 export type Page = 'Home' | 'Tools' | 'ContactUs' | 'About' | 'Privacy';
 
+const TOOLS_PAGES = new Set<Tools>([
+    'ContractionTimer',
+    'PulseCalc',
+    'MetronomeActivity',
+    'VitalsChecker',
+    'OxygenCalculator',
+    'ApgarCalculator',
+    'GlazgowCalculator',
+    'Dictionary',
+    'BlsProtocoles',
+    'AlsProtocoles',
+    'Kuntres',
+]);
+
 @injectable()
 export class NavigationStore {
     private page: Page = 'Home';
+    private subPage?: Tools = undefined;
     public canGoBack = false;
     private eventListenerCleanup?: () => void;
     private navigator?: NavigationContainerRef<Record<Page, undefined>>;
@@ -31,14 +46,7 @@ export class NavigationStore {
     @inject(PermissionsStore) private readonly permissionsStore!: PermissionsStore;
 
     constructor() {
-        makeObservable<NavigationStore, 'page' | 'onNavigate'>(this, {
-            page: observable.ref,
-            canGoBack: observable.ref,
-            currentPage: computed,
-            onNavigate: action.bound,
-            setNavigator: action.bound,
-            setToolsNavigator: action.bound,
-        });
+        makeAutoObservable<NavigationStore, 'onNavigate'>(this, undefined, { autoBind: true });
         reaction(
             () => this.page,
             () => {
@@ -49,6 +57,13 @@ export class NavigationStore {
 
     public get currentPage() {
         return this.page;
+    }
+
+    public get currentSubPage() {
+        if (!['Tools'].includes(this.page)) {
+            return undefined;
+        }
+        return this.subPage || this.navigator?.getCurrentRoute()?.name;
     }
 
     public setNavigator(navigator: NavigationContainerRef<any>) {
@@ -84,22 +99,15 @@ export class NavigationStore {
     public goBack = () => this.navigator?.goBack();
     public openDrawer = () => this.toolsNavigator?.toggleDrawer();
 
+    private isToolsTab = (route?: string): route is Tools => TOOLS_PAGES.has(route as Tools);
+
     private onNavigate = () => {
-        const route = this.navigator?.getCurrentRoute()?.name;
-        const innerNavigationMap: Record<string, Page> = {
-            ContractionTimer: 'Tools',
-            PulseCalc: 'Tools',
-            MetronomeActivity: 'Tools',
-            VitalsChecker: 'Tools',
-            OxygenCalculator: 'Tools',
-            ApgarCalculator: 'Tools',
-            GlazgowCalculator: 'Tools',
-            Dictionary: 'Tools',
-            BlsProtocoles: 'Tools',
-            AlsProtocoles: 'Tools',
-            Kuntres: 'Tools',
-        } satisfies Record<Tools, Page>;
-        const pageParent = innerNavigationMap[route || ''];
-        this.page = pageParent || route || 'Home';
+        const route = this.navigator?.getCurrentRoute()?.name as Page | Tools | undefined;
+        if (this.isToolsTab(route)) {
+            this.subPage = route;
+            this.page = 'Tools';
+            return;
+        }
+        this.page = route || 'Home';
     };
 }

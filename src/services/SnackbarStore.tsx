@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { observer } from 'mobx-react-lite';
 import { StyleSheet, View } from 'react-native';
-import { makeAutoObservable, observable } from 'mobx';
+import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { useDependencyInjector } from './container';
 import { SnackbarProps } from '../Components/Snackbar';
 import { randomString, createDeferredPromise } from '../utils';
@@ -32,7 +32,9 @@ export class SnackbarStore {
     openSnack<T extends SnackbarProps>(Component: React.FC<T>, props: Omit<T, 'closeSnackbar'> = {} as any) {
         const snackbar = new Snackbar<T>(Component, props, (byAction: boolean) => {
             snackbar[kResolve](byAction);
-            this.snackbarInstances.delete(snackbar.id);
+            runInAction(() => {
+                this.snackbarInstances.delete(snackbar.id);
+            });
         });
 
         this.snackbarInstances.set(snackbar.id, snackbar);
