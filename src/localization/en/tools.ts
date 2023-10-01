@@ -76,6 +76,7 @@ If Glazgow score is above 12, patient is in a light coma.`,
         },
         name: 'Medical term',
         definition: "Term's definition",
+        searchHint: 'Search dictionary',
     },
     vitals: {
         ageRange: {

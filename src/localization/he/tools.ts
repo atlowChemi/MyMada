@@ -77,6 +77,7 @@ export default {
         },
         name: 'מונח רפואי',
         definition: 'משמעות המונח',
+        searchHint: 'חפש במילון',
     },
     vitals: {
         ageRange: {

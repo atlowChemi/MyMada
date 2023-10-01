@@ -273,8 +273,6 @@ export default {
 //     <string name="numberNone">לא רשמת מספר!</string>
 //     <string name="admin">מנהל:</string>
 //     <string name="user">אתה:</string>
-//     <string name="add_word">הוסף מונח למילון</string>
-//     <string name="searchDictionary">חפש במילון</string>
 //     <string name="general_settings">הגדרות כלליות</string>
 //     <string name="langBad">החלפת שפה הופסקה בשל תקלה. ודא שיש חיבור לרשת ונסה שוב!</string>
 //     <string name="langLoad">מוריד את השפה המבוקשת %s</string>
