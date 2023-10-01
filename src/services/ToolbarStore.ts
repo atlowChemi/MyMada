@@ -1,20 +1,23 @@
 import i18n from '../localization';
 import { inject, injectable } from 'inversify';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { NavigationStore } from './NavigationStore';
 import type { TranslationKeys } from '../localization';
 
 const noop = () => null;
 
-interface NavBarIcon {
+export interface NavBarIcon {
     key: string;
     icon: number;
     onPress(): void;
+    show?: boolean;
     rotatable?: boolean;
 }
 
 @injectable()
 export class ToolbarStore {
+    private isSearching = false;
+    private _searchQuery = '';
     private dictionaryItemAdder: () => void = noop;
     @inject(NavigationStore) private readonly navigationStore!: NavigationStore;
 
@@ -43,18 +46,18 @@ export class ToolbarStore {
     }
 
     public get navBtn(): NavBarIcon | undefined {
-        if (this.navigationStore.currentPage === 'Tools') {
+        if (this.navigationStore.currentPage === 'Tools' && !this.isSearching) {
             return {
                 key: 'drawer',
                 onPress: this.navigationStore.openDrawer,
                 icon: require('../assets/icons/menu.webp'),
             };
         }
-        if (this.navigationStore.canGoBack) {
+        if (this.navigationStore.canGoBack || this.isSearching) {
             return {
                 key: 'back',
                 rotatable: i18n.dir() === 'rtl',
-                onPress: this.navigationStore.goBack,
+                onPress: this.isSearching ? this.closeSearch : this.navigationStore.goBack,
                 icon: require('../assets/icons/back_arrow.webp'),
             };
         }
@@ -63,20 +66,40 @@ export class ToolbarStore {
 
     public get navIcons(): NavBarIcon[] {
         return [
-            ...(true /* this.navigationStore.currentPage !== 'Settings' */ ? [{ key: 'settings', onPress: noop, icon: require('../assets/icons/settings.webp') }] : []),
-            ...(this.navigationStore.currentSubPage === 'Dictionary'
-                ? [
-                      { key: 'search', onPress: noop, icon: require('../assets/icons/search.webp') },
-                      { key: 'add', onPress: this.dictionaryItemAdder, icon: require('../assets/icons/add.webp') },
-                  ]
-                : []),
+            { key: 'settings', onPress: noop, icon: require('../assets/icons/settings.webp'), show: true /* this.navigationStore.currentPage !== 'Settings' */ },
+            { key: 'search', onPress: this.search, icon: require('../assets/icons/search.webp'), show: this.navigationStore.currentSubPage === 'Dictionary' && !this.isSearching },
+            { key: 'add', onPress: this.dictionaryItemAdder, icon: require('../assets/icons/add.webp'), show: this.navigationStore.currentSubPage === 'Dictionary' },
         ];
+    }
+
+    public get showSearch() {
+        return this.isSearching;
+    }
+
+    public get searchQuery() {
+        return this._searchQuery;
     }
 
     public setDictionaryItemAdder(onPress: () => void) {
         this.dictionaryItemAdder = onPress;
-        return () => {
-            this.dictionaryItemAdder = noop;
-        };
+        return () =>
+            runInAction(() => {
+                this.dictionaryItemAdder = noop;
+                this._searchQuery = '';
+                this.isSearching = false;
+            });
     }
+
+    public setSearchQuery = (query: string) => {
+        this._searchQuery = query.toLowerCase();
+    };
+
+    private search = () => {
+        this.isSearching = true;
+    };
+
+    private closeSearch = () => {
+        this.isSearching = false;
+        this._searchQuery = '';
+    };
 }

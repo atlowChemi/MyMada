@@ -46,8 +46,10 @@ class DictionaryLocalStore {
     }
 
     private get dictionaryKeysOrder() {
+        console.log(this.dictionaryOrder.entries().next());
         return Array.from(this.dictionaryOrder.entries())
             .sort(([, a], [, b]) => Intl.Collator().compare(a, b))
+            .filter(([, name]) => name.toLowerCase().includes(this.toolbarStore.searchQuery))
             .map(([key]) => key);
         // filter by search prior to sorting
     }
