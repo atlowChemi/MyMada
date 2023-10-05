@@ -62,7 +62,7 @@ export const DialogWrapper = observer(() => {
         </View>
     );
 });
-DialogWrapper.displayName = 'SnackbarWrapper';
+DialogWrapper.displayName = 'DialogWrapper';
 
 const styles = StyleSheet.create({
     dialogWrapper: {

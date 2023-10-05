@@ -16,7 +16,7 @@ const Drawer = createDrawerNavigator();
 export const Tools = observer<NavigatableScreenProps>(() => {
     return (
         <BasePageView scrollType="none">
-            <Drawer.Navigator backBehavior="none" screenOptions={{ headerShown: false }} initialRouteName="Metronome">
+            <Drawer.Navigator backBehavior="none" screenOptions={{ headerShown: false }} initialRouteName="MetronomeActivity">
                 <Drawer.Screen name="ContractionTimer" component={Metronome} />
                 <Drawer.Screen name="PulseCalc" component={PulseCalculator} />
                 <Drawer.Screen name="MetronomeActivity" component={Metronome} />

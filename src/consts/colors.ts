@@ -40,3 +40,4 @@ export const navPickedColor = '#D2D4DB';
 export const navPickedTextColor = '#05167c';
 export const navNotPickedTextColor = '#5d5d5d';
 export const navBar = '#c1c1c4';
+export const transparent = 'transparent';

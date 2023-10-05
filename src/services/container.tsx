@@ -33,9 +33,8 @@ export const useLocalStoreWithInjectedDependencies = <T extends {}>(Class: inter
                 return container.get(c);
             } catch (e) {
                 const errorMessage = `Failed to find dependency for: ${c.name}, param index:${index}, dependencyClasses: ${String(dependencyClasses)}`;
-                if (process.env.dev) {
-                    console.error(errorMessage, e);
-                }
+                // Crashlytics
+                console.error(errorMessage, e);
                 return undefined;
             }
         });
