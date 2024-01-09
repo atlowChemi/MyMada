@@ -1,5 +1,16 @@
 export default {
     toolbarTitle: 'כלי עזר',
+    contraction: {
+        start: 'תחילת ציר',
+        end: 'סוף ציר',
+        lengthMsg: 'אורך הציר: {{ length }}',
+        minutes: 'דקות',
+        seconds: 'שניות',
+        and: 'ו',
+        delta: 'הפרש מציר קודם: {{ delta }}',
+        recoverDialogMsg: 'שחזר נתונים קודמים?',
+        delete: 'מחק צירים שמורים?',
+    },
     pulse: {
         pulse: 'דופק ב15 שניות',
         fullPulse: 'דופק בדקה',
@@ -96,8 +107,3 @@ export default {
         diastolic: 'דיאסטולי',
     },
 } as const;
-//     <string name="vitalsBreath">"הנשימה בקצב "</string>
-//     <string name="vitalsBP">"לחץ הדם "</string>
-//     <string name="vitalsPulse">"הדופק בקצב "</string>
-//     <string name="vitalsTakin">תקין</string>
-//     <string name="vitalsNotTakin">לא תקין</string>

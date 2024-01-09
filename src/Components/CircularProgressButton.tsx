@@ -57,6 +57,7 @@ interface ArcProps extends PathProps {
 interface CircleSnailProps extends ViewProps {
     animating?: boolean;
     color?: string | string[];
+    backgroundColor?: string;
     title?: string;
     direction?: 'clockwise' | 'counter-clockwise';
     duration?: number;
@@ -83,6 +84,7 @@ Arc.displayName = 'Arc';
 export const CircularProgressButton: FC<CircleSnailProps> = ({
     animating = true,
     color = colors.ocean,
+    backgroundColor = colors.white,
     direction = 'counter-clockwise',
     duration = 1000,
     hidesWhenStopped = false,
@@ -155,7 +157,7 @@ export const CircularProgressButton: FC<CircleSnailProps> = ({
     const offset = useMemo(() => ({ top: thickness, left: thickness }), [thickness]);
     const directionFactor = useMemo(() => (direction === 'counter-clockwise' ? -1 : 1), [direction]);
     const currentColor = useMemo(() => (Array.isArray(color) ? color[colorIndex] : color), [color, colorIndex]);
-    const touchableStyle = useMemo<StyleProp<ViewStyle>>(() => ({ height: size, width: size, borderRadius: radius, backgroundColor: colors.white, overflow: 'hidden' }), [radius, size]);
+    const touchableStyle = useMemo<StyleProp<ViewStyle>>(() => ({ height: size, width: size, borderRadius: radius, backgroundColor, overflow: 'hidden' }), [radius, backgroundColor, size]);
     const viewStyle = useMemo<StyleProp<ViewStyle>>(
         () => ({
             backgroundColor: colors.transparent,

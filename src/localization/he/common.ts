@@ -4,4 +4,5 @@ export default {
     error: 'תקלה',
     save: 'שמירה',
     cancel: 'ביטול',
+    notNow: 'לא כרגע',
 } as const;

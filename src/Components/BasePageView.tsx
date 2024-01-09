@@ -1,10 +1,10 @@
-import { memo } from 'react';
+import { forwardRef, memo } from 'react';
 import { FlatList, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { colors } from '../consts';
-import type { ReactNode } from 'react';
-import type { ListRenderItem, StyleProp, ViewStyle } from 'react-native';
 import { observer } from 'mobx-react-lite';
+import type { ForwardedRef, ReactNode, RefAttributes } from 'react';
+import type { ListRenderItem, StyleProp, ViewStyle } from 'react-native';
 
 interface CommonProps<T extends {} = any> {
     data?: T[];
@@ -48,44 +48,50 @@ const Separator = memo(() => <View style={styles.separator} />);
 
 type BasePageViewProps<T extends {} = any> = CommonProps<T> & (NoScrollProps | ScrollProps | FlatScrollProps<T>);
 
-const Content = observer(<T extends {} = {}>(props: BasePageViewProps<T>) => {
-    if (props.scrollType === 'none') {
-        return props.children;
-    }
-    if (props.scrollType === 'flat') {
+const Content = observer(
+    forwardRef(<T extends {} = {}>(props: BasePageViewProps<T>, ref: ForwardedRef<FlatList<T>>) => {
+        if (props.scrollType === 'none') {
+            return props.children;
+        }
+        if (props.scrollType === 'flat') {
+            return (
+                <FlatList
+                    ref={ref}
+                    data={props.data}
+                    renderItem={props.renderItem}
+                    keyExtractor={props.keyExtractor}
+                    ItemSeparatorComponent={Separator}
+                    style={[styles.scroller, props.scrollViewStyle]}
+                    contentContainerStyle={props.scrollContentStyle}
+                />
+            );
+        }
         return (
-            <FlatList
-                data={props.data}
-                renderItem={props.renderItem}
-                keyExtractor={props.keyExtractor}
-                ItemSeparatorComponent={Separator}
-                style={[styles.scroller, props.scrollViewStyle]}
-                contentContainerStyle={props.scrollContentStyle}
-            />
+            <ScrollView style={[styles.scroller, props.scrollViewStyle]} contentContainerStyle={[styles.scrollContent, props.scrollContentStyle]} showsHorizontalScrollIndicator={false}>
+                {props.children}
+            </ScrollView>
         );
-    }
-    return (
-        <ScrollView style={[styles.scroller, props.scrollViewStyle]} contentContainerStyle={[styles.scrollContent, props.scrollContentStyle]} showsHorizontalScrollIndicator={false}>
-            {props.children}
-        </ScrollView>
-    );
-});
+    }),
+);
 
-const BasePageViewFn = <T extends {} = {}>(props: BasePageViewProps<T>) => {
+const BasePageViewFn = <T extends {} = {}>(props: BasePageViewProps<T>, ref: ForwardedRef<FlatList<T>>) => {
     const { scrollType = 'scroll', preScroll, postScroll } = props;
     const noScroll = scrollType === 'none';
     return (
         <SafeAreaView style={[styles.basePage, props.pageStyle]}>
             <RadialGradient colors={[colors.white, colors.bgShadowEnd]} stops={[0.9]} style={styles.radialBg}>
                 {!noScroll && preScroll}
-                <Content {...props} />
+                <Content {...(props as any)} ref={ref} />
                 {!noScroll && postScroll}
             </RadialGradient>
             {/* TODO: show adds when relevant */}
         </SafeAreaView>
     );
 };
-export const BasePageView = memo(BasePageViewFn) as typeof BasePageViewFn & { displayName: string };
+interface BasePageViewFn {
+    <T extends {} = {}>(props: BasePageViewProps<T> & RefAttributes<FlatList<T>>): JSX.Element;
+}
+export const BasePageView = memo(forwardRef(BasePageViewFn)) as BasePageViewFn & { displayName: string };
 BasePageView.displayName = 'BasePageView';
 
 const styles = StyleSheet.create({

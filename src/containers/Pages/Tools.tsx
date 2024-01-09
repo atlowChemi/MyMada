@@ -9,6 +9,7 @@ import { PulseCalculator } from '../Tools/Pulse';
 import { VitalsCalculator } from '../Tools/Vitals';
 import { OxygenCalculator } from '../Tools/Oxygen';
 import { GlazgowCalculator } from '../Tools/Glazgow';
+import { ContractionTimer } from '../Tools/ContractionTimer';
 import type { NavigatableScreenProps } from '../../App';
 
 const Drawer = createDrawerNavigator();
@@ -17,7 +18,7 @@ export const Tools = observer<NavigatableScreenProps>(() => {
     return (
         <BasePageView scrollType="none">
             <Drawer.Navigator backBehavior="none" screenOptions={{ headerShown: false }} initialRouteName="MetronomeActivity">
-                <Drawer.Screen name="ContractionTimer" component={Metronome} />
+                <Drawer.Screen name="ContractionTimer" component={ContractionTimer} />
                 <Drawer.Screen name="PulseCalc" component={PulseCalculator} />
                 <Drawer.Screen name="MetronomeActivity" component={Metronome} />
                 <Drawer.Screen name="VitalsChecker" component={VitalsCalculator} />

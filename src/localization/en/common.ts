@@ -4,4 +4,5 @@ export default {
     error: 'Error',
     save: 'Save',
     cancel: 'Cancel',
+    notNow: 'Not now',
 } as const;

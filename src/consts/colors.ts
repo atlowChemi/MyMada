@@ -15,6 +15,7 @@ export const shadowEnd = '#00000007';
 export const white = '#FFFFFF';
 export const ocean = '#3586B5';
 export const grey = '#46314d62';
+export const greyBtn = '#dadada';
 export const greyNav = '#223e3e3e';
 export const darkGrey = '#a5314451';
 export const materialGrey300 = '#e0e0e0';
