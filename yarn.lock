@@ -2408,11 +2408,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/app@npm:18.4.0":
-  version: 18.4.0
-  resolution: "@react-native-firebase/app@npm:18.4.0"
+"@react-native-firebase/app@npm:^18.7.3":
+  version: 18.7.3
+  resolution: "@react-native-firebase/app@npm:18.7.3"
   dependencies:
-    opencollective-postinstall: ^2.0.1
+    opencollective-postinstall: ^2.0.3
     superstruct: ^0.6.2
   peerDependencies:
     expo: ">=47.0.0"
@@ -2421,43 +2421,47 @@ __metadata:
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 27bdd9b4709a2fae3a7aac42486b529e2a82b0f36a2976a9e09193714d7f10cde09353ed3f079afdc2e116f83038d79016db5a6dcfcfee9c9888d384e90d29b8
+  checksum: d17f50a59f70f4374157cc53183a89fbcbada6925099298648d2612aaf863f65b89e1093b0cff1b034f6c0063d2cb5332147d4bc611111ec85a0b13293f25f59
   languageName: node
   linkType: hard
 
-"@react-native-firebase/database@npm:18.4.0":
-  version: 18.4.0
-  resolution: "@react-native-firebase/database@npm:18.4.0"
+"@react-native-firebase/database@npm:^18.7.3":
+  version: 18.7.3
+  resolution: "@react-native-firebase/database@npm:18.7.3"
   peerDependencies:
-    "@react-native-firebase/app": 18.4.0
-  checksum: 04cf462761246087cd3bd925eddfb01300dbb770b67b1d920354a8aa51b241bf93146dc2d38b97f54522ff5fa9ce13ba2c4d13369fcc773581f161a321eab2c8
+    "@react-native-firebase/app": 18.7.3
+  checksum: 6b396abbb7b7dc48396c82c1d79c239b5f4171f17bc7e0679b795732a5f24810d157b731ef1d8f8ba6055c54da978748bbe20109adf266df2dc7b5ddb436d010
   languageName: node
   linkType: hard
 
-"@react-native-firebase/firestore@npm:18.4.0":
-  version: 18.4.0
-  resolution: "@react-native-firebase/firestore@npm:18.4.0"
+"@react-native-firebase/firestore@npm:^18.7.3":
+  version: 18.7.3
+  resolution: "@react-native-firebase/firestore@npm:18.7.3"
   peerDependencies:
-    "@react-native-firebase/app": 18.4.0
-  checksum: 52b44738507355f32825cb3ca0de0bd0dbdf0c0ac2c5115afc0920cb3d6dacff70162ae09ec041513f7e6e9e02723b2266a34b3145a5eacb9c74b71234005c2d
+    "@react-native-firebase/app": 18.7.3
+  checksum: 2ac8e84b282b19bae055fc7484e32dc3e6bede0f96edd340a787c480adbf4d5af9af764e47516758178fb53821c04dadc1b714eaee5846999595a9bf47646125
   languageName: node
   linkType: hard
 
-"@react-native-firebase/messaging@npm:18.4.0":
-  version: 18.4.0
-  resolution: "@react-native-firebase/messaging@npm:18.4.0"
+"@react-native-firebase/messaging@npm:^18.7.3":
+  version: 18.7.3
+  resolution: "@react-native-firebase/messaging@npm:18.7.3"
   peerDependencies:
-    "@react-native-firebase/app": 18.4.0
-  checksum: 5c55378224f6b57893b0df208244882bf7382cd6380c733a838cc7aa747fa0e008f3157d1394436d19a5b3a913b7d6f8888a390e7109712a6e3da76a1f71f680
+    "@react-native-firebase/app": 18.7.3
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: 5c6b7ed795a62f428a91e0bb71d7583d6adcf2b1f3408b5bc8df95453ea52d95df8d126d5f0b5a111f002888606c49a1fff763644aba3951e35e19f3269a14ad
   languageName: node
   linkType: hard
 
-"@react-native-firebase/storage@npm:18.4.0":
-  version: 18.4.0
-  resolution: "@react-native-firebase/storage@npm:18.4.0"
+"@react-native-firebase/storage@npm:^18.7.3":
+  version: 18.7.3
+  resolution: "@react-native-firebase/storage@npm:18.7.3"
   peerDependencies:
-    "@react-native-firebase/app": 18.4.0
-  checksum: 0bdcf00e425e8d873770934318d6ef12e63554a689f747b8c766492809c997c20eb5268248528adeb345757a6b72f66b4fb956cb211b08d9b77e119c4c69bb07
+    "@react-native-firebase/app": 18.7.3
+  checksum: 7066d4c5c6abef2bdf7317069aeda460523fd5bd20d765bba5bad5730c49441fe19dfa61da17582f2137f8378a79c06c3fd1dd87c55d8ea1178b80f76e931b59
   languageName: node
   linkType: hard
 
@@ -7912,11 +7916,11 @@ __metadata:
     "@babel/plugin-transform-export-namespace-from": ^7.22.5
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
-    "@react-native-firebase/app": 18.4.0
-    "@react-native-firebase/database": 18.4.0
-    "@react-native-firebase/firestore": 18.4.0
-    "@react-native-firebase/messaging": 18.4.0
-    "@react-native-firebase/storage": 18.4.0
+    "@react-native-firebase/app": ^18.7.3
+    "@react-native-firebase/database": ^18.7.3
+    "@react-native-firebase/firestore": ^18.7.3
+    "@react-native-firebase/messaging": ^18.7.3
+    "@react-native-firebase/storage": ^18.7.3
     "@react-native/eslint-config": ^0.72.2
     "@react-native/metro-config": ^0.72.11
     "@react-navigation/drawer": ^6.6.3
@@ -7951,7 +7955,7 @@ __metadata:
     react-native-shared-preferences: ^1.0.2
     react-native-svg: ^13.14.0
     react-native-view-pdf: ^0.14.0
-    react-native-webview: ^13.3.1
+    react-native-webview: ^13.6.4
     react-test-renderer: 18.2.0
     reflect-metadata: ^0.1.13
     typescript: 5.1.6
@@ -8271,7 +8275,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"opencollective-postinstall@npm:^2.0.1":
+"opencollective-postinstall@npm:^2.0.3":
   version: 2.0.3
   resolution: "opencollective-postinstall@npm:2.0.3"
   bin:
@@ -8915,29 +8919,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-webview@npm:13.3.1":
-  version: 13.3.1
-  resolution: "react-native-webview@npm:13.3.1"
+"react-native-webview@npm:^13.6.4":
+  version: 13.6.4
+  resolution: "react-native-webview@npm:13.6.4"
   dependencies:
     escape-string-regexp: 2.0.0
     invariant: 2.2.4
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: c455279ccc42f4787e75c5c0e4609b535bb417eb35536c978079f23474c1135f39f5b8aed32445dd5422913c07651db77343e3c348e193c0b17329fdaa35e1a7
-  languageName: node
-  linkType: hard
-
-"react-native-webview@patch:react-native-webview@npm%3A13.3.1#./.yarn/patches/react-native-webview-npm-13.3.1-8c63a7196a.patch::locator=mymada%40workspace%3A.":
-  version: 13.3.1
-  resolution: "react-native-webview@patch:react-native-webview@npm%3A13.3.1#./.yarn/patches/react-native-webview-npm-13.3.1-8c63a7196a.patch::version=13.3.1&hash=22302e&locator=mymada%40workspace%3A."
-  dependencies:
-    escape-string-regexp: 2.0.0
-    invariant: 2.2.4
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: c3ec80fe25b3cd7812807ffd822f9a38ee1be7cd2f5985db1e23efc36a7a38409e012c442377c727ada3f9b70043a38c8e5dc956bad84d9a271bfd1d686f0164
+  checksum: 72df9422ededdcf2de6232629bb447932e63c824904ef5eba0aa0a082d0899148f4e5bda713de931336d23204c7dd025b80221aa8c9bc10306f3d8948ebd0dcb
   languageName: node
   linkType: hard
 

@@ -35,7 +35,6 @@ import com.google.android.gms.ads.MobileAds;
 import java.util.ArrayList;
 import java.util.List;
 
-import atlow.chemi.mymada.InfoActivityKt;
 import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 import atlow.chemi.mymada.classes.HomeB;
@@ -344,24 +343,6 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                     }
                     break;
                 case "inf":
-                    if (openUp != null && openUp.isLoaded()) {
-                        openUp.setAdListener(new AdListener() {
-                            @Override
-                            public void onAdClosed() {
-                                openUp.loadAd(new AdRequest.Builder().build());
-                                Intent intent = new Intent(mContext, InfoActivityKt.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mContext.startActivity(intent);
-                            }
-                        });
-                        openUp.show();
-                    }
-                    else {
-                        intent = new Intent(mContext, InfoActivityKt.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
-                    }
-                    break;
                 case "react":
                     intent = new Intent(mContext, MainReactActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -64,6 +64,9 @@ android {
         }
     }
     namespace 'atlow.chemi.mymada'
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -108,5 +111,4 @@ dependencies {
 
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
