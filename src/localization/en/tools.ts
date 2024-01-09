@@ -1,5 +1,16 @@
 export default {
     toolbarTitle: 'Tools',
+    contraction: {
+        start: 'Contraction start',
+        end: 'Contraction end',
+        lengthMsg: 'Duration: {{ length }}',
+        minutes: 'minutes',
+        seconds: 'seconds',
+        and: 'and ',
+        delta: 'Time between contractions: {{ delta }}',
+        recoverDialogMsg: 'Recover previous data?',
+        delete: 'Delete current contractions?',
+    },
     pulse: {
         pulse: 'Pulses in 15 seconds',
         fullPulse: 'Beats per minute',

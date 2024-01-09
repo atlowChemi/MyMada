@@ -16,9 +16,11 @@ export interface NavBarIcon {
 
 @injectable()
 export class ToolbarStore {
+    public showTrashIcon = false;
     private isSearching = false;
     private _searchQuery = '';
     private dictionaryItemAdder: () => void = noop;
+    private trashAction: () => void = noop;
     @inject(NavigationStore) private readonly navigationStore!: NavigationStore;
 
     constructor() {
@@ -67,6 +69,7 @@ export class ToolbarStore {
     public get navIcons(): NavBarIcon[] {
         return [
             { key: 'settings', onPress: noop, icon: require('../assets/icons/settings.webp'), show: true /* this.navigationStore.currentPage !== 'Settings' */ },
+            { key: 'trash', onPress: this.trashAction, icon: require('../assets/icons/trash.webp'), show: this.navigationStore.currentSubPage === 'ContractionTimer' && this.showTrashIcon },
             { key: 'search', onPress: this.search, icon: require('../assets/icons/search.webp'), show: this.navigationStore.currentSubPage === 'Dictionary' && !this.isSearching },
             { key: 'add', onPress: this.dictionaryItemAdder, icon: require('../assets/icons/add.webp'), show: this.navigationStore.currentSubPage === 'Dictionary' },
         ];
@@ -80,8 +83,13 @@ export class ToolbarStore {
         return this._searchQuery;
     }
 
+    public setTrashAction(onPress: () => void) {
+        runInAction(() => (this.trashAction = onPress));
+        return () => runInAction(() => (this.trashAction = noop));
+    }
+
     public setDictionaryItemAdder(onPress: () => void) {
-        this.dictionaryItemAdder = onPress;
+        runInAction(() => (this.dictionaryItemAdder = onPress));
         return () =>
             runInAction(() => {
                 this.dictionaryItemAdder = noop;

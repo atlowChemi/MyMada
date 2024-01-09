@@ -94,8 +94,8 @@ export class NavigationStore {
         }
         this.navigator?.navigate('ContactUs');
     };
-    public goToAboutTheApp = () => this.navigator?.navigate('About');
-    public goToPrivacyPolicy = () => this.navigator?.navigate('Privacy');
+    public goToAboutTheApp = () => /* open ad */ this.navigator?.navigate('About');
+    public goToPrivacyPolicy = () => /* open ad */ this.navigator?.navigate('Privacy');
     public goBack = () => this.navigator?.goBack();
     public openDrawer = () => this.toolsNavigator?.toggleDrawer();
 

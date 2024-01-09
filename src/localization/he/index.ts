@@ -52,7 +52,6 @@ export default {
     // title_activity_dialog_parent: 'אישור קריאת התראות',
     // dialog_help: 'כדי לאפשר לאפליקציה לזהות מקרים באפליקציית מדא, יש לאפשר לה גישה להתראות.\nכדי לאשר גישה, יש ללחוץ אישור ובעמוד שיפתח לבחור ב"דיווחי מגן דוד אדום", ולאפשר את האפשרות הזו.',
     // dialog_yes: 'איפשור גישה להתראות',
-    // dialog_no: 'לא כרגע',
     // dialog_rate_yes: 'דרג כעת',
     // dialog_never: 'לא תודה',
     // title_activity_code: 'בקשת קוד הפעלה',
@@ -233,8 +232,6 @@ export default {
 //     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-7600269766434003/5732229370</string>
 //     <string name="service_exp">בכדי שנוכל לזהות את המקרים המגיעים למכשיר, אפשרות זו צריכה להיות דולקת.\nבמידה ואפשרות זו לא דולקת, לא יזוהו מקרים כלל.</string>
 //     <string name="seconds">שניות</string>
-//     <string name="startContract">תחילת ציר</string>
-//     <string name="endContract">סוף ציר</string>
 //     <string name="notifDay">התראות בשעות יום</string>
 //     <string name="notifNight">התראות בשעות לילה</string>
 //     <string name="nightEnd">סוף משמרת לילה</string>
@@ -259,13 +256,6 @@ export default {
 //     <string name="MetroServiceTtl">מטרונום פעיל ברקע</string>
 //     <string name="MetroServiceTxt">התראה זו מונעת כיבוי המטרונום באופן אוטומטי במטרת חיסכון בסוללה.</string>
 //     <string name="MetroStop">עצור</string>
-//     <string name="ContracLength">אורך הציר: %s</string>
-//     <string name="ContracBetween">הפרש מציר קודם: %s</string>
-//     <string name="ContracMinutes">%1$d דקות ו%2$d שניות</string>
-//     <string name="ContracSecondes">%d שניות</string>
-//     <string name="ContracRecover">שחזר נתונים קודמים?</string>
-//     <string name="ContracDelete">מחק צירים שמורים?</string>
-//     <string name="ContracDeleteEmpty">אין צירים למחוק</string>
 //     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
 //     <string name="title_low_calls">הודעות לא קריטיות</string>
 //     <string name="title_notif">התראה</string>

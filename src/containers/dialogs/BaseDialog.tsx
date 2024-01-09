@@ -5,15 +5,16 @@ import { colors } from '../../consts';
 import type { IDialogInstance } from '../../services/DialogStore';
 
 interface BaseDialogProps extends IDialogInstance<boolean> {
-    title: string;
+    title?: string;
     description: string;
     okText?: string;
     cancelText?: string;
     blockBackdropPress?: boolean;
     blockBackBtn?: boolean;
+    negativeBtnColor?: string;
 }
 
-export const BaseDialog = observer<BaseDialogProps>(({ title, description, okText, cancelText, blockBackdropPress, blockBackBtn, closeDialog }) => {
+export const BaseDialog = observer<BaseDialogProps>(({ title, description, okText, cancelText, blockBackdropPress, blockBackBtn, negativeBtnColor, closeDialog }) => {
     const localStore = useLocalObservable(() => ({
         onBackdropPress() {
             if (blockBackdropPress) {
@@ -37,9 +38,9 @@ export const BaseDialog = observer<BaseDialogProps>(({ title, description, okTex
 
     return (
         <Dialog.Container visible onBackdropPress={localStore.onBackdropPress} onRequestClose={localStore.onRequestClose}>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{title}</Dialog.Title>
+            {title && <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{title}</Dialog.Title>}
             <Dialog.Description style={[styles.font, styles.dialogColorDark]}>{description}</Dialog.Description>
-            {cancelText && <Dialog.Button style={[styles.font, styles.dialogColor]} label={cancelText} onPress={localStore.onCancel} />}
+            {cancelText && <Dialog.Button style={[styles.font, negativeBtnColor ? { color: negativeBtnColor } : styles.dialogColor]} label={cancelText} onPress={localStore.onCancel} />}
             {okText && <Dialog.Button style={[styles.font, styles.dialogColor]} label={okText} onPress={localStore.onApprove} />}
         </Dialog.Container>
     );
