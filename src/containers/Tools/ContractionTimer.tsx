@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { fromPromise } from 'mobx-utils';
 import { useTranslation } from 'react-i18next';
@@ -13,9 +14,11 @@ import { ToolbarStore } from '../../services/ToolbarStore';
 import { LinkedList, NodeOf } from '../../utils/linkedList';
 import { BasePageView } from '../../Components/BasePageView';
 import { CircularProgressButton } from '../../Components/CircularProgressButton';
-import { useLocalStoreWithInjectedDependencies } from '../../services/container';
+import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { BaseDialog } from '../dialogs/BaseDialog';
+import { NavigationStore } from '../../services/NavigationStore';
+import type { NavigatableScreenProps } from '../../App';
 import type { FlatList, ListRenderItemInfo } from 'react-native';
 
 const TWENTY_MINUTES = 20 * 60_000;
@@ -260,8 +263,13 @@ const ContractionItem = observer<ListRenderItemInfo<NodeOf<Contraction>>>(({ ite
 });
 ContractionItem.displayName = 'ContractionItem';
 
-export const ContractionTimer = observer(() => {
+export const ContractionTimer = observer<NavigatableScreenProps>(({ navigation }) => {
+    const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(ContractionTimerLocalStore);
+
+    useEffect(() => {
+        return navigationStore.setToolsNavigator(navigation as any);
+    }, [navigationStore, navigation]);
 
     if (localStore.loading.state === 'pending') {
         return (
