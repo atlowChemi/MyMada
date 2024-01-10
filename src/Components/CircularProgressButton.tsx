@@ -1,12 +1,11 @@
-import { Svg } from 'react-native-svg';
-import { Path, type PathProps } from 'react-native-svg';
+import { Svg, Path } from 'react-native-svg';
 import { forwardRef, useImperativeHandle } from 'react';
 import { Animated, Easing, TouchableOpacity, View } from 'react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Text } from './Text';
 import { colors } from '../consts';
 import type { FC } from 'react';
-import type { Linecap } from 'react-native-svg';
+import type { Linecap, PathProps } from 'react-native-svg';
 import type { GestureResponderEvent, StyleProp, TextStyle, ViewProps, ViewStyle } from 'react-native';
 
 const MIN_ARC_ANGLE = 0.1;

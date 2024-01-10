@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { computedFn } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
@@ -12,12 +13,14 @@ import { Snackbar } from '../../Components/Snackbar';
 import { ConnectionError } from '../ConnectionError';
 import { BasePageView } from '../../Components/BasePageView';
 import { DictionaryForm } from '../dialogs/DictionaryForm';
-import { useLocalStoreWithInjectedDependencies } from '../../services/container';
+import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { DialogStore } from '../../services/DialogStore';
 import { SnackbarStore } from '../../services/SnackbarStore';
 import { ToolbarStore } from '../../services/ToolbarStore';
+import { NavigationStore } from '../../services/NavigationStore';
 import type { ListRenderItemInfo } from 'react-native';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import type { NavigatableScreenProps } from '../../App';
 
 export interface DictionaryEntry {
     key: string;
@@ -155,8 +158,12 @@ const Item = observer<ListRenderItemInfo<DictionaryEntry> & { localStore: Dictio
 });
 Item.displayName = 'DictionaryItem';
 
-export const Dictionary = observer(() => {
+export const Dictionary = observer<NavigatableScreenProps>(({ navigation }) => {
+    const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(DictionaryLocalStore);
+    useEffect(() => {
+        return navigationStore.setToolsNavigator(navigation as any);
+    }, [navigationStore, navigation]);
 
     if (localStore.hasError) {
         return <ConnectionError />;
