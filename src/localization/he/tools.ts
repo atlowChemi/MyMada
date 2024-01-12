@@ -1,5 +1,10 @@
 export default {
     toolbarTitle: 'כלי עזר',
+    metronome: {
+        title: 'לחץ בכל נקודה להתחלת החייאה',
+        start: 'הפעלה',
+        stop: 'עצור',
+    },
     contraction: {
         start: 'תחילת ציר',
         end: 'סוף ציר',

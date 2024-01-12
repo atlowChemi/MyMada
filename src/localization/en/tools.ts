@@ -1,5 +1,10 @@
 export default {
     toolbarTitle: 'Tools',
+    metronome: {
+        title: 'Click anywhere on the screen to start CPR',
+        start: 'Start',
+        stop: 'Stop',
+    },
     contraction: {
         start: 'Contraction start',
         end: 'Contraction end',

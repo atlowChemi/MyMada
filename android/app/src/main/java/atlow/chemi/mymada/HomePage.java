@@ -120,8 +120,6 @@ public class HomePage extends AppCompatActivity {
             albumList.add(Contact);
             HomeB Info = new HomeB("inf", R.drawable.new_inf);
             albumList.add(Info);
-            HomeB ReactPage = new HomeB("react", R.drawable.new_inf);
-            albumList.add(ReactPage);
 //            Crashlytics.log("HomeBtns Loaded properly!");
         }
         catch (Exception e) {
