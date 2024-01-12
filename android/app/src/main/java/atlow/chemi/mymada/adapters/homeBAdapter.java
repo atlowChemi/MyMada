@@ -343,7 +343,6 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                     }
                     break;
                 case "inf":
-                case "react":
                     intent = new Intent(mContext, MainReactActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);

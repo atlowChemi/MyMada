@@ -225,10 +225,6 @@ export default {
 //     <string name="pref_description_sleep_off">פיצול סגנון התראה בהתאם לשעה (לילה מ23:00 עד 7:00).\\\\nשימו לב!\\\\nהגדרה זו לא מפעילה צליל ורטט, אלא מאפשרת אותם אם הם פעילים.</string>
 //     <string name="time">התקבל בשעה: %1$s</string>
 
-//     <string name="startT">לחץ בכל נקודה להתחלת החייאה</string>
-//     <string name="start">הפעלה</string>
-//     <string name="stop">עצור</string>
-
 //     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-7600269766434003/5732229370</string>
 //     <string name="service_exp">בכדי שנוכל לזהות את המקרים המגיעים למכשיר, אפשרות זו צריכה להיות דולקת.\nבמידה ואפשרות זו לא דולקת, לא יזוהו מקרים כלל.</string>
 //     <string name="seconds">שניות</string>
