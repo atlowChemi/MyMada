@@ -4,6 +4,9 @@ export default {
         title: 'Click anywhere on the screen to start CPR',
         start: 'Start',
         stop: 'Stop',
+        notificationTitle: 'Metronome running in Background',
+        notificationTxt: 'This notification avoids the metronome shutting down for battery saving.',
+        notificationBtn: 'stop',
     },
     contraction: {
         start: 'Contraction start',

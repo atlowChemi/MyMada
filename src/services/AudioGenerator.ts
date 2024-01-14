@@ -7,6 +7,7 @@ interface AudioGenerator {
     maximizeVolume(): Promise<number>;
     setVolume(volume: number): Promise<void>;
     destroyAudioTrack(id: string): Promise<void>;
+    getEmptySineWave(samples: number): Promise<string>;
     writeSound(playerId: string, waveId: string): Promise<void>;
     getSineWave(samples: number, frequencyOfTone: number): Promise<string>;
 }

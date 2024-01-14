@@ -1,7 +1,7 @@
 import i18n from '../localization';
 import { inject, injectable } from 'inversify';
-import { makeAutoObservable, reaction } from 'mobx';
 import { NavigationContainerRef } from '@react-navigation/native';
+import { makeAutoObservable, observable, reaction, when } from 'mobx';
 import { PermissionsStore } from './PermissionsStore';
 import { DialogStore } from './DialogStore';
 import { BaseDialog } from '../containers/dialogs/BaseDialog';
@@ -33,6 +33,12 @@ const TOOLS_PAGES = new Set<Tools>([
     'AlsProtocoles',
     'Kuntres',
 ]);
+interface DrawerNavigator {
+    openDrawer(): void;
+    closeDrawer(): void;
+    toggleDrawer(): void;
+    jumpTo(route: Tools, params?: Record<string, any>): void;
+}
 
 @injectable()
 export class NavigationStore {
@@ -41,12 +47,12 @@ export class NavigationStore {
     public canGoBack = false;
     private eventListenerCleanup?: () => void;
     private navigator?: NavigationContainerRef<Record<Page, undefined>>;
-    private toolsNavigator?: { toggleDrawer(): void };
+    private toolsNavigator?: DrawerNavigator = undefined;
     @inject(DialogStore) private readonly dialogStore!: DialogStore;
     @inject(PermissionsStore) private readonly permissionsStore!: PermissionsStore;
 
     constructor() {
-        makeAutoObservable<NavigationStore, 'onNavigate'>(this, undefined, { autoBind: true });
+        makeAutoObservable<NavigationStore, 'toolsNavigator'>(this, { toolsNavigator: observable.ref }, { autoBind: true });
         reaction(
             () => this.page,
             () => {
@@ -73,7 +79,7 @@ export class NavigationStore {
         this.eventListenerCleanup = navigator?.addListener('state', this.onNavigate);
     }
 
-    public setToolsNavigator(navigator: { toggleDrawer(): void }) {
+    public setToolsNavigator(navigator: DrawerNavigator) {
         this.toolsNavigator = navigator;
         return () => {
             this.toolsNavigator = undefined;
@@ -81,6 +87,11 @@ export class NavigationStore {
     }
 
     public goToTools = () => this.navigator?.navigate('Tools');
+    public goToToolsTab = async (route: Tools) => {
+        this.goToTools();
+        await when(() => this.toolsNavigator !== undefined);
+        this.toolsNavigator?.jumpTo(route);
+    };
     public goToContactUs = async () => {
         const shouldNavigate = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS');
         if (!shouldNavigate) {

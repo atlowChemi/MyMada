@@ -16,7 +16,6 @@ export default {
     tools,
     // smsMoni: 'הפעלת האפליקציה ברקע',
     // notiMoni: 'זיהוי התראות ברקע',
-    // metroMoni: 'הפעלת מטרונום ברקע',
     // helloWorld: 'הכתבת טופס',
     // ambN: 'מספר אמבולנס',
     // visa: 'מספר ויזה',
@@ -249,9 +248,6 @@ export default {
 //     <string name="BGServiceTtl">מאזין ברקע להודעות</string>
 //     <string name="BGServiceTicker">מזהה הודעות חדשות ממד\"א</string>
 //     <string name="BGServiceTxt">מזהה הודעות חדשות שנשלחות ממוקד מד\"א ברקע</string>
-//     <string name="MetroServiceTtl">מטרונום פעיל ברקע</string>
-//     <string name="MetroServiceTxt">התראה זו מונעת כיבוי המטרונום באופן אוטומטי במטרת חיסכון בסוללה.</string>
-//     <string name="MetroStop">עצור</string>
 //     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
 //     <string name="title_low_calls">הודעות לא קריטיות</string>
 //     <string name="title_notif">התראה</string>

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:initialKeyguardLayout="@layout/metro_widget"
-    android:initialLayout="@layout/metro_widget"
     android:minWidth="40dp"
     android:minHeight="40dp"
-    android:previewImage="@drawable/ic_metronome_tile_white"
     android:resizeMode="none"
+    android:targetCellWidth="1"
+    android:targetCellHeight="1"
     android:updatePeriodMillis="86400000"
-    android:widgetCategory="home_screen|keyguard" />
+    android:initialKeyguardLayout="@layout/metro_widget"
+    android:initialLayout="@layout/metro_widget"
+    android:previewImage="@drawable/ic_metronome_tile_white"
+    android:widgetCategory="home_screen" />

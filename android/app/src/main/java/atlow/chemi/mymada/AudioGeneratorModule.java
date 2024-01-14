@@ -5,10 +5,13 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -16,89 +19,142 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+@ReactModule(name = AudioGeneratorModule.NAME)
 public class AudioGeneratorModule extends ReactContextBaseJavaModule {
+    public static final String NAME = "AudioGeneratorModule";
     private final Map<UUID, AudioTrack> trackMap = new HashMap<>();
     private final Map<UUID, double[]> waveMap = new HashMap<>();
-    private final ReactApplicationContext mContext;
     private final int sampleRate = 8000;
     private final AudioManager audioManager;
 
     AudioGeneratorModule(ReactApplicationContext context) {
         super(context);
-        mContext = context;
-        audioManager = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) context.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
     }
 
+    @NonNull
     @Override
     public String getName() {
-        return "AudioGeneratorModule";
+        return NAME;
     }
 
     @ReactMethod
-    public void createPlayer(Promise promise) {
-        UUID uuid = UUID.randomUUID();
-        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_ALARM, sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, sampleRate, AudioTrack.MODE_STREAM);
+    public String createPlayer(@Nullable Promise promise) {
+        var uuid = UUID.randomUUID();
+        var audioTrack = new AudioTrack(AudioManager.STREAM_ALARM, sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, sampleRate, AudioTrack.MODE_STREAM);
         audioTrack.play();
         trackMap.put(uuid, audioTrack);
-        promise.resolve(uuid.toString());
+        var uuidString = uuid.toString();
+        if (promise != null) {
+            promise.resolve(uuidString);
+        }
+        return uuidString;
     }
 
     @ReactMethod
-    public void destroyAudioTrack(String id, Promise promise) {
-        UUID uuid = UUID.fromString(id);
+    public void destroyAudioTrack(String id, @Nullable Promise promise) {
+        var uuid = UUID.fromString(id);
         if (!trackMap.containsKey(uuid)) {
-            promise.reject(new IndexOutOfBoundsException("No player with given ID"));
+            var err = new IndexOutOfBoundsException("No player with given ID");
+            if (promise != null) {
+                promise.reject(err);
+                return;
+            }
+            throw err;
         }
-        AudioTrack audioTrack = trackMap.get(uuid);
+        var audioTrack = trackMap.get(uuid);
         trackMap.remove(uuid);
-        assert audioTrack != null;
+        if (audioTrack == null) {
+            if (promise != null) {
+                promise.reject(new Exception("Invalid audioTrack"));
+            }
+            return;
+        }
         audioTrack.stop();
         audioTrack.release();
-        promise.resolve(null);
+        if (promise != null) {
+            promise.resolve(null);
+        }
     }
 
     @ReactMethod
-    public void writeSound(String trackId, String waveId, Promise promise) {
-        UUID trackUUID = UUID.fromString(trackId);
-        UUID waveUUID = UUID.fromString(waveId);
+    public void writeSound(String trackId, String waveId, @Nullable Promise promise) throws Exception {
+        var trackUUID = UUID.fromString(trackId);
+        var waveUUID = UUID.fromString(waveId);
         if (!trackMap.containsKey(trackUUID)) {
-            promise.reject(new IndexOutOfBoundsException("No player with given ID"));
+            var err = new IndexOutOfBoundsException("No player with given ID");
+            if (promise != null) {
+                promise.reject(err);
+                return;
+            }
+            throw err;
         }
         if (!waveMap.containsKey(waveUUID)) {
-            promise.reject(new IndexOutOfBoundsException("No wave with given ID"));
+            var err = new IndexOutOfBoundsException("No wave with given ID");
+            if (promise != null) {
+                promise.reject(err);
+                return;
+            }
+            throw err;
         }
-        AudioTrack audioTrack = trackMap.get(trackUUID);
+        var audioTrack = trackMap.get(trackUUID);
         double[] samples = waveMap.get(waveUUID);
-        assert samples != null;
-        assert audioTrack != null;
-        byte[] generatedSnd = get16BitPcm(samples);
+        if (samples == null || audioTrack == null) {
+            var err = new Exception("Invalid sample or audioTrack");
+            if (promise != null) {
+                promise.reject(err);
+                return;
+            }
+            throw err;
+        }
+        var generatedSnd = get16BitPcm(samples);
         audioTrack.write(generatedSnd, 0, generatedSnd.length);
-        promise.resolve(null);
+        if (promise != null) {
+            promise.resolve(null);
+        }
     }
 
     @ReactMethod
     public void destroyWave(String id) {
-        UUID uuid = UUID.fromString(id);
+        var uuid = UUID.fromString(id);
         trackMap.remove(uuid);
     }
 
     @ReactMethod
-    public void getSineWave(int samples, double frequencyOfTone, Promise promise){
-        double[] sample = new double[samples];
-        for (int i = 0; i < samples; i++) {
+    public String getEmptySineWave(int samples, @Nullable Promise promise){
+        var sample = new double[samples];
+        var uuid = UUID.randomUUID();
+        waveMap.put(uuid, sample);
+        var uuidString = uuid.toString();
+        if (promise != null) {
+            promise.resolve(uuidString);
+        }
+        return uuidString;
+    }
+    @ReactMethod
+    public String getSineWave(int samples, double frequencyOfTone, @Nullable Promise promise){
+        var sample = new double[samples];
+        for (var i = 0; i < samples; i++) {
             sample[i] = Math.sin(2 * Math.PI * i / (sampleRate/frequencyOfTone));
         }
-        UUID uuid = UUID.randomUUID();
+        var uuid = UUID.randomUUID();
         waveMap.put(uuid, sample);
-        promise.resolve(uuid.toString());
+        var uuidString = uuid.toString();
+        if (promise != null) {
+            promise.resolve(uuidString);
+        }
+        return uuidString;
     }
 
     @ReactMethod
-    public void maximizeVolume(Promise promise) {
-        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-        setVolume((int)(maxVolume / 2), null);
-        promise.resolve(currentVolume);
+    public int maximizeVolume(@Nullable Promise promise) {
+        var maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+        var currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+        setVolume(maxVolume, null);
+        if (promise != null) {
+            promise.resolve(currentVolume);
+        }
+        return currentVolume;
     }
 
     @ReactMethod
@@ -110,12 +166,12 @@ public class AudioGeneratorModule extends ReactContextBaseJavaModule {
     }
 
     private byte[] get16BitPcm(double[] samples) {
-        byte[] generatedSound = new byte[2 * samples.length];
-        int index = 0;
-        for (double sample : samples) {
+        var generatedSound = new byte[2 * samples.length];
+        var index = 0;
+        for (var sample : samples) {
             // scale to maximum amplitude
-            short maxSample = (short) ((sample * Short.MAX_VALUE));
-            // in 16 bit wav PCM, first byte is the low order byte
+            var maxSample = (short) ((sample * Short.MAX_VALUE));
+            // in 16 bit wave PCM, first byte is the low order byte
             generatedSound[index++] = (byte) (maxSample & 0x00ff);
             generatedSound[index++] = (byte) ((maxSample & 0xff00) >>> 8);
 
