@@ -4,6 +4,9 @@ export default {
         title: 'לחץ בכל נקודה להתחלת החייאה',
         start: 'הפעלה',
         stop: 'עצור',
+        notificationTitle: 'מטרונום פעיל ברקע',
+        notificationTxt: 'התראה זו מונעת כיבוי המטרונום באופן אוטומטי במטרת חיסכון בסוללה.',
+        notificationBtn: 'עצור',
     },
     contraction: {
         start: 'תחילת ציר',

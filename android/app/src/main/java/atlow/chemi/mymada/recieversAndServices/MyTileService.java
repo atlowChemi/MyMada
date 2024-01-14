@@ -1,111 +1,84 @@
 package atlow.chemi.mymada.recieversAndServices;
 
+import static atlow.chemi.mymada.Constants.METRONOME_STATE;
+import static atlow.chemi.mymada.Constants.METRONOME_TOGGLED;
+
 import android.annotation.TargetApi;
-import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
-import android.app.NotificationManager;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
-import androidx.core.content.ContextCompat;
+import java.util.HashMap;
+import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
+
+import atlow.chemi.mymada.MetronomeManager;
 
 @TargetApi(Build.VERSION_CODES.N)
 public class MyTileService extends TileService {
-
+    private final Consumer<HashMap<String, Object>> onToggleHandler =  val -> {
+        var state = (boolean)val.getOrDefault(METRONOME_STATE, false);
+        toggleState(state ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
+    };
     @Override
     public void onTileAdded() {
         super.onTileAdded();
-        setCurrentState(Tile.STATE_INACTIVE);
+        toggleState(Tile.STATE_INACTIVE);
     }
     @Override
     public void onTileRemoved() {
-        try {
-            setCurrentState(Tile.STATE_INACTIVE);
-        } catch (NullPointerException e) {
-//            Crashlytics.log("removing tile error");
-//            Crashlytics.logException(e);
-        }
+        toggleState(Tile.STATE_INACTIVE);
         super.onTileRemoved();
+        MetronomeManager.getInstance().off(METRONOME_TOGGLED, onToggleHandler);
     }
     @Override
     public void onClick() {
         super.onClick();
-        Tile tile = getQsTile();
-        // switch from active to passive based on tiles current state
-        switch (tile.getState()) {
-            case Tile.STATE_ACTIVE:
-                Intent btn = new Intent(MyTileService.this, ActionReceiver.class);
-                getApplicationContext().sendBroadcast(btn);
-                /**/
-                setCurrentState(Tile.STATE_INACTIVE);
-                break;
-            case Tile.STATE_INACTIVE:
-                Intent serviceIntent = new Intent(MyTileService.this, MetroService.class);
-                NotificationManager manager = getSystemService(NotificationManager.class);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&manager != null && manager.getNotificationChannel("runInBg") == null) {
-                    NotificationChannelGroup group2 = new NotificationChannelGroup("grpOthers", "התראות שונות");
-                    NotificationChannel serviceChannel = new NotificationChannel("runInBg", "פעילות ברקע", NotificationManager.IMPORTANCE_MIN);
-                    serviceChannel.enableVibration(false);
-                    serviceChannel.enableLights(false);
-                    serviceChannel.setShowBadge(false);
-                    serviceChannel.setImportance(NotificationManager.IMPORTANCE_MIN);
-                    serviceChannel.setDescription("חיוני כדי לאפשר זיהוי מקרים");
-                    serviceChannel.setGroup("grpOthers");
-                    manager.createNotificationChannelGroup(group2);
-                    manager.createNotificationChannel(serviceChannel);
-                }
-                try {
-                    ContextCompat.startForegroundService(MyTileService.this, serviceIntent);
-                } catch (Exception e) {
-//                    Crashlytics.log("failed starting metronome tile");
-//                    Crashlytics.logException(e);
-                }
-                /**/
-                setCurrentState(Tile.STATE_ACTIVE);
-                break;
-            case Tile.STATE_UNAVAILABLE:
-                break;
-        }
-    }
-    private void setCurrentState(int state){
-        Tile tile = getQsTile();
-        try {
-            tile.setState(state);
-        }catch (Exception e)    {
-            e.printStackTrace();
-        }
-        try {
-            switch (state) {
-                case Tile.STATE_ACTIVE:
-                    tile.setIcon(tile.getIcon().setTint(Color.WHITE));
-                    break;
-                case Tile.STATE_INACTIVE:
-                    tile.setIcon(tile.getIcon().setTint(Color.GRAY));
-                    break;
-                case Tile.STATE_UNAVAILABLE:
-                    tile.setIcon(tile.getIcon().setTint(Color.GRAY));
-                    break;
-                default:
-                    tile.setIcon(tile.getIcon().setTint(Color.GRAY));
-                    break;
-
-            }
-        } catch (NullPointerException e) {
-//            Crashlytics.log("Cant get tile icon!");
-//            Crashlytics.logException(e);
-        }
-        if (tile != null)
-            tile.updateTile();
+        var metronomeManager = MetronomeManager.getInstance();
+        metronomeManager.toggleMetronome(getApplicationContext());
     }
     @Override
     public void onStartListening() {
         super.onStartListening();
+        var metronomeManager = MetronomeManager.getInstance();
+        toggleState(metronomeManager.isActive() ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
+        metronomeManager.on(METRONOME_TOGGLED, onToggleHandler);
     }
     @Override
     public void onStopListening() {
         super.onStopListening();
+        MetronomeManager.getInstance().off(METRONOME_TOGGLED, onToggleHandler);
+    }
+
+    private int getOppositeState(int state) {
+        return state == Tile.STATE_ACTIVE ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE;
+    }
+    private void toggleState(@Nullable Integer state) {
+        Tile tile = getQsTile();
+        if (tile == null || (state != null && state == tile.getState())) {
+            return;
+        }
+        if (state == null) {
+            state = getOppositeState(tile.getState());
+        }
+        try {
+            tile.setState(state);
+        } catch (Exception e)    {
+            e.printStackTrace();
+        }
+        switch (state) {
+            case Tile.STATE_ACTIVE:
+                tile.setIcon(tile.getIcon().setTint(Color.WHITE));
+                break;
+            case Tile.STATE_INACTIVE:
+            case Tile.STATE_UNAVAILABLE:
+            default:
+                tile.setIcon(tile.getIcon().setTint(Color.GRAY));
+                break;
+
+        }
+        tile.updateTile();
     }
 }

@@ -1,6 +1,9 @@
 package atlow.chemi.mymada;
 
+import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -18,6 +21,47 @@ public class MainReactActivity extends ReactActivity implements DefaultHardwareB
     protected String getMainComponentName() {
         return "Root";
     }
+
+    public static class MyActivityDelegate extends DefaultReactActivityDelegate {
+        private static final String TEST = "test";
+        private Bundle mInitialProps = null;
+
+        private final ReactActivity mActivity;
+
+        public MyActivityDelegate(ReactActivity activity, String mainComponentName, Boolean fabricEnabled) {
+            super(activity, mainComponentName, fabricEnabled);
+            this.mActivity = activity;
+        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            if (mActivity == null) {
+                return;
+            }
+            Bundle bundle = mActivity.getIntent().getExtras();
+            if (bundle != null) {
+                mInitialProps = bundle;
+            }
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public boolean onNewIntent(Intent intent) {
+            if (intent != null) {
+                Bundle bundle = intent.getExtras();
+                if (bundle != null) {
+                    mInitialProps = bundle;
+                }
+            }
+            return super.onNewIntent(intent);
+        }
+
+        @Override
+        protected Bundle getLaunchOptions() {
+            return mInitialProps;
+        }
+    }
+
     /**
      * Returns the instance of the {@link ReactActivityDelegate}. Here we use a util class {@link
      * DefaultReactActivityDelegate} which allows you to easily enable Fabric and Concurrent React
@@ -25,7 +69,7 @@ public class MainReactActivity extends ReactActivity implements DefaultHardwareB
      */
     @Override
     protected ReactActivityDelegate createReactActivityDelegate() {
-        return new DefaultReactActivityDelegate(
+        return new MyActivityDelegate(
                 this,
                 getMainComponentName(),
                 // If you opted-in for the New Architecture, we enable the Fabric Renderer.

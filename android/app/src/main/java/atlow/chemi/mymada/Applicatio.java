@@ -1,5 +1,6 @@
 package atlow.chemi.mymada;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,6 +20,7 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -45,7 +47,6 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
 
                 @Override
                 protected List<ReactPackage> getPackages() {
-                    @SuppressWarnings("UnnecessaryLocalVariable")
                     List<ReactPackage> packages = new PackageList(this).getPackages();
                      packages.add(new MyMadaReactPackage());
                     return packages;
@@ -74,6 +75,13 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
         return mReactNativeHost;
     }
 
+    @SuppressLint("VisibleForTests")
+    public ReactContext getReactContext() {
+        var instanceManager = getReactNativeHost().getReactInstanceManager();
+        var currentContext = instanceManager.getCurrentReactContext();
+        return currentContext;
+    }
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(LocalHelper.onAttach(base));
@@ -84,14 +92,18 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
         if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits())
             return;
         super.onCreate();
-        SoLoader.init(this, false);
-        I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
-        sharedI18nUtilInstance.allowRTL(getApplicationContext(), true);
-        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-            // If you opted-in for the New Architecture, we load the native entry point for this app.
-            DefaultNewArchitectureEntryPoint.load();
+        try {
+            SoLoader.init(this, false);
+            I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+            sharedI18nUtilInstance.allowRTL(getApplicationContext(), true);
+            if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+                // If you opted-in for the New Architecture, we load the native entry point for this app.
+                DefaultNewArchitectureEntryPoint.load();
+            }
+            ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
         FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SERIF", "fonts/opensanshebrew.ttf");
