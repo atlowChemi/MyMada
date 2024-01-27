@@ -20,7 +20,7 @@ export type Tools =
     | 'Kuntres';
 export type Page = 'Home' | 'Tools' | 'ContactUs' | 'About' | 'Privacy';
 
-const TOOLS_PAGES = new Set<Tools>([
+export const TOOLS_PAGES = new Set<Tools>([
     'ContractionTimer',
     'PulseCalc',
     'MetronomeActivity',
@@ -86,6 +86,7 @@ export class NavigationStore {
         };
     }
 
+    public goHome = () => this.navigator?.navigate('Home');
     public goToTools = () => this.navigator?.navigate('Tools');
     public goToToolsTab = async (route: Tools) => {
         this.goToTools();

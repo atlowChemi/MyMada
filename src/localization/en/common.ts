@@ -5,4 +5,5 @@ export default {
     save: 'Save',
     cancel: 'Cancel',
     notNow: 'Not now',
+    toolbarBack: 'Home page',
 } as const;

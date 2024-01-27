@@ -1,6 +1,7 @@
 export default {
     toolbarTitle: 'כלי עזר',
     metronome: {
+        menuName: 'מטרונום',
         title: 'לחץ בכל נקודה להתחלת החייאה',
         start: 'הפעלה',
         stop: 'עצור',
@@ -9,6 +10,7 @@ export default {
         notificationBtn: 'עצור',
     },
     contraction: {
+        menuName: 'שעון צירים',
         start: 'תחילת ציר',
         end: 'סוף ציר',
         lengthMsg: 'אורך הציר: {{ length }}',
@@ -20,6 +22,7 @@ export default {
         delete: 'מחק צירים שמורים?',
     },
     pulse: {
+        menuName: 'שעון דופק',
         pulse: 'דופק ב15 שניות',
         fullPulse: 'דופק בדקה',
         pulseInputErr: 'יש לרשום מספר פעימות ב15 שניות!',
@@ -27,6 +30,7 @@ export default {
         timerHint: 'לחץ על האזור האפור כדי למדוד דופק',
     },
     oxygen: {
+        menuName: 'מחשבון חמצן',
         sizes: {
             twoDot4: 'בלון קטן',
             twenty: 'בלון גדול',
@@ -37,6 +41,7 @@ export default {
         clarify: 'בחישוב של 10-lpm זרימה.',
     },
     apgar: {
+        menuName: 'מחשבון אפגאר',
         score: 'ציון אפגאר הוא: {{ score }}',
         info: `יילוד בציון נמוך מ4 זקוק להחייאה מיידית.
 ניקוד בין 4 ל6 מסמן על יילוד במצוקה בינונית הזקוק לחמצון והמרצה.
@@ -63,6 +68,7 @@ export default {
         },
     },
     glazgow: {
+        menuName: 'מחשבון גלאזגו',
         score: 'ציון גלאזגו הוא: {{ score }} ({{ scoreDesc }})',
         scoreDesc: ['תרדמת חמורה', 'תרדמת בינונית', 'תרדמת מינורית'],
         //'Deep coma', 'Moderate coma', 'Light coma'],
@@ -83,6 +89,7 @@ export default {
         },
     },
     dictionary: {
+        menuName: 'מילון רפואי',
         create: {
             title: 'יצירת מונח',
             success: 'הגדרה נוספה בהצלחה ונשלחה לאישורינו!',
@@ -99,6 +106,7 @@ export default {
         searchHint: 'חפש במילון',
     },
     vitals: {
+        menuName: 'מחשבון מדדים',
         ageRange: {
             adult: 'מבוגר',
             child: 'ילד',
@@ -113,5 +121,11 @@ export default {
         breathing: 'נשימות בדקה',
         systolic: 'סיסטולי',
         diastolic: 'דיאסטולי',
+    },
+    protocols: {
+        menuName: 'פרוטוקולים',
+        als: 'פרוטוקולי ALS',
+        bls: 'פרוטוקולי BLS',
+        death: '"קונטרס" גישה לנפטר',
     },
 } as const;

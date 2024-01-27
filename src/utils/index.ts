@@ -1,4 +1,5 @@
 import { DependencyList, useEffect } from 'react';
+import { Dimensions, PixelRatio } from 'react-native';
 
 export const createDeferredPromise = <T = void>() => {
     let resolve!: (value: T | PromiseLike<T>) => void;
@@ -78,3 +79,14 @@ export function useAsyncEffect<T>(effect: EffectFn<T>, destroy: Function | Depen
         typeof destroy === 'function' ? deps : destroy, // eslint-disable-line react-hooks/exhaustive-deps
     );
 }
+
+export const isTablet = () => {
+    const pixelDensity = PixelRatio.get();
+    const { width, height } = Dimensions.get('window');
+    const adjustedWidth = width * pixelDensity;
+    const adjustedHeight = height * pixelDensity;
+    if (pixelDensity < 2 && (adjustedWidth >= 1000 || adjustedHeight >= 1000)) {
+        return true;
+    }
+    return pixelDensity === 2 && (adjustedWidth >= 1920 || adjustedHeight >= 1920);
+};
