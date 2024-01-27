@@ -1,6 +1,7 @@
 export default {
     toolbarTitle: 'Tools',
     metronome: {
+        menuName: 'CPR Metronome',
         title: 'Click anywhere on the screen to start CPR',
         start: 'Start',
         stop: 'Stop',
@@ -9,6 +10,7 @@ export default {
         notificationBtn: 'stop',
     },
     contraction: {
+        menuName: 'Contractions timer',
         start: 'Contraction start',
         end: 'Contraction end',
         lengthMsg: 'Duration: {{ length }}',
@@ -20,6 +22,7 @@ export default {
         delete: 'Delete current contractions?',
     },
     pulse: {
+        menuName: 'Pulse calculator',
         pulse: 'Pulses in 15 seconds',
         fullPulse: 'Beats per minute',
         pulseInputErr: "You didn't write the number of heart beats in 15 seconds!",
@@ -27,6 +30,7 @@ export default {
         timerHint: 'Click the grey area to start pulse timer',
     },
     oxygen: {
+        menuName: 'Oxygen calculator',
         sizes: {
             twoDot4: 'Small oxygen tank',
             twenty: 'Big oxygen tank',
@@ -37,6 +41,7 @@ export default {
         clarify: 'Assuming oxygen using 10-lpm.',
     },
     apgar: {
+        menuName: 'APGAR calculator',
         score: 'Apgar is: {{ score }}',
         info: `If Apgar score is between 0 - 3, start CPR immediately.
 If Apgar score is between 4 - 6, you should oxygenate baby.
@@ -63,6 +68,7 @@ Apgar score above 7 is considered normal.`,
         },
     },
     glazgow: {
+        menuName: 'Glazgow calculator',
         score: 'Glazgow is: {{ score }} ({{ scoreDesc }})',
         scoreDesc: ['Deep coma', 'Moderate coma', 'Light coma'],
         info: `If Glazgow score is between 0 - 8, patient is in a deep coma.
@@ -82,6 +88,7 @@ If Glazgow score is above 12, patient is in a light coma.`,
         },
     },
     dictionary: {
+        menuName: 'Medical dictionary',
         create: {
             title: 'Create term',
             success: 'Added successfully, sent for our approval!',
@@ -98,6 +105,7 @@ If Glazgow score is above 12, patient is in a light coma.`,
         searchHint: 'Search dictionary',
     },
     vitals: {
+        menuName: 'Vital signs calculator',
         ageRange: {
             adult: 'Adult',
             child: 'Child',
@@ -112,5 +120,11 @@ blood pressure: {{ systolicLow }}-{{ systolicHigh }}/{{ diastolicLow }}-{{ diast
         breathing: 'Breaths per minute',
         systolic: 'Systolic',
         diastolic: 'Diastolic',
+    },
+    protocols: {
+        menuName: 'Protocols',
+        als: 'ALS protocol',
+        bls: 'BLS protocol',
+        death: '"Handling the deceased" pamphlet',
     },
 } as const;

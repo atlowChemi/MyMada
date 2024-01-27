@@ -5,4 +5,5 @@ export default {
     save: 'שמירה',
     cancel: 'ביטול',
     notNow: 'לא כרגע',
+    toolbarBack: 'חזרה לעמוד הבית',
 } as const;

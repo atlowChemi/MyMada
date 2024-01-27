@@ -157,9 +157,6 @@ export default {
 //     <string name="skip">דלג</string>
 //     <string name="SendNoNames">לא ניתן לשלוח ללא אנשי צוות!</string>
 //     <string name="protocoles">בחר פרוטוקולים לצפייה</string>
-//     <string name="protocolesAls">פרוטוקולי ALS</string>
-//     <string name="protocolesBls">פרוטוקולי BLS</string>
-//     <string name="protocolesDeath">קונטרס \"גישה לנפטר\"</string>
 //     <string name="title_activity_main3">הודעה מותאמת אישית</string>
 //     <string name="toMoked">כתוב הודעתך למוקד.</string>
 //     <string name="customMsgErr">לא כתבת שום הודעה!</string>
@@ -171,15 +168,6 @@ export default {
 //     <string name="button_a">הכתבת טפסים</string>
 //     <string name="button_b">דיווח צוות</string>
 //     <string name="button_i">הודעה כללית</string>
-//     <string name="button_c">שעון דופק</string>
-//     <string name="button_d">מטרונום</string>
-//     <string name="button_e">מחשבון מדדים</string>
-//     <string name="button_f">שעון צירים</string>
-//     <string name="button_g">מחשבון חמצן</string>
-//     <string name="button_ag">מחשבון אפגאר</string>
-//     <string name="button_gl">מחשבון גלאזגו</string>
-//     <string name="button_p">פרוטוקלים</string>
-//     <string name="button_dict">מילון רפואי</string>
 //     <string name="button_h">כלי עזר</string>
 //     <string name="button_j">דיווחים למוקד</string>
 //     <string name="TestCallApp">כונן</string>
@@ -259,6 +247,5 @@ export default {
 //     <string name="langBad">החלפת שפה הופסקה בשל תקלה. ודא שיש חיבור לרשת ונסה שוב!</string>
 //     <string name="langLoad">מוריד את השפה המבוקשת %s</string>
 //     <string name="oxyCalc" translatable="false">%d</string>
-//     <string name="back">חזרה לעמוד הבית</string>
 //     <string name="MetroBound">המטרונום פעיל מתוך כלי עזר, לא ניתן לעצור אותו חיצונית.</string>
 // </resources>
