@@ -4,6 +4,7 @@ export const colorPrimaryDark = '#1a1d4b';
 export const colorRedDark = '#6b0000';
 export const oldPrimary = '#bd0000';
 export const oldPrimaryDark = '#860000';
+export const reviewTitles = '#238bad';
 export const colorBlue = '#98194853';
 export const colorBlueAlpha = '#4D194853';
 export const colorBlueNoAlpha = '#568894';

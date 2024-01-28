@@ -8,6 +8,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import atlow.chemi.mymada.helpers.NotificationHelper;
+
 
 public class ForegroundService extends Service {
     @Override

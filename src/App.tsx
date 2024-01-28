@@ -15,6 +15,7 @@ import { DependencyInjectionProvider, container } from './services/container';
 import { colors } from './consts';
 import { Toolbar } from './containers/Toolbar';
 import { setLanguage } from './localization';
+import { RequestCode } from './containers/Pages/RequestCode';
 import type { ParamListBase, RouteProp, useNavigationBuilder } from '@react-navigation/native';
 
 const NOTIFICATION_HELPER_SOURCE = 'NOTIFICATION_HELPER';
@@ -46,6 +47,7 @@ export const App: React.FC = (props: any) => {
                     <Stack.Screen name="Home" component={HomePage} options={{ orientation: 'portrait' }} />
                     <Stack.Screen name="Tools" component={Tools} />
                     <Stack.Screen name="ContactUs" component={ContactUs} />
+                    <Stack.Screen name="RequestCode" component={RequestCode} />
                     <Stack.Screen name="About" component={AboutTheApp} />
                     <Stack.Screen name="Privacy" component={Privacy} />
                 </Stack.Navigator>

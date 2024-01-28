@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import atlow.chemi.mymada.ReactModules.AudioGeneratorModule;
+import atlow.chemi.mymada.ReactModules.MadaNotificationsModule;
+import atlow.chemi.mymada.ReactModules.MetronomeModule;
+import atlow.chemi.mymada.ReactModules.NotificationsModule;
+
 public class MyMadaReactPackage  implements ReactPackage {
     @NonNull
     @Override
@@ -19,6 +24,7 @@ public class MyMadaReactPackage  implements ReactPackage {
         modules.add(new AudioGeneratorModule(context));
         modules.add(new NotificationsModule(context));
         modules.add(new MetronomeModule(context));
+        modules.add(new MadaNotificationsModule(context));
         return modules;
     }
 

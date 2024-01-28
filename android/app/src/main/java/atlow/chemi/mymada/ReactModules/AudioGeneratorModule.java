@@ -1,4 +1,4 @@
-package atlow.chemi.mymada;
+package atlow.chemi.mymada.ReactModules;
 
 import android.content.Context;
 import android.media.AudioFormat;
@@ -27,7 +27,7 @@ public class AudioGeneratorModule extends ReactContextBaseJavaModule {
     private final int sampleRate = 8000;
     private final AudioManager audioManager;
 
-    AudioGeneratorModule(ReactApplicationContext context) {
+    public AudioGeneratorModule(ReactApplicationContext context) {
         super(context);
         audioManager = (AudioManager) context.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
     }

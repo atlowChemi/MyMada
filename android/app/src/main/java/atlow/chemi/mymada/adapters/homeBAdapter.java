@@ -180,11 +180,6 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                         mContext.startActivity(intent);
                     }
                     break;
-                case "tol":
-                    intent = new Intent(mContext, MainReactActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
-                    break;
                 case "tes":
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
                     builder.setMessage(mContext.getResources().getString(R.string.TestCallMsg)).setCancelable(true)
@@ -255,93 +250,8 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                     alert.show();
                     break;
                 case "con":
-                    realM = sharedPreferences.getBoolean("realM", false);
-                    isMADA = false;
-                    if (!realM) {
-                        isMADA = isPI(mContext);
-                    }
-                    if (openUp != null && openUp.isLoaded()) {
-                        openUp.setAdListener(new AdListener() {
-                            @Override
-                            public void onAdLeftApplication() {
-                                //TODO: close ad
-                            }
-                            @Override
-                            public void onAdClosed() {
-                                openUp.loadAd(new AdRequest.Builder().build());
-                                if (realM || isMADA) {
-                                    Intent intent = new Intent(mContext, contactChatActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    mContext.startActivity(intent);
-                                } else {
-                                    AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
-                                    builder2.setTitle(mContext.getResources().getString(R.string.plsNote)).setMessage(mContext.getResources().getString(R.string.plsNoteCon)).setCancelable(true)
-                                            .setNegativeButton(mContext.getResources().getString(R.string.plsNoteConCode), (dialogInterface, i) -> {
-                                                Intent intent13 = new Intent(mContext, codeRequest.class);
-                                                intent13.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                mContext.startActivity(intent13);
-                                            }).setPositiveButton(mContext.getResources().getString(R.string.title_activity_contact), (dialogInterface, i) -> {
-                                        Intent intent14 = new Intent(mContext, contactChatActivity.class);
-                                        intent14.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        mContext.startActivity(intent14);
-                                    });
-
-                                    final AlertDialog alert = builder2.create();
-                                    alert.setOnShowListener(dialogInterface -> {
-                                        TextView textView = alert.findViewById(android.R.id.message);
-                                        if (textView != null)
-                                            textView.setTypeface(myTypeface);
-                                        textView = alert.findViewById(android.R.id.title);
-                                        if (textView != null)
-                                            textView.setTypeface(myTypeface);
-                                        Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                        Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                                        ok.setTypeface(myTypeface);
-                                        canc.setTypeface(myTypeface);
-                                        canc.setTextColor(mContext.getResources().getColor(R.color.OldPrimary));
-                                    });
-                                    alert.show();
-                                }
-                            }
-                        });
-                        openUp.show();
-                    } else {
-                        if (realM || isMADA) {
-                            intent = new Intent(mContext, contactChatActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            mContext.startActivity(intent);
-                        } else {
-                            AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
-                            builder2.setTitle(mContext.getResources().getString(R.string.plsNote)).setMessage(mContext.getResources().getString(R.string.plsNoteCon)).setCancelable(true)
-                                    .setNegativeButton(mContext.getResources().getString(R.string.plsNoteConCode), (dialogInterface, i) -> {
-                                        Intent intent13 = new Intent(mContext, codeRequest.class);
-                                        intent13.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        mContext.startActivity(intent13);
-                                    }).setPositiveButton(mContext.getResources().getString(R.string.title_activity_contact), (dialogInterface, i) -> {
-                                Intent intent14 = new Intent(mContext, contactChatActivity.class);
-                                intent14.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mContext.startActivity(intent14);
-                            });
-
-                            final AlertDialog alert2 = builder2.create();
-                            alert2.setOnShowListener(dialogInterface -> {
-                                TextView textView = alert2.findViewById(android.R.id.message);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                textView = alert2.findViewById(android.R.id.title);
-                                if (textView != null)
-                                    textView.setTypeface(myTypeface);
-                                Button canc = alert2.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                Button ok = alert2.getButton(DialogInterface.BUTTON_POSITIVE);
-                                ok.setTypeface(myTypeface);
-                                canc.setTypeface(myTypeface);
-                                canc.setTextColor(mContext.getResources().getColor(R.color.OldPrimary));
-                            });
-                            alert2.show();
-                        }
-                    }
-                    break;
                 case "inf":
+                case "tol":
                     intent = new Intent(mContext, MainReactActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);

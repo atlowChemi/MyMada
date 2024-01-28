@@ -132,7 +132,7 @@ const PathElement = memo<Pick<IconProps, 'd'>>(({ d }) => {
                 if (typeof path === 'string') {
                     return <Path key={path.substring(0, 15)} d={path} />;
                 }
-                return <Path key={path.d.substring(0, 15)} {...path.props} />;
+                return <Path key={path.d.substring(0, 15)} d={path.d} {...path.props} />;
             })}
         </G>
     );

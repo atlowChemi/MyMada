@@ -1,4 +1,4 @@
-package atlow.chemi.mymada;
+package atlow.chemi.mymada.ReactModules;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,12 +12,10 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import static atlow.chemi.mymada.Constants.METRONOME_START_TIME;
 import static atlow.chemi.mymada.Constants.METRONOME_TOGGLED;
 import static atlow.chemi.mymada.Constants.METRONOME_TOGGLED_EVENT_NAME;
 
-import android.util.Log;
-
+import atlow.chemi.mymada.MetronomeManager;
 import atlow.chemi.mymada.classes.JSException;
 
 
