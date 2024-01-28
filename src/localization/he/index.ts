@@ -28,7 +28,6 @@ export default {
     // Fna: 'שם פרטי',
     // Lna: 'שם משפחה',
     // code: 'קוד רפואי',
-    // suc: 'נא אשר לפני שליחה',
     // succ: 'שלח',
     // ret: 'ביטול',
     // action_settings: 'הגדרות',
@@ -136,8 +135,6 @@ export default {
 //     </string-array>
 //     <string name="Mcode">קודים רפואיים</string>
 //     <string name="langSwitched">השינוי יכנס לתוקף בכניסה הבאה לאפליקציה.</string>
-//     <string name="err">תקלה</string>
-//     <string name="ok">אישור</string>
 //     <string name="apply">החל</string>
 //     <string name="codeGood">קוד הפעלה נקלט בהצלחה!\nהאפליקציה תופעל כעת!</string>
 //     <string name="codeBad">קוד הפעלה\nשגוי או לא קיים. נסה שנית!</string>
@@ -145,12 +142,8 @@ export default {
 //     <string name="codeUsed">הקוד כבר נוצל בעבר.\nלא ניתן להשתמש בקוד יותר מפעם אחת!\nייתכן והייתה תקלה. נסו להזין ידנית את הקוד: %s</string>
 //     <string name="codeNotAllowed">קוד לא אושר לשימוש!\nייתכן ואירעה תקלה. נסה להזין קוד ידנית: %s</string>
 //     <string name="emailGood">האימייל הגיע אלינו\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
-//     <string name="emailBad">שליחה הופסקה בשל תקלה. נסה שוב!</string>
-//     <string name="emailInvalid">כתובת המייל שהזנת אינה תקינה!</string>
-//     <string name="emailNone">לא רשמת כתובת מייל!</string>
 //     <string name="emailSubjNone">לא רשמת נושא להודעה!</string>
 //     <string name="load">טוען. אנא המתן…</string>
-//     <string name="requestGood">הבקשה הגיעה אלינו ונרשמה.\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
 //     <string name="pickMokTtl">מוקד ברירת מחדל</string>
 //     <string name="pickMokTxt">בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. אנא עבור להגדרות והגדר מרחב ברירת מחדל</string>
 //     <string name="goToSet">עבור להגדרות</string>
@@ -170,19 +163,13 @@ export default {
 //     <string name="button_i">הודעה כללית</string>
 //     <string name="button_h">כלי עזר</string>
 //     <string name="button_j">דיווחים למוקד</string>
-//     <string name="TestCallApp">כונן</string>
-//     <string name="TestCallMsg">דימוי קבלת מקרה כהודעת כונן או כהודעת משמרת?</string>
-//     <string name="TestCallSMS">משמרת</string>
 //     <string name="newSettings">נראה כי זוהי כניסתך הראשונה לאפליקציה.\nמומלץ לבדוק את כל ההגדרות לפני תחילת השימוש</string>
 //     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
 //     <string name="importanceMsg">זיהינו כי התראה על זיהוי הודעות ברקע מופיעה במסך.\nלידיעתך, ניתן להעלים אותו על ידי העברה לדחיפות נמוכה.</string>
 //     <string name="importance">הורד דחיפות</string>
 //     <string name="TEAMTest">הודעת צוות. 02:34 מונה:1325 כתובת: בדיקה!!! ירושלים בורוכוב. קוד הזנקה: מחלה מבוגר, קוד רפואי: חוסר הכרה</string>
 //     <string name="CONANTest">אירוע חדש. 14:18 מונה:267 כתובת: בדיקה!!!ירושלים המ\"ג, קוד הזנקה: מחלה מבוגר, קוד רפואי: דום לב</string>
-//     <string name="APP_reco_off">איתור הודעות כבוי.</string>
 //     <string name="APP_reco_none">אנא התקן את אפליקציית מד"א תחילה!</string>
-//     <string name="CONAN_reco_off">איתור הודעות כונן כבוי בהגדרות.</string>
-//     <string name="MISHM_reco_off">איתור הודעות משמרת כבוי בהגדרות.</string>
 //     <string name="search">חיפוש</string>
 //     <string name="newCall">אירוע חדש!</string>
 //     <string name="edit">ערוך</string>
@@ -222,12 +209,8 @@ export default {
 //     <string name="nightStartDesc">בחר מאיזו שעה יתריעו מקרים לפי הגדרת הלילה</string>
 //     <string name="nightEndDesc">בחר מאיזו שעה יחזרו מקרים להתריע לפי הגדרת יום</string>
 //     <string name="toDispatch">"ישלח למוקד: "</string>
-//     <string name="sender">"שולח: "</string>
 //     <string name="subject">"נושא: "</string>
-//     <string name="msg">הודעה:</string>
-//     <string name="emailAlert">יש להקפיד שכתובת המייל מדוייקת, אחרת לא נוכל להשיב להודעה!</string>
 //     <string name="note">הערות</string>
-//     <string name="note2">יש לציין: תחנת  אם של מד"א, מרחב והכשרה רפואית.</string>
 
 //     <string name="navigation_drawer_open">פתח מגירה</string>
 //     <string name="navigation_drawer_close">סגור מגירה</string>
