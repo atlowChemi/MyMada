@@ -2,16 +2,16 @@ import i18n from '../localization';
 import { inject, injectable } from 'inversify';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { NavigationStore } from './NavigationStore';
+import type { IconName } from '../Components/Icon';
 import type { TranslationKeys } from '../localization';
 
 const noop = () => null;
 
 export interface NavBarIcon {
     key: string;
-    icon: number;
+    icon: IconName;
     onPress(): void;
     show?: boolean;
-    rotatable?: boolean;
 }
 
 @injectable()
@@ -52,15 +52,14 @@ export class ToolbarStore {
             return {
                 key: 'drawer',
                 onPress: this.navigationStore.openDrawer,
-                icon: require('../assets/icons/menu.webp'),
+                icon: 'menu',
             };
         }
         if (this.navigationStore.canGoBack || this.isSearching) {
             return {
                 key: 'back',
-                rotatable: i18n.dir() === 'rtl',
                 onPress: this.isSearching ? this.closeSearch : this.navigationStore.goBack,
-                icon: require('../assets/icons/back_arrow.webp'),
+                icon: 'backArrow',
             };
         }
         return undefined;
@@ -68,10 +67,10 @@ export class ToolbarStore {
 
     public get navIcons(): NavBarIcon[] {
         return [
-            { key: 'settings', onPress: noop, icon: require('../assets/icons/settings.webp'), show: true /* this.navigationStore.currentPage !== 'Settings' */ },
-            { key: 'trash', onPress: this.trashAction, icon: require('../assets/icons/trash.webp'), show: this.navigationStore.currentSubPage === 'ContractionTimer' && this.showTrashIcon },
-            { key: 'search', onPress: this.search, icon: require('../assets/icons/search.webp'), show: this.navigationStore.currentSubPage === 'Dictionary' && !this.isSearching },
-            { key: 'add', onPress: this.dictionaryItemAdder, icon: require('../assets/icons/add.webp'), show: this.navigationStore.currentSubPage === 'Dictionary' },
+            { key: 'settings', onPress: noop, icon: 'settings', show: true /* this.navigationStore.currentPage !== 'Settings' */ },
+            { key: 'trash', onPress: this.trashAction, icon: 'trash', show: this.navigationStore.currentSubPage === 'ContractionTimer' && this.showTrashIcon },
+            { key: 'search', onPress: this.search, icon: 'search', show: this.navigationStore.currentSubPage === 'Dictionary' && !this.isSearching },
+            { key: 'add', onPress: this.dictionaryItemAdder, icon: 'add', show: this.navigationStore.currentSubPage === 'Dictionary' },
         ];
     }
 

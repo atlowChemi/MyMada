@@ -1,12 +1,13 @@
 import { observer } from 'mobx-react-lite';
-import { Image, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Text } from './Text';
 import { colors } from '../consts';
+import { Icon } from './Icon';
 
 export const InfoCard = observer<{ text: string }>(({ text }) => {
     return (
         <View style={styles.card}>
-            <Image style={styles.infoIcon} source={require('../assets/icons/info.webp')} />
+            <Icon style={styles.infoIcon} size={24} name="info" />
             <View style={styles.border} />
             <Text style={styles.infoTxt}>{text}</Text>
         </View>
@@ -27,8 +28,6 @@ const styles = StyleSheet.create({
     },
     infoIcon: {
         flexShrink: 0,
-        height: 24,
-        width: 24,
     },
     border: {
         flexShrink: 0,
