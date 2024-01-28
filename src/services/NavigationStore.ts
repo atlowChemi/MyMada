@@ -1,4 +1,5 @@
 import i18n from '../localization';
+import { Linking } from 'react-native';
 import { inject, injectable } from 'inversify';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { makeAutoObservable, observable, reaction, when } from 'mobx';
@@ -119,14 +120,27 @@ export class NavigationStore {
             }
         }
         // Open ad
-        const shouldNavigate = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS');
-        if (!shouldNavigate) {
-            // TODO: add a link to the permissions page
-            this.dialogStore.openDialog(BaseDialog, {
+        const permissionStatus = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS', {
+            title: i18n.t('permissions:alertTitle'),
+            message: i18n.t('permissions:notificationExplain'),
+            buttonPositive: i18n.t('permissions:approve'),
+            buttonNegative: i18n.t('permissions:deny'),
+        });
+        if (permissionStatus !== 'granted') {
+            const goToSettings = await this.dialogStore.openDialog(BaseDialog, {
                 title: i18n.t('permissions:alertTitle'),
                 description: i18n.t('permissions:blocked'),
-                okText: i18n.t('common:ok'),
+                cancelText: i18n.t('common:cancel'),
+                okText: i18n.t('permissions:goToSettings'),
             });
+            if (goToSettings) {
+                const { packageName, uid } = await this.madaNotificationsStore.getAppData();
+                await Linking.sendIntent('android.settings.APP_NOTIFICATION_SETTINGS', [
+                    { key: 'app_uid', value: uid },
+                    { key: 'app_package', value: packageName },
+                    { key: 'android.provider.extra.APP_PACKAGE', value: packageName },
+                ]);
+            }
             return;
         }
         this.navigator?.navigate('ContactUs');

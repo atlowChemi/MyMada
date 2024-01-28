@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -38,5 +39,16 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule {
         }
         var list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         promise.resolve(list.size() > 0);
+    }
+
+    @ReactMethod
+    public void getAppData(Promise promise) {
+        var pkgName = reactContext.getPackageName();
+        var uid = reactContext.getApplicationInfo().uid;
+
+        var result = Arguments.createMap();
+        result.putString("packageName", pkgName);
+        result.putInt("uid", uid);
+        promise.resolve(result);
     }
 }

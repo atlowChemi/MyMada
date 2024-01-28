@@ -8,4 +8,8 @@ export class MadaNotificationsStore {
     public hasMadaApp(): Promise<boolean> {
         return MadaNotificationsModule.hasMadaApp();
     }
+
+    public getAppData(): Promise<{ packageName: string; uid: number }> {
+        return MadaNotificationsModule.getAppData();
+    }
 }
