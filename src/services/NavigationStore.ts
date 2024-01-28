@@ -94,6 +94,7 @@ export class NavigationStore {
         this.toolsNavigator?.jumpTo(route);
     };
     public goToContactUs = async () => {
+        // Need to check if is real mitnadev etc
         const shouldNavigate = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS');
         if (!shouldNavigate) {
             // TODO: add a link to the permissions page

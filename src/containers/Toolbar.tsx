@@ -1,22 +1,23 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { View, Image, Pressable, StyleSheet, StyleProp, ViewStyle, TextInput } from 'react-native';
+import { View, Pressable, StyleSheet, StyleProp, ViewStyle, TextInput } from 'react-native';
 import { Text } from '../Components/Text';
 import { colors } from '../consts';
 import { useDependencyInjector } from '../services/container';
 import { NavBarIcon, ToolbarStore } from '../services/ToolbarStore';
+import { Icon } from '../Components/Icon';
 
 interface ToolbarNavIconProps extends NavBarIcon {
     style?: StyleProp<ViewStyle>;
 }
 
-const ToolbarNavIcon = observer<ToolbarNavIconProps>(({ icon, onPress, rotatable, show, style }) => {
+const ToolbarNavIcon = observer<ToolbarNavIconProps>(({ icon, onPress, show, style }) => {
     if (typeof show === 'boolean' && !show) {
         return null;
     }
     return (
-        <Pressable style={[style, rotatable && styles.rotated]} onPress={onPress}>
-            <Image source={icon} style={styles.toolbarIcon} />
+        <Pressable style={style} onPress={onPress}>
+            <Icon size={30} color={colors.white} name={icon} />
         </Pressable>
     );
 });

@@ -4,11 +4,12 @@ import { fromPromise } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { action, makeAutoObservable, observable, reaction, runInAction } from 'mobx';
-import { ActivityIndicator, Image, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import database from '@react-native-firebase/database';
 import Dialog from 'react-native-dialog';
 import i18n from '../../localization';
 import { colors } from '../../consts';
+import { Icon } from '../../Components/Icon';
 import { Text } from '../../Components/Text';
 import { BaseDialog } from '../dialogs/BaseDialog';
 import { TextInput } from '../../Components/TextInput';
@@ -276,7 +277,7 @@ const ChatFooter = observer<{ localStore: ContactUsLocalStore }>(({ localStore }
             <View style={styles.sendSection}>
                 <TextInput wrapperStyle={styles.sendText} value={localStore.messageValue} onChangeText={localStore.messageChanged} numberOfLines={3} label={t('contact:msgHint')} />
                 <Pressable android_ripple={{ color: colors.ocean, radius: 36, borderless: false }} style={[styles.sendBtn]} onPress={localStore.sendMessage}>
-                    <Image source={require('../../assets/icons/send.webp')} style={[styles.sendIcon, i18n.language === 'he' && styles.rotated]} />
+                    <Icon size={24} color={colors.white} name="send" />
                 </Pressable>
             </View>
         </View>
@@ -393,13 +394,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: colors.colorNice,
-    },
-    sendIcon: {
-        height: 20,
-        width: 20,
-    },
-    rotated: {
-        transform: [{ rotate: '180deg' }],
     },
     msgTitle: {
         flexDirection: 'row',
