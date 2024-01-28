@@ -42,7 +42,7 @@ export class DialogStore {
             });
         });
 
-        this[kDialogInstances].set(dialog.id, dialog);
+        runInAction(() => this[kDialogInstances].set(dialog.id, dialog));
         return dialog[kPromise];
     }
 }

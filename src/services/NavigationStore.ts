@@ -5,6 +5,9 @@ import { makeAutoObservable, observable, reaction, when } from 'mobx';
 import { PermissionsStore } from './PermissionsStore';
 import { DialogStore } from './DialogStore';
 import { BaseDialog } from '../containers/dialogs/BaseDialog';
+import { SharedPreferencesStore } from './SharedPreferencesStore';
+import { MadaNotificationsStore } from './MadaNotificationsStore';
+import { colors } from '../consts';
 
 export type Tools =
     | 'ContractionTimer'
@@ -18,7 +21,7 @@ export type Tools =
     | 'BlsProtocoles'
     | 'AlsProtocoles'
     | 'Kuntres';
-export type Page = 'Home' | 'Tools' | 'ContactUs' | 'About' | 'Privacy';
+export type Page = 'Home' | 'Tools' | 'ContactUs' | 'RequestCode' | 'About' | 'Privacy';
 
 export const TOOLS_PAGES = new Set<Tools>([
     'ContractionTimer',
@@ -49,7 +52,9 @@ export class NavigationStore {
     private navigator?: NavigationContainerRef<Record<Page, undefined>>;
     private toolsNavigator?: DrawerNavigator = undefined;
     @inject(DialogStore) private readonly dialogStore!: DialogStore;
+    @inject(MadaNotificationsStore) private readonly madaNotificationsStore!: MadaNotificationsStore;
     @inject(PermissionsStore) private readonly permissionsStore!: PermissionsStore;
+    @inject(SharedPreferencesStore) private readonly sharedPreferencesStore!: SharedPreferencesStore;
 
     constructor() {
         makeAutoObservable<NavigationStore, 'toolsNavigator'>(this, { toolsNavigator: observable.ref }, { autoBind: true });
@@ -94,7 +99,26 @@ export class NavigationStore {
         this.toolsNavigator?.jumpTo(route);
     };
     public goToContactUs = async () => {
-        // Need to check if is real mitnadev etc
+        this.sharedPreferencesStore.name = 'Settings';
+        const { realM } = await this.sharedPreferencesStore.activeChannel;
+        const isMarkedAsVolunteer = this.sharedPreferencesStore.makePrefBoolean(realM, false);
+        if (!isMarkedAsVolunteer && !(await this.madaNotificationsStore.hasMadaApp())) {
+            const navigateToContact = await this.dialogStore.openDialog(BaseDialog, {
+                title: i18n.t('contact:plsNote'),
+                okText: i18n.t('contact:toolbarTitle'),
+                cancelText: i18n.t('contact:goToCodeRequest'),
+                negativeBtnColor: colors.oldPrimary,
+                description: i18n.t('contact:nonVolunteerMsg'),
+            });
+            if (typeof navigateToContact === 'undefined') {
+                return;
+            }
+            if (!navigateToContact) {
+                this.navigator?.navigate('RequestCode');
+                return;
+            }
+        }
+        // Open ad
         const shouldNavigate = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS');
         if (!shouldNavigate) {
             // TODO: add a link to the permissions page

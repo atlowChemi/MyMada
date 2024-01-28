@@ -4,7 +4,6 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { Dimensions, Platform, NativeModules, NativeEventEmitter } from 'react-native';
 import i18n from '../localization';
 import { colors } from '../consts';
-// import { audioGenerator } from './AudioGenerator';
 import { notificationsService, Importance, Priority, NOTIFICATION_MAP } from './NotificationService';
 
 const { MetronomeModule } = NativeModules;
@@ -90,32 +89,7 @@ export class MetronomeStore {
         return { hours: hoursProps, time: timeProps };
     }
 
-    // public async playMetronome() {
-    //     const playerId = await audioGenerator.createPlayer();
-    //     const waves = await Promise.all([audioGenerator.getSineWave(1000, 9440), audioGenerator.getSineWave(1000, 9350), audioGenerator.getEmptySineWave(3800)]);
-    //     const [tickWave, tockWave, emptyWave] = waves;
-    //     // Maximize volume.
-    //     const originalVolume = await audioGenerator.maximizeVolume();
-    //     let currentBeat = 0;
-    //     while (this.isActive) {
-    //         const sound = currentBeat === 0 ? tockWave : tickWave;
-    //         try {
-    //             await audioGenerator.writeSound(playerId, sound);
-    //             await audioGenerator.writeSound(playerId, emptyWave);
-    //         } catch (e) {
-    //             // Crashlytics
-    //         }
-    //         if (++currentBeat > this.beat) {
-    //             currentBeat = 0;
-    //         }
-    //     }
-    //     await audioGenerator.destroyAudioTrack(playerId);
-    //     waves.forEach(w => audioGenerator.destroyWave(w));
-    //     await audioGenerator.setVolume(originalVolume);
-    // }
-
     private async startMetronome() {
-        // this.startTime = Date.now();
         try {
             if (Platform.OS === 'android' && Platform.Version >= 26) {
                 await notificationsService.createNotificationChannelGroup({ id: NOTIFICATION_MAP.GROUPS.OTHERS, name: 'התראות שונות', description: 'התראות מהאפליקציה שאינן קשורות לאירועי רפואה' });
@@ -138,7 +112,6 @@ export class MetronomeStore {
                 startTime: Date.now(),
             });
             runInAction(() => (this.startTime = startTime));
-            // return this.playMetronome();
         } catch (e) {
             console.warn('MetronomeManager startMetronome failed', e);
             // Crashlytics
@@ -146,7 +119,6 @@ export class MetronomeStore {
     }
 
     private async stopMetronome() {
-        // this.startTime = 0;
         try {
             const startTime = await MetronomeModule.stopMetronome();
             runInAction(() => (this.startTime = startTime));

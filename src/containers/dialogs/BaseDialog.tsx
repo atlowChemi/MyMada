@@ -20,13 +20,13 @@ export const BaseDialog = observer<BaseDialogProps>(({ title, description, okTex
             if (blockBackdropPress) {
                 return;
             }
-            closeDialog(false);
+            closeDialog(undefined);
         },
         onRequestClose() {
             if (blockBackBtn) {
                 return;
             }
-            closeDialog(false);
+            closeDialog(undefined);
         },
         onCancel() {
             closeDialog(false);

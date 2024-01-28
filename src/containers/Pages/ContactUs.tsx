@@ -273,7 +273,7 @@ const ChatFooter = observer<{ localStore: ContactUsLocalStore }>(({ localStore }
 
     return (
         <View style={styles.chatFooter}>
-            <Text style={styles.font}>{localStore.seenByAdmin}</Text>
+            <Text>{localStore.seenByAdmin}</Text>
             <View style={styles.sendSection}>
                 <TextInput wrapperStyle={styles.sendText} value={localStore.messageValue} onChangeText={localStore.messageChanged} numberOfLines={3} label={t('contact:msgHint')} />
                 <Pressable android_ripple={{ color: colors.ocean, radius: 36, borderless: false }} style={[styles.sendBtn]} onPress={localStore.sendMessage}>

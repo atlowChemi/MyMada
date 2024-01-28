@@ -1,4 +1,4 @@
-package atlow.chemi.mymada;
+package atlow.chemi.mymada.helpers;
 
 
 import android.app.Notification;
@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
@@ -21,7 +20,9 @@ import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
 import static atlow.chemi.mymada.Constants.METRONOME_NOTIFICATION_BUTTON_PRESSED;
 import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
 
-class NotificationHelper {
+import atlow.chemi.mymada.MainReactActivity;
+
+public class NotificationHelper {
     private static NotificationHelper instance = null;
     private final NotificationManager mNotificationManager;
 
@@ -37,7 +38,7 @@ class NotificationHelper {
 
     }
 
-    void createNotificationChannelGroup(ReadableMap channelGroupConfig, Promise promise) {
+    public void createNotificationChannelGroup(ReadableMap channelGroupConfig, Promise promise) {
         if (channelGroupConfig == null) {
             promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel group config is invalid");
             return;
@@ -69,7 +70,7 @@ class NotificationHelper {
         }
     }
 
-    void createNotificationChannel(ReadableMap channelConfig, Promise promise) {
+    public void createNotificationChannel(ReadableMap channelConfig, Promise promise) {
         if (channelConfig == null) {
             promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel config is invalid");
             return;
@@ -105,7 +106,7 @@ class NotificationHelper {
         }
     }
 
-    Notification buildNotification(Context context, Bundle notificationConfig) {
+    public Notification buildNotification(Context context, Bundle notificationConfig) {
         if (notificationConfig == null) {
             return null;
         }

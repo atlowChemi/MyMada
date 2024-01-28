@@ -6,4 +6,5 @@ export default {
     cancel: 'ביטול',
     notNow: 'לא כרגע',
     toolbarBack: 'חזרה לעמוד הבית',
+    send: 'שליחה',
 } as const;

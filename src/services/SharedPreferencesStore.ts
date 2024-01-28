@@ -91,4 +91,11 @@ export class SharedPreferencesStore {
             tempChannelCleanup?.();
         }
     }
+
+    public makePrefBoolean(value: string | undefined, defaultValue: boolean) {
+        if (value === undefined) {
+            return defaultValue;
+        }
+        return value === 'true';
+    }
 }

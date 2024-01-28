@@ -6,4 +6,5 @@ export default {
     cancel: 'Cancel',
     notNow: 'Not now',
     toolbarBack: 'Home page',
+    send: 'Send',
 } as const;

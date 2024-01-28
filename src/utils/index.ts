@@ -13,11 +13,11 @@ export const createDeferredPromise = <T = void>() => {
 
 const alphabet = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890';
 
-export const randomString = (length = 16) => {
+export const randomString = (length = 16, source = alphabet) => {
     let result = '';
     for (let i = 0; i < length; i++) {
-        const index = Math.floor(Math.random() * alphabet.length);
-        result += alphabet[index];
+        const index = Math.floor(Math.random() * source.length);
+        result += source[index];
     }
     return result;
 };

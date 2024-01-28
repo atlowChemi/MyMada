@@ -1,4 +1,4 @@
-package atlow.chemi.mymada;
+package atlow.chemi.mymada.ReactModules;
 
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
 
@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
+import atlow.chemi.mymada.helpers.NotificationHelper;
 
 @ReactModule(name = NotificationsModule.NAME)
 public class NotificationsModule extends ReactContextBaseJavaModule {
