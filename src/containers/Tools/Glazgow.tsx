@@ -98,6 +98,7 @@ export const GlazgowCalculator = observer<NavigatableScreenProps>(({ navigation 
         return navigationStore.setToolsNavigator(navigation as any);
     }, [navigationStore, navigation]);
 
+    // Handle landscape orientation
     return (
         <BasePageView
             postScroll={

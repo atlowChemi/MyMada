@@ -121,9 +121,6 @@
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".recieversAndServices.MetroService"
-            android:label="@string/metroMoni" />
-        <service
             android:name=".ForegroundService" />
         <service
             android:name=".NotificationService"
@@ -158,7 +155,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".recieversAndServices.MyTileService"
+            android:name=".recieversAndServices.MetronomeTileService"
             android:enabled="@bool/tile"
             android:icon="@drawable/ic_metronome_tile"
             android:label="@string/button_d"

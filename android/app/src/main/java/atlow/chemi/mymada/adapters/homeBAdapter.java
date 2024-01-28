@@ -40,7 +40,6 @@ import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 import atlow.chemi.mymada.classes.HomeB;
 import atlow.chemi.mymada.MokedPage;
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.UtillitiesAndTools;
 import atlow.chemi.mymada.codeRequest;
 import atlow.chemi.mymada.contactChatActivity;
 import atlow.chemi.mymada.lockPage;
@@ -182,7 +181,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                     }
                     break;
                 case "tol":
-                    intent = new Intent(mContext, UtillitiesAndTools.class);
+                    intent = new Intent(mContext, MainReactActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
                     break;

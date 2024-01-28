@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 import atlow.chemi.mymada.MetronomeManager;
 
 @TargetApi(Build.VERSION_CODES.N)
-public class MyTileService extends TileService {
+public class MetronomeTileService extends TileService {
     private final Consumer<HashMap<String, Object>> onToggleHandler =  val -> {
         var state = (boolean)val.getOrDefault(METRONOME_STATE, false);
         toggleState(state ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);

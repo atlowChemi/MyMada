@@ -45,6 +45,7 @@ export const Metronome = observer<NavigatableScreenProps>(({ navigation }) => {
         store.updateStartTimeFromModule();
     }, [store]);
 
+    // Handle landscape orientation
     return (
         <BasePageView scrollType="none">
             <Pressable style={styles.page} onPress={store.toggleMetronome}>
