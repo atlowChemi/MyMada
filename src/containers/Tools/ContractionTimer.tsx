@@ -281,6 +281,7 @@ export const ContractionTimer = observer<NavigatableScreenProps>(({ navigation }
         );
     }
 
+    // Handle landscape orientation
     return (
         <BasePageView
             scrollType="flat"
