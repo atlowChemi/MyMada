@@ -4,6 +4,7 @@ import contact from './contact';
 import errors from './errors';
 import permissions from './permissions';
 import privacy from './privacy';
+import testCall from './testCall';
 import tools from './tools';
 
 export default {
@@ -13,6 +14,7 @@ export default {
     errors,
     permissions,
     privacy,
+    testCall,
     tools,
     // smsMoni: 'הפעלת האפליקציה ברקע',
     // notiMoni: 'זיהוי התראות ברקע',
@@ -167,9 +169,6 @@ export default {
 //     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
 //     <string name="importanceMsg">זיהינו כי התראה על זיהוי הודעות ברקע מופיעה במסך.\nלידיעתך, ניתן להעלים אותו על ידי העברה לדחיפות נמוכה.</string>
 //     <string name="importance">הורד דחיפות</string>
-//     <string name="TEAMTest">הודעת צוות. 02:34 מונה:1325 כתובת: בדיקה!!! ירושלים בורוכוב. קוד הזנקה: מחלה מבוגר, קוד רפואי: חוסר הכרה</string>
-//     <string name="CONANTest">אירוע חדש. 14:18 מונה:267 כתובת: בדיקה!!!ירושלים המ\"ג, קוד הזנקה: מחלה מבוגר, קוד רפואי: דום לב</string>
-//     <string name="APP_reco_none">אנא התקן את אפליקציית מד"א תחילה!</string>
 //     <string name="search">חיפוש</string>
 //     <string name="newCall">אירוע חדש!</string>
 //     <string name="edit">ערוך</string>
@@ -224,11 +223,7 @@ export default {
 //     <string name="title_notif">התראה</string>
 //     <string name="pick_sound">בחר צליל</string>
 //     <string name="numberNone">לא רשמת מספר!</string>
-//     <string name="admin">מנהל:</string>
-//     <string name="user">אתה:</string>
 //     <string name="general_settings">הגדרות כלליות</string>
 //     <string name="langBad">החלפת שפה הופסקה בשל תקלה. ודא שיש חיבור לרשת ונסה שוב!</string>
 //     <string name="langLoad">מוריד את השפה המבוקשת %s</string>
-//     <string name="oxyCalc" translatable="false">%d</string>
-//     <string name="MetroBound">המטרונום פעיל מתוך כלי עזר, לא ניתן לעצור אותו חיצונית.</string>
 // </resources>
