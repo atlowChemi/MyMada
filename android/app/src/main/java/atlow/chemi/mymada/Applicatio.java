@@ -35,6 +35,8 @@ import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 import static android.service.notification.NotificationListenerService.requestRebind;
 
+import static atlow.chemi.mymada.Constants.TEST_CALL_ACTION;
+
 import java.util.List;
 
 public class Applicatio extends MultiDexApplication implements ReactApplication {
@@ -78,8 +80,7 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
     @SuppressLint("VisibleForTests")
     public ReactContext getReactContext() {
         var instanceManager = getReactNativeHost().getReactInstanceManager();
-        var currentContext = instanceManager.getCurrentReactContext();
-        return currentContext;
+        return instanceManager.getCurrentReactContext();
     }
 
     @Override
@@ -94,7 +95,7 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
         super.onCreate();
         try {
             SoLoader.init(this, false);
-            I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+            var sharedI18nUtilInstance = I18nUtil.getInstance();
             sharedI18nUtilInstance.allowRTL(getApplicationContext(), true);
             if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
                 // If you opted-in for the New Architecture, we load the native entry point for this app.
@@ -108,10 +109,10 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SERIF", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SANS_SERIF", "fonts/opensanshebrew.ttf");
-        SharedPreferences sharedPreferences = getSharedPreferences("Settings",0);
-        boolean mapp = sharedPreferences.getBoolean("Mapp", false);
+        var sharedPreferences = getSharedPreferences("Settings",0);
+        var mapp = sharedPreferences.getBoolean("Mapp", false);
         if (mapp) {
-            Intent serviceIntent = new Intent(getApplicationContext(), SMSMonitorService.class);
+            var serviceIntent = new Intent(getApplicationContext(), SMSMonitorService.class);
             ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
             try {
                 tryConnectService(getApplicationContext());
@@ -125,28 +126,27 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
     public static void tryConnectService(Context mContext) {
         toggleNotificationListenerService(mContext);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ComponentName componentName = new ComponentName(mContext, NotificationService.class);
+            var componentName = new ComponentName(mContext, NotificationService.class);
             requestRebind(componentName);
         }
     }
     public static void toggleNotificationListenerService(Context mContext) {
-        PackageManager pm = mContext.getPackageManager();
-        ComponentName componentName = new ComponentName(mContext, NotificationService.class);
+        var pm = mContext.getPackageManager();
+        var componentName = new ComponentName(mContext, NotificationService.class);
         pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
         pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
     private void makeRec() {
-        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-        BroadcastReceiver receiver;
-        receiver = new GrobootRec();
-        IntentFilter filter = new IntentFilter("MADA_APP");
-        filter.addAction("atlow.chemi.MyMada.MADA_APP");
+        var broadcastManager = LocalBroadcastManager.getInstance(this);
+        var receiver = new GrobootRec();
+        var filter = new IntentFilter("MADA_APP");
+        filter.addAction(TEST_CALL_ACTION);
         broadcastManager.registerReceiver(receiver, filter);
-        IntentFilter filter2 = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
+        var filter2 = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
         filter2.addAction(Intent.ACTION_PACKAGE_RESTARTED);
         filter2.addAction(Intent.ACTION_PACKAGE_ADDED);
         filter2.addAction(Intent.ACTION_PACKAGE_REPLACED);
-        BroadcastReceiver bcr = new BootCompleteReceiver();
+        var bcr = new BootCompleteReceiver();
         broadcastManager.registerReceiver(bcr, filter2);
     }
 }

@@ -3,6 +3,13 @@ import { NativeModules } from 'react-native';
 
 const { MadaNotificationsModule } = NativeModules;
 
+export const enum CallType {
+    OnCall = 1,
+    Group = 2,
+    Shift = 3,
+    Administrative = 4,
+}
+
 @injectable()
 export class MadaNotificationsStore {
     public hasMadaApp(): Promise<boolean> {
@@ -11,5 +18,9 @@ export class MadaNotificationsStore {
 
     public getAppData(): Promise<{ packageName: string; uid: number }> {
         return MadaNotificationsModule.getAppData();
+    }
+
+    public triggerTestCall(config: { callType: CallType; callText: string }): Promise<void> {
+        return MadaNotificationsModule.triggerTestCall(config);
     }
 }

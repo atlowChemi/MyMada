@@ -20,5 +20,6 @@ public class Constants {
 
     public static final String NOTIFICATION_HELPER_SOURCE = "NOTIFICATION_HELPER";
 
-    public  static final String MADA_APP_PACKAGE = "com.groboot.mdaemergency";
+    public static final String MADA_APP_PACKAGE = "com.groboot.mdaemergency";
+    public static final String TEST_CALL_ACTION = "atlow.chemi.MyMada.MADA_APP";
 }
