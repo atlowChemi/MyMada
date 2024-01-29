@@ -1,18 +1,24 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { observable } from 'mobx';
+import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { Image, Pressable, StyleSheet } from 'react-native';
 import { colors } from '../consts';
-import type { GestureResponderEvent, PressableStateCallbackType, StyleProp, ViewStyle, ImageSourcePropType } from 'react-native';
+import { Text } from '../Components/Text';
+import { Icon, type IconName } from '../Components/Icon';
+import type { GestureResponderEvent, PressableStateCallbackType, StyleProp, ViewStyle } from 'react-native';
 
 interface HomeBtnProps {
     big?: boolean;
-    img: ImageSourcePropType;
+    icon: IconName;
+    size?: number;
     style?: StyleProp<ViewStyle>;
+    textStyle?: StyleProp<ViewStyle>;
     onPress(event: GestureResponderEvent): void;
 }
 
-export const HomeBtn = observer<HomeBtnProps>(({ big, img, style, onPress }) => {
+export const HomeBtn = observer<HomeBtnProps>(({ big, icon, size = 80, textStyle, style, onPress }) => {
+    const { t, i18n } = useTranslation();
     const state = useLocalObservable(
         () => ({
             big,
@@ -34,23 +40,21 @@ export const HomeBtn = observer<HomeBtnProps>(({ big, img, style, onPress }) => 
             onPressOut() {
                 this.isPressed = false;
             },
-            get imageStyle() {
-                return [styles.image, this.isPressed && { opacity: 0.7 }];
-            },
         }),
         { style: observable.ref },
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         state.big = big;
     }, [state, big]);
-    React.useEffect(() => {
+    useEffect(() => {
         state.style = style;
     }, [state, style]);
 
     return (
         <Pressable style={state.pressableStyle} onPressIn={state.onPressIn} onPressOut={state.onPressOut} onPress={onPress}>
-            <Image source={img} style={styles.image} />
+            <Icon name={icon} size={size} color={colors.oldPrimary} />
+            <Text style={[styles.name, i18n.language === 'en' && styles.englishName, textStyle]}>{t(`home:${icon}`)}</Text>
         </Pressable>
     );
 });
@@ -74,5 +78,13 @@ const styles = StyleSheet.create({
         maxWidth: '100%',
         height: '100%',
         resizeMode: 'cover',
+    },
+    name: {
+        fontSize: 28,
+        fontWeight: '900',
+        textAlign: 'center',
+    },
+    englishName: {
+        letterSpacing: -2,
     },
 });
