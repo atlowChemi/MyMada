@@ -70,15 +70,15 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
             scrollContentStyle={styles.scrollContent}
             preScroll={<LinearGradient colors={['#1f425f', colors.colorPrimary, colors.colorPrimary]} angle={0} useAngle style={styles.roundBg} />}>
             <View>
-                <HomeBtn big img={require('../../assets/homeBtns/new_tol.png')} onPress={navigationStore.goToTools} />
+                <HomeBtn big icon="tools" onPress={navigationStore.goToTools} />
             </View>
             <View style={styles.buttonRow}>
-                <HomeBtn img={require('../../assets/homeBtns/new_mok.png')} onPress={() => {}} />
-                <HomeBtn img={require('../../assets/homeBtns/new_tes.png')} onPress={localStore.onRequestTest} />
+                <HomeBtn icon="dispatch" onPress={() => {}} />
+                <HomeBtn icon="testCall" onPress={localStore.onRequestTest} />
             </View>
             <View style={styles.buttonRow}>
-                <HomeBtn img={require('../../assets/homeBtns/new_con.png')} onPress={navigationStore.goToContactUs} />
-                <HomeBtn img={require('../../assets/homeBtns/new_inf.png')} onPress={navigationStore.goToAboutTheApp} />
+                <HomeBtn icon="contactUs" onPress={navigationStore.goToContactUs} />
+                <HomeBtn icon="info" onPress={navigationStore.goToAboutTheApp} />
             </View>
         </BasePageView>
     );

@@ -2,6 +2,7 @@ import aboutUs from './aboutUs';
 import common from './common';
 import contact from './contact';
 import errors from './errors';
+import home from './home';
 import permissions from './permissions';
 import privacy from './privacy';
 import testCall from './testCall';
@@ -12,6 +13,7 @@ export default {
     common,
     contact,
     errors,
+    home,
     permissions,
     privacy,
     testCall,
