@@ -92,8 +92,10 @@ export class NavigationStore {
         };
     }
 
-    public goHome = () => this.navigator?.navigate('Home');
-    public goToTools = () => this.navigator?.navigate('Tools');
+    public navigate = (page: Page) => this.navigator?.navigate(page);
+
+    public goHome = () => this.navigate('Home');
+    public goToTools = () => this.navigate('Tools');
     public goToToolsTab = async (route: Tools) => {
         this.goToTools();
         await when(() => this.toolsNavigator !== undefined);
@@ -115,7 +117,7 @@ export class NavigationStore {
                 return;
             }
             if (!navigateToContact) {
-                this.navigator?.navigate('RequestCode');
+                this.navigate('RequestCode');
                 return;
             }
         }
@@ -143,10 +145,10 @@ export class NavigationStore {
             }
             return;
         }
-        this.navigator?.navigate('ContactUs');
+        this.navigate('ContactUs');
     };
-    public goToAboutTheApp = () => /* open ad */ this.navigator?.navigate('About');
-    public goToPrivacyPolicy = () => /* open ad */ this.navigator?.navigate('Privacy');
+    public goToAboutTheApp = () => /* open ad */ this.navigate('About');
+    public goToPrivacyPolicy = () => /* open ad */ this.navigate('Privacy');
     public goBack = () => this.navigator?.goBack();
     public openDrawer = () => this.toolsNavigator?.toggleDrawer();
 

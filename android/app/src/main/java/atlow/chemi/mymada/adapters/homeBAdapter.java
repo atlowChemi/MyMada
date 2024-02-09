@@ -2,7 +2,6 @@ package atlow.chemi.mymada.adapters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,7 +12,6 @@ import android.graphics.Typeface;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Display;
@@ -25,9 +23,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
@@ -36,12 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import atlow.chemi.mymada.MainReactActivity;
-import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 import atlow.chemi.mymada.classes.HomeB;
 import atlow.chemi.mymada.MokedPage;
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.codeRequest;
-import atlow.chemi.mymada.contactChatActivity;
 import atlow.chemi.mymada.lockPage;
 
 public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {

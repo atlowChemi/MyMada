@@ -196,7 +196,7 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
             }
             var notificationConfig = Arguments.createMap();
             notificationConfig.putInt("id", 13);
-            notificationConfig.putBoolean("color", true);
+            notificationConfig.putString("color", "red");
             notificationConfig.putString("icon", "ic_metronome_tile");
             notificationConfig.putInt("priority", Notification.PRIORITY_MIN);
             notificationConfig.putString("channelId", RUN_IN_BG_NOTIFICATION_CHANNEL);
@@ -204,7 +204,10 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
             notificationConfig.putString("button", context.getString(R.string.MetroStop));
             notificationConfig.putString("title", context.getString(R.string.MetroServiceTtl));
             notificationConfig.putDouble("startTime", System.currentTimeMillis());
-            
+            notificationConfig.putBoolean("navigateToTools", true);
+            notificationConfig.putBoolean("isOnGoing", true);
+            notificationConfig.putString("target", "MetronomeActivity");
+
             startMetronome(context, notificationConfig, null);
         } catch (Exception e) {
             Log.e("MetronomeManager", "Toggle poop", e);

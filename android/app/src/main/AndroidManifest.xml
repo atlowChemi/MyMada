@@ -152,13 +152,6 @@
             </intent-filter>
         </service>
         <service
-            android:name=".helpers.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <service
             android:name=".recieversAndServices.MetronomeTileService"
             android:enabled="@bool/tile"
             android:icon="@drawable/ic_metronome_tile"
