@@ -143,8 +143,7 @@ class VitalsCalculatorLocalStore {
         this.category = category;
     }
 
-    public onSubmitEditing(e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) {
-        console.log(e);
+    public onSubmitEditing(_: NativeSyntheticEvent<TextInputSubmitEditingEventData>) {
         const { pulseRef, breathRef, systolicRef, diastolicRef } = this;
         if (pulseRef?.isFocused()) {
             breathRef?.focus();

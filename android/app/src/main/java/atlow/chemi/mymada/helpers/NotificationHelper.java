@@ -8,6 +8,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +21,8 @@ import static atlow.chemi.mymada.Constants.ERROR_ANDROID_VERSION;
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
 import static atlow.chemi.mymada.Constants.METRONOME_NOTIFICATION_BUTTON_PRESSED;
 import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
+
+import androidx.core.app.NotificationCompat;
 
 import atlow.chemi.mymada.MainReactActivity;
 
@@ -35,7 +39,6 @@ public class NotificationHelper {
 
     private NotificationHelper(Context context) {
         mNotificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-
     }
 
     public void createNotificationChannelGroup(ReadableMap channelGroupConfig, Promise promise) {
@@ -48,18 +51,18 @@ public class NotificationHelper {
                 promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id is required");
                 return;
             }
-            String channelGroupId = channelGroupConfig.getString("id");
+            var channelGroupId = channelGroupConfig.getString("id");
             if (!channelGroupConfig.hasKey("name")) {
                 promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel name is required");
                 return;
             }
-            String channelGroupName = channelGroupConfig.getString("name");
+            var channelGroupName = channelGroupConfig.getString("name");
             if (channelGroupId == null || channelGroupName == null) {
                 promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel group id or name is not specified");
                 return;
             }
-            String channelGroupDescription = channelGroupConfig.getString("description");
-            NotificationChannelGroup grp = new NotificationChannelGroup(channelGroupId, channelGroupName);
+            var channelGroupDescription = channelGroupConfig.getString("description");
+            var grp = new NotificationChannelGroup(channelGroupId, channelGroupName);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 grp.setDescription(channelGroupDescription);
             }
@@ -80,24 +83,24 @@ public class NotificationHelper {
                 promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id is required");
                 return;
             }
-            String channelId = channelConfig.getString("id");
+            var channelId = channelConfig.getString("id");
             if (!channelConfig.hasKey("name")) {
                 promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel name is required");
                 return;
             }
-            String channelName = channelConfig.getString("name");
-            String channelDescription = channelConfig.getString("description");
-            int channelImportance = channelConfig.hasKey("importance") ?
+            var channelName = channelConfig.getString("name");
+            var channelDescription = channelConfig.getString("description");
+            var channelImportance = channelConfig.hasKey("importance") ?
                     channelConfig.getInt("importance") : NotificationManager.IMPORTANCE_LOW;
-            boolean enableVibration = channelConfig.hasKey("enableVibration") && channelConfig.getBoolean("enableVibration");
+            var enableVibration = channelConfig.hasKey("enableVibration") && channelConfig.getBoolean("enableVibration");
             if (channelId == null || channelName == null) {
                 promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id or name is not specified");
                 return;
             }
-            NotificationChannel channel = new NotificationChannel(channelId, channelName, channelImportance);
+            var channel = new NotificationChannel(channelId, channelName, channelImportance);
             channel.setDescription(channelDescription);
             channel.enableVibration(enableVibration);
-            String channelGroup = channelConfig.getString("group");
+            var channelGroup = channelConfig.getString("group");
             channel.setGroup(channelGroup);
             mNotificationManager.createNotificationChannel(channel);
             promise.resolve(null);
@@ -110,53 +113,66 @@ public class NotificationHelper {
         if (notificationConfig == null) {
             return null;
         }
-        Class mainActivityClass = getMainActivityClass(context);
+        var mainActivityClass = getMainActivityClass(context);
         if (mainActivityClass == null) {
             return null;
         }
-        Intent notificationIntent = new Intent(context, mainActivityClass);
+        var notificationIntent = new Intent(context, mainActivityClass);
         notificationIntent.putExtra("source", NOTIFICATION_HELPER_SOURCE);
         notificationIntent.putExtras(notificationConfig);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent,
+        var pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent,
                 (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? (PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT) : PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification.Builder notificationBuilder;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String channelId = notificationConfig.getString("channelId");
-            if (channelId == null) {
-                return null;
-            }
-            notificationBuilder = new Notification.Builder(context, channelId);
-        } else {
-            notificationBuilder = new Notification.Builder(context);
+        var channelId = notificationConfig.getString("channelId");
+        if (channelId == null) {
+            return null;
         }
+        var notificationBuilder = new NotificationCompat.Builder(context, channelId);
 
-        int priorityInt = notificationConfig.containsKey("priority") ? notificationConfig.getInt("priority"): Notification.PRIORITY_HIGH;
-
-        int priority = getPriority(priorityInt);
+        var priorityInt = notificationConfig.containsKey("priority") ? notificationConfig.getInt("priority"): Notification.PRIORITY_HIGH;
+        var priority = getPriority(priorityInt);
 
         notificationBuilder.setContentTitle(notificationConfig.getString("title"))
                 .setContentText(notificationConfig.getString("text"))
                 .setPriority(priority)
                 .setContentIntent(pendingIntent)
-                .setSound(null)
-                .setVibrate(null)
-                .setOngoing(true);
+                .setAutoCancel(notificationConfig.getBoolean("isAutoCancelable", false))
+                .setOngoing(notificationConfig.getBoolean("isOnGoing", false));
 
-        String iconName = notificationConfig.getString("icon");
+        var ticker = notificationConfig.getString("ticker");
+        if (ticker != null) {
+            notificationBuilder.setTicker(ticker);
+        }
+
+        var bigText = notificationConfig.getString("bigText");
+        if (bigText != null) {
+            notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
+        }
+
+        var iconName = notificationConfig.getString("icon");
         if (iconName != null) {
             notificationBuilder.setSmallIcon(getResourceIdForResourceName(context, iconName));
         }
+        var largeIconName = notificationConfig.getString("largeIcon");
+        if (largeIconName != null) {
+            notificationBuilder.setLargeIcon(getBitmapForResourceName(context, largeIconName));
+        }
 
-        if (notificationConfig.containsKey("color")) {
+        var color = notificationConfig.getString("color", "");
+        if (color.equals("red")) {
             notificationBuilder.setColor(Color.argb(50, 255, 57, 50));
         }
 
+        if (notificationConfig.getBoolean("useDefaults", false)) {
+            notificationBuilder.setDefaults(Notification.DEFAULT_ALL);
+        } else {
+            notificationBuilder.setSound(null).setVibrate(null);
+        }
+
         if (notificationConfig.containsKey("button")) {
-            Intent buttonIntent = new Intent();
+            var buttonIntent = new Intent();
             buttonIntent.setAction(METRONOME_NOTIFICATION_BUTTON_PRESSED);
-            PendingIntent pendingButtonIntent = PendingIntent.getBroadcast(context, 0, buttonIntent,
+            var pendingButtonIntent = PendingIntent.getBroadcast(context, 0, buttonIntent,
                     (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? (PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT) : PendingIntent.FLAG_UPDATE_CURRENT);
 
             notificationBuilder.addAction(0, notificationConfig.getString("button"), pendingButtonIntent);
@@ -168,8 +184,8 @@ public class NotificationHelper {
     private Class getMainActivityClass(Context context) {
         // temp
         return MainReactActivity.class;
-//        String packageName = context.getPackageName();
-//        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+//        var packageName = context.getPackageName();
+//        var launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
 //        if (launchIntent == null || launchIntent.getComponent() == null) {
 //            return null;
 //        }
@@ -197,10 +213,15 @@ public class NotificationHelper {
     }
 
     private int getResourceIdForResourceName(Context context, String resourceName) {
-        int resourceId = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
+        var resourceId = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
         if (resourceId == 0) {
             resourceId = context.getResources().getIdentifier(resourceName, "mipmap", context.getPackageName());
         }
         return resourceId;
+    }
+
+    private Bitmap getBitmapForResourceName(Context context, String resourceName) {
+        var resource = getResourceIdForResourceName(context, resourceName);
+        return BitmapFactory.decodeResource(context.getResources(), resource);
     }
 }

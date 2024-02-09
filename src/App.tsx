@@ -8,6 +8,7 @@ import { HomePage } from './containers/Pages/HomePage';
 import { ContactUs } from './containers/Pages/ContactUs';
 import { AboutTheApp } from './containers/Pages/AboutTheApp';
 import { DialogWrapper } from './services/DialogStore';
+import { MessagingStore } from './services/MessagingStore';
 import { MetronomeStore } from './services/MetronomeStore';
 import { SnackbarWrapper } from './services/SnackbarStore';
 import { NavigationStore } from './services/NavigationStore';
@@ -28,14 +29,19 @@ const Stack = createNativeStackNavigator();
 
 export const App: React.FC = (props: any) => {
     const navigationStore = container.get(NavigationStore);
+    const messagingStore = container.get(MessagingStore);
     const metronomeStore = container.get(MetronomeStore);
     setLanguage('he');
 
     useEffect(() => {
-        if (props.source === NOTIFICATION_HELPER_SOURCE) {
-            navigationStore.goToToolsTab('MetronomeActivity');
+        const { source, target, navigateToTools = false } = props || {};
+        const navigationFn = navigateToTools ? navigationStore.goToToolsTab : navigationStore.navigate;
+        if (source === NOTIFICATION_HELPER_SOURCE && typeof target === 'string') {
+            navigationFn(target as never);
         }
     }, [props, metronomeStore, navigationStore]);
+
+    useEffect(() => messagingStore.setUpMessaging(), [messagingStore]);
 
     return (
         <DependencyInjectionProvider container={container}>

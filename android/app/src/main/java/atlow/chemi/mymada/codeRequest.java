@@ -15,7 +15,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Editable;
@@ -47,7 +46,6 @@ import java.util.Map;
 import java.util.Random;
 
 import atlow.chemi.mymada.helpers.LocalHelper;
-import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
@@ -77,7 +75,7 @@ public class codeRequest extends AppCompatActivity {
         builder.setTitle(getResources().getString(R.string.plsNote)).setMessage(getResources().getString(R.string.plsNoteT)).setCancelable(false);
         builder.setPositiveButton(getResources().getString(R.string.ok), (dialogInterface, i) -> dialogInterface.dismiss());
         builder.show();
-        MyFirebaseMessagingService.getToken(getApplicationContext());
+//        MyFirebaseMessagingService.getToken(getApplicationContext());
         token = getSharedPreferences("Settings", 0).getString("fcm", "empty");
         pdialog = new ProgressDialog(codeRequest.this);
         pdialog.setIndeterminate(true);

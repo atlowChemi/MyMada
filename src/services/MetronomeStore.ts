@@ -34,7 +34,6 @@ export class MetronomeStore {
         this.updateStartTimeFromModule();
 
         this.eventEmitter.addListener('MetronomeToggled', ({ METRONOME_START_TIME = 0 } = {}) => {
-            console.warn('MetronomeManager: MetronomeToggled', METRONOME_START_TIME);
             runInAction(() => (this.startTime = METRONOME_START_TIME));
         });
     }
@@ -102,18 +101,20 @@ export class MetronomeStore {
             }
             const startTime = await MetronomeModule.startMetronome({
                 id: 13,
-                color: true,
+                color: 'red',
+                isOnGoing: true,
+                startTime: Date.now(),
+                navigateToTools: true,
                 icon: 'ic_metronome_tile',
+                target: 'MetronomeActivity',
                 priority: Priority.PRIORITY_MIN,
                 channelId: NOTIFICATION_MAP.CHANNELS.BACKGROUND,
                 text: i18n.t('tools:metronome:notificationTxt'),
                 button: i18n.t('tools:metronome:notificationBtn'),
                 title: i18n.t('tools:metronome:notificationTitle'),
-                startTime: Date.now(),
             });
             runInAction(() => (this.startTime = startTime));
         } catch (e) {
-            console.warn('MetronomeManager startMetronome failed', e);
             // Crashlytics
         }
     }
@@ -123,7 +124,6 @@ export class MetronomeStore {
             const startTime = await MetronomeModule.stopMetronome();
             runInAction(() => (this.startTime = startTime));
         } catch (e) {
-            console.warn('MetronomeManager stopMetronome failed', e);
             // Crashlytics
         }
     }

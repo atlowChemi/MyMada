@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import type { Page, Tools } from './NavigationStore';
 
 const { NotificationsModule } = NativeModules;
 
@@ -25,12 +26,28 @@ export interface NotificationConfig {
     text: string;
     /** Small icon name */
     icon: string;
+    /** Large icon name */
+    largeIcon?: string;
     /** Priority of this notification. */
     priority?: Priority;
-    /** If this property exists, notification will be contain button with text as button value. */
+    /** If this property exists, notification will contain button with given string as button value. */
     button?: string;
-    /** If this property exists, notification will be colored in red. */
-    color?: true;
+    /** Set the notifications color. */
+    color?: 'red';
+    /** If this property exists, default sound and vibration will be used on Android M and below. */
+    useDefaults?: boolean;
+    /** If this property exists, notification will be canceled when user taps on it. */
+    isAutoCancelable?: boolean;
+    /** If this property exists, notification will be persistent and won't be removable. */
+    isOnGoing?: boolean;
+    /** If this property exists, notification will contain a ticker. */
+    ticker?: string;
+    /** If this property exists, notification will show the given text when unfolded. */
+    bigText?: string;
+    /** If this property exists, clicking the notification will navigate to the given page. */
+    target?: Tools | Page;
+    /** Marks wether ther @see {target} is a tools page */
+    navigateToTools?: boolean;
     /** additional data */
     [key: string]: any;
 }
@@ -60,11 +77,13 @@ interface NotificationChannelConfig extends NotificationChannelGroupConfig {
     group?: string;
 }
 
-interface AudioGenerator {
+interface NotificationsModuleStatic {
     /** Create notification channel for foreground service */
     createNotificationChannelGroup(channelGroupConfig: NotificationChannelGroupConfig): Promise<void>;
     /** Create notification channel for foreground service */
     createNotificationChannel(channelConfig: NotificationChannelConfig): Promise<void>;
+    /** Publish a notification */
+    publishNotification(notificationConfig: NotificationConfig): Promise<void>;
 }
 
 export const NOTIFICATION_MAP = {
@@ -76,4 +95,4 @@ export const NOTIFICATION_MAP = {
     },
 } as const;
 
-export const notificationsService = NotificationsModule as AudioGenerator;
+export const notificationsService = NotificationsModule as NotificationsModuleStatic;

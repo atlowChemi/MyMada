@@ -12,7 +12,6 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -51,7 +50,6 @@ import atlow.chemi.mymada.adapters.ChatAdapter;
 import atlow.chemi.mymada.classes.Chat;
 import atlow.chemi.mymada.helpers.FixedTextInputEditText;
 import atlow.chemi.mymada.helpers.LocalHelper;
-import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
@@ -93,7 +91,7 @@ public class contactChatActivity extends AppCompatActivity {
         itemAnimator.setRemoveDuration(1000);
         msgs.setItemAnimator(itemAnimator);
 
-        MyFirebaseMessagingService.getToken(getApplicationContext());
+//        MyFirebaseMessagingService.getToken(getApplicationContext());
         fcmToken = getSharedPreferences("Settings", 0).getString("fcm", "empty");
         root = FirebaseDatabase.getInstance().getReference().child("chats").child(fcmToken);
         ChatT = findViewById(R.id.chatT);

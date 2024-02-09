@@ -46,7 +46,6 @@ import java.util.List;
 import atlow.chemi.mymada.adapters.homeBAdapter;
 import atlow.chemi.mymada.classes.HomeB;
 import atlow.chemi.mymada.helpers.LocalHelper;
-import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
 import atlow.chemi.mymada.helpers.rateUs;
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
@@ -67,7 +66,7 @@ public class HomePage extends AppCompatActivity {
         setNotifChannels();
         rateUs.app_launched(HomePage.this);
         Context context = HomePage.this;
-        MyFirebaseMessagingService.getToken(getApplicationContext());
+//        MyFirebaseMessagingService.getToken(getApplicationContext());
         String token = getSharedPreferences("Settings", 0).getString("fcm", "empty");
 //        Crashlytics.setUserIdentifier(token);
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
