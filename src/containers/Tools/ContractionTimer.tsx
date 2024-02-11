@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
+import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
@@ -92,8 +93,8 @@ class ContractionTimerLocalStore {
                 this.active = false;
             });
             await this.cleanupSavedData();
-        } catch {
-            // Crashlytics
+        } catch (e) {
+            e instanceof Error && crashlytics().recordError(e);
         }
     }
 
@@ -138,8 +139,8 @@ class ContractionTimerLocalStore {
             if (!this.contractions.tail?.value.end) {
                 this.active = true;
             }
-        } catch {
-            // Crashlytics
+        } catch (e) {
+            e instanceof Error && crashlytics().recordError(e);
         } finally {
             this.isHandlingReload = false;
         }
@@ -195,8 +196,8 @@ class ContractionTimerLocalStore {
         }
         try {
             this.flatList?.scrollToIndex({ index: 0, animated: true });
-        } catch {
-            // Crashlytics
+        } catch (e) {
+            e instanceof Error && crashlytics().recordError(e);
         }
     };
 

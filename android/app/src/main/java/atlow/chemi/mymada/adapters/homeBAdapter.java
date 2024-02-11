@@ -24,9 +24,9 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
+// import com.google.android.gms.ads.AdRequest;
+// import com.google.android.gms.ads.InterstitialAd;
+// import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
     private List<HomeB> albumList;
     private ArrayList<Button> btns;
     private float oldX1, oldY1;
-    private InterstitialAd openUp;
+    // private InterstitialAd openUp;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private Button homeB;
@@ -81,10 +81,10 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
         }catch (NullPointerException e) {
             Log.e("not Added btn", e.getMessage());
         }
-        MobileAds.initialize(mContext, "ca-app-pub-7600269766434003~4255496174");
-        openUp = new InterstitialAd(mContext);
-        openUp.setAdUnitId("ca-app-pub-7600269766434003/4483563620");
-        openUp.loadAd(new AdRequest.Builder().build());
+        // MobileAds.initialize(mContext, "ca-app-pub-7600269766434003~4255496174");
+        // openUp = new InterstitialAd(mContext);
+        // openUp.setAdUnitId("ca-app-pub-7600269766434003/4483563620");
+        // openUp.loadAd(new AdRequest.Builder().build());
 
         Display display = mContext.getWindowManager().getDefaultDisplay();
         int width = display.getWidth()/2;

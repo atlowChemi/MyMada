@@ -75,7 +75,6 @@ public class codeRequest extends AppCompatActivity {
         builder.setTitle(getResources().getString(R.string.plsNote)).setMessage(getResources().getString(R.string.plsNoteT)).setCancelable(false);
         builder.setPositiveButton(getResources().getString(R.string.ok), (dialogInterface, i) -> dialogInterface.dismiss());
         builder.show();
-//        MyFirebaseMessagingService.getToken(getApplicationContext());
         token = getSharedPreferences("Settings", 0).getString("fcm", "empty");
         pdialog = new ProgressDialog(codeRequest.this);
         pdialog.setIndeterminate(true);

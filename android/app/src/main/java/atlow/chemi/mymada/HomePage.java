@@ -34,11 +34,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.messaging.FirebaseMessaging;
+//import com.google.android.gms.ads.AdRequest;
+// import com.google.android.gms.ads.AdView;
+//import com.google.android.gms.ads.MobileAds;
+// import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,20 +71,19 @@ public class HomePage extends AppCompatActivity {
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
         boolean Mapp = sharedPreferences.getBoolean("Mapp", false);
-        AdView mAdView;
+//        AdView mAdView;
         try {
             Log.e("FCM token: ", token);
         }
         catch (Exception e)    {
             e.printStackTrace();
         }
-        FirebaseMessaging.getInstance().subscribeToTopic("news");
-        FirebaseAnalytics.getInstance(getApplicationContext());
+        // FirebaseMessaging.getInstance().subscribeToTopic("news");
         try {
-            MobileAds.initialize(getApplicationContext(), "ca-app-pub-7600269766434003/5732229370");
-            mAdView = findViewById(R.id.adView);
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mAdView.loadAd(adRequest);
+//            MobileAds.initialize(getApplicationContext(), "ca-app-pub-7600269766434003/5732229370");
+//            mAdView = findViewById(R.id.adView);
+//            AdRequest adRequest = new AdRequest.Builder().build();
+//            mAdView.loadAd(adRequest);
 //            Crashlytics.log("Ads Loaded");
         }
         catch (Exception e) {
