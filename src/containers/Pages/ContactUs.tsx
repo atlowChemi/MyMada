@@ -4,9 +4,9 @@ import { fromPromise } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { action, makeAutoObservable, observable, reaction, runInAction } from 'mobx';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, GestureResponderEvent, Pressable, StyleSheet, View } from 'react-native';
 import database from '@react-native-firebase/database';
-import Dialog from 'react-native-dialog';
+import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Icon } from '../../Components/Icon';
@@ -14,6 +14,7 @@ import { Text } from '../../Components/Text';
 import { BaseDialog } from '../dialogs/BaseDialog';
 import { TextInput } from '../../Components/TextInput';
 import { DialogStore } from '../../services/DialogStore';
+import { TextInputDialog } from '../dialogs/TextInputDialog';
 import { BasePageView } from '../../Components/BasePageView';
 import { MessagingStore } from '../../services/MessagingStore';
 import { ConnectionError } from '../ConnectionError';
@@ -33,7 +34,6 @@ interface Message {
 
 @injectable()
 class ContactUsLocalStore {
-    private cancelable = true;
     private message: string = '';
     private name?: string = undefined;
     private showDisclaimer = true;
@@ -62,8 +62,6 @@ class ContactUsLocalStore {
             onChildAdded: action.bound,
             messageChanged: action.bound,
             messages: observable.shallow,
-            closeNameDialog: action.bound,
-            acceptNameDialog: action.bound,
             _showNameDialog: observable.ref,
             _nameChangeError: observable.ref,
             lastSeenByAdminStatus: observable.ref,
@@ -85,7 +83,7 @@ class ContactUsLocalStore {
                 { fireImmediately: true },
             ),
         ];
-        this.openDisclaimerDialog();
+        this.openDisclaimerDialogAndEnforceName();
         sharedPreferencesStore.name = 'Settings';
     }
 
@@ -129,8 +127,8 @@ class ContactUsLocalStore {
         this.eventCleanups.forEach(cleanup => cleanup());
     }
 
-    private *openDisclaimerDialog() {
-        yield this.dialogStore.openDialog(BaseDialog, {
+    private async openDisclaimerDialogAndEnforceName() {
+        await this.dialogStore.openDialog(BaseDialog, {
             title: i18n.t('contact:plsNote'),
             description: i18n.t('contact:disclaimer'),
             okText: i18n.t('common:ok'),
@@ -138,14 +136,12 @@ class ContactUsLocalStore {
             blockBackdropPress: true,
         });
         if (this.sharedPreferences.state !== 'fulfilled') {
-            // Log error
+            crashlytics().log('Shared preferences not fulfilled in openDisclaimerDialogAndEnforceName');
             return;
         }
         if (!this.sharedPreferences.value.UserName?.length) {
-            this.cancelable = false;
-            this.askForName();
+            await this.askForName(false);
         }
-        this.showDisclaimer = false;
     }
 
     private onChildAdded = (data: FirebaseDatabaseTypes.DataSnapshot) => {
@@ -179,32 +175,30 @@ class ContactUsLocalStore {
         this.eventCleanups.push(() => root.off('child_added', this.onChildAdded));
     }
 
-    public askForName() {
-        this._showNameDialog = true;
-    }
-
-    public closeNameDialog() {
-        if (!this.cancelable) {
+    public async askForName(cancelable: boolean | GestureResponderEvent = true) {
+        const nameResult = await this.dialogStore.openDialog(TextInputDialog, {
+            autoComplete: 'name',
+            blockBackBtn: !cancelable,
+            initialValue: this.savedName,
+            blockBackdropPress: !cancelable,
+            title: i18n.t('contact:writeName'),
+            placeholder: i18n.t('contact:name'),
+            isValid(value) {
+                const name = value?.trim();
+                if (!name) {
+                    return i18n.t('contact:emptyName');
+                }
+                if (/^\d+$/.test(name)) {
+                    return i18n.t('contact:numeralName');
+                }
+            },
+        });
+        if (!nameResult) {
             return;
         }
-        this._showNameDialog = false;
-    }
-
-    public async acceptNameDialog() {
-        const name = this.name?.trim();
-        if (!name) {
-            this._nameChangeError = i18n.t('contact:emptyName');
-            return;
-        }
-        if (/^\d+$/.test(name)) {
-            this._nameChangeError = i18n.t('contact:numeralName');
-            return;
-        }
-        this._nameChangeError = undefined;
-        this._showNameDialog = false;
-        this.cancelable = true;
         const root = await this.chatRootDocument;
-        await Promise.all([this.sharedPreferencesStore.setItem('UserName', name), root.child('Name').set(name)]);
+        await Promise.all([this.sharedPreferencesStore.setItem('UserName', nameResult), root.child('Name').set(nameResult)]);
+        runInAction(() => (this.name = nameResult));
     }
 
     public nameChanged(name: string) {
@@ -217,11 +211,7 @@ class ContactUsLocalStore {
 
     public sendMessage = async () => {
         if (!this.savedName || this.savedName.trim().length < 1) {
-            runInAction(() => {
-                this.cancelable = false;
-                this.askForName();
-            });
-            return;
+            return this.askForName(false);
         }
         const msg = this.message?.trim() || '';
         if (!msg.length) {
@@ -245,28 +235,6 @@ class ContactUsLocalStore {
         return this.intlFormatter.format(date);
     }
 }
-
-const AskForNameDialog = observer<{ localStore: ContactUsLocalStore }>(({ localStore }) => {
-    const { t } = useTranslation();
-
-    return (
-        <Dialog.Container visible={localStore.showNameDialog} onRequestClose={localStore.closeNameDialog} onBackdropPress={localStore.closeNameDialog}>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t('contact:writeName')}</Dialog.Title>
-            <Dialog.Input
-                value={localStore.savedName}
-                autoComplete="name"
-                cursorColor={colors.colorNice}
-                style={[styles.font, styles.dialogColorDark]}
-                placeholder={t('contact:name')}
-                placeholderTextColor={localStore.hasError ? colors.oldPrimaryDark : colors.colorNice}
-                underlineColorAndroid={localStore.hasError ? colors.oldPrimaryDark : colors.colorNice}
-                onChangeText={localStore.nameChanged}
-            />
-            {localStore.hasError && <Text style={styles.errorHint}>{localStore.hasError}</Text>}
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:ok')} onPress={localStore.acceptNameDialog} />
-        </Dialog.Container>
-    );
-});
 
 const ChatFooter = observer<{ localStore: ContactUsLocalStore }>(({ localStore }) => {
     const { t } = useTranslation();
@@ -321,18 +289,16 @@ export const ContactUs = observer<NavigatableScreenProps>(() => {
         );
     }
 
+    // TODO: navigate to bottom
     return (
-        <>
-            <AskForNameDialog localStore={localStore} />
-            <BasePageView scrollContentStyle={styles.scrollContent} postScroll={<ChatFooter localStore={localStore} />}>
-                <Pressable onPress={localStore.askForName} style={styles.contactChatCard}>
-                    <Text style={styles.text}>{t('contact:changeName')}</Text>
-                </Pressable>
-                {localStore.messages.map(message => (
-                    <ChatMessage key={message.key} localStore={localStore} message={message} />
-                ))}
-            </BasePageView>
-        </>
+        <BasePageView scrollContentStyle={styles.scrollContent} postScroll={<ChatFooter localStore={localStore} />}>
+            <Pressable onPress={localStore.askForName} style={styles.contactChatCard}>
+                <Text style={styles.text}>{t('contact:changeName')}</Text>
+            </Pressable>
+            {localStore.messages.map(message => (
+                <ChatMessage key={message.key} localStore={localStore} message={message} />
+            ))}
+        </BasePageView>
     );
 });
 ContactUs.displayName = 'ContactUs';
