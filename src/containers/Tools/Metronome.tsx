@@ -10,11 +10,11 @@ import { NavigationStore } from '../../services/NavigationStore';
 import { MetronomeStore } from '../../services/MetronomeStore';
 import { useDependencyInjector } from '../../services/container';
 import { BasePageView } from '../../Components/BasePageView';
-import type { NavigatableScreenProps } from '../../App';
+import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-export const Metronome = observer<NavigatableScreenProps>(({ navigation }) => {
+export const Metronome = observer<NavigatableToolsScreenProps>(({ navigation }) => {
     const { t } = useTranslation();
     const store = useDependencyInjector(MetronomeStore);
     const navigationStore = useDependencyInjector(NavigationStore);
@@ -38,7 +38,7 @@ export const Metronome = observer<NavigatableScreenProps>(({ navigation }) => {
     }, [scale, store.startTime]);
 
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation as any);
+        return navigationStore.setToolsNavigator(navigation);
     }, [navigationStore, navigation]);
 
     useEffect(() => {

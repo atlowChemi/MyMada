@@ -7,14 +7,14 @@ import { colors } from '../../consts';
 import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
 import { useDependencyInjector } from '../../services/container';
-import type { NavigatableScreenProps } from '../../App';
 import { ConnectionError } from '../ConnectionError';
 import { fromPromise } from 'mobx-utils';
+import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const allowedDocs = ['bls', 'als', 'kuntres'] as const;
 type AllowedDoc = (typeof allowedDocs)[number];
 
-export const DocsViewer = observer<NavigatableScreenProps>(({ navigation, route }) => {
+export const DocsViewer = observer<NavigatableToolsScreenProps>(({ navigation, route }) => {
     const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalObservable(() => ({
         type: undefined as AllowedDoc | undefined,
@@ -47,11 +47,11 @@ export const DocsViewer = observer<NavigatableScreenProps>(({ navigation, route 
     }));
 
     useEffect(() => {
-        const type = (route.params as any)?.type;
+        const type = route.params?.type;
         localStore.setType(type);
     }, [route.params, localStore]);
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation as any);
+        return navigationStore.setToolsNavigator(navigation);
     }, [navigationStore, navigation]);
 
     if (localStore.docUrl.state === 'rejected' || localStore.hasErrored) {

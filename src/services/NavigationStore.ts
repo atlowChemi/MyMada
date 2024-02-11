@@ -1,3 +1,4 @@
+import BuildConfig from 'react-native-build-config';
 import i18n from '../localization';
 import { Linking } from 'react-native';
 import { inject, injectable } from 'inversify';
@@ -10,6 +11,7 @@ import { BaseDialog } from '../containers/dialogs/BaseDialog';
 import { SharedPreferencesStore } from './SharedPreferencesStore';
 import { MadaNotificationsStore } from './MadaNotificationsStore';
 import { colors } from '../consts';
+import type { NavigatableToolsScreenProps } from '../containers/Pages/Tools';
 
 export type Tools =
     | 'ContractionTimer'
@@ -23,7 +25,7 @@ export type Tools =
     | 'BlsProtocoles'
     | 'AlsProtocoles'
     | 'Kuntres';
-export type Page = 'Home' | 'Tools' | 'ContactUs' | 'RequestCode' | 'About' | 'Privacy';
+export type Page = 'Home' | 'Tools' | 'Lock' | 'Dispatch' | 'ContactUs' | 'RequestCode' | 'About' | 'Privacy';
 
 export const TOOLS_PAGES = new Set<Tools>([
     'ContractionTimer',
@@ -87,7 +89,7 @@ export class NavigationStore {
         this.eventListenerCleanup = navigator?.addListener('state', this.onNavigate);
     }
 
-    public setToolsNavigator(navigator: DrawerNavigator) {
+    public setToolsNavigator(navigator: NavigatableToolsScreenProps['navigation']) {
         this.toolsNavigator = navigator;
         return () => {
             this.toolsNavigator = undefined;
@@ -98,10 +100,32 @@ export class NavigationStore {
 
     public goHome = () => this.navigate('Home');
     public goToTools = () => this.navigate('Tools');
+    public goToRequestCode = () => this.navigate('RequestCode');
     public goToToolsTab = async (route: Tools) => {
         this.goToTools();
         await when(() => this.toolsNavigator !== undefined);
         this.toolsNavigator?.jumpTo(route);
+    };
+    public goToDispatch = async () => {
+        this.sharedPreferencesStore.name = 'Settings';
+        const { realM } = await this.sharedPreferencesStore.activeChannel;
+        const isMarkedAsVolunteer = this.sharedPreferencesStore.makePrefBoolean(realM, false);
+        if (BuildConfig.DEBUG || BuildConfig.BUILD_TYPE === 'debug' || BuildConfig.APPLICATION_ID?.endsWith('.debug')) {
+            const navigateToLockPage = await this.dialogStore.openDialog(BaseDialog, {
+                description: 'זוהי גרסה לבדיקה. עמוד חסימה או עמוד דיווחים',
+                okText: 'עמוד חסימה',
+                cancelText: 'עמוד דיווחים',
+            });
+            if (typeof navigateToLockPage === 'undefined') {
+                return;
+            }
+            return this.navigate(navigateToLockPage ? 'Lock' : 'Dispatch');
+        }
+        if (isMarkedAsVolunteer || (await this.madaNotificationsStore.hasMadaApp())) {
+            await this.sharedPreferencesStore.setItem('realM', 'true');
+            return this.navigate('Dispatch');
+        }
+        return this.navigate('Lock');
     };
     public goToContactUs = async () => {
         this.sharedPreferencesStore.name = 'Settings';
@@ -119,11 +143,10 @@ export class NavigationStore {
                 return;
             }
             if (!navigateToContact) {
-                this.navigate('RequestCode');
-                return;
+                return this.navigate('RequestCode');
             }
         }
-        this.adsStore.showInterstitialAd();
+        await this.adsStore.showInterstitialAd();
         const permissionStatus = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS', {
             title: i18n.t('permissions:alertTitle'),
             message: i18n.t('permissions:notificationExplain'),
@@ -147,15 +170,15 @@ export class NavigationStore {
             }
             return;
         }
-        this.navigate('ContactUs');
+        return this.navigate('ContactUs');
     };
     public goToAboutTheApp = async () => {
         await this.adsStore.showInterstitialAd();
-        this.navigate('About');
+        return this.navigate('About');
     };
     public goToPrivacyPolicy = async () => {
         await this.adsStore.showInterstitialAd();
-        this.navigate('Privacy');
+        return this.navigate('Privacy');
     };
     public goBack = () => this.navigator?.goBack();
     public openDrawer = () => this.toolsNavigator?.toggleDrawer();

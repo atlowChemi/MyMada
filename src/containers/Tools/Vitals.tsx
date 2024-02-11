@@ -7,6 +7,7 @@ import { StyleSheet, View } from 'react-native';
 import { makeAutoObservable } from 'mobx';
 import i18n from '../../localization';
 import database from '@react-native-firebase/database';
+import { colors } from '../../consts';
 import { inRange } from '../../utils';
 import { Text } from '../../Components/Text';
 import { InfoCard } from '../../Components/InfoCard';
@@ -16,8 +17,7 @@ import { NavigationStore } from '../../services/NavigationStore';
 import { RadioButtonGroup } from '../../Components/RadioButtonGroup';
 import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import type { NativeSyntheticEvent, TextInput as NativeTextInput, TextInputSubmitEditingEventData } from 'react-native';
-import type { NavigatableScreenProps } from '../../App';
-import { colors } from '../../consts';
+import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const VITAL_CATEGORIES = ['adult', 'child', 'baby'] as const;
 type VitalCategory = (typeof VITAL_CATEGORIES)[number];
@@ -178,13 +178,13 @@ class VitalsCalculatorLocalStore {
     }
 }
 
-export const VitalsCalculator = observer<NavigatableScreenProps>(({ navigation }) => {
+export const VitalsCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
     const { t } = useTranslation();
     const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(VitalsCalculatorLocalStore);
 
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation as any);
+        return navigationStore.setToolsNavigator(navigation);
     }, [navigationStore, navigation]);
 
     // Handle landscape orientation

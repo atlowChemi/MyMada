@@ -3,6 +3,7 @@ import common from './common';
 import contact from './contact';
 import errors from './errors';
 import home from './home';
+import lock from './lock';
 import permissions from './permissions';
 import privacy from './privacy';
 import testCall from './testCall';
@@ -14,6 +15,7 @@ export default {
     contact,
     errors,
     home,
+    lock,
     permissions,
     privacy,
     testCall,
@@ -56,17 +58,12 @@ export default {
     // dialog_yes: 'איפשור גישה להתראות',
     // dialog_rate_yes: 'דרג כעת',
     // dialog_never: 'לא תודה',
-    // title_activity_code: 'בקשת קוד הפעלה',
-    // title_code: 'הכנסת קוד הפעלה',
     // codeNote: 'כתוב את פרטיך והוסף בהערות את פרטי ההתנדבות שלך (מרחב ותפקיד) ואנו נבחן את הפרטים ונשלח קוד הפעלה בהקדם.',
     // driverQ: 'נהג',
     // aQ: 'מתנדב 1',
     // bQ: 'מתנדב 2',
     // cQ: 'מתנדב 3',
     // tQ: 'מספר ת.ז.',
-    // notMada:
-    //     'נראה לנו שאתה לא מתנדב מד"א.\nבכדי שהאפליקציה תפעל כראוי צריכה להיות מותקנת אצלך אפליקציית צוותי מגן דוד אדום.\nבאם האפליקציה מותקנת אצלך ובכל זאת אתה רואה מסך זה, התנתק מאפליקציית הצוותים והתחבר שנית.\nשימוש מהנה ומועיל!',
-    // notM: 'מתנדב פעיל ונתקל בחלונית זו?\nצור עימנו קשר ונסייע לך.',
     // passH: 'הזן כאן את הקוד',
     // title_activity_code_c: 'התחברות בקוד',
     // title_activity_help_page: 'עמוד הסברים',
@@ -215,7 +212,6 @@ export default {
 //     <string name="navigation_drawer_open">פתח מגירה</string>
 //     <string name="navigation_drawer_close">סגור מגירה</string>
 
-//     <string name="title_mda">הורדת יישומון מד\"א</string>
 //     <string name="BGServiceTtl">מאזין ברקע להודעות</string>
 //     <string name="BGServiceTicker">מזהה הודעות חדשות ממד\"א</string>
 //     <string name="BGServiceTxt">מזהה הודעות חדשות שנשלחות ממוקד מד\"א ברקע</string>

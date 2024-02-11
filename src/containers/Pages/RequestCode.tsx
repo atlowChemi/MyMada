@@ -2,8 +2,8 @@ import { injectable } from 'inversify';
 import { computedFn } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 import { makeAutoObservable, runInAction } from 'mobx';
-import { Pressable, StyleSheet, View } from 'react-native';
 import database from '@react-native-firebase/database';
 import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../../localization';
@@ -18,8 +18,9 @@ import { DialogStore } from '../../services/DialogStore';
 import { BasePageView } from '../../Components/BasePageView';
 import { MessagingStore } from '../../services/MessagingStore';
 import { RequestCodeApproval } from '../dialogs/RequestCodeApproval';
-import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
+import { PressableRippleWrapper } from '../../Components/PressableRippleWrapper';
+import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import type { NativeSyntheticEvent, TextInput as NativeTextInput, TextInputSubmitEditingEventData } from 'react-native';
 import type { NavigatableScreenProps } from '../../App';
 
@@ -166,10 +167,10 @@ const RequestCodeFooter = observer<{ localStore: RequestCodeLocalStore }>(({ loc
 
     return (
         <View style={styles.pageFooter}>
-            <Pressable android_ripple={{ color: colors.ocean, borderless: false }} style={styles.sendBtn} onPress={localStore.askForSendingApproval}>
+            <PressableRippleWrapper android_ripple={{ color: colors.ocean, borderless: false }} style={styles.sendBtn} wrapperStyle={styles.sendBtnWrapper} onPress={localStore.askForSendingApproval}>
                 <Text style={styles.sendText}>{t('common:send')}</Text>
                 <Icon size={24} color={colors.white} name="send" />
-            </Pressable>
+            </PressableRippleWrapper>
         </View>
     );
 });
@@ -257,11 +258,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: colors.white,
     },
+    sendBtnWrapper: {
+        elevation: 4,
+        borderRadius: 15,
+    },
     sendBtn: {
         width: '100%',
         height: 60,
-        elevation: 4,
-        borderRadius: 15,
         overflow: 'hidden',
         alignItems: 'center',
         flexDirection: 'row',

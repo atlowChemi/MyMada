@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'react-native-linear-gradient';
 import { StyleSheet, View, ToastAndroid } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { colors } from '../../consts';
 import { HomeBtn } from '../HomeBtn';
+import { RoundBG } from '../RoundBG';
 import { BaseDialog } from '../dialogs/BaseDialog';
 import { BasePageView } from '../../Components/BasePageView';
 import { AdsStore } from '../../services/AdsStore';
@@ -83,11 +83,7 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
     }));
 
     return (
-        <BasePageView
-            scrollViewStyle={styles.scroller}
-            scrollContentStyle={styles.scrollContent}
-            postScroll={<BannerAdFooter />}
-            preScroll={<LinearGradient colors={['#1f425f', colors.colorPrimary, colors.colorPrimary]} angle={0} useAngle style={styles.roundBg} />}>
+        <BasePageView scrollViewStyle={styles.scroller} scrollContentStyle={styles.scrollContent} postScroll={<BannerAdFooter />} preScroll={<RoundBG />}>
             <View>
                 <HomeBtn big icon="tools" onPress={navigationStore.goToTools} />
             </View>
@@ -119,19 +115,6 @@ const styles = StyleSheet.create({
     buttonRow: {
         flexDirection: 'row',
         columnGap: 10,
-    },
-    roundBg: {
-        position: 'relative',
-        top: 0,
-        bottom: 0,
-        right: '-15%',
-        left: '-15%',
-        width: '130%',
-        height: 100,
-        borderTopStartRadius: 0,
-        borderTopEndRadius: 0,
-        borderBottomRightRadius: 130,
-        borderBottomLeftRadius: 130,
     },
     banner: {
         position: 'absolute',
