@@ -67,7 +67,7 @@ export class ToolbarStore {
 
     public get navIcons(): NavBarIcon[] {
         return [
-            { key: 'settings', onPress: noop, icon: 'settings', show: true /* this.navigationStore.currentPage !== 'Settings' */ },
+            { key: 'settings', onPress: noop, icon: 'settings', show: !['Lock', 'ActivateCode', 'Settings'].includes(this.navigationStore.currentPage) },
             { key: 'trash', onPress: this.trashAction, icon: 'trash', show: this.navigationStore.currentSubPage === 'ContractionTimer' && this.showTrashIcon },
             { key: 'search', onPress: this.search, icon: 'search', show: this.navigationStore.currentSubPage === 'Dictionary' && !this.isSearching },
             { key: 'add', onPress: this.dictionaryItemAdder, icon: 'add', show: this.navigationStore.currentSubPage === 'Dictionary' },

@@ -25,7 +25,7 @@ export type Tools =
     | 'BlsProtocoles'
     | 'AlsProtocoles'
     | 'Kuntres';
-export type Page = 'Home' | 'Tools' | 'Lock' | 'Dispatch' | 'ContactUs' | 'RequestCode' | 'About' | 'Privacy';
+export type Page = 'Home' | 'Tools' | 'Lock' | 'Dispatch' | 'ContactUs' | 'RequestCode' | 'ActivateCode' | 'About' | 'Privacy';
 
 export const TOOLS_PAGES = new Set<Tools>([
     'ContractionTimer',
@@ -100,7 +100,8 @@ export class NavigationStore {
 
     public goHome = () => this.navigate('Home');
     public goToTools = () => this.navigate('Tools');
-    public goToRequestCode = () => this.navigate('RequestCode');
+    public goToRequestCode = () => this.navigator?.reset({ index: 1, routes: [{ name: 'Home' }, { name: 'RequestCode' }] });
+    public goToCodeActivation = () => this.navigator?.reset({ index: 1, routes: [{ name: 'Home' }, { name: 'ActivateCode' }] });
     public goToToolsTab = async (route: Tools) => {
         this.goToTools();
         await when(() => this.toolsNavigator !== undefined);
@@ -143,7 +144,7 @@ export class NavigationStore {
                 return;
             }
             if (!navigateToContact) {
-                return this.navigate('RequestCode');
+                return this.goToRequestCode();
             }
         }
         await this.adsStore.showInterstitialAd();

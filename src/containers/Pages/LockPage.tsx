@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import { RoundBG } from '../RoundBG';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
@@ -10,20 +10,30 @@ import { NavigationStore } from '../../services/NavigationStore';
 import { PressableRippleWrapper } from '../../Components/PressableRippleWrapper';
 import type { NavigatableScreenProps } from '../../App';
 
+const MADA_APP_PKG_NAME = 'com.groboot.mdaemergency';
+const MADA_APP_MARKET_LINK = `market://details?id=${MADA_APP_PKG_NAME}`;
+const MADA_APP_PLAY_STORE_LINK = `https://play.google.com/store/apps/details?id=${MADA_APP_PKG_NAME}`;
+async function goToMadaApp() {
+    if (await Linking.canOpenURL(MADA_APP_MARKET_LINK)) {
+        return await Linking.openURL(MADA_APP_MARKET_LINK);
+    }
+    return Linking.openURL(MADA_APP_PLAY_STORE_LINK);
+}
+
 const ButtonsFooter = observer(() => {
     const { t } = useTranslation();
     const navigationStore = useDependencyInjector(NavigationStore);
 
     return (
         <View style={styles.footer}>
-            <PressableRippleWrapper android_ripple={{ color: colors.ocean, borderless: false }} style={styles.btn} wrapperStyle={styles.btnWrapper}>
+            <PressableRippleWrapper android_ripple={{ color: colors.ocean, borderless: false }} style={styles.btn} wrapperStyle={styles.btnWrapper} onPress={goToMadaApp}>
                 <Text style={styles.btnText}>{t('lock:download')}</Text>
             </PressableRippleWrapper>
             <View style={styles.btnSplitView}>
                 <PressableRippleWrapper android_ripple={{ color: colors.ocean, borderless: false }} style={styles.btn} wrapperStyle={styles.btnWrapper} onPress={navigationStore.goToRequestCode}>
                     <Text style={styles.btnText}>{t('lock:requestActivationCode')}</Text>
                 </PressableRippleWrapper>
-                <PressableRippleWrapper android_ripple={{ color: colors.ocean, borderless: false }} style={styles.btn} wrapperStyle={styles.btnWrapper}>
+                <PressableRippleWrapper android_ripple={{ color: colors.ocean, borderless: false }} style={styles.btn} wrapperStyle={styles.btnWrapper} onPress={navigationStore.goToCodeActivation}>
                     <Text style={styles.btnText}>{t('lock:enterActivationCode')}</Text>
                 </PressableRippleWrapper>
             </View>

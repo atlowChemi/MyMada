@@ -8,7 +8,9 @@ import { HomePage } from './containers/Pages/HomePage';
 import { LockPage } from './containers/Pages/LockPage';
 import { Dispatch } from './containers/Pages/Dispatch';
 import { ContactUs } from './containers/Pages/ContactUs';
+import { RequestCode } from './containers/Pages/RequestCode';
 import { AboutTheApp } from './containers/Pages/AboutTheApp';
+import { CodeActivation } from './containers/Pages/CodeActivation';
 import { DialogWrapper } from './services/DialogStore';
 import { MessagingStore } from './services/MessagingStore';
 import { MetronomeStore } from './services/MetronomeStore';
@@ -18,7 +20,6 @@ import { DependencyInjectionProvider, container } from './services/container';
 import { colors } from './consts';
 import { Toolbar } from './containers/Toolbar';
 import { setLanguage } from './localization';
-import { RequestCode } from './containers/Pages/RequestCode';
 
 const NOTIFICATION_HELPER_SOURCE = 'NOTIFICATION_HELPER';
 type RootStackParamList = Record<Page, undefined>;
@@ -54,6 +55,7 @@ export const App: React.FC = (props: any) => {
                     <Stack.Screen name="Dispatch" component={Dispatch} />
                     <Stack.Screen name="ContactUs" component={ContactUs} />
                     <Stack.Screen name="RequestCode" component={RequestCode} />
+                    <Stack.Screen name="ActivateCode" component={CodeActivation} />
                     <Stack.Screen name="About" component={AboutTheApp} />
                     <Stack.Screen name="Privacy" component={Privacy} />
                 </Stack.Navigator>
