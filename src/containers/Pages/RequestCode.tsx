@@ -5,11 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { Pressable, StyleSheet, View } from 'react-native';
 import database from '@react-native-firebase/database';
+import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../../localization';
 import { colors } from '../../consts';
 import { randomString } from '../../utils';
 import { Icon } from '../../Components/Icon';
 import { Text } from '../../Components/Text';
+import { Loader } from '../../Components/Loader';
 import { BaseDialog } from '../dialogs/BaseDialog';
 import { TextInput } from '../../Components/TextInput';
 import { DialogStore } from '../../services/DialogStore';
@@ -20,7 +22,6 @@ import { useLocalStoreWithInjectedDependencies } from '../../services/container'
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import type { NativeSyntheticEvent, TextInput as NativeTextInput, TextInputSubmitEditingEventData } from 'react-native';
 import type { NavigatableScreenProps } from '../../App';
-import { Loader } from '../../Components/Loader';
 
 type RequestCodeKey = 'email' | 'name' | 'info';
 
@@ -121,7 +122,7 @@ class RequestCodeLocalStore {
             });
             await Promise.all([dialogPromise, this.sharedPreferences.setItemOnChannel('Settings', 'firebaseGenratedKey', newRef.key!)]);
         } catch (e) {
-            // Crashlytics
+            e instanceof Error && crashlytics().recordError(e);
             await this.dialogStore.openDialog(BaseDialog, {
                 blockBackBtn: true,
                 blockBackdropPress: true,

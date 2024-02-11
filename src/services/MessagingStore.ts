@@ -1,4 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
+import crashlytics from '@react-native-firebase/crashlytics';
 import { fromPromise } from 'mobx-utils';
 import { inject, injectable } from 'inversify';
 import { computed, makeObservable } from 'mobx';
@@ -41,7 +42,7 @@ export class MessagingStore {
 
     private async getToken() {
         const token = await this.messaging.getToken();
-        await this.updatePreferences(token);
+        await Promise.all([crashlytics().setUserId(token), this.updatePreferences(token)]);
         return token;
     }
 
@@ -49,8 +50,8 @@ export class MessagingStore {
         try {
             await this.messaging.subscribeToTopic('news');
         } catch (error) {
-            console.warn('Failed to subscribe to news topic:', error);
-            // Crashlytics
+            crashlytics().log('Failed to subscribe to news topic:');
+            error instanceof Error && crashlytics().recordError(error);
         }
     }
 

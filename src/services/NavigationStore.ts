@@ -4,6 +4,7 @@ import { inject, injectable } from 'inversify';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { makeAutoObservable, observable, reaction, when } from 'mobx';
 import { PermissionsStore } from './PermissionsStore';
+import { AdsStore } from './AdsStore';
 import { DialogStore } from './DialogStore';
 import { BaseDialog } from '../containers/dialogs/BaseDialog';
 import { SharedPreferencesStore } from './SharedPreferencesStore';
@@ -52,6 +53,7 @@ export class NavigationStore {
     private eventListenerCleanup?: () => void;
     private navigator?: NavigationContainerRef<Record<Page, undefined>>;
     private toolsNavigator?: DrawerNavigator = undefined;
+    @inject(AdsStore) private readonly adsStore!: AdsStore;
     @inject(DialogStore) private readonly dialogStore!: DialogStore;
     @inject(MadaNotificationsStore) private readonly madaNotificationsStore!: MadaNotificationsStore;
     @inject(PermissionsStore) private readonly permissionsStore!: PermissionsStore;
@@ -121,7 +123,7 @@ export class NavigationStore {
                 return;
             }
         }
-        // Open ad
+        this.adsStore.showInterstitialAd();
         const permissionStatus = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS', {
             title: i18n.t('permissions:alertTitle'),
             message: i18n.t('permissions:notificationExplain'),
@@ -147,8 +149,14 @@ export class NavigationStore {
         }
         this.navigate('ContactUs');
     };
-    public goToAboutTheApp = () => /* open ad */ this.navigate('About');
-    public goToPrivacyPolicy = () => /* open ad */ this.navigate('Privacy');
+    public goToAboutTheApp = async () => {
+        await this.adsStore.showInterstitialAd();
+        this.navigate('About');
+    };
+    public goToPrivacyPolicy = async () => {
+        await this.adsStore.showInterstitialAd();
+        this.navigate('Privacy');
+    };
     public goBack = () => this.navigator?.goBack();
     public openDrawer = () => this.toolsNavigator?.toggleDrawer();
 

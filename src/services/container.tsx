@@ -1,3 +1,4 @@
+import crashlytics from '@react-native-firebase/crashlytics';
 import { Container, interfaces, METADATA_KEY } from 'inversify';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 
@@ -33,7 +34,8 @@ export const useLocalStoreWithInjectedDependencies = <T extends {}>(Class: inter
                 return container.get(c);
             } catch (e) {
                 const errorMessage = `Failed to find dependency for: ${c.name}, param index:${index}, dependencyClasses: ${String(dependencyClasses)}`;
-                // Crashlytics
+                crashlytics().log(errorMessage);
+                e instanceof Error && crashlytics().recordError(e);
                 console.error(errorMessage, e);
                 return undefined;
             }

@@ -2,6 +2,7 @@ import { now } from 'mobx-utils';
 import { injectable } from 'inversify';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { Dimensions, Platform, NativeModules, NativeEventEmitter } from 'react-native';
+import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../localization';
 import { colors } from '../consts';
 import { notificationsService, Importance, Priority, NOTIFICATION_MAP } from './NotificationService';
@@ -115,7 +116,7 @@ export class MetronomeStore {
             });
             runInAction(() => (this.startTime = startTime));
         } catch (e) {
-            // Crashlytics
+            e instanceof Error && crashlytics().recordError(e);
         }
     }
 
@@ -124,7 +125,7 @@ export class MetronomeStore {
             const startTime = await MetronomeModule.stopMetronome();
             runInAction(() => (this.startTime = startTime));
         } catch (e) {
-            // Crashlytics
+            e instanceof Error && crashlytics().recordError(e);
         }
     }
 

@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { computed, makeAutoObservable, observable } from 'mobx';
 import firestore from '@react-native-firebase/firestore';
+import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
@@ -97,7 +98,7 @@ class DictionaryLocalStore {
             });
             this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:create:success'), timeout: 5000 });
         } catch (error) {
-            // Crashlytics
+            error instanceof Error && crashlytics().recordError(error);
             this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:create:failure'), timeout: 5000 });
         }
     };
@@ -116,7 +117,7 @@ class DictionaryLocalStore {
             });
             this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:edit:success'), timeout: 5000 });
         } catch (error) {
-            // Crashlytics
+            error instanceof Error && crashlytics().recordError(error);
             this.snackbarStore.openSnack(Snackbar, { msg: i18n.t('tools:dictionary:edit:failure'), timeout: 5000 });
         }
     };
@@ -143,9 +144,9 @@ class DictionaryLocalStore {
         });
     };
 
-    private onError = (_error: Error) => {
+    private onError = (error: Error) => {
         this.hasError = true;
-        // Crashlytics
+        error instanceof Error && crashlytics().recordError(error);
     };
 }
 

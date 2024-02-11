@@ -2,16 +2,33 @@ import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { StyleSheet, View, ToastAndroid } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import crashlytics from '@react-native-firebase/crashlytics';
 import { colors } from '../../consts';
 import { HomeBtn } from '../HomeBtn';
 import { BaseDialog } from '../dialogs/BaseDialog';
 import { BasePageView } from '../../Components/BasePageView';
+import { AdsStore } from '../../services/AdsStore';
 import { DialogStore } from '../../services/DialogStore';
 import { NavigationStore } from '../../services/NavigationStore';
 import { useDependencyInjector } from '../../services/container';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { MadaNotificationsStore, CallType } from '../../services/MadaNotificationsStore';
 import type { NavigatableScreenProps } from '../../App';
+
+const BannerAdFooter = observer(() => {
+    const adsStore = useDependencyInjector(AdsStore);
+
+    if (adsStore.initialization.state !== 'fulfilled') {
+        return null;
+    }
+    return (
+        <View style={styles.banner}>
+            <BannerAd unitId={adsStore.bannerAdUnitId} onAdFailedToLoad={console.error} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+        </View>
+    );
+});
+BannerAdFooter.displayName = 'BannerAdFooter';
 
 export const HomePage = observer<NavigatableScreenProps>(() => {
     const { t } = useTranslation();
@@ -58,8 +75,9 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
                     callType: isTestingShiftCall ? CallType.Shift : CallType.OnCall,
                     callText: t(`testCall:${isTestingShiftCall ? 'shift' : 'onCall'}Message`),
                 });
-            } catch {
-                // Crashlytics
+            } catch (e) {
+                crashlytics().log('Failed to send test call');
+                e instanceof Error && crashlytics().recordError(e);
             }
         },
     }));
@@ -68,12 +86,13 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
         <BasePageView
             scrollViewStyle={styles.scroller}
             scrollContentStyle={styles.scrollContent}
+            postScroll={<BannerAdFooter />}
             preScroll={<LinearGradient colors={['#1f425f', colors.colorPrimary, colors.colorPrimary]} angle={0} useAngle style={styles.roundBg} />}>
             <View>
                 <HomeBtn big icon="tools" onPress={navigationStore.goToTools} />
             </View>
             <View style={styles.buttonRow}>
-                <HomeBtn icon="dispatch" onPress={() => {}} />
+                <HomeBtn icon="dispatch" onPress={navigationStore.goToDispatch} />
                 <HomeBtn icon="testCall" onPress={localStore.onRequestTest} />
             </View>
             <View style={styles.buttonRow}>
@@ -89,7 +108,7 @@ const styles = StyleSheet.create({
     scroller: {
         position: 'absolute',
         top: 20,
-        bottom: 0,
+        bottom: 80,
         right: 0,
         left: 0,
     },
@@ -113,5 +132,13 @@ const styles = StyleSheet.create({
         borderTopEndRadius: 0,
         borderBottomRightRadius: 130,
         borderBottomLeftRadius: 130,
+    },
+    banner: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: 80,
+        justifyContent: 'flex-end',
     },
 });
