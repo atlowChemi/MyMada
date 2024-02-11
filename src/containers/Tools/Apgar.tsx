@@ -12,9 +12,9 @@ import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
 import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { useColorAnimation } from '../../utils/colorAnimation';
-import type { NavigatableScreenProps } from '../../App';
 import { ToolsDropDown } from '../../Components/ToolsDropdown';
 import { InfoCard } from '../../Components/InfoCard';
+import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const APGAR_PARAMS = ['appearance', 'pulse', 'grimace', 'activity', 'respiration'] as const;
 type ApgarParam = (typeof APGAR_PARAMS)[number];
@@ -85,14 +85,14 @@ class ApgarCalculatorLocalStore {
     }
 }
 
-export const ApgarCalculator = observer<NavigatableScreenProps>(({ navigation }) => {
+export const ApgarCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
     const { t } = useTranslation();
     const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(ApgarCalculatorLocalStore);
     const [backgroundColor] = useColorAnimation(localStore.scoreColor);
 
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation as any);
+        return navigationStore.setToolsNavigator(navigation);
     }, [navigationStore, navigation]);
 
     // Handle landscape orientation

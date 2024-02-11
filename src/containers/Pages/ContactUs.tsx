@@ -18,6 +18,7 @@ import { TextInputDialog } from '../dialogs/TextInputDialog';
 import { BasePageView } from '../../Components/BasePageView';
 import { MessagingStore } from '../../services/MessagingStore';
 import { ConnectionError } from '../ConnectionError';
+import { PressableRippleWrapper } from '../../Components/PressableRippleWrapper';
 import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import type { IReactionDisposer } from 'mobx';
@@ -244,9 +245,9 @@ const ChatFooter = observer<{ localStore: ContactUsLocalStore }>(({ localStore }
             <Text>{localStore.seenByAdmin}</Text>
             <View style={styles.sendSection}>
                 <TextInput wrapperStyle={styles.sendText} value={localStore.messageValue} onChangeText={localStore.messageChanged} numberOfLines={3} label={t('contact:msgHint')} />
-                <Pressable android_ripple={{ color: colors.ocean, radius: 36, borderless: false }} style={[styles.sendBtn]} onPress={localStore.sendMessage}>
+                <PressableRippleWrapper android_ripple={{ color: colors.ocean, borderless: false }} style={styles.sendBtn} wrapperStyle={styles.sendBtnWrapper} onPress={localStore.sendMessage}>
                     <Icon size={24} color={colors.white} name="send" />
-                </Pressable>
+                </PressableRippleWrapper>
             </View>
         </View>
     );
@@ -350,12 +351,14 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         flexGrow: 1,
     },
+    sendBtnWrapper: {
+        elevation: 4,
+        borderRadius: 15,
+    },
     sendBtn: {
         width: 60,
         height: 60,
         flexShrink: 0,
-        elevation: 4,
-        borderRadius: 15,
         overflow: 'hidden',
         alignItems: 'center',
         justifyContent: 'center',

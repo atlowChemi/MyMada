@@ -12,9 +12,9 @@ import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
 import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { useColorAnimation } from '../../utils/colorAnimation';
-import type { NavigatableScreenProps } from '../../App';
 import { ToolsDropDown } from '../../Components/ToolsDropdown';
 import { InfoCard } from '../../Components/InfoCard';
+import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const GLAZGOW_PARAMS = ['eyes', 'verbal', 'motor'] as const;
 type GlazgowParam = (typeof GLAZGOW_PARAMS)[number];
@@ -88,14 +88,14 @@ class GlazgowCalculatorLocalStore {
     }
 }
 
-export const GlazgowCalculator = observer<NavigatableScreenProps>(({ navigation }) => {
+export const GlazgowCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
     const { t } = useTranslation();
     const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(GlazgowCalculatorLocalStore);
     const [backgroundColor] = useColorAnimation(localStore.scoreColor);
 
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation as any);
+        return navigationStore.setToolsNavigator(navigation);
     }, [navigationStore, navigation]);
 
     // Handle landscape orientation

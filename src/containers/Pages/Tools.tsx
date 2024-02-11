@@ -1,7 +1,8 @@
 import { fromPromise } from 'mobx-utils';
 import { StyleSheet, View } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerScreenProps } from '@react-navigation/drawer';
+import { isTablet } from '../../utils';
 import { BasePageView } from '../../Components/BasePageView';
 import { Loader } from '../../Components/Loader';
 import { Metronome } from '../Tools/Metronome';
@@ -19,9 +20,12 @@ import { useDeviceOrientation } from '../../utils/useDeviceOrientation';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { TOOLS_PAGES, type Tools as ToolsType } from '../../services/NavigationStore';
 import type { NavigatableScreenProps } from '../../App';
-import { isTablet } from '../../utils';
 
-const Drawer = createDrawerNavigator();
+type ProtocolPages = 'BlsProtocoles' | 'AlsProtocoles' | 'Kuntres';
+type ToolsStackParamList = Record<Exclude<ToolsType, ProtocolPages>, undefined> & Record<Extract<ToolsType, ProtocolPages>, { type: 'bls' | 'als' | 'kuntres' }>;
+export type NavigatableToolsScreenProps = DrawerScreenProps<ToolsStackParamList, ToolsType>;
+
+const Drawer = createDrawerNavigator<ToolsStackParamList>();
 
 const TOOL_SETTING_MAP = new Map<ToolsType, string>([
     ['ContractionTimer', 'contrac'],
@@ -42,11 +46,12 @@ export const Tools = observer<NavigatableScreenProps>(() => {
     const sharedPreferencesStore = useDependencyInjector(SharedPreferencesStore);
     const localStore = useLocalObservable(() => ({
         get initialPage() {
-            return this.toolsToShow.case({
+            return this.toolsToShow.case<ToolsType>({
                 fulfilled: toolsToShow => {
                     const index = toolsToShow.findIndex(el => el === 'MetronomeActivity');
                     if (index === -1) {
-                        return toolsToShow[index];
+                        const [first] = toolsToShow;
+                        return first === 'ProtocolCategory' ? 'BlsProtocoles' : first;
                     }
                     return 'MetronomeActivity';
                 },

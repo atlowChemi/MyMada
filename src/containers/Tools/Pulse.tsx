@@ -12,7 +12,7 @@ import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
 import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { audioGenerator } from '../../services/AudioGenerator';
-import type { NavigatableScreenProps } from '../../App';
+import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 @injectable()
 class PulseCalculatorLocalStore {
@@ -121,13 +121,13 @@ class PulseCalculatorLocalStore {
     };
 }
 
-export const PulseCalculator = observer<NavigatableScreenProps>(({ navigation }) => {
+export const PulseCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
     const { t } = useTranslation();
     const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(PulseCalculatorLocalStore);
 
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation as any);
+        return navigationStore.setToolsNavigator(navigation);
     }, [navigationStore, navigation]);
 
     // Handle landscape orientation

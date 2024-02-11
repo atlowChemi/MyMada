@@ -12,7 +12,7 @@ import { TextInput } from '../../Components/TextInput';
 import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
 import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
-import type { NavigatableScreenProps } from '../../App';
+import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const LITER_PER_MINUTE = 10;
 type OxygenTankSize = 2.4 | 20;
@@ -85,13 +85,13 @@ class OxygenCalculatorLocalStore {
     }
 }
 
-export const OxygenCalculator = observer<NavigatableScreenProps>(({ navigation }) => {
+export const OxygenCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
     const { t } = useTranslation();
     const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(OxygenCalculatorLocalStore);
 
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation as any);
+        return navigationStore.setToolsNavigator(navigation);
     }, [navigationStore, navigation]);
 
     // Handle landscape orientation

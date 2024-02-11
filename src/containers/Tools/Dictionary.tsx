@@ -21,7 +21,7 @@ import { ToolbarStore } from '../../services/ToolbarStore';
 import { NavigationStore } from '../../services/NavigationStore';
 import type { ListRenderItemInfo } from 'react-native';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import type { NavigatableScreenProps } from '../../App';
+import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 export interface DictionaryEntry {
     key: string;
@@ -159,11 +159,11 @@ const Item = observer<ListRenderItemInfo<DictionaryEntry> & { localStore: Dictio
 });
 Item.displayName = 'DictionaryItem';
 
-export const Dictionary = observer<NavigatableScreenProps>(({ navigation }) => {
+export const Dictionary = observer<NavigatableToolsScreenProps>(({ navigation }) => {
     const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(DictionaryLocalStore);
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation as any);
+        return navigationStore.setToolsNavigator(navigation);
     }, [navigationStore, navigation]);
 
     if (localStore.hasError) {

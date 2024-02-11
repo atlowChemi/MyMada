@@ -19,8 +19,8 @@ import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '..
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { BaseDialog } from '../dialogs/BaseDialog';
 import { NavigationStore } from '../../services/NavigationStore';
-import type { NavigatableScreenProps } from '../../App';
 import type { FlatList, ListRenderItemInfo } from 'react-native';
+import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const TWENTY_MINUTES = 20 * 60_000;
 
@@ -264,12 +264,12 @@ const ContractionItem = observer<ListRenderItemInfo<NodeOf<Contraction>>>(({ ite
 });
 ContractionItem.displayName = 'ContractionItem';
 
-export const ContractionTimer = observer<NavigatableScreenProps>(({ navigation }) => {
+export const ContractionTimer = observer<NavigatableToolsScreenProps>(({ navigation }) => {
     const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(ContractionTimerLocalStore);
 
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation as any);
+        return navigationStore.setToolsNavigator(navigation);
     }, [navigationStore, navigation]);
 
     if (localStore.loading.state === 'pending') {
