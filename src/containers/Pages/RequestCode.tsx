@@ -174,7 +174,7 @@ const RequestCodeFooter = observer<{ localStore: RequestCodeLocalStore }>(({ loc
         </View>
     );
 });
-RequestCodeFooter.displayName = 'ChatFooter';
+RequestCodeFooter.displayName = 'RequestCodeFooter';
 
 export const RequestCode = observer<NavigatableScreenProps>(() => {
     const { t } = useTranslation();
