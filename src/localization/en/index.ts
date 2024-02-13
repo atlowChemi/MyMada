@@ -2,6 +2,7 @@ import aboutUs from './aboutUs';
 import activationCode from './activationCode';
 import common from './common';
 import contact from './contact';
+import dispatch from './dispatch';
 import errors from './errors';
 import home from './home';
 import lock from './lock';
@@ -15,6 +16,7 @@ export default {
     activationCode,
     common,
     contact,
+    dispatch,
     errors,
     home,
     lock,

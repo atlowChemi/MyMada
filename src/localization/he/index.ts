@@ -2,6 +2,7 @@ import aboutUs from './aboutUs';
 import activationCode from './activationCode';
 import common from './common';
 import contact from './contact';
+import dispatch from './dispatch';
 import errors from './errors';
 import home from './home';
 import lock from './lock';
@@ -15,6 +16,7 @@ export default {
     activationCode,
     common,
     contact,
+    dispatch,
     errors,
     home,
     lock,
@@ -156,10 +158,6 @@ export default {
 //     <string name="smsCountChar">תווים בהודעה.</string>
 //     <string name="smsCountMsg">סמסים.</string>
 //     <string name="title_activity_moked_page">דיווחים למוקד</string>
-//     <string name="button_a">הכתבת טפסים</string>
-//     <string name="button_b">דיווח צוות</string>
-//     <string name="button_i">הודעה כללית</string>
-//     <string name="button_h">כלי עזר</string>
 //     <string name="button_j">דיווחים למוקד</string>
 //     <string name="newSettings">נראה כי זוהי כניסתך הראשונה לאפליקציה.\nמומלץ לבדוק את כל ההגדרות לפני תחילת השימוש</string>
 //     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
