@@ -109,35 +109,6 @@ export default {
 //         <item>רטט</item>
 //         <item>שקט</item>
 //     </string-array>
-//     <string-array name="region_entry">
-//         <item>0</item>
-//         <item>1</item>
-//         <item>2</item>
-//         <item>3</item>
-//         <item>4</item>
-//         <item>5</item>
-//         <item>6</item>
-//         <item>7</item>
-//         <item>8</item>
-//         <item>9</item>
-//         <item>10</item>
-//         <item>11</item>
-//     </string-array>
-//     <string-array name="region">
-//         <item>ירושלים</item>
-//         <item>איילון</item>
-//         <item>אשר</item>
-//         <item>גלבוע</item>
-//         <item>דן</item>
-//         <item>ירדן</item>
-//         <item>ירקון</item>
-//         <item>כרמל</item>
-//         <item>לכיש</item>
-//         <item>נגב</item>
-//         <item>שרון</item>
-//         <item>מוקד 4</item>
-//     </string-array>
-//     </string-array>
 //     <string name="Mcode">קודים רפואיים</string>
 //     <string name="langSwitched">השינוי יכנס לתוקף בכניסה הבאה לאפליקציה.</string>
 //     <string name="apply">החל</string>
@@ -151,12 +122,8 @@ export default {
 //     <string name="SendNoNames">לא ניתן לשלוח ללא אנשי צוות!</string>
 //     <string name="protocoles">בחר פרוטוקולים לצפייה</string>
 //     <string name="title_activity_main3">הודעה מותאמת אישית</string>
-//     <string name="toMoked">כתוב הודעתך למוקד.</string>
-//     <string name="customMsgErr">לא כתבת שום הודעה!</string>
 //     <string name="msgSent">ההודעה נשלחה בהצלחה!</string>
 //     <string name="msgNotSent">שליחה נכשלה, נסה שוב!</string>
-//     <string name="smsCountChar">תווים בהודעה.</string>
-//     <string name="smsCountMsg">סמסים.</string>
 //     <string name="title_activity_moked_page">דיווחים למוקד</string>
 //     <string name="button_j">דיווחים למוקד</string>
 //     <string name="newSettings">נראה כי זוהי כניסתך הראשונה לאפליקציה.\nמומלץ לבדוק את כל ההגדרות לפני תחילת השימוש</string>
@@ -200,7 +167,6 @@ export default {
 //     <string name="nightStart">תחילת משמרת לילה</string>
 //     <string name="nightStartDesc">בחר מאיזו שעה יתריעו מקרים לפי הגדרת הלילה</string>
 //     <string name="nightEndDesc">בחר מאיזו שעה יחזרו מקרים להתריע לפי הגדרת יום</string>
-//     <string name="toDispatch">"ישלח למוקד: "</string>
 //     <string name="subject">"נושא: "</string>
 //     <string name="note">הערות</string>
 

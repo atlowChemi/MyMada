@@ -44,7 +44,7 @@ export const RequestCodeApproval = observer<RequestCodeApprovalProps>(({ email, 
         </Dialog.Container>
     );
 });
-RequestCodeApproval.displayName = 'BaseDialog';
+RequestCodeApproval.displayName = 'RequestCodeApproval';
 
 const styles = StyleSheet.create({
     contentView: {
