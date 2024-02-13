@@ -19,17 +19,4 @@ Please help us. contact us only with issues or requests we can help you with, so
     admin: 'Admin:',
     user: 'You:',
     nonVolunteerMsg: 'It seems to us you are not a MADA volunteer. Are you interested to ask for a activation code, or would you like to contact us for another reason?',
-    goToCodeRequest: 'I want an activation code',
-    requestCodeExplanation: `An activation code allows sending SMS messages to MADA dispatch.
-If you Are not a MADA volunteer, you do not need a code!`,
-    requestCodeInfoHint: 'Enter the name of the MADA region & station you belong to, as well as your medical training level.',
-    emptyEmail: 'Please provide an email address',
-    invalidEmail: 'The email address provided is invalid',
-    review: 'Please review before sending',
-    reviewAlert: 'Please make sure the email address is correct, otherwise we will not be able to reply',
-    reviewSender: 'Sent by: ',
-    reviewContent: 'Message content: ',
-    requestCodeSent: `Your request has arrived at our systems.
-We will try responding within a few hours.`,
-    requestCodeSendError: 'Sending the request failed due to an error. Please try again!',
 } as const;

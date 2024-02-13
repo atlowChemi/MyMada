@@ -54,10 +54,10 @@ class RequestCodeLocalStore {
             return undefined;
         }
         if (!this.email.length) {
-            return i18n.t('contact:emptyEmail') as string;
+            return i18n.t('activationCode:emptyEmail') as string;
         }
         if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(this.email)) {
-            return i18n.t('contact:invalidEmail') as string;
+            return i18n.t('activationCode:invalidEmail') as string;
         }
         return undefined;
     }
@@ -119,7 +119,7 @@ class RequestCodeLocalStore {
                 blockBackBtn: true,
                 blockBackdropPress: true,
                 okText: i18n.t('common:ok'),
-                description: i18n.t('contact:requestCodeSent'),
+                description: i18n.t('activationCode:requestCodeSent'),
             });
             await Promise.all([dialogPromise, this.sharedPreferences.setItemOnChannel('Settings', 'firebaseGenratedKey', newRef.key!)]);
         } catch (e) {
@@ -129,7 +129,7 @@ class RequestCodeLocalStore {
                 blockBackdropPress: true,
                 okText: i18n.t('common:ok'),
                 title: i18n.t('common:error'),
-                description: i18n.t('contact:requestCodeSent'),
+                description: i18n.t('activationCode:requestCodeSent'),
             });
         } finally {
             runInAction(() => (this.isPerformingAction = false));
@@ -154,7 +154,7 @@ class RequestCodeLocalStore {
     private openDisclaimerDialog() {
         return this.dialogStore.openDialog(BaseDialog, {
             title: i18n.t('contact:plsNote'),
-            description: i18n.t('contact:requestCodeExplanation'),
+            description: i18n.t('activationCode:requestCodeExplanation'),
             okText: i18n.t('common:ok'),
             blockBackBtn: true,
             blockBackdropPress: true,
@@ -196,7 +196,7 @@ export const RequestCode = observer<NavigatableScreenProps>(() => {
 
     return (
         <BasePageView scrollContentStyle={styles.scrollContent} postScroll={<RequestCodeFooter localStore={localStore} />}>
-            <Text style={styles.text}>{t('contact:requestCodeExplanation')}</Text>
+            <Text style={styles.text}>{t('activationCode:requestCodeExplanation')}</Text>
             <TextInput
                 returnKeyType="next"
                 error={localStore.emailError}
@@ -222,7 +222,7 @@ export const RequestCode = observer<NavigatableScreenProps>(() => {
                 ref={localStore.setInputRef('info')}
                 onChangeText={localStore.setValue('info')}
                 onSubmitEditing={localStore.onSubmitEditing}
-                label={t('contact:requestCodeInfoHint')}
+                label={t('activationCode:requestCodeInfoHint')}
                 numberOfLines={11}
             />
         </BasePageView>

@@ -1,4 +1,5 @@
 import aboutUs from './aboutUs';
+import activationCode from './activationCode';
 import common from './common';
 import contact from './contact';
 import errors from './errors';
@@ -11,6 +12,7 @@ import tools from './tools';
 
 export default {
     aboutUs,
+    activationCode,
     common,
     contact,
     errors,
