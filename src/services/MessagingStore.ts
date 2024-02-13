@@ -87,8 +87,8 @@ export class MessagingStore {
                 bigText: `קוד ההפעלה שלך הינו:  ${code}`, // TODO: i18n
                 title: 'קוד ההפעלה אושר', // TODO: i18n
                 code,
-                key,
-                target: 'RequestCode', // TODO
+                firebaseKey: key,
+                target: 'ActivateCode',
             });
             return;
         }

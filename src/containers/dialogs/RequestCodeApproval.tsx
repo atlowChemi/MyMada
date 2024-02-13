@@ -25,17 +25,17 @@ export const RequestCodeApproval = observer<RequestCodeApprovalProps>(({ email, 
 
     return (
         <Dialog.Container visible>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t('contact:review')}</Dialog.Title>
+            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t('activationCode:review')}</Dialog.Title>
             <View style={styles.contentView}>
-                <Text style={styles.warning}>{t('contact:reviewAlert')}</Text>
+                <Text style={styles.warning}>{t('activationCode:reviewAlert')}</Text>
                 <View style={styles.titleWrapper}>
-                    <Text style={styles.title}>{t('contact:reviewSender')}</Text>
+                    <Text style={styles.title}>{t('activationCode:reviewSender')}</Text>
                     <Text>
                         {name} - {email}
                     </Text>
                 </View>
                 <View style={styles.titleWrapper}>
-                    <Text style={styles.title}>{t('contact:reviewContent')}</Text>
+                    <Text style={styles.title}>{t('activationCode:reviewContent')}</Text>
                     <Text>{info}</Text>
                 </View>
             </View>

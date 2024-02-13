@@ -47,7 +47,7 @@ public class MokedPage extends AppCompatActivity {
         resetTitle();
         setContentView(R.layout.activity_moked_page);
         SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
-        boolean realM = sharedPreferences.getBoolean("realM", false);
+        boolean realM = sharedPreferences.getString("realM", "false").equals("true");
         boolean isMADA;
         if (!realM) {
             isMADA = isPI(MokedPage.this);

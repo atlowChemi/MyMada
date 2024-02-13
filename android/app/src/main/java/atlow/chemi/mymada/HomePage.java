@@ -156,7 +156,9 @@ public class HomePage extends AppCompatActivity {
         else if (!Privacy)
             ShowDialog(getString(R.string.privacyMsg),
                     getString(R.string.title_activity_privacy),
-                    new Intent(HomePage.this, PrivacyActivity.class));
+//                    new Intent(HomePage.this, PrivacyActivity.class)
+                    new Intent(HomePage.this, HomePage.class)
+                );
 
         if(Mapp && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             manager = context.getSystemService(NotificationManager.class);

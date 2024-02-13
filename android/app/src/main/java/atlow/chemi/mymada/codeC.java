@@ -38,13 +38,11 @@ public class codeC extends AppCompatActivity {
     private Button send;
     private DatabaseReference mFirebaseDatabase;
     private ProgressDialog pdialog;
-    private static final String BASE_URL = "http://atlowapps.tzevethatzolah.org/codeC.php";
     private OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        resetTitle();
         setContentView(R.layout.activity_code_c);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -66,16 +64,13 @@ public class codeC extends AppCompatActivity {
         final EditText code3 = (EditText)findViewById(R.id.code3);
         final EditText code4 = (EditText)findViewById(R.id.code4);
         send = (Button)findViewById(R.id.okBBB);
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(code1.getText().length() == 0 || code2.getText().length() == 0 || code3.getText().length() == 0 || code4.getText().length() == 0)   {
-                    di("לא הזנת את הקוד במלואו!");
-                }else   {
-                    SharedPreferences preferences = getApplication().getSharedPreferences("Settings", 0);
-                    String MemoKey = preferences.getString("firebaseGenratedKey", "");
-                    newSendCode(code1.getText().toString() + code2.getText().toString() + code3.getText().toString() + code4.getText().toString(), MemoKey);
-                }
+        send.setOnClickListener(v -> {
+            if(code1.getText().length() == 0 || code2.getText().length() == 0 || code3.getText().length() == 0 || code4.getText().length() == 0)   {
+                di("לא הזנת את הקוד במלואו!");
+            }else   {
+                SharedPreferences preferences1 = getApplication().getSharedPreferences("Settings", 0);
+                String MemoKey = preferences1.getString("firebaseGenratedKey", "");
+                newSendCode(code1.getText().toString() + code2.getText().toString() + code3.getText().toString() + code4.getText().toString(), MemoKey);
             }
         });
         if(toCode)  {
@@ -137,15 +132,7 @@ public class codeC extends AppCompatActivity {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(LocalHelper.onAttach(base));
     }
-    private void resetTitle() {
-        try {
-            int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;
-            if (label != 0)
-                setTitle(label);
-        } catch (PackageManager.NameNotFoundException e) {
-//            Crashlytics.log(e.getMessage());
-        }
-    }
+
     private void di(String err)   {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
         builder.setTitle(getResources().getString(R.string.err)).setMessage(err).setCancelable(false)

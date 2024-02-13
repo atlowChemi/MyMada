@@ -123,7 +123,8 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
             Intent intent;
             switch (in) {
                 case "mok":
-                    realM = sharedPreferences.getBoolean("realM", false);
+                    var realMString = sharedPreferences.getString("realM", "false");
+                    realM = realMString.equals("true");
                     isMADA = false;
                     if (mContext.getApplication().getPackageName().contains("debug")) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
@@ -132,7 +133,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                                     Intent intent16 = new Intent(mContext, lockPage.class);
                                     intent16.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                                    sp1.putBoolean("realM", false);
+                                    sp1.putString("realM", "false");
                                     sp1.apply();
                                     mContext.startActivity(intent16);
                                 })
@@ -140,7 +141,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                                     Intent intent15 = new Intent(mContext, MokedPage.class);
                                     intent15.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                                    sp1.putBoolean("realM", true);
+                                    sp1.putString("realM", "true");
                                     sp1.apply();
                                     mContext.startActivity(intent15);
                                 });
@@ -165,7 +166,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                         if (realM || isMADA) {
                             intent = new Intent(mContext, MokedPage.class);
                             SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                            sp1.putBoolean("realM", true);
+                            sp1.putString("realM", "true");
                             sp1.apply();
                         } else
                             intent = new Intent(mContext, lockPage.class);

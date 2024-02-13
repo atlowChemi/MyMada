@@ -97,11 +97,12 @@ export class NavigationStore {
     }
 
     public navigate = (page: Page) => this.navigator?.navigate(page);
+    public navigateWithoutHistory = (name: Page) => this.navigator?.reset({ index: name === 'Home' ? 0 : 1, routes: [{ name: 'Home' }, ...(name === 'Home' ? [] : [{ name }])] });
 
     public goHome = () => this.navigate('Home');
     public goToTools = () => this.navigate('Tools');
-    public goToRequestCode = () => this.navigator?.reset({ index: 1, routes: [{ name: 'Home' }, { name: 'RequestCode' }] });
-    public goToCodeActivation = () => this.navigator?.reset({ index: 1, routes: [{ name: 'Home' }, { name: 'ActivateCode' }] });
+    public goToRequestCode = () => this.navigateWithoutHistory('RequestCode');
+    public goToCodeActivation = () => this.navigateWithoutHistory('ActivateCode');
     public goToToolsTab = async (route: Tools) => {
         this.goToTools();
         await when(() => this.toolsNavigator !== undefined);
@@ -136,7 +137,7 @@ export class NavigationStore {
             const navigateToContact = await this.dialogStore.openDialog(BaseDialog, {
                 title: i18n.t('contact:plsNote'),
                 okText: i18n.t('contact:toolbarTitle'),
-                cancelText: i18n.t('contact:goToCodeRequest'),
+                cancelText: i18n.t('activationCode:goToCodeRequest'),
                 negativeBtnColor: colors.oldPrimary,
                 description: i18n.t('contact:nonVolunteerMsg'),
             });

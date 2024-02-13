@@ -1,4 +1,5 @@
 import aboutUs from './aboutUs';
+import activationCode from './activationCode';
 import common from './common';
 import contact from './contact';
 import errors from './errors';
@@ -11,6 +12,7 @@ import tools from './tools';
 
 export default {
     aboutUs,
+    activationCode,
     common,
     contact,
     errors,
@@ -137,11 +139,6 @@ export default {
 //     <string name="Mcode">קודים רפואיים</string>
 //     <string name="langSwitched">השינוי יכנס לתוקף בכניסה הבאה לאפליקציה.</string>
 //     <string name="apply">החל</string>
-//     <string name="codeGood">קוד הפעלה נקלט בהצלחה!\nהאפליקציה תופעל כעת!</string>
-//     <string name="codeBad">קוד הפעלה\nשגוי או לא קיים. נסה שנית!</string>
-//     <string name="codeNotExist">נראה כי מעולם לא שלחת לנו בקשת קוד.\nבמידה ושלחת כבר פעם, אנא נסה לשלוח בקשת קוד שוב, ופרט על התקלה.</string>
-//     <string name="codeUsed">הקוד כבר נוצל בעבר.\nלא ניתן להשתמש בקוד יותר מפעם אחת!\nייתכן והייתה תקלה. נסו להזין ידנית את הקוד: %s</string>
-//     <string name="codeNotAllowed">קוד לא אושר לשימוש!\nייתכן ואירעה תקלה. נסה להזין קוד ידנית: %s</string>
 //     <string name="emailGood">האימייל הגיע אלינו\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
 //     <string name="emailSubjNone">לא רשמת נושא להודעה!</string>
 //     <string name="load">טוען. אנא המתן…</string>

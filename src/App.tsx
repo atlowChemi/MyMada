@@ -20,6 +20,7 @@ import { DependencyInjectionProvider, container } from './services/container';
 import { colors } from './consts';
 import { Toolbar } from './containers/Toolbar';
 import { setLanguage } from './localization';
+import { AppPropsStore } from './services/AppPropsStore';
 
 const NOTIFICATION_HELPER_SOURCE = 'NOTIFICATION_HELPER';
 type RootStackParamList = Record<Page, undefined>;
@@ -27,6 +28,7 @@ export type NavigatableScreenProps = NativeStackScreenProps<RootStackParamList, 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const App: React.FC = (props: any) => {
+    const appPropsStore = container.get(AppPropsStore);
     const navigationStore = container.get(NavigationStore);
     const messagingStore = container.get(MessagingStore);
     const metronomeStore = container.get(MetronomeStore);
@@ -40,6 +42,7 @@ export const App: React.FC = (props: any) => {
         }
     }, [props, metronomeStore, navigationStore]);
 
+    useEffect(() => appPropsStore.setProps(props), [appPropsStore, props]);
     useEffect(() => messagingStore.setUpMessaging(), [messagingStore]);
 
     return (
