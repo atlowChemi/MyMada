@@ -4,8 +4,8 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import mobileAds, { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import { createDeferredPromise } from '../utils';
 
-const BANNER_AD_UNIT_ID = 'ca-app-pub-7600269766434003/4483563620';
-const INTERSTITIAL_AD_UNIT_ID = 'ca-app-pub-7600269766434003/5732229370';
+const BANNER_AD_UNIT_ID = 'ca-app-pub-7600269766434003/5732229370';
+const INTERSTITIAL_AD_UNIT_ID = 'ca-app-pub-7600269766434003/4483563620';
 
 @injectable()
 export class AdsStore {
