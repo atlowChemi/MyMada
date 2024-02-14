@@ -108,10 +108,11 @@ const styles = StyleSheet.create({
         width: 24,
     },
     label: {
+        margin: 4,
+        fontSize: 13,
         textAlign: 'center',
         textTransform: 'uppercase',
-        fontSize: 13,
-        margin: 4,
+        fontFamily: 'opensanshebrew',
         backgroundColor: 'transparent',
     },
 });

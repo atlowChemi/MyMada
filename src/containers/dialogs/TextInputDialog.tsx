@@ -1,4 +1,4 @@
-import Dialog from 'react-native-dialog/';
+import Dialog from 'react-native-dialog';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';

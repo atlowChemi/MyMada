@@ -7,4 +7,5 @@ export default {
     notNow: 'Not now',
     toolbarBack: 'Home page',
     send: 'Send',
+    search: 'Search',
 } as const;

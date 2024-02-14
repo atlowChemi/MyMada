@@ -1,6 +1,25 @@
 export default {
     form: {
         title: 'הכתבת טפסים',
+        ambulanceNumber: 'מספר אמבולנס',
+        visa: 'מספר ויזה',
+        address: 'כתובת אירוע',
+        formNumber: 'חולה נפגע',
+        billNumber: 'התחייבות',
+        paymentSum: 'סכום',
+        firstName: 'שם פרטי',
+        lastName: 'שם משפחה',
+        medicalCode: 'קוד רפואי',
+        pickMedicalCode: 'בחר קודים רפואיים',
+        error: {
+            ambulanceNumber: 'לא הכנסת מספר אמבולנס!',
+            formNumber: 'לא הכנסת מספר חולה נפגע!',
+            billNumber: 'לא הכנסת מספר התחייבות!',
+            paymentSum: 'לא הכנסת סכום!',
+            firstName: 'לא הכנסת שם פרטי!',
+            lastName: 'לא הכנסת שם משפחה!',
+            medicalCode: 'לא הכנסת קוד רפואי!',
+        },
     },
     team: {
         title: 'דיווח צוות',

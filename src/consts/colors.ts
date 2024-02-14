@@ -44,3 +44,16 @@ export const navPickedTextColor = '#05167c';
 export const navNotPickedTextColor = '#5d5d5d';
 export const navBar = '#c1c1c4';
 export const transparent = 'transparent';
+export const medicalCodes = {
+    areaAndPain: '#4bacc6',
+    trauma: '#8064a2',
+    cardioVascular: '#c0504d',
+    respiratory: '#4f81bd',
+    neurology: '#a1a30e',
+    gastro: '#d8863a',
+    infection: '#829ca3',
+    psychiatry: '#00b050',
+    endocrinology: '#92d050',
+    urology: '#ba8280',
+    general: '#6b7177',
+} as const;

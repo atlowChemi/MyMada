@@ -2,7 +2,7 @@ import { computedFn } from 'mobx-utils';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import Dialog from 'react-native-dialog/';
+import Dialog from 'react-native-dialog';
 import { colors } from '../../consts';
 import type { DictionaryEntry } from '../Tools/Dictionary';
 import type { IDialogInstance } from '../../services/DialogStore';

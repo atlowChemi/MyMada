@@ -6,12 +6,12 @@ import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import type { IDialogInstance } from '../../services/DialogStore';
 
-interface RequestCodeApprovalProps extends IDialogInstance<boolean> {
+interface SmsApprovalProps extends IDialogInstance<boolean> {
     region: string;
     msg: string;
 }
 
-export const SmsApproval = observer<RequestCodeApprovalProps>(({ region, msg, closeDialog }) => {
+export const SmsApproval = observer<SmsApprovalProps>(({ region, msg, closeDialog }) => {
     const { t } = useTranslation();
     const localStore = useLocalObservable(() => ({
         onCancel() {

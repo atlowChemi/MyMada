@@ -1,6 +1,25 @@
 export default {
     form: {
         title: 'Form dictation',
+        ambulanceNumber: 'AMB. number',
+        visa: 'Visa number',
+        address: 'Call address',
+        formNumber: 'Patient form',
+        billNumber: 'Bill',
+        paymentSum: 'סכום',
+        firstName: 'First name',
+        lastName: 'Last name',
+        medicalCode: 'Medical code',
+        pickMedicalCode: 'Pick medical codes',
+        error: {
+            ambulanceNumber: 'Please write ambulance number!',
+            formNumber: 'Please write form number!',
+            billNumber: 'Please write bill number!',
+            paymentSum: 'Please write bill amount!',
+            firstName: 'Please write first name!',
+            lastName: 'Please write family name!',
+            medicalCode: 'Please pick medical code!',
+        },
     },
 
     team: {
