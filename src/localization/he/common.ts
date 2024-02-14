@@ -7,4 +7,5 @@ export default {
     notNow: 'לא כרגע',
     toolbarBack: 'חזרה לעמוד הבית',
     send: 'שליחה',
+    search: 'חיפוש',
 } as const;

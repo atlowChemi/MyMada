@@ -1,4 +1,4 @@
-import { reaction } from 'mobx';
+import { reaction, runInAction } from 'mobx';
 import { useEffect, forwardRef } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { StyleSheet, TextInput as NativeTextInput, View, Animated } from 'react-native';
@@ -7,7 +7,7 @@ import { colors } from '../consts';
 import { InputLabel } from './InputLabel';
 import { roundLayoutSize } from '../utils';
 import type { ComponentProps } from 'react';
-import type { StyleProp, ViewStyle, TextStyle, LayoutChangeEvent, ColorValue } from 'react-native';
+import type { StyleProp, ViewStyle, TextStyle, LayoutChangeEvent, ColorValue, NativeSyntheticEvent, TextInputFocusEventData } from 'react-native';
 
 interface TextInputProps extends Omit<ComponentProps<typeof NativeTextInput>, 'style'> {
     label: string;
@@ -39,7 +39,9 @@ export const TextInput = observer<TextInputProps, NativeTextInput>(
             labeled: new Animated.Value(props.value ? 0 : 1),
             errorAnimation: new Animated.Value(error ? 1 : 0),
             onChange(value: string) {
-                this.value = value;
+                if (typeof props.value === 'undefined') {
+                    this.value = value;
+                }
                 props.onChangeText?.(value);
             },
             setup() {
@@ -108,11 +110,13 @@ export const TextInput = observer<TextInputProps, NativeTextInput>(
                     this.labelLayout.height = height;
                 }
             },
-            onFocus() {
+            onFocus(e: NativeSyntheticEvent<TextInputFocusEventData>) {
                 this.focused = true;
+                props.onFocus?.(e);
             },
-            onBlur() {
+            onBlur(e: NativeSyntheticEvent<TextInputFocusEventData>) {
                 this.focused = false;
+                props.onBlur?.(e);
             },
             get height() {
                 return this.numberOfLines ? this.numberOfLines * 27 : undefined;
@@ -156,6 +160,9 @@ export const TextInput = observer<TextInputProps, NativeTextInput>(
         useEffect(() => {
             localStore.updateValues(error, props.editable, numberOfLines, props.underlineColorAndroid);
         }, [error, props.editable, numberOfLines, props.underlineColorAndroid, localStore]);
+        useEffect(() => {
+            runInAction(() => (localStore.value = props.value));
+        }, [localStore, props.value]);
         useEffect(() => localStore.setup(), [localStore]);
         return (
             <View style={[styles.wrapper, wrapperStyle]}>

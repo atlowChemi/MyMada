@@ -27,16 +27,8 @@ export default {
     // smsMoni: 'הפעלת האפליקציה ברקע',
     // notiMoni: 'זיהוי התראות ברקע',
     // helloWorld: 'הכתבת טופס',
-    // ambN: 'מספר אמבולנס',
-    // visa: 'מספר ויזה',
-    // address: 'כתובת אירוע',
-    // HN: 'חולה נפגע',
-    // HT: 'התחייבות',
     // titleActivityHomePage: 'מסך כניסה',
     // titleActivityMainMenu: 'מסך כניסה',
-    // SUM: 'סכום',
-    // Fna: 'שם פרטי',
-    // Lna: 'שם משפחה',
     // code: 'קוד רפואי',
     // succ: 'שלח',
     // ret: 'ביטול',
@@ -72,7 +64,6 @@ export default {
     // title_activity_code_c: 'התחברות בקוד',
     // title_activity_help_page: 'עמוד הסברים',
     // pref_description_enable_on: 'זיהוי מקרים בסמס פועל.',
-    // pickC: 'לחץ לבחירת קוד',
     // pref_description_vibrate_on: 'רטט בעת קבלת מקרים פועל.',
 } as const;
 
@@ -130,18 +121,9 @@ export default {
 //     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
 //     <string name="importanceMsg">זיהינו כי התראה על זיהוי הודעות ברקע מופיעה במסך.\nלידיעתך, ניתן להעלים אותו על ידי העברה לדחיפות נמוכה.</string>
 //     <string name="importance">הורד דחיפות</string>
-//     <string name="search">חיפוש</string>
 //     <string name="newCall">אירוע חדש!</string>
 //     <string name="edit">ערוך</string>
 //     <string name="delete">הסר</string>
-
-//     <string name="err_amb">לא הכנסת מספר אמבולנס!</string>
-//     <string name="err_hn">לא הכנסת מספר חולה נפגע!</string>
-//     <string name="err_ht">לא הכנסת מספר התחייבות!</string>
-//     <string name="err_fn">לא הכנסת שם פרטי!</string>
-//     <string name="err_ln">לא הכנסת שם משפחה!</string>
-//     <string name="err_sum">לא הכנסת סכום!</string>
-//     <string name="err_mc">לא הכנסת קוד רפואי!</string>
 
 //     <string name="explain">בכדי להוסיף איש צוות לחצו על כפתור ה+ בצד ימין בתחתית המסך.\nבכדי לשלוח את ההודעה למוקד לחצו על הכפתור בצד שמאל.</string>
 
