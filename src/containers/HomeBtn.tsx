@@ -23,7 +23,6 @@ export const HomeBtn = observer<HomeBtnProps>(({ big, icon, size = 80, textStyle
         () => ({
             big,
             style,
-            isPressed: false,
             pressableStyle({ pressed }: PressableStateCallbackType): StyleProp<ViewStyle> {
                 return [
                     styles.btnCard,
@@ -33,12 +32,6 @@ export const HomeBtn = observer<HomeBtnProps>(({ big, icon, size = 80, textStyle
                     },
                     this.style,
                 ];
-            },
-            onPressIn() {
-                this.isPressed = true;
-            },
-            onPressOut() {
-                this.isPressed = false;
             },
         }),
         { style: observable.ref },
@@ -52,7 +45,7 @@ export const HomeBtn = observer<HomeBtnProps>(({ big, icon, size = 80, textStyle
     }, [state, style]);
 
     return (
-        <Pressable style={state.pressableStyle} onPressIn={state.onPressIn} onPressOut={state.onPressOut} onPress={onPress}>
+        <Pressable style={state.pressableStyle} onPress={onPress}>
             <Icon name={icon} size={size} color={colors.oldPrimary} />
             <Text style={[styles.name, i18n.language === 'en' && styles.englishName, textStyle]}>{t(`home:${icon}`)}</Text>
         </Pressable>

@@ -104,8 +104,9 @@ MedicalCodePicker.displayName = 'MedicalCodePicker';
 
 const styles = StyleSheet.create({
     container: {
-        padding: 0,
         margin: 0,
+        padding: 0,
+        maxHeight: '90%',
     },
     font: {
         fontFamily: 'opensanshebrew',
@@ -132,5 +133,7 @@ const styles = StyleSheet.create({
         padding: 5,
         alignItems: 'center',
         flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: colors.materialGrey300,
     },
 });
