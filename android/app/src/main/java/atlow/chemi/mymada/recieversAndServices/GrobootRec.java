@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import atlow.chemi.mymada.MokedPage;
+import atlow.chemi.mymada.HomePage;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.smsRes;
 
@@ -64,11 +64,13 @@ public class GrobootRec extends BroadcastReceiver {
             silent = false;
         if (am != null && am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
             silentVib = false;
-        Intent hachtava = new Intent(context, MokedPage.class);
+        Intent hachtava = new Intent(context, HomePage.class);
+//        Intent hachtava = new Intent(context, MokedPage.class);
         hachtava.putExtra("msg", true);
         hachtava.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         hachtava.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Intent launchIntent = new Intent(context, MokedPage.class);
+        Intent launchIntent = new Intent(context, HomePage.class);
+//        Intent launchIntent = new Intent(context, MokedPage.class);
         if (isCallable(context.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency")))
             launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency");
         if (launchIntent != null) {

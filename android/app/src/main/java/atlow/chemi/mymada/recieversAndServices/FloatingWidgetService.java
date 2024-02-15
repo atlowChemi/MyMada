@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
-import atlow.chemi.mymada.MokedPage;
+import atlow.chemi.mymada.HomePage;
 import atlow.chemi.mymada.R;
 
 public class FloatingWidgetService extends Service implements View.OnClickListener {
@@ -358,7 +358,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 break;
             case R.id.open_activity_button:
                 //open the activity and stop service
-                Intent intent = new Intent(FloatingWidgetService.this, MokedPage.class);
+//                Intent intent = new Intent(FloatingWidgetService.this, MokedPage.class);
+                Intent intent = new Intent(FloatingWidgetService.this, HomePage.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 //close the service and remove view from the view hierarchy

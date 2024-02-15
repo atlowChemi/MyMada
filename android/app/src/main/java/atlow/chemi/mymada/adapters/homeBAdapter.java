@@ -3,7 +3,6 @@ package atlow.chemi.mymada.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -11,7 +10,6 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Display;
@@ -22,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 // import com.google.android.gms.ads.AdRequest;
 // import com.google.android.gms.ads.InterstitialAd;
@@ -33,9 +30,7 @@ import java.util.List;
 
 import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.classes.HomeB;
-import atlow.chemi.mymada.MokedPage;
 import atlow.chemi.mymada.R;
-import atlow.chemi.mymada.lockPage;
 
 public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
 
@@ -120,67 +115,16 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
         });
         holder.homeB.setOnClickListener(view -> {
             String in = album.getIntent();
-            Intent intent;
             switch (in) {
                 case "mok":
-                    var realMString = sharedPreferences.getString("realM", "false");
-                    realM = realMString.equals("true");
-                    isMADA = false;
-                    if (mContext.getApplication().getPackageName().contains("debug")) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogStyle);
-                        builder.setMessage("זוהי גרסה לבדיקה. עמוד חסימה או עמוד דיווחים?").setCancelable(true)
-                                .setPositiveButton("עמוד חסימה", (dialog, id) -> {
-                                    Intent intent16 = new Intent(mContext, lockPage.class);
-                                    intent16.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                                    sp1.putString("realM", "false");
-                                    sp1.apply();
-                                    mContext.startActivity(intent16);
-                                })
-                                .setNegativeButton("עמוד דיווחים", (dialog, id) -> {
-                                    Intent intent15 = new Intent(mContext, MokedPage.class);
-                                    intent15.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                                    sp1.putString("realM", "true");
-                                    sp1.apply();
-                                    mContext.startActivity(intent15);
-                                });
-                        final AlertDialog alert = builder.create();
-                        alert.setOnShowListener(dialogInterface -> {
-                            TextView textView = alert.findViewById(android.R.id.message);
-                            if (textView != null)
-                                textView.setTypeface(myTypeface);
-                            textView = alert.findViewById(android.R.id.title);
-                            if (textView != null)
-                                textView.setTypeface(myTypeface);
-                            Button canc = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                            Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                            ok.setTypeface(myTypeface);
-                            canc.setTypeface(myTypeface);
-                        });
-                        alert.show();
-                    } else {
-                        if (!realM) {
-                            isMADA = isPI(mContext);
-                        }
-                        if (realM || isMADA) {
-                            intent = new Intent(mContext, MokedPage.class);
-                            SharedPreferences.Editor sp1 = sharedPreferences.edit();
-                            sp1.putString("realM", "true");
-                            sp1.apply();
-                        } else
-                            intent = new Intent(mContext, lockPage.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
-                    }
-                    break;
                 case "tes":
                 case "con":
                 case "inf":
-                case "tol":
-                    intent = new Intent(mContext, MainReactActivity.class);
+                case "tol": {
+                    var intent = new Intent(mContext, MainReactActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
+                }
             }
         });
     }

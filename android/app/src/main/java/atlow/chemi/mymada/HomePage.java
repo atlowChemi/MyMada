@@ -65,31 +65,9 @@ public class HomePage extends AppCompatActivity {
         setNotifChannels();
         rateUs.app_launched(HomePage.this);
         Context context = HomePage.this;
-//        MyFirebaseMessagingService.getToken(getApplicationContext());
-        String token = getSharedPreferences("Settings", 0).getString("fcm", "empty");
-//        Crashlytics.setUserIdentifier(token);
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
         boolean Mapp = sharedPreferences.getBoolean("Mapp", false);
-//        AdView mAdView;
-        try {
-            Log.e("FCM token: ", token);
-        }
-        catch (Exception e)    {
-            e.printStackTrace();
-        }
-        // FirebaseMessaging.getInstance().subscribeToTopic("news");
-        try {
-//            MobileAds.initialize(getApplicationContext(), "ca-app-pub-7600269766434003/5732229370");
-//            mAdView = findViewById(R.id.adView);
-//            AdRequest adRequest = new AdRequest.Builder().build();
-//            mAdView.loadAd(adRequest);
-//            Crashlytics.log("Ads Loaded");
-        }
-        catch (Exception e) {
-//            Crashlytics.log("Ads Not Loaded");
-//            Crashlytics.logException(e);
-        }
 
         RecyclerView rv = findViewById(R.id.rv);
         GridLayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 2);
@@ -106,25 +84,18 @@ public class HomePage extends AppCompatActivity {
         rv.setItemAnimator(new DefaultItemAnimator());
         rv.setAdapter(adapter);
 
-        try {
-            HomeB Tool = new HomeB("tol", R.drawable.new_tol);
-            albumList.add(Tool);
-            HomeB Moked = new HomeB("mok", R.drawable.new_mok);
-            albumList.add(Moked);
-            HomeB Test = new HomeB("tes", R.drawable.new_tes);
-            albumList.add(Test);
-            HomeB Contact = new HomeB("con", R.drawable.new_con);
-            albumList.add(Contact);
-            HomeB Info = new HomeB("inf", R.drawable.new_inf);
-            albumList.add(Info);
-//            Crashlytics.log("HomeBtns Loaded properly!");
-        }
-        catch (Exception e) {
-//            Crashlytics.log("HomeBtns caused crash!");
-//            Crashlytics.logException(e);
-        }
+        HomeB Tool = new HomeB("tol", R.drawable.new_tol);
+        albumList.add(Tool);
+        HomeB Moked = new HomeB("mok", R.drawable.new_mok);
+        albumList.add(Moked);
+        HomeB Test = new HomeB("tes", R.drawable.new_tes);
+        albumList.add(Test);
+        HomeB Contact = new HomeB("con", R.drawable.new_con);
+        albumList.add(Contact);
+        HomeB Info = new HomeB("inf", R.drawable.new_inf);
+        albumList.add(Info);
 
-        adapter.notifyDataSetChanged();
+        adapter.notifyItemRangeInserted(0, albumList.size());
         rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
