@@ -4,13 +4,14 @@ import { Linking } from 'react-native';
 import { inject, injectable } from 'inversify';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { makeAutoObservable, observable, reaction, when } from 'mobx';
-import { PermissionsStore } from './PermissionsStore';
+import { colors } from '../consts';
 import { AdsStore } from './AdsStore';
 import { DialogStore } from './DialogStore';
+import { PermissionsStore } from './PermissionsStore';
 import { BaseDialog } from '../containers/dialogs/BaseDialog';
 import { SharedPreferencesStore } from './SharedPreferencesStore';
 import { MadaNotificationsStore } from './MadaNotificationsStore';
-import { colors } from '../consts';
+import type { NavigatableScreenProps } from '../App';
 import type { NavigatableToolsScreenProps } from '../containers/Pages/Tools';
 
 export type Tools =
@@ -25,7 +26,7 @@ export type Tools =
     | 'BlsProtocoles'
     | 'AlsProtocoles'
     | 'Kuntres';
-export type Page = 'Home' | 'Tools' | 'Lock' | 'Dispatch' | 'ContactUs' | 'RequestCode' | 'ActivateCode' | 'About' | 'Privacy';
+export type Page = 'Home' | 'Tools' | 'Lock' | 'Dispatch' | 'ContactUs' | 'RequestCode' | 'ActivateCode' | 'About' | 'Privacy' | 'Settings';
 
 export const TOOLS_PAGES = new Set<Tools>([
     'ContractionTimer',
@@ -96,17 +97,18 @@ export class NavigationStore {
         };
     }
 
-    public navigate = (page: Page) => this.navigator?.navigate(page);
+    // @ts-expect-error generic inconvenience
+    public navigate = <T extends Page = Page>(page: T, params?: NavigatableScreenProps<T>['route']['params']) => this.navigator?.navigate(page, params);
     public navigateWithoutHistory = (name: Page) => this.navigator?.reset({ index: name === 'Home' ? 0 : 1, routes: [{ name: 'Home' }, ...(name === 'Home' ? [] : [{ name }])] });
 
     public goHome = () => this.navigate('Home');
     public goToTools = () => this.navigate('Tools');
     public goToRequestCode = () => this.navigateWithoutHistory('RequestCode');
     public goToCodeActivation = () => this.navigateWithoutHistory('ActivateCode');
-    public goToToolsTab = async (route: Tools) => {
+    public goToToolsTab = async (route: Tools, params?: Record<string, any>) => {
         this.goToTools();
         await when(() => this.toolsNavigator !== undefined);
-        this.toolsNavigator?.jumpTo(route);
+        this.toolsNavigator?.jumpTo(route, params);
     };
     public goToDispatch = async () => {
         this.sharedPreferencesStore.name = 'Settings';
@@ -160,7 +162,7 @@ export class NavigationStore {
                 title: i18n.t('permissions:alertTitle'),
                 description: i18n.t('permissions:blocked'),
                 cancelText: i18n.t('common:cancel'),
-                okText: i18n.t('permissions:goToSettings'),
+                okText: i18n.t('common:goToSettings'),
             });
             if (goToSettings) {
                 const { packageName, uid } = await this.madaNotificationsStore.getAppData();

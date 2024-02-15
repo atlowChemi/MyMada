@@ -23,6 +23,25 @@ export default {
     },
     team: {
         title: 'דיווח צוות',
+        addMember: 'הוספת איש צוות',
+        editMember: 'עריכת איש צוות',
+        memberName: 'שם איש צוות',
+        memberID: 'ת.ז:',
+        note: `ניתן לדווח על 3 מתנדבים ונהג.
+הדיווח הוא של שם פרטי ומשפחה יחד עם הכשרה רפואית.
+משמרת מהנה!`,
+        noMembers: 'לא ניתן לשלוח ללא אנשי צוות!',
+        ranks: {
+            Driver: 'נהג',
+            EMT: 'חובש',
+            Paramedic: 'פראמדיק',
+            Doctor: 'רופא',
+            Volunteer: 'מתנדב',
+            Intern: 'משתלם',
+            NationalService: 'שירות לאומי',
+        },
+        edit: 'ערוך',
+        delete: 'הסר',
     },
     general: {
         title: 'הודעה כללית',
@@ -32,6 +51,8 @@ export default {
     smsReviewTitle: 'יש לאשר לפני שליחה',
     smsDispatchTarget: 'ישלח למוקד: {{ region }}',
     smsCounter: '{{ length }} תווים. {{ msgCount }} הודעות סמס.',
+    pickDefaultDispatchTitle: 'מוקד ברירת מחדל',
+    pickDefaultDispatchText: 'בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. ממולץ לעבור להגדרות ולהגדיר מרחב ברירת מחדל',
     regions: {
         Jerusalem: 'ירושלים',
         Ayalon: 'איילון',

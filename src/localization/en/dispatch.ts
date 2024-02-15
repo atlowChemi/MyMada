@@ -21,11 +21,28 @@ export default {
             medicalCode: 'Please pick medical code!',
         },
     },
-
     team: {
         title: 'Team report',
+        addMember: 'Add team member',
+        editMember: 'Edit team member',
+        memberName: 'Volunteer name',
+        memberID: 'ID:',
+        note: `You can send up to 3 volunteers and a driver.
+the Information sent is the name and medical rank.
+Enjoy your shift!`,
+        noMembers: 'Cannot send without team members!',
+        ranks: {
+            Driver: 'Driver',
+            EMT: 'EMT',
+            Paramedic: 'Paramedic',
+            Doctor: 'Doctor',
+            Volunteer: 'Volunteer',
+            Intern: 'EMT Intern',
+            NationalService: 'National Service',
+        },
+        edit: 'Edit',
+        delete: 'Delete',
     },
-
     general: {
         title: 'Custom message',
         msgHint: 'Type your message to the dispatch here',
@@ -34,6 +51,8 @@ export default {
     smsReviewTitle: 'Please review before sending',
     smsDispatchTarget: 'Send to: "{{ region }}" dispatch',
     smsCounter: '{{ length }} characters. {{ msgCount }} SMS messages.',
+    pickDefaultDispatchTitle: 'Default MADA region',
+    pickDefaultDispatchText: 'You did not select your default MADA region. please pick a default region in settings.',
     regions: {
         Jerusalem: 'Jerusalem',
         Ayalon: 'Ayalon',

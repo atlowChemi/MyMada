@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/atlowChemi/MyMada#readme",
   "dependencies": {
+    "@gorhom/portal": "^1.0.14",
     "@react-native-firebase/app": "18.8.0",
     "@react-native-firebase/crashlytics": "^18.8.0",
     "@react-native-firebase/database": "18.8.0",
