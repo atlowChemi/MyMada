@@ -2436,6 +2436,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-firebase/analytics@npm:18.8.0":
+  version: 18.8.0
+  resolution: "@react-native-firebase/analytics@npm:18.8.0"
+  peerDependencies:
+    "@react-native-firebase/app": 18.8.0
+  checksum: 2a01308982226e8873278e4719189083cf61563dd20d41e20b514061e96220ba7c55aa87c8fb82442b4eab8d07ba7ae7588cbbd1f942d2694a1bdc63648729ae
+  languageName: node
+  linkType: hard
+
 "@react-native-firebase/app@npm:18.8.0":
   version: 18.8.0
   resolution: "@react-native-firebase/app@npm:18.8.0"
@@ -2453,7 +2462,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/crashlytics@npm:^18.8.0":
+"@react-native-firebase/crashlytics@npm:18.8.0":
   version: 18.8.0
   resolution: "@react-native-firebase/crashlytics@npm:18.8.0"
   dependencies:
@@ -2496,6 +2505,19 @@ __metadata:
     expo:
       optional: true
   checksum: 4a6e744579954310557a56c843049283e8478185609d78409ad3949dbfe0e01007b6fb724496308dec9131266a55d068a0828587476df54ddfc3adc8a1013d29
+  languageName: node
+  linkType: hard
+
+"@react-native-firebase/perf@npm:18.8.0":
+  version: 18.8.0
+  resolution: "@react-native-firebase/perf@npm:18.8.0"
+  peerDependencies:
+    "@react-native-firebase/app": 18.8.0
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: 1f2e0f17c093b9709b77efe5db33633e654c99397e65c997e21cedfaad4b902d8e166a466179cb25a6febcabe1b14fc3108e146aa9eba9c1dc0565e6c251ad2a
   languageName: node
   linkType: hard
 
@@ -8008,11 +8030,13 @@ __metadata:
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
     "@gorhom/portal": ^1.0.14
+    "@react-native-firebase/analytics": 18.8.0
     "@react-native-firebase/app": 18.8.0
-    "@react-native-firebase/crashlytics": ^18.8.0
+    "@react-native-firebase/crashlytics": 18.8.0
     "@react-native-firebase/database": 18.8.0
     "@react-native-firebase/firestore": 18.8.0
     "@react-native-firebase/messaging": 18.8.0
+    "@react-native-firebase/perf": 18.8.0
     "@react-native-firebase/storage": 18.8.0
     "@react-native/eslint-config": ^0.72.2
     "@react-native/metro-config": ^0.72.11

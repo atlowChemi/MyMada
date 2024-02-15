@@ -1,4 +1,5 @@
 import BuildConfig from 'react-native-build-config';
+import analytics from '@react-native-firebase/analytics';
 import i18n from '../localization';
 import { Linking } from 'react-native';
 import { inject, injectable } from 'inversify';
@@ -66,8 +67,9 @@ export class NavigationStore {
         makeAutoObservable<NavigationStore, 'toolsNavigator'>(this, { toolsNavigator: observable.ref }, { autoBind: true });
         reaction(
             () => this.page,
-            () => {
+            async () => {
                 this.canGoBack = this.navigator?.canGoBack() || false;
+                await analytics().logScreenView({ screen_name: this.page, screen_class: this.page });
             },
         );
     }
