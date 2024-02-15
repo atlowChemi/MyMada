@@ -7,5 +7,4 @@ export default {
     deny: 'דחייה',
     blocked: 'פעולה זה נחסמה בשל הרשאות נדרשות שנחסמו.',
     notificationExplain: 'על מנת שנוכל לעדכן אותך כשראינו את ההודעה שלך, יש צורך לאשר קבלת התראות.',
-    goToSettings: 'מעבר להגדרות',
 } as const;

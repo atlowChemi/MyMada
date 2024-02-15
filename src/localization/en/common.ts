@@ -8,4 +8,6 @@ export default {
     toolbarBack: 'Home page',
     send: 'Send',
     search: 'Search',
+    goToSettings: 'Go to settings',
+    skip: 'Skip',
 } as const;

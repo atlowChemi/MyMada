@@ -7,5 +7,4 @@ export default {
     deny: 'Deny',
     blocked: 'This action has been blocked by a required permission which is missing.',
     notificationExplain: 'In order for us to update you when we see your message, we need permission to send notifications.',
-    goToSettings: 'Go to settings',
 } as const;

@@ -26,29 +26,15 @@ export default {
     tools,
     // smsMoni: 'הפעלת האפליקציה ברקע',
     // notiMoni: 'זיהוי התראות ברקע',
-    // helloWorld: 'הכתבת טופס',
-    // titleActivityHomePage: 'מסך כניסה',
-    // titleActivityMainMenu: 'מסך כניסה',
-    // code: 'קוד רפואי',
-    // succ: 'שלח',
-    // ret: 'ביטול',
     // action_settings: 'הגדרות',
-    // send: 'שלח',
     // Mrec: 'אשר קבלה',
     // Mrec2: 'חזור',
     // Minf: 'פרטי מקרה',
     // Mhac: 'עבור להכתבה',
-    // test_beep: 'דמה קבלת מקרה',
     // title_activity_msgaprove: 'אישור סופי',
     // title_activity_sms_res: 'הודעה חדשה',
     // title_activity_main2: 'דיווח אנשי צוות',
     // enjoy: 'משמרת מהנה!',
-    // Nteam: 'הוספת איש צוות',
-    // teamN: 'שם איש צוות',
-    // teamT: 'ת.ז:',
-    // teamE: `ניתן לדווח על 3 מתנדבים ונהג.\nהדיווח הוא של שם פרטי ומשפחה יחד עם ת.ז.
-    // \nכדי לשלוח פרטי מתנדב יש להפעיל תחילה את השורה שלו באמצעות לחיצה על התיבה מימינו.
-    // \nמשמרת מהנה!`,
     // title_activity_dialog_parent: 'אישור קריאת התראות',
     // dialog_help: 'כדי לאפשר לאפליקציה לזהות מקרים באפליקציית מדא, יש לאפשר לה גישה להתראות.\nכדי לאשר גישה, יש ללחוץ אישור ובעמוד שיפתח לבחור ב"דיווחי מגן דוד אדום", ולאפשר את האפשרות הזו.',
     // dialog_yes: 'איפשור גישה להתראות',
@@ -106,11 +92,6 @@ export default {
 //     <string name="emailGood">האימייל הגיע אלינו\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
 //     <string name="emailSubjNone">לא רשמת נושא להודעה!</string>
 //     <string name="load">טוען. אנא המתן…</string>
-//     <string name="pickMokTtl">מוקד ברירת מחדל</string>
-//     <string name="pickMokTxt">בשלב זה, טרם בחרת מרחב ברירת מחדל בהגדרות. אנא עבור להגדרות והגדר מרחב ברירת מחדל</string>
-//     <string name="goToSet">עבור להגדרות</string>
-//     <string name="skip">דלג</string>
-//     <string name="SendNoNames">לא ניתן לשלוח ללא אנשי צוות!</string>
 //     <string name="protocoles">בחר פרוטוקולים לצפייה</string>
 //     <string name="title_activity_main3">הודעה מותאמת אישית</string>
 //     <string name="msgSent">ההודעה נשלחה בהצלחה!</string>
@@ -122,8 +103,6 @@ export default {
 //     <string name="importanceMsg">זיהינו כי התראה על זיהוי הודעות ברקע מופיעה במסך.\nלידיעתך, ניתן להעלים אותו על ידי העברה לדחיפות נמוכה.</string>
 //     <string name="importance">הורד דחיפות</string>
 //     <string name="newCall">אירוע חדש!</string>
-//     <string name="edit">ערוך</string>
-//     <string name="delete">הסר</string>
 
 //     <string name="explain">בכדי להוסיף איש צוות לחצו על כפתור ה+ בצד ימין בתחתית המסך.\nבכדי לשלוח את ההודעה למוקד לחצו על הכפתור בצד שמאל.</string>
 

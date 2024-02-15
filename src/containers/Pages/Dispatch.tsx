@@ -8,8 +8,10 @@ import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Loader } from '../../Components/Loader';
 import { CustomMsg } from '../Dispatch/CustomMsg';
+import { BaseDialog } from '../dialogs/BaseDialog';
 import { TeamReport } from '../Dispatch/TeamReport';
 import { DispatchTabBar } from '../Dispatch/TabBar';
+import { DialogStore } from '../../services/DialogStore';
 import { FormDictation } from '../Dispatch/FormDictation';
 import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
@@ -18,7 +20,7 @@ import { useLocalStoreWithInjectedDependencies } from '../../services/container'
 import type { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import type { NavigatableScreenProps } from '../../App';
 
-type DispatchPage = 'Team' | 'Form' | 'General';
+export type DispatchPage = 'Team' | 'Form' | 'General';
 type DispatchNavigatorParamList = Record<DispatchPage, undefined>;
 export type NavigatableDispatchScreenProps = MaterialTopTabScreenProps<DispatchNavigatorParamList, DispatchPage>;
 
@@ -26,12 +28,14 @@ const Tab = createMaterialTopTabNavigator<DispatchNavigatorParamList>();
 
 @injectable()
 class DispatchLocalStore {
+    private hasNavigated = false;
     public showPagePromise = fromPromise(this.isAllowedToViewDispatchPage());
 
-    constructor(private readonly navigationStore: NavigationStore, private readonly sharedPreferencesStore: SharedPreferencesStore) {
+    constructor(private readonly dialogStore: DialogStore, private readonly navigationStore: NavigationStore, private readonly sharedPreferencesStore: SharedPreferencesStore) {
         makeAutoObservable(this, undefined, { autoBind: true });
 
         // TODO: If there isn't a default dispatch set - show popup to select one.
+        this.ensureDefaultDispatchSet();
     }
 
     public get titles() {
@@ -46,13 +50,34 @@ class DispatchLocalStore {
         this.sharedPreferencesStore.name = 'Settings';
         const { realM } = await this.sharedPreferencesStore.activeChannel;
         const isMarkedAsVolunteer = this.sharedPreferencesStore.makePrefBoolean(realM, false);
-        if (!isMarkedAsVolunteer) {
-            this.navigationStore.navigateWithoutHistory('Home');
+        if (isMarkedAsVolunteer) {
+            return;
+        }
+        this.hasNavigated = true;
+        this.navigationStore.navigateWithoutHistory('Home');
+    }
+
+    private async ensureDefaultDispatchSet() {
+        this.sharedPreferencesStore.name = 'Settings';
+        const { pickedMoked } = await this.sharedPreferencesStore.activeChannel;
+        const hasUserSelectedDefaultDispatch = this.sharedPreferencesStore.makePrefBoolean(pickedMoked, false);
+        if (this.hasNavigated || hasUserSelectedDefaultDispatch) {
+            return;
+        }
+        const goToSettings = await this.dialogStore.openDialog(BaseDialog, {
+            cancelText: i18n.t('common:skip'),
+            okText: i18n.t('common:goToSettings'),
+            negativeBtnColor: colors.colorPrimary,
+            title: i18n.t('dispatch:pickDefaultDispatchTitle'),
+            description: i18n.t('dispatch:pickDefaultDispatchText'),
+        });
+        if (goToSettings) {
+            this.navigationStore.navigate('Settings', { page: 'Dispatch' });
         }
     }
 }
 
-export const Dispatch = observer<NavigatableScreenProps>(() => {
+export const Dispatch = observer<NavigatableScreenProps<'Dispatch'>>(({ route }) => {
     const localStore = useLocalStoreWithInjectedDependencies(DispatchLocalStore);
 
     if (localStore.showPagePromise.state === 'pending') {
@@ -66,7 +91,7 @@ export const Dispatch = observer<NavigatableScreenProps>(() => {
     }
 
     return (
-        <Tab.Navigator backBehavior="none" tabBar={DispatchTabBar} initialRouteName="Team" screenOptions={{ tabBarPressColor: colors.whiteOpacity }}>
+        <Tab.Navigator backBehavior="none" tabBar={DispatchTabBar} initialRouteName={route.params?.page ?? 'Team'} screenOptions={{ tabBarPressColor: colors.whiteOpacity }}>
             <Tab.Screen name="Form" options={{ title: localStore.titles.Form }} component={FormDictation} />
             <Tab.Screen name="Team" options={{ title: localStore.titles.Team }} component={TeamReport} />
             <Tab.Screen name="General" options={{ title: localStore.titles.General }} component={CustomMsg} />

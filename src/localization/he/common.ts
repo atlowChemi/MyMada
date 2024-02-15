@@ -8,4 +8,6 @@ export default {
     toolbarBack: 'חזרה לעמוד הבית',
     send: 'שליחה',
     search: 'חיפוש',
+    goToSettings: 'מעבר להגדרות',
+    skip: 'דלג',
 } as const;
