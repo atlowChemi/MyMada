@@ -65,36 +65,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme.SmsRes" />
         <activity
-            android:name=".codeC"
-            android:label="@string/title_activity_code_c"
-            android:theme="@style/MyMaterialTheme"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".MokedPage"
-            android:label="@string/title_activity_moked_page"
-            android:parentActivityName=".HomePage"
-            android:screenOrientation="portrait"
-            android:theme="@style/MyMaterialTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="atlow.chemi.mymada.HomePage" />
-        </activity>
-        <activity
-            android:name=".lockPage"
-            android:label="@string/app_name"
-            android:parentActivityName=".HomePage"
-            android:screenOrientation="portrait"
-            android:theme="@style/MyMaterialTheme" />
-        <activity
-            android:name=".UtillitiesAndTools"
-            android:label="@string/button_h"
-            android:parentActivityName=".HomePage"
-            android:theme="@style/MyMaterialTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".HomePage" />
-        </activity>
-        <activity
             android:name=".SettingsPage"
             android:label="@string/title_activity_settings"
             android:theme="@style/MyMaterialTheme" />
