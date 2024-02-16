@@ -5,20 +5,20 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: "com.facebook.react"
 
 android {
-    signingConfigs {
-        release {
-            keyAlias 'hi'
-            keyPassword '1446264'
-            storeFile file('../../../cert.jks')
-            storePassword '1446264'
-        }
-        debug {
-            keyAlias 'hi'
-            keyPassword '1446264'
-            storeFile file('../../../certDebug.jks')
-            storePassword '1446264'
-        }
-    }
+//    signingConfigs {
+//        release {
+//            keyAlias 'hi'
+//            keyPassword '1446264'
+//            storeFile file('../../../cert.jks')
+//            storePassword '1446264'
+//        }
+//        debug {
+//            keyAlias 'hi'
+//            keyPassword '1446264'
+//            storeFile file('../../../certDebug.jks')
+//            storePassword '1446264'
+//        }
+//    }
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "atlow.chemi.mymada"
