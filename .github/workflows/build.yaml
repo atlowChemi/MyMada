@@ -53,12 +53,12 @@ jobs:
             -   name: Generate App APK
                 run: |
                     cd android
-                    ./gradlew assembleRelease --no-daemon
+                    ./gradlew assembleRelease
             -   name: Generate App Bundle
                 run: |
                     cd android
-                    ./gradlew :app:bundleRelease --no-daemon
-            -   name: Copy APK && AAB to releases folder
+                    ./gradlew :app:bundleRelease
+            -   name: Copy APK & AAB to releases folder
                 run: |
                     mkdir -p releases
                     cp android/app/build/outputs/apk/release/app-release.apk releases/app-release.apk
