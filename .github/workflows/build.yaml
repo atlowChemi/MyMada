@@ -1,0 +1,99 @@
+name: Build and deploy for dev
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - 'dev'
+            - 'master'
+jobs:
+    android-build:
+        name: Android Dev Build
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Cancel previous runs
+                uses: styfle/cancel-workflow-action@0.12.1
+            -   name: Checkout repo from dev branch
+                uses: actions/checkout@v4
+            -   name: Get yarn cache directory path
+                id: yarn-cache-dir-path
+                run: echo "{dir}={$(yarn cache dir)}" >> "$GITHUB_OUTPUT"
+            -   name: Restore node_modules from cache
+                uses: actions/cache@v4
+                id: yarn-cache
+                with:
+                    path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                    key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                    restore-keys: |
+                        ${{ runner.os }}-yarn-
+            -   name: Install yarn dependency
+                run: yarn install --frozen-lockfile
+            -   name: Set up JDK 17
+                uses: actions/setup-java@v4
+                with:
+                    java-version: '17'
+                    distribution: 'temurin'
+            -   name: Setup Android SDK
+                uses: android-actions/setup-android@v3
+            -   name: Cache Gradle
+                uses: actions/cache@v4
+                with:
+                    path: |
+                        ~/.gradle/caches
+                        ~/.gradle/wrapper
+                    key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+                    restore-keys: |
+                        ${{ runner.os }}-gradle-
+            -   name: Setup Gradle
+                uses: gradle/actions/setup-gradle@v3
+            -   name: Execute Gradle build
+                run: |
+                    cd android
+                    ./gradlew build
+            -   name: Generate App APK
+                run: |
+                    cd android
+                    ./gradlew assembleRelease --no-daemon
+            -   name: Generate App Bundle
+                run: |
+                    cd android
+                    ./gradlew :app:bundleRelease --no-daemon
+            -   name: Copy APK && AAB to releases folder
+                run: |
+                    mkdir -p releases
+                    cp android/app/build/outputs/apk/release/app-release.apk releases/app-release.apk
+                    cp android/app/build/outputs/bundle/release/app-release.aab releases/app-release.aab
+            -   name: Sign APK
+                id: sign_app
+                uses: r0adkll/sign-android-release@v1
+                with:
+                    releaseDirectory: releases
+                    signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+                    alias: ${{ secrets.ANDROID_ALIAS }}
+                    keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
+                    keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+            -   name: Upload as artifact
+                uses: actions/upload-artifact@v2
+                with:
+                    name: Signed app files
+                    path: |
+                        ${{steps.sign_app.outputs.signedReleaseFile0}}
+                        ${{steps.sign_app.outputs.signedReleaseFile1}}
+            ## Distribute app to Firebase App Distribution for testing / use google play internal track if you have a google play account
+            # -   name: upload artifact to Firebase App Distribution
+            #     uses: wzieba/Firebase-Distribution-Github-Action@v1
+            #     with:
+            #         appId: ${{secrets.ANDROID_FIREBASE_APP_ID}}
+            #         token: ${{secrets.ANDROID_FIREBASE_TOKEN}}
+            #         groups: testers
+            #         file: ${{steps.sign_app.outputs.signedReleaseFile}}
+            ## Distribute  App to google play alpha track
+            # -   name: Upload App to Google Play
+            #     uses: r0adkll/upload-google-play@v1
+            #     with:
+            #         serviceAccountJsonPlainText: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON_TEXT }}
+            #         packageName: com.test.test
+            #         releaseFiles: android/app/build/outputs/bundle/release/*.aab
+            #         track: alpha
+            #         status: completed
+            #         inAppUpdatePriority: 2

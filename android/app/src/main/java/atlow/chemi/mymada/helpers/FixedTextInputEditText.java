@@ -1,5 +1,6 @@
 package atlow.chemi.mymada.helpers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -32,7 +33,7 @@ public class FixedTextInputEditText extends TextInputEditText {
             }
     }
     private CharSequence getSuperHintHack() throws NoSuchFieldException, IllegalAccessException {
-        Field hintField = TextView.class.getDeclaredField("mHint");
+        @SuppressLint("SoonBlockedPrivateApi") Field hintField = TextView.class.getDeclaredField("mHint");
         hintField.setAccessible(true);
         return (CharSequence) hintField.get(this);
     }

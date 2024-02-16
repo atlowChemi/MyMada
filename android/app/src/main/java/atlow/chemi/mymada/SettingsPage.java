@@ -412,10 +412,10 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e("result", "activity result");
-        if (requestCode == OVERLAY_PER_REQ)
-            if (resultCode != RESULT_OK)
+        if (requestCode == OVERLAY_PER_REQ && resultCode != RESULT_OK) {
                 CreateOverlayPermissionDialog();
-            super.onActivityResult(requestCode, resultCode, data);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
     private boolean isCallable(Intent intent) {
         try {
