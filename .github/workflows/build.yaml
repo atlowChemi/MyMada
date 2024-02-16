@@ -46,10 +46,10 @@ jobs:
                         ${{ runner.os }}-gradle-
             -   name: Setup Gradle
                 uses: gradle/actions/setup-gradle@v3
-            -   name: Execute Gradle build
-                run: |
-                    cd android
-                    ./gradlew build
+            # -   name: Execute Gradle build
+            #     run: |
+            #         cd android
+            #         ./gradlew build
             -   name: Generate App APK
                 run: |
                     cd android
