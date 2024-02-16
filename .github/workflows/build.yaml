@@ -56,11 +56,11 @@ jobs:
                     ./gradlew :app:bundleRelease
             -   name: (TEMP) Find app-release.apk
                 run: |
-                    find / -name "app-release.apk" 2>/dev/null
+                    find .. -name "app-release.apk" 2>/dev/null
             -   name: Copy APK & AAB to releases folder
                 run: |
                     mkdir -p releases
-                    cp android/app/release/app-release.apk releases/app-release.apk
+                    cp android/app/build/outputs/app/release/app-release.apk releases/app-release.apk
                     cp android/app/build/outputs/bundle/release/app-release.aab releases/app-release.aab
             -   name: Sign APK
                 id: sign_app
