@@ -51,11 +51,11 @@ jobs:
                 run: |
                     TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/keystore
                     mkdir -p "${TMP_KEYSTORE_FILE_PATH}"
-                    echo keystorDir="${TMP_KEYSTORE_FILE_PATH}" >> "$GITHUB_OUTPUT"
+                    echo keystoreFile="${TMP_KEYSTORE_FILE_PATH}/cert.jks" >> "$GITHUB_OUTPUT"
                     echo ${{ secrets.ANDROID_SIGNING_KEY }} | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/cert.jks
             -   name: Generate App APK
                 env:
-                    KEYSTORE_DIR: ${{ steps.decode_keystore.outputs.keystorDir }}
+                    KEYSTORE_FILE: ${{ steps.decode_keystore.outputs.keystoreFile }}
                     SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
                     SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_ALIAS }}
                     SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
