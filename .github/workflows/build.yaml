@@ -46,35 +46,52 @@ jobs:
                         ${{ runner.os }}-gradle-
             -   name: Setup Gradle
                 uses: gradle/actions/setup-gradle@v3
+            -   name: Decode Keystore
+                env:
+                    ENCODED_STRING: ${{ secrets.ANDROID_SIGNING_KEY }}
+                run: |
+                    TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/keystore
+                    mkdir -p "${TMP_KEYSTORE_FILE_PATH}"
+                    echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/cert.jks
             -   name: Generate App APK
+                env:
+                    SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
+                    SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_ALIAS }}
+                    SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
                 run: |
                     cd android
                     ./gradlew assembleRelease
             -   name: Generate App Bundle
+                env:
+                    SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
+                    SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_ALIAS }}
+                    SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
                 run: |
                     cd android
                     ./gradlew :app:bundleRelease
-            -   name: Copy APK & AAB to releases folder
-                run: |
-                    mkdir -p releases
-                    cp android/app/build/outputs/apk/release/app-release-unsigned.apk releases/app-release.apk
-                    cp android/app/build/outputs/bundle/release/app-release.aab releases/app-release.aab
-            -   name: Sign APK
-                id: sign_app
-                uses: r0adkll/sign-android-release@v1
-                with:
-                    releaseDirectory: releases
-                    signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-                    alias: ${{ secrets.ANDROID_ALIAS }}
-                    keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
-                    keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+            # -   name: Copy APK & AAB to releases folder
+            #     run: |
+            #         mkdir -p releases
+            #         cp android/app/build/outputs/apk/release/app-release-unsigned.apk releases/app-release.apk
+            #         cp android/app/build/outputs/bundle/release/app-release.aab releases/app-release.aab
+            # -   name: Sign APK
+            #     id: sign_app
+            #     uses: r0adkll/sign-android-release@v1
+            #     with:
+            #         releaseDirectory: releases
+            #         signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+            #         alias: ${{ secrets.ANDROID_ALIAS }}
+            #         keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
+            #         keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
             -   name: Upload as artifact
                 uses: actions/upload-artifact@v2
                 with:
                     name: Signed app files
                     path: |
-                        ${{steps.sign_app.outputs.signedReleaseFile0}}
-                        ${{steps.sign_app.outputs.signedReleaseFile1}}
+                        android/app/build/outputs/apk/release/app-release.apk
+                        android/app/build/outputs/bundle/release/app-release.aab
+                    # ${{steps.sign_app.outputs.signedReleaseFile0}}
+                    # ${{steps.sign_app.outputs.signedReleaseFile1}}
             ## Distribute app to Firebase App Distribution for testing / use google play internal track if you have a google play account
             # -   name: upload artifact to Firebase App Distribution
             #     uses: wzieba/Firebase-Distribution-Github-Action@v1
