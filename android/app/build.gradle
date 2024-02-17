@@ -7,18 +7,10 @@ apply plugin: "com.facebook.react"
 android {
    signingConfigs {
         release {
-                def tmpFilePath = System.getenv("KEYSTORE_DIR")
-                def allFilesFromDir = new File(tmpFilePath).listFiles()
-
-                if (allFilesFromDir != null) {
-                    def keystoreFile = allFilesFromDir.first()
-                    keystoreFile.renameTo("keystore/cert.jks")
-                }
-
-                storeFile = file("keystore/cert.jks")
-                storePassword System.getenv("SIGNING_STORE_PASSWORD")
                 keyAlias System.getenv("SIGNING_KEY_ALIAS")
                 keyPassword System.getenv("SIGNING_KEY_PASSWORD")
+                storeFile = file(System.getenv("KEYSTORE_DIR") + "keystore/cert.jks")
+                storePassword System.getenv("SIGNING_STORE_PASSWORD")
             }
 //        release {
 //            keyAlias 'hi'
