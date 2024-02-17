@@ -7,7 +7,7 @@ apply plugin: "com.facebook.react"
 android {
    signingConfigs {
         release {
-                def tmpFilePath = System.getProperty("user.home") + "/work/_temp/keystore/"
+                def tmpFilePath = System.getenv("KEYSTORE_DIR")
                 def allFilesFromDir = new File(tmpFilePath).listFiles()
 
                 if (allFilesFromDir != null) {
