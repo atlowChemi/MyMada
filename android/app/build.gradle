@@ -7,9 +7,13 @@ apply plugin: "com.facebook.react"
 android {
    signingConfigs {
         release {
+                def keystoreFile = System.getenv("KEYSTORE_FILE")
+                if (keystoreFile == null) {
+                    keystoreFile = '../../../cert.jks'
+                }
                 keyAlias System.getenv("SIGNING_KEY_ALIAS")
                 keyPassword System.getenv("SIGNING_KEY_PASSWORD")
-                storeFile = file(System.getenv("KEYSTORE_FILE"))
+                storeFile = file(keystoreFile)
                 storePassword System.getenv("SIGNING_STORE_PASSWORD")
             }
 //        release {
@@ -34,7 +38,7 @@ android {
         versionName '3.5.5'
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
-        signingConfig signingConfigs.release
+//        signingConfig signingConfigs.release
     }
     buildTypes {
         release {
