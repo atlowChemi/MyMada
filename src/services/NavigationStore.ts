@@ -125,6 +125,9 @@ export class NavigationStore {
             if (typeof navigateToLockPage === 'undefined') {
                 return;
             }
+            if (!navigateToLockPage && !isMarkedAsVolunteer) {
+                await this.sharedPreferencesStore.setItem('realM', 'true');
+            }
             return this.navigate(navigateToLockPage ? 'Lock' : 'Dispatch');
         }
         if (isMarkedAsVolunteer || (await this.madaNotificationsStore.hasMadaApp())) {
