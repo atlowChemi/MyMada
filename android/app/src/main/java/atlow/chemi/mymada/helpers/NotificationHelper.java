@@ -46,31 +46,31 @@ public class NotificationHelper {
             promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel group config is invalid");
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!channelGroupConfig.hasKey("id")) {
-                promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id is required");
-                return;
-            }
-            var channelGroupId = channelGroupConfig.getString("id");
-            if (!channelGroupConfig.hasKey("name")) {
-                promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel name is required");
-                return;
-            }
-            var channelGroupName = channelGroupConfig.getString("name");
-            if (channelGroupId == null || channelGroupName == null) {
-                promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel group id or name is not specified");
-                return;
-            }
-            var channelGroupDescription = channelGroupConfig.getString("description");
-            var grp = new NotificationChannelGroup(channelGroupId, channelGroupName);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                grp.setDescription(channelGroupDescription);
-            }
-            mNotificationManager.createNotificationChannelGroup(grp);
-            promise.resolve(null);
-        } else {
-            promise.reject(ERROR_ANDROID_VERSION, "ForegroundService: Notification channel can be created on Android O+");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            promise.reject(ERROR_ANDROID_VERSION, "ForegroundService: Notification channel group can be created on Android O+");
+            return;
         }
+        if (!channelGroupConfig.hasKey("id")) {
+            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id is required");
+            return;
+        }
+        var channelGroupId = channelGroupConfig.getString("id");
+        if (!channelGroupConfig.hasKey("name")) {
+            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel name is required");
+            return;
+        }
+        var channelGroupName = channelGroupConfig.getString("name");
+        if (channelGroupId == null || channelGroupName == null) {
+            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel group id or name is not specified");
+            return;
+        }
+        var channelGroupDescription = channelGroupConfig.getString("description");
+        var grp = new NotificationChannelGroup(channelGroupId, channelGroupName);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            grp.setDescription(channelGroupDescription);
+        }
+        mNotificationManager.createNotificationChannelGroup(grp);
+        promise.resolve(null);
     }
 
     public void createNotificationChannel(ReadableMap channelConfig, Promise promise) {
@@ -78,35 +78,43 @@ public class NotificationHelper {
             promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel config is invalid");
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!channelConfig.hasKey("id")) {
-                promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id is required");
-                return;
-            }
-            var channelId = channelConfig.getString("id");
-            if (!channelConfig.hasKey("name")) {
-                promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel name is required");
-                return;
-            }
-            var channelName = channelConfig.getString("name");
-            var channelDescription = channelConfig.getString("description");
-            var channelImportance = channelConfig.hasKey("importance") ?
-                    channelConfig.getInt("importance") : NotificationManager.IMPORTANCE_LOW;
-            var enableVibration = channelConfig.hasKey("enableVibration") && channelConfig.getBoolean("enableVibration");
-            if (channelId == null || channelName == null) {
-                promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id or name is not specified");
-                return;
-            }
-            var channel = new NotificationChannel(channelId, channelName, channelImportance);
-            channel.setDescription(channelDescription);
-            channel.enableVibration(enableVibration);
-            var channelGroup = channelConfig.getString("group");
-            channel.setGroup(channelGroup);
-            mNotificationManager.createNotificationChannel(channel);
-            promise.resolve(null);
-        } else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             promise.reject(ERROR_ANDROID_VERSION, "ForegroundService: Notification channel can be created on Android O+");
+            return;
         }
+        if (!channelConfig.hasKey("id")) {
+            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id is required");
+            return;
+        }
+        var channelId = channelConfig.getString("id");
+        if (!channelConfig.hasKey("name")) {
+            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel name is required");
+            return;
+        }
+        var channelName = channelConfig.getString("name");
+        var channelDescription = channelConfig.getString("description");
+        var channelImportance = channelConfig.hasKey("importance") ?
+                channelConfig.getInt("importance") : NotificationManager.IMPORTANCE_LOW;
+        var enableVibration = channelConfig.hasKey("enableVibration") && channelConfig.getBoolean("enableVibration");
+        var enableLights = channelConfig.hasKey("enableLights") && channelConfig.getBoolean("enableLights");
+        var showBadge = channelConfig.hasKey("showBadge") && channelConfig.getBoolean("showBadge");
+        if (channelId == null || channelName == null) {
+            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id or name is not specified");
+            return;
+        }
+        var channel = new NotificationChannel(channelId, channelName, channelImportance);
+        channel.setDescription(channelDescription);
+        channel.enableVibration(enableVibration);
+        channel.enableLights(enableLights);
+        if (enableLights) {
+            var lightsColor = channelConfig.hasKey("lightsColor") ? channelConfig.getInt("lightsColor") : Color.RED;
+            channel.setLightColor(lightsColor);
+        }
+        channel.setShowBadge(showBadge);
+        var channelGroup = channelConfig.getString("group");
+        channel.setGroup(channelGroup);
+        mNotificationManager.createNotificationChannel(channel);
+        promise.resolve(null);
     }
 
     public Notification buildNotification(Context context, Bundle notificationConfig) {
@@ -120,8 +128,7 @@ public class NotificationHelper {
         var notificationIntent = new Intent(context, mainActivityClass);
         notificationIntent.putExtra("source", NOTIFICATION_HELPER_SOURCE);
         notificationIntent.putExtras(notificationConfig);
-        var pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent,
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? (PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT) : PendingIntent.FLAG_UPDATE_CURRENT);
+        var pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         var channelId = notificationConfig.getString("channelId");
         if (channelId == null) {
@@ -172,8 +179,7 @@ public class NotificationHelper {
         if (notificationConfig.containsKey("button")) {
             var buttonIntent = new Intent();
             buttonIntent.setAction(METRONOME_NOTIFICATION_BUTTON_PRESSED);
-            var pendingButtonIntent = PendingIntent.getBroadcast(context, 0, buttonIntent,
-                    (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? (PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT) : PendingIntent.FLAG_UPDATE_CURRENT);
+            var pendingButtonIntent = PendingIntent.getBroadcast(context, 0, buttonIntent,  PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
             notificationBuilder.addAction(0, notificationConfig.getString("button"), pendingButtonIntent);
         }
@@ -182,7 +188,7 @@ public class NotificationHelper {
     }
 
     private Class getMainActivityClass(Context context) {
-        // temp
+        // TODO
         return MainReactActivity.class;
 //        var packageName = context.getPackageName();
 //        var launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);

@@ -104,9 +104,8 @@ class ContractionTimerLocalStore {
 
     private async loadSavedContractions() {
         this.isHandlingReload = true;
-        this.sharedPreferencesStore.name = 'Settings';
         try {
-            const sharedPreferences = await this.sharedPreferencesStore.activeChannel;
+            const sharedPreferences = await this.sharedPreferencesStore.settingsChannel;
             const { contractList, contractLong } = sharedPreferences;
             if (!contractList || !this.contractions.isEmpty) {
                 return undefined;
@@ -210,7 +209,6 @@ class ContractionTimerLocalStore {
         if (this.isHandlingReload || this.contractions.isEmpty) {
             return;
         }
-        this.sharedPreferencesStore.name = 'Settings';
         Promise.all([this.sharedPreferencesStore.setItem('contractList', JSON.stringify(this.contractions.array)), this.sharedPreferencesStore.setItem('contractLong', Date.now().toString())]);
     }
 }

@@ -63,8 +63,7 @@ export const Tools = observer<NavigatableScreenProps>(() => {
             return fromPromise(this.buildToolsList());
         },
         async loadToolsToShow() {
-            sharedPreferencesStore.name = 'Settings';
-            const sharedPreferences = await sharedPreferencesStore.activeChannel;
+            const sharedPreferences = await sharedPreferencesStore.settingsChannel;
             const { Tools: toolsArrString = `[${Array.from(TOOL_SETTING_MAP.values()).join(', ')}]` } = sharedPreferences;
             const [, toolsString] = toolsArrString.split(/[[\]]/);
             return new Set(toolsString.split(/,\s?/));

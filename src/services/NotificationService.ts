@@ -1,5 +1,7 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import type { Page, Tools } from './NavigationStore';
+import { injectable } from 'inversify';
+import { ANDROID_VERSION } from '../utils/constants';
 
 const { NotificationsModule } = NativeModules;
 
@@ -68,31 +70,102 @@ export const enum Importance {
     HIGH = 4,
     MAX = 5,
 }
+
+export const enum NotificationLightColor {
+    BLACK = -16777216,
+    BLUE = -16776961,
+    CYAN = -16711681,
+    DKGRAY = -12303292,
+    GRAY = -7829368,
+    GREEN = -16711936,
+    LTGRAY = -3355444,
+    MAGENTA = -65281,
+    RED = -65536,
+    TRANSPARENT = 0,
+    WHITE = -1,
+    YELLOW = -256,
+}
+
 interface NotificationChannelConfig extends NotificationChannelGroupConfig {
     /** Notification channel importance. */
     importance?: Importance;
     /** Sets whether notification posted to this channel should vibrate. False by default. */
     enableVibration?: boolean;
+    /** Sets whether notification posted to this channel should use lights. False by default. */
+    enableLights?: boolean;
+    /** Sets what color lights notification posted to this channel should use. RED by default. */
+    lightsColor?: NotificationLightColor;
+    /** Sets whether notification posted to this channel should show a badge. False by default. */
+    showBadge?: boolean;
     /** Sets the group to which this channel will be related. */
     group?: string;
 }
 
-interface NotificationsModuleStatic {
-    /** Create notification channel for foreground service */
-    createNotificationChannelGroup(channelGroupConfig: NotificationChannelGroupConfig): Promise<void>;
-    /** Create notification channel for foreground service */
-    createNotificationChannel(channelConfig: NotificationChannelConfig): Promise<void>;
-    /** Publish a notification */
-    publishNotification(notificationConfig: NotificationConfig): Promise<void>;
-}
-
 export const NOTIFICATION_MAP = {
     GROUPS: {
+        CALLS: 'grpTog',
         OTHERS: 'grpOthers',
     },
     CHANNELS: {
+        PUSH: 'Push',
+        CALLS: 'notWithWin',
         BACKGROUND: 'runInBg',
     },
 } as const;
 
-export const notificationsService = NotificationsModule as NotificationsModuleStatic;
+@injectable()
+export class NotificationService {
+    constructor() {
+        this.setupChannels();
+    }
+
+    public async createNotificationChannelGroup(channelGroupConfig: NotificationChannelGroupConfig) {
+        return await NotificationsModule.createNotificationChannelGroup(channelGroupConfig);
+    }
+
+    public async createNotificationChannel(channelConfig: NotificationChannelConfig) {
+        return await NotificationsModule.createNotificationChannel(channelConfig);
+    }
+
+    public async publishNotification(notificationConfig: NotificationConfig) {
+        return await NotificationsModule.publishNotification(notificationConfig);
+    }
+
+    private async setupChannels() {
+        if (Platform.OS !== 'android' || Platform.Version < ANDROID_VERSION.OREO) {
+            return;
+        }
+        await Promise.all([
+            this.createNotificationChannelGroup({ id: NOTIFICATION_MAP.GROUPS.CALLS, name: 'התראות מקרים', description: 'התראות עבור מקרים שזוהו' }),
+            this.createNotificationChannelGroup({ id: NOTIFICATION_MAP.GROUPS.OTHERS, name: 'התראות שונות', description: 'התראות מהאפליקציה שאינן קשורות לאירועי רפואה' }),
+        ]);
+        await Promise.all([
+            this.createNotificationChannel({
+                name: 'פעילות ברקע',
+                importance: Importance.MIN,
+                group: NOTIFICATION_MAP.GROUPS.OTHERS,
+                id: NOTIFICATION_MAP.CHANNELS.BACKGROUND,
+                description: 'חיוני כדי לאפשר זיהוי מקרים',
+            }),
+            this.createNotificationChannel({
+                showBadge: true,
+                name: 'הודעות פוש',
+                enableLights: true,
+                enableVibration: true,
+                importance: Importance.HIGH,
+                group: NOTIFICATION_MAP.GROUPS.OTHERS,
+                lightsColor: NotificationLightColor.RED,
+                id: NOTIFICATION_MAP.CHANNELS.BACKGROUND,
+                description: "התראות להודעות פוש שישלחו כגון בקשות קוד וכדו'",
+            }),
+            this.createNotificationChannel({
+                showBadge: true,
+                name: 'זיהוי הודעות',
+                importance: Importance.LOW,
+                group: NOTIFICATION_MAP.GROUPS.CALLS,
+                id: NOTIFICATION_MAP.CHANNELS.BACKGROUND,
+                description: 'התראות עבור הודעות כאשר מוגדר להקפיץ גם חלון',
+            }),
+        ]);
+    }
+}

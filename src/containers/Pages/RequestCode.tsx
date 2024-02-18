@@ -121,7 +121,7 @@ class RequestCodeLocalStore {
                 okText: i18n.t('common:ok'),
                 description: i18n.t('activationCode:requestCodeSent'),
             });
-            await Promise.all([dialogPromise, this.sharedPreferences.setItemOnChannel('Settings', 'firebaseGenratedKey', newRef.key!)]);
+            await Promise.all([dialogPromise, this.sharedPreferences.setItem('firebaseGenratedKey', newRef.key!)]);
         } catch (e) {
             e instanceof Error && crashlytics().recordError(e);
             await this.dialogStore.openDialog(BaseDialog, {

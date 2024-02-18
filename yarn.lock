@@ -8074,7 +8074,6 @@ __metadata:
     react-native-reanimated: ^3.4.2
     react-native-safe-area-context: ^4.7.1
     react-native-screens: 3.22.0
-    react-native-shared-preferences: ^1.0.2
     react-native-svg: ^14.1.0
     react-native-tab-view: ^3.5.2
     react-native-view-pdf: ^0.14.0
@@ -9031,20 +9030,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 064a601cb86af85041c3185ace4754df1adee9affa39ad071df2568f273d19ca3df30f138f0d80fea9251c86640d6c598f3a323c6fb6cd29f5cea7988485eee4
-  languageName: node
-  linkType: hard
-
-"react-native-shared-preferences@npm:1.0.2":
-  version: 1.0.2
-  resolution: "react-native-shared-preferences@npm:1.0.2"
-  checksum: 0edf2aef537f6d9ba05a15d7dca4ce835758b5d5be08a1dec43bcaa6b80e04751f1825df667cb07a3da1fc3768ea30618c9ab3ef8492346fe712eb673f9bcb09
-  languageName: node
-  linkType: hard
-
-"react-native-shared-preferences@patch:react-native-shared-preferences@npm%3A1.0.2#./.yarn/patches/react-native-shared-preferences-npm-1.0.2-0232c65960.patch::locator=mymada%40workspace%3A.":
-  version: 1.0.2
-  resolution: "react-native-shared-preferences@patch:react-native-shared-preferences@npm%3A1.0.2#./.yarn/patches/react-native-shared-preferences-npm-1.0.2-0232c65960.patch::version=1.0.2&hash=ac306b&locator=mymada%40workspace%3A."
-  checksum: 02d6c62c66f5c861df32b2b5c7e21704055db3b6f2200cdb437f0ebf9da1ef0d23396e8e51cff2aad1302e94e0b6ccce22667239d33474296608daddc4953b95
   languageName: node
   linkType: hard
 
