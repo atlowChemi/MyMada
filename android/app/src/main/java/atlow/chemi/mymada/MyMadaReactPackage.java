@@ -15,6 +15,7 @@ import atlow.chemi.mymada.ReactModules.AudioGeneratorModule;
 import atlow.chemi.mymada.ReactModules.MadaNotificationsModule;
 import atlow.chemi.mymada.ReactModules.MetronomeModule;
 import atlow.chemi.mymada.ReactModules.NotificationsModule;
+import atlow.chemi.mymada.ReactModules.SharedPreferencesModule;
 
 public class MyMadaReactPackage  implements ReactPackage {
     @NonNull
@@ -25,6 +26,7 @@ public class MyMadaReactPackage  implements ReactPackage {
         modules.add(new NotificationsModule(context));
         modules.add(new MetronomeModule(context));
         modules.add(new MadaNotificationsModule(context));
+        modules.add(new SharedPreferencesModule(context));
         return modules;
     }
 

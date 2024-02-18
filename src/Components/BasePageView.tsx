@@ -84,7 +84,6 @@ const BasePageViewFn = <T extends {} = {}>(props: BasePageViewProps<T>, ref: For
                 <Content {...(props as any)} ref={ref} />
                 {!noScroll && postScroll}
             </RadialGradient>
-            {/* TODO: show adds when relevant */}
         </SafeAreaView>
     );
 };

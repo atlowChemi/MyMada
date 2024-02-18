@@ -27,8 +27,7 @@ const REGION_PHONE_MAP = new Map<Region, String>([
 export class DispatchService {
     constructor(private readonly dialogStore: DialogStore, private readonly sharedPreferencesStore: SharedPreferencesStore) {}
     public async getRegion() {
-        this.sharedPreferencesStore.name = 'Settings';
-        const { merhav: regionIndexStr } = await this.sharedPreferencesStore.activeChannel;
+        const { merhav: regionIndexStr } = await this.sharedPreferencesStore.settingsChannel;
         const regionIndex = parseInt(regionIndexStr, 10);
         return REGIONS[regionIndex] ?? 'Jerusalem';
     }

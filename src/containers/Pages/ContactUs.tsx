@@ -85,11 +85,10 @@ class ContactUsLocalStore {
             ),
         ];
         this.openDisclaimerDialogAndEnforceName();
-        sharedPreferencesStore.name = 'Settings';
     }
 
     private get sharedPreferences() {
-        return this.sharedPreferencesStore.activeChannel;
+        return this.sharedPreferencesStore.settingsChannel;
     }
 
     private get chatRootDocument() {

@@ -34,7 +34,6 @@ class DispatchLocalStore {
     constructor(private readonly dialogStore: DialogStore, private readonly navigationStore: NavigationStore, private readonly sharedPreferencesStore: SharedPreferencesStore) {
         makeAutoObservable(this, undefined, { autoBind: true });
 
-        // TODO: If there isn't a default dispatch set - show popup to select one.
         this.ensureDefaultDispatchSet();
     }
 
@@ -47,8 +46,7 @@ class DispatchLocalStore {
     }
 
     private async isAllowedToViewDispatchPage() {
-        this.sharedPreferencesStore.name = 'Settings';
-        const { realM } = await this.sharedPreferencesStore.activeChannel;
+        const { realM } = await this.sharedPreferencesStore.settingsChannel;
         const isMarkedAsVolunteer = this.sharedPreferencesStore.makePrefBoolean(realM, false);
         if (isMarkedAsVolunteer) {
             return;
@@ -58,8 +56,7 @@ class DispatchLocalStore {
     }
 
     private async ensureDefaultDispatchSet() {
-        this.sharedPreferencesStore.name = 'Settings';
-        const { pickedMoked } = await this.sharedPreferencesStore.activeChannel;
+        const { pickedMoked } = await this.sharedPreferencesStore.settingsChannel;
         const hasUserSelectedDefaultDispatch = this.sharedPreferencesStore.makePrefBoolean(pickedMoked, false);
         if (this.hasNavigated || hasUserSelectedDefaultDispatch) {
             return;

@@ -3,8 +3,8 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import { fromPromise } from 'mobx-utils';
 import { inject, injectable } from 'inversify';
 import { computed, makeObservable } from 'mobx';
-import { notificationsService } from './NotificationService';
 import { SharedPreferencesStore } from './SharedPreferencesStore';
+import { NOTIFICATION_MAP, NotificationService } from './NotificationService';
 import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 
 interface NewChat {
@@ -22,6 +22,7 @@ type MessagePayload = NewChat | CodeApproval;
 
 @injectable()
 export class MessagingStore {
+    @inject(NotificationService) private readonly notificationService!: NotificationService;
     @inject(SharedPreferencesStore) private readonly sharedPreferencesStore!: SharedPreferencesStore;
     private readonly messaging = messaging();
 
@@ -61,7 +62,7 @@ export class MessagingStore {
         }
         const msgData = message.data as unknown as MessagePayload;
         const commonConfig = {
-            channelId: 'Push',
+            channelId: NOTIFICATION_MAP.CHANNELS.PUSH,
             icon: 'ic_siren',
             largeIcon: 'ic_launcher',
             id: Date.now(),
@@ -69,7 +70,7 @@ export class MessagingStore {
             isAutoCancelable: true,
         };
         if (msgData.type === 'newChat') {
-            await notificationsService.publishNotification({
+            await this.notificationService.publishNotification({
                 ...commonConfig,
                 text: 'הודעה חדשה מאת ההנהלה', // TODO: i18n
                 title: 'הודעה צ׳אט חדשה', // TODO: i18n
@@ -81,7 +82,7 @@ export class MessagingStore {
         }
         if (msgData.type === 'codeApproval') {
             const { code, key } = msgData;
-            await notificationsService.publishNotification({
+            await this.notificationService.publishNotification({
                 ...commonConfig,
                 text: `קוד ההפעלה שלך הינו:  ${code}`, // TODO: i18n
                 bigText: `קוד ההפעלה שלך הינו:  ${code}`, // TODO: i18n
@@ -93,7 +94,7 @@ export class MessagingStore {
             return;
         }
         // if (typeof msg === 'string' && msg.length && typeof title === 'string' && title.length) {
-        //     await notificationsService.publishNotification({
+        //     await this.notificationService.publishNotification({
         //         ...commonConfig,
         //         text: title,
         //         title: 'הודעה חדשה!',
@@ -102,7 +103,5 @@ export class MessagingStore {
         // }
     };
 
-    public setUpMessaging = () => {
-        return this.messaging.onMessage(this.onMessage);
-    };
+    public setUpMessaging = () => this.messaging.onMessage(this.onMessage);
 }

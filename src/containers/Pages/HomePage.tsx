@@ -39,8 +39,7 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
 
     const localStore = useLocalObservable(() => ({
         async getNotificationPreferences() {
-            sharedPreferencesStore.name = 'Settings';
-            const { callT1, callT3, cut, Mapp, not, win } = await sharedPreferencesStore.activeChannel;
+            const { callT1, callT3, cut, Mapp, not, win } = await sharedPreferencesStore.settingsChannel;
             return {
                 callRecognition: sharedPreferencesStore.makePrefBoolean(Mapp, false),
                 notifyOnCall: sharedPreferencesStore.makePrefBoolean(not, true),

@@ -1,11 +1,11 @@
 import { now } from 'mobx-utils';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { makeAutoObservable, runInAction } from 'mobx';
-import { Dimensions, Platform, NativeModules, NativeEventEmitter } from 'react-native';
+import { Dimensions, NativeModules, NativeEventEmitter } from 'react-native';
 import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../localization';
 import { colors } from '../consts';
-import { notificationsService, Importance, Priority, NOTIFICATION_MAP } from './NotificationService';
+import { Priority, NOTIFICATION_MAP, NotificationService } from './NotificationService';
 
 const { MetronomeModule } = NativeModules;
 
@@ -29,6 +29,7 @@ export class MetronomeStore {
     public readonly diameter = Math.min(Dimensions.get('screen').width - 40, 390);
     public readonly progressBarDiameter = this.diameter * 0.43 - this.strokeWidth / 2;
     private readonly eventEmitter = new NativeEventEmitter(MetronomeModule);
+    @inject(NotificationService) private readonly notificationService!: NotificationService;
 
     constructor() {
         makeAutoObservable(this, { circle: false, strokeWidth: false, diameter: false, progressBarDiameter: false }, { autoBind: true });
@@ -91,15 +92,6 @@ export class MetronomeStore {
 
     private async startMetronome() {
         try {
-            if (Platform.OS === 'android' && Platform.Version >= 26) {
-                await notificationsService.createNotificationChannelGroup({ id: NOTIFICATION_MAP.GROUPS.OTHERS, name: 'התראות שונות', description: 'התראות מהאפליקציה שאינן קשורות לאירועי רפואה' });
-                await notificationsService.createNotificationChannel({
-                    name: 'פעילות ברקע',
-                    id: NOTIFICATION_MAP.CHANNELS.BACKGROUND,
-                    group: NOTIFICATION_MAP.GROUPS.OTHERS,
-                    importance: Importance.MIN,
-                });
-            }
             const startTime = await MetronomeModule.startMetronome({
                 id: 13,
                 color: 'red',

@@ -113,8 +113,7 @@ export class NavigationStore {
         this.toolsNavigator?.jumpTo(route, params);
     };
     public goToDispatch = async () => {
-        this.sharedPreferencesStore.name = 'Settings';
-        const { realM } = await this.sharedPreferencesStore.activeChannel;
+        const { realM } = await this.sharedPreferencesStore.settingsChannel;
         const isMarkedAsVolunteer = this.sharedPreferencesStore.makePrefBoolean(realM, false);
         if (BuildConfig.DEBUG || BuildConfig.BUILD_TYPE === 'debug' || BuildConfig.APPLICATION_ID?.endsWith('.debug')) {
             const navigateToLockPage = await this.dialogStore.openDialog(BaseDialog, {
@@ -137,8 +136,7 @@ export class NavigationStore {
         return this.navigate('Lock');
     };
     public goToContactUs = async () => {
-        this.sharedPreferencesStore.name = 'Settings';
-        const { realM } = await this.sharedPreferencesStore.activeChannel;
+        const { realM } = await this.sharedPreferencesStore.settingsChannel;
         const isMarkedAsVolunteer = this.sharedPreferencesStore.makePrefBoolean(realM, false);
         if (!isMarkedAsVolunteer && !(await this.madaNotificationsStore.hasMadaApp())) {
             const navigateToContact = await this.dialogStore.openDialog(BaseDialog, {
@@ -155,7 +153,6 @@ export class NavigationStore {
                 return this.goToRequestCode();
             }
         }
-        await this.adsStore.showInterstitialAd();
         const permissionStatus = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS', {
             title: i18n.t('permissions:alertTitle'),
             message: i18n.t('permissions:notificationExplain'),
@@ -179,6 +176,7 @@ export class NavigationStore {
             }
             return;
         }
+        await this.adsStore.showInterstitialAd();
         return this.navigate('ContactUs');
     };
     public goToAboutTheApp = async () => {
