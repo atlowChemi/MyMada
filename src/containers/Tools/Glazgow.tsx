@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { computedFn } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
@@ -8,12 +7,12 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
+import { InfoCard } from '../../Components/InfoCard';
 import { BasePageView } from '../../Components/BasePageView';
-import { NavigationStore } from '../../services/NavigationStore';
-import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { useColorAnimation } from '../../utils/colorAnimation';
 import { ToolsDropDown } from '../../Components/ToolsDropdown';
-import { InfoCard } from '../../Components/InfoCard';
+import { useInnerNavigator } from '../../utils/useInnerNavigator';
+import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const GLAZGOW_PARAMS = ['eyes', 'verbal', 'motor'] as const;
@@ -88,17 +87,13 @@ class GlazgowCalculatorLocalStore {
     }
 }
 
-export const GlazgowCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
+export const GlazgowCalculator = observer<NavigatableToolsScreenProps>(props => {
+    useInnerNavigator('Tools', props);
     const { t } = useTranslation();
-    const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(GlazgowCalculatorLocalStore);
     const [backgroundColor] = useColorAnimation(localStore.scoreColor);
 
-    useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation);
-    }, [navigationStore, navigation]);
-
-    // Handle landscape orientation
+    // TODO: Handle landscape orientation
     return (
         <BasePageView
             postScroll={

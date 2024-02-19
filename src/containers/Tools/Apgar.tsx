@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { computedFn } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
@@ -8,12 +7,12 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
+import { InfoCard } from '../../Components/InfoCard';
 import { BasePageView } from '../../Components/BasePageView';
-import { NavigationStore } from '../../services/NavigationStore';
-import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { useColorAnimation } from '../../utils/colorAnimation';
 import { ToolsDropDown } from '../../Components/ToolsDropdown';
-import { InfoCard } from '../../Components/InfoCard';
+import { useInnerNavigator } from '../../utils/useInnerNavigator';
+import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const APGAR_PARAMS = ['appearance', 'pulse', 'grimace', 'activity', 'respiration'] as const;
@@ -85,17 +84,13 @@ class ApgarCalculatorLocalStore {
     }
 }
 
-export const ApgarCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
+export const ApgarCalculator = observer<NavigatableToolsScreenProps>(props => {
     const { t } = useTranslation();
-    const navigationStore = useDependencyInjector(NavigationStore);
+    useInnerNavigator('Tools', props);
     const localStore = useLocalStoreWithInjectedDependencies(ApgarCalculatorLocalStore);
     const [backgroundColor] = useColorAnimation(localStore.scoreColor);
 
-    useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation);
-    }, [navigationStore, navigation]);
-
-    // Handle landscape orientation
+    // TODO: Handle landscape orientation
     return (
         <BasePageView
             postScroll={

@@ -14,6 +14,7 @@ import { SharedPreferencesStore } from './SharedPreferencesStore';
 import { MadaNotificationsStore } from './MadaNotificationsStore';
 import type { NavigatableScreenProps } from '../App';
 import type { NavigatableToolsScreenProps } from '../containers/Pages/Tools';
+import { NavigatableSettingsScreenProps, SETTINGS_PAGES, SettingPage } from '../containers/Pages/Settings';
 
 export type Tools =
     | 'ContractionTimer'
@@ -52,11 +53,12 @@ interface DrawerNavigator {
 @injectable()
 export class NavigationStore {
     private page: Page = 'Home';
-    private subPage?: Tools = undefined;
+    private subPage?: Tools | SettingPage = undefined;
     public canGoBack = false;
     private eventListenerCleanup?: () => void;
     private navigator?: NavigationContainerRef<Record<Page, undefined>>;
     private toolsNavigator?: DrawerNavigator = undefined;
+    private settingsNavigator?: NavigatableSettingsScreenProps['navigation'] = undefined;
     @inject(AdsStore) private readonly adsStore!: AdsStore;
     @inject(DialogStore) private readonly dialogStore!: DialogStore;
     @inject(MadaNotificationsStore) private readonly madaNotificationsStore!: MadaNotificationsStore;
@@ -99,18 +101,31 @@ export class NavigationStore {
         };
     }
 
+    public setSettingsNavigator(navigator: NavigatableSettingsScreenProps['navigation']) {
+        this.settingsNavigator = navigator;
+        return () => {
+            this.settingsNavigator = undefined;
+        };
+    }
+
     // @ts-expect-error generic inconvenience
     public navigate = <T extends Page = Page>(page: T, params?: NavigatableScreenProps<T>['route']['params']) => this.navigator?.navigate(page, params);
     public navigateWithoutHistory = (name: Page) => this.navigator?.reset({ index: name === 'Home' ? 0 : 1, routes: [{ name: 'Home' }, ...(name === 'Home' ? [] : [{ name }])] });
 
     public goHome = () => this.navigate('Home');
     public goToTools = () => this.navigate('Tools');
+    public goToSettings = () => this.navigate('Settings');
     public goToRequestCode = () => this.navigateWithoutHistory('RequestCode');
     public goToCodeActivation = () => this.navigateWithoutHistory('ActivateCode');
     public goToToolsTab = async (route: Tools, params?: Record<string, any>) => {
         this.goToTools();
         await when(() => this.toolsNavigator !== undefined);
         this.toolsNavigator?.jumpTo(route, params);
+    };
+    public goToSettingsTab = async (route: SettingPage) => {
+        this.goToSettings();
+        await when(() => this.settingsNavigator !== undefined);
+        this.settingsNavigator?.jumpTo(route);
     };
     public goToDispatch = async () => {
         const { realM } = await this.sharedPreferencesStore.settingsChannel;
@@ -188,15 +203,21 @@ export class NavigationStore {
         return this.navigate('Privacy');
     };
     public goBack = () => this.navigator?.goBack();
-    public openDrawer = () => this.toolsNavigator?.toggleDrawer();
+    public openDrawer = () => this.toolsNavigator?.toggleDrawer() || this.settingsNavigator?.toggleDrawer();
 
     private isToolsTab = (route?: string): route is Tools => TOOLS_PAGES.has(route as Tools);
+    private isSettingsTab = (route?: string): route is SettingPage => SETTINGS_PAGES.has(route as SettingPage);
 
     private onNavigate = () => {
         const route = this.navigator?.getCurrentRoute()?.name as Page | Tools | undefined;
         if (this.isToolsTab(route)) {
             this.subPage = route;
             this.page = 'Tools';
+            return;
+        }
+        if (this.isSettingsTab(route)) {
+            this.subPage = route;
+            this.page = 'Settings';
             return;
         }
         this.page = route || 'Home';

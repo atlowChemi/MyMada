@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { computedFn } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
@@ -12,13 +11,13 @@ import { Text } from '../../Components/Text';
 import { BaseDialog } from '../dialogs/BaseDialog';
 import { Snackbar } from '../../Components/Snackbar';
 import { ConnectionError } from '../ConnectionError';
-import { BasePageView } from '../../Components/BasePageView';
 import { DictionaryForm } from '../dialogs/DictionaryForm';
-import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { DialogStore } from '../../services/DialogStore';
-import { SnackbarStore } from '../../services/SnackbarStore';
 import { ToolbarStore } from '../../services/ToolbarStore';
-import { NavigationStore } from '../../services/NavigationStore';
+import { BasePageView } from '../../Components/BasePageView';
+import { SnackbarStore } from '../../services/SnackbarStore';
+import { useInnerNavigator } from '../../utils/useInnerNavigator';
+import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import type { ListRenderItemInfo } from 'react-native';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import type { NavigatableToolsScreenProps } from '../Pages/Tools';
@@ -159,18 +158,14 @@ const Item = observer<ListRenderItemInfo<DictionaryEntry> & { localStore: Dictio
 });
 Item.displayName = 'DictionaryItem';
 
-export const Dictionary = observer<NavigatableToolsScreenProps>(({ navigation }) => {
-    const navigationStore = useDependencyInjector(NavigationStore);
+export const Dictionary = observer<NavigatableToolsScreenProps>(props => {
+    useInnerNavigator('Tools', props);
     const localStore = useLocalStoreWithInjectedDependencies(DictionaryLocalStore);
-    useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation);
-    }, [navigationStore, navigation]);
-
     if (localStore.hasError) {
         return <ConnectionError />;
     }
 
-    return <BasePageView scrollType="flat" data={localStore.dictionaryValues} renderItem={props => <Item localStore={localStore} {...props} />} keyExtractor={item => item.key} />;
+    return <BasePageView scrollType="flat" data={localStore.dictionaryValues} renderItem={itemProps => <Item localStore={localStore} {...itemProps} />} keyExtractor={item => item.key} />;
 });
 Dictionary.displayName = 'Dictionary';
 

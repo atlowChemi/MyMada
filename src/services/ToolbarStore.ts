@@ -43,6 +43,9 @@ export class ToolbarStore {
         if (this.navigationStore.currentPage === 'Dispatch') {
             return 'dispatch:toolbarTitle';
         }
+        if (this.navigationStore.currentPage === 'Settings') {
+            // TODO: Add settings titles
+        }
         return 'common:appName';
     }
 
@@ -51,7 +54,7 @@ export class ToolbarStore {
     }
 
     public get navBtn(): NavBarIcon | undefined {
-        if (this.navigationStore.currentPage === 'Tools' && !this.isSearching) {
+        if (['Tools', 'Settings'].includes(this.navigationStore.currentPage) && !this.isSearching) {
             return {
                 key: 'drawer',
                 onPress: this.navigationStore.openDrawer,
@@ -70,7 +73,7 @@ export class ToolbarStore {
 
     public get navIcons(): NavBarIcon[] {
         return [
-            { key: 'settings', onPress: noop, icon: 'settings', show: !['Lock', 'ActivateCode', 'Settings'].includes(this.navigationStore.currentPage) },
+            { key: 'settings', onPress: this.navigationStore.goToSettings, icon: 'settings', show: !['Lock', 'ActivateCode', 'Settings'].includes(this.navigationStore.currentPage) },
             { key: 'trash', onPress: this.trashAction, icon: 'trash', show: this.navigationStore.currentSubPage === 'ContractionTimer' && this.showTrashIcon },
             { key: 'search', onPress: this.search, icon: 'search', show: this.navigationStore.currentSubPage === 'Dictionary' && !this.isSearching },
             { key: 'add', onPress: this.dictionaryItemAdder, icon: 'add', show: this.navigationStore.currentSubPage === 'Dictionary' },

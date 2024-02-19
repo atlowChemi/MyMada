@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { computedFn, fromPromise } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
@@ -13,9 +12,9 @@ import { Text } from '../../Components/Text';
 import { InfoCard } from '../../Components/InfoCard';
 import { TextInput } from '../../Components/TextInput';
 import { BasePageView } from '../../Components/BasePageView';
-import { NavigationStore } from '../../services/NavigationStore';
+import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import { RadioButtonGroup } from '../../Components/RadioButtonGroup';
-import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
+import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import type { NativeSyntheticEvent, TextInput as NativeTextInput, TextInputSubmitEditingEventData } from 'react-native';
 import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
@@ -178,14 +177,10 @@ class VitalsCalculatorLocalStore {
     }
 }
 
-export const VitalsCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
+export const VitalsCalculator = observer<NavigatableToolsScreenProps>(props => {
+    useInnerNavigator('Tools', props);
     const { t } = useTranslation();
-    const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(VitalsCalculatorLocalStore);
-
-    useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation);
-    }, [navigationStore, navigation]);
 
     // Handle landscape orientation
     return (

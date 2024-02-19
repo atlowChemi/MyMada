@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { fromPromise } from 'mobx-utils';
 import { useTranslation } from 'react-i18next';
@@ -10,15 +9,15 @@ import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { Loader } from '../../Components/Loader';
+import { BaseDialog } from '../dialogs/BaseDialog';
 import { DialogStore } from '../../services/DialogStore';
 import { ToolbarStore } from '../../services/ToolbarStore';
 import { LinkedList, NodeOf } from '../../utils/linkedList';
 import { BasePageView } from '../../Components/BasePageView';
-import { CircularProgressButton } from '../../Components/CircularProgressButton';
-import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
+import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
-import { BaseDialog } from '../dialogs/BaseDialog';
-import { NavigationStore } from '../../services/NavigationStore';
+import { CircularProgressButton } from '../../Components/CircularProgressButton';
+import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import type { FlatList, ListRenderItemInfo } from 'react-native';
 import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
@@ -262,13 +261,9 @@ const ContractionItem = observer<ListRenderItemInfo<NodeOf<Contraction>>>(({ ite
 });
 ContractionItem.displayName = 'ContractionItem';
 
-export const ContractionTimer = observer<NavigatableToolsScreenProps>(({ navigation }) => {
-    const navigationStore = useDependencyInjector(NavigationStore);
+export const ContractionTimer = observer<NavigatableToolsScreenProps>(props => {
+    useInnerNavigator('Tools', props);
     const localStore = useLocalStoreWithInjectedDependencies(ContractionTimerLocalStore);
-
-    useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation);
-    }, [navigationStore, navigation]);
 
     if (localStore.loading.state === 'pending') {
         return (
@@ -287,7 +282,7 @@ export const ContractionTimer = observer<NavigatableToolsScreenProps>(({ navigat
             ref={localStore.setFlatList}
             keyExtractor={item => `${item.value.number}`}
             data={localStore.contractions.reversedNodeArray}
-            renderItem={props => <ContractionItem {...props} />}
+            renderItem={itemProps => <ContractionItem {...itemProps} />}
             postScroll={<ContractionsTimerFooter localStore={localStore} />}
         />
     );
