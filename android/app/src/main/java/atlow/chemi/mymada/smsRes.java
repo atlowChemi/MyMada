@@ -57,11 +57,7 @@ public class smsRes extends AppCompatActivity {
     public static float vo = 0;
     private float oldX1, oldY1;
     private boolean isMove1 = false;
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(LocalHelper.onAttach(base));
-    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {

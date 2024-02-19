@@ -1,9 +1,7 @@
 import { forwardRef, Children } from 'react';
 import { PressableAndroidRippleConfig, StyleProp, Platform, ViewStyle, StyleSheet, GestureResponderEvent, View, ColorValue, Pressable } from 'react-native';
+import { ANDROID_VERSION } from '../consts';
 import type { PressableProps, PressableStateCallbackType } from 'react-native';
-
-const ANDROID_VERSION_LOLLIPOP = 21;
-const ANDROID_VERSION_PIE = 28;
 
 export interface TouchableRippleProps extends Omit<PressableProps, 'android_ripple' | 'children'> {
     borderless?: boolean;
@@ -18,8 +16,6 @@ export interface TouchableRippleProps extends Omit<PressableProps, 'android_ripp
     children: React.ReactNode;
 }
 
-const supported = Platform.OS === 'android' && Platform.Version >= ANDROID_VERSION_LOLLIPOP;
-
 export const TouchableRipple = forwardRef<View, TouchableRippleProps>(({ style, background, borderless = false, disabled: disabledProp, rippleColor, children, ...rest }, ref) => {
     const { onPress, onLongPress, onPressIn, onPressOut } = rest;
     const hasPassedTouchHandler = Boolean(onPress || onLongPress || onPressIn || onPressOut);
@@ -28,9 +24,9 @@ export const TouchableRipple = forwardRef<View, TouchableRippleProps>(({ style, 
         return [borderless && styles.overflowHidden, typeof style === 'function' ? style(state) : style];
     };
 
-    if (supported) {
+    if (Platform.OS === 'android') {
         // A workaround for ripple on Android P is to use useForeground + overflow: 'hidden' https://github.com/facebook/react-native/issues/6480
-        const useForeground = Platform.OS === 'android' && Platform.Version >= ANDROID_VERSION_PIE && borderless;
+        const useForeground = Platform.Version >= ANDROID_VERSION.PIE && borderless;
         const androidRipple = background ?? { color: rippleColor, borderless, foreground: useForeground };
         return (
             <Pressable {...rest} ref={ref} disabled={disabled} style={styleFn} android_ripple={androidRipple}>

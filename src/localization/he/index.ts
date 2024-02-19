@@ -8,6 +8,7 @@ import home from './home';
 import lock from './lock';
 import permissions from './permissions';
 import privacy from './privacy';
+import rateUs from './rateUs';
 import testCall from './testCall';
 import tools from './tools';
 
@@ -22,6 +23,7 @@ export default {
     lock,
     permissions,
     privacy,
+    rateUs,
     testCall,
     tools,
     // smsMoni: 'הפעלת האפליקציה ברקע',
@@ -38,8 +40,6 @@ export default {
     // title_activity_dialog_parent: 'אישור קריאת התראות',
     // dialog_help: 'כדי לאפשר לאפליקציה לזהות מקרים באפליקציית מדא, יש לאפשר לה גישה להתראות.\nכדי לאשר גישה, יש ללחוץ אישור ובעמוד שיפתח לבחור ב"דיווחי מגן דוד אדום", ולאפשר את האפשרות הזו.',
     // dialog_yes: 'איפשור גישה להתראות',
-    // dialog_rate_yes: 'דרג כעת',
-    // dialog_never: 'לא תודה',
     // codeNote: 'כתוב את פרטיך והוסף בהערות את פרטי ההתנדבות שלך (מרחב ותפקיד) ואנו נבחן את הפרטים ונשלח קוד הפעלה בהקדם.',
     // driverQ: 'נהג',
     // aQ: 'מתנדב 1',
@@ -96,12 +96,7 @@ export default {
 //     <string name="title_activity_main3">הודעה מותאמת אישית</string>
 //     <string name="msgSent">ההודעה נשלחה בהצלחה!</string>
 //     <string name="msgNotSent">שליחה נכשלה, נסה שוב!</string>
-//     <string name="title_activity_moked_page">דיווחים למוקד</string>
 //     <string name="button_j">דיווחים למוקד</string>
-//     <string name="newSettings">נראה כי זוהי כניסתך הראשונה לאפליקציה.\nמומלץ לבדוק את כל ההגדרות לפני תחילת השימוש</string>
-//     <string name="privacyMsg">נראה כי זוהי כניסתך הראשונה לאפליקציה. יש לקרוא את מדיניות הפרטיות כעת.</string>
-//     <string name="importanceMsg">זיהינו כי התראה על זיהוי הודעות ברקע מופיעה במסך.\nלידיעתך, ניתן להעלים אותו על ידי העברה לדחיפות נמוכה.</string>
-//     <string name="importance">הורד דחיפות</string>
 //     <string name="newCall">אירוע חדש!</string>
 
 //     <string name="explain">בכדי להוסיף איש צוות לחצו על כפתור ה+ בצד ימין בתחתית המסך.\nבכדי לשלוח את ההודעה למוקד לחצו על הכפתור בצד שמאל.</string>

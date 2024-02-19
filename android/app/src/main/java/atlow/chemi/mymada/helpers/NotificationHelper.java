@@ -25,6 +25,7 @@ import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
 import androidx.core.app.NotificationCompat;
 
 import atlow.chemi.mymada.MainReactActivity;
+import atlow.chemi.mymada.classes.JSException;
 
 public class NotificationHelper {
     private static NotificationHelper instance = null;
@@ -43,25 +44,25 @@ public class NotificationHelper {
 
     public void createNotificationChannelGroup(ReadableMap channelGroupConfig, Promise promise) {
         if (channelGroupConfig == null) {
-            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel group config is invalid");
+            promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel group config is invalid");
             return;
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            promise.reject(ERROR_ANDROID_VERSION, "ForegroundService: Notification channel group can be created on Android O+");
+            promise.reject(ERROR_ANDROID_VERSION, "NotificationHelper: Notification channel group can be created on Android O+");
             return;
         }
         if (!channelGroupConfig.hasKey("id")) {
-            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id is required");
+            promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel id is required");
             return;
         }
         var channelGroupId = channelGroupConfig.getString("id");
         if (!channelGroupConfig.hasKey("name")) {
-            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel name is required");
+            promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel name is required");
             return;
         }
         var channelGroupName = channelGroupConfig.getString("name");
         if (channelGroupId == null || channelGroupName == null) {
-            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel group id or name is not specified");
+            promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel group id or name is not specified");
             return;
         }
         var channelGroupDescription = channelGroupConfig.getString("description");
@@ -75,20 +76,20 @@ public class NotificationHelper {
 
     public void createNotificationChannel(ReadableMap channelConfig, Promise promise) {
         if (channelConfig == null) {
-            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel config is invalid");
+            promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel config is invalid");
             return;
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            promise.reject(ERROR_ANDROID_VERSION, "ForegroundService: Notification channel can be created on Android O+");
+            promise.reject(ERROR_ANDROID_VERSION, "NotificationHelper: Notification channel can be created on Android O+");
             return;
         }
         if (!channelConfig.hasKey("id")) {
-            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id is required");
+            promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel id is required");
             return;
         }
         var channelId = channelConfig.getString("id");
         if (!channelConfig.hasKey("name")) {
-            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel name is required");
+            promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel name is required");
             return;
         }
         var channelName = channelConfig.getString("name");
@@ -99,7 +100,7 @@ public class NotificationHelper {
         var enableLights = channelConfig.hasKey("enableLights") && channelConfig.getBoolean("enableLights");
         var showBadge = channelConfig.hasKey("showBadge") && channelConfig.getBoolean("showBadge");
         if (channelId == null || channelName == null) {
-            promise.reject(ERROR_INVALID_CONFIG, "ForegroundService: Channel id or name is not specified");
+            promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel id or name is not specified");
             return;
         }
         var channel = new NotificationChannel(channelId, channelName, channelImportance);
@@ -115,6 +116,14 @@ public class NotificationHelper {
         channel.setGroup(channelGroup);
         mNotificationManager.createNotificationChannel(channel);
         promise.resolve(null);
+    }
+
+    public int getChannelImportance(String channelId) throws JSException {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            throw new JSException(ERROR_ANDROID_VERSION, "NotificationHelper: Notification channel exists Android O+");
+        }
+        var channel = mNotificationManager.getNotificationChannel(channelId);
+        return channel.getImportance();
     }
 
     public Notification buildNotification(Context context, Bundle notificationConfig) {

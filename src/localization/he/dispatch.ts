@@ -1,4 +1,5 @@
 export default {
+    toolbarTitle: 'דיווחים למוקד',
     form: {
         title: 'הכתבת טפסים',
         ambulanceNumber: 'מספר אמבולנס',

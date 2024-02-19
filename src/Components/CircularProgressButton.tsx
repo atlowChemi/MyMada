@@ -186,7 +186,7 @@ export const CircularProgressButton: FC<CircleSnailProps> = ({
         }),
         [thickness, textSize],
     );
-    const computedTextStyle = useMemo<StyleProp<TextStyle>>(() => ({ color: currentColor, fontSize: size / 8, fontWeight: '300' }), [currentColor, size]);
+    const computedTextStyle = useMemo<StyleProp<TextStyle>>(() => ({ color: currentColor, fontSize: size / 8, fontWeight: '300', textAlign: 'center' }), [currentColor, size]);
 
     if (!animating && hidesWhenStopped) {
         return null;

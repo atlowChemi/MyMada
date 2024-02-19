@@ -23,4 +23,12 @@ export class MadaNotificationsStore {
     public triggerTestCall(config: { callType: CallType; callText: string }): Promise<void> {
         return MadaNotificationsModule.triggerTestCall(config);
     }
+
+    public hasOverlayPermission(): Promise<boolean> {
+        return MadaNotificationsModule.hasOverlayPermission();
+    }
+
+    public requestOverlayPermission(): Promise<boolean> {
+        return MadaNotificationsModule.requestOverlayPermission();
+    }
 }

@@ -40,6 +40,9 @@ export class ToolbarStore {
         if (this.navigationStore.currentPage === 'Privacy') {
             return 'privacy:toolbarTitle';
         }
+        if (this.navigationStore.currentPage === 'Dispatch') {
+            return 'dispatch:toolbarTitle';
+        }
         return 'common:appName';
     }
 
