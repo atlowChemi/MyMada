@@ -85,6 +85,7 @@ android {
     namespace 'atlow.chemi.mymada'
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 

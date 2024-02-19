@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
+import atlow.chemi.mymada.classes.JSException;
 import atlow.chemi.mymada.helpers.NotificationHelper;
 
 @ReactModule(name = NotificationsModule.NAME)
@@ -71,5 +72,19 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
         }
         var notificationManager = NotificationManagerCompat.from(reactContext);
         notificationManager.notify(notificationConfig.getInt("id"), notification);
+    }
+
+    @ReactMethod
+    public void getChannelImportance(String channelId, Promise promise) {
+        if (channelId == null) {
+            promise.reject(ERROR_INVALID_CONFIG, "NotificationsModule: channelId is missing");
+            return;
+        }
+        try {
+            var importance = NotificationHelper.getInstance(reactContext).getChannelImportance(channelId);
+            promise.resolve(importance);
+        } catch (JSException e) {
+            promise.reject(e.getErrorType(), e.getMsg());
+        }
     }
 }

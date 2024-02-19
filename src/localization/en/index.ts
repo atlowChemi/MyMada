@@ -8,6 +8,7 @@ import home from './home';
 import lock from './lock';
 import permissions from './permissions';
 import privacy from './privacy';
+import rateUs from './rateUs';
 import testCall from './testCall';
 import tools from './tools';
 
@@ -22,6 +23,7 @@ export default {
     lock,
     permissions,
     privacy,
+    rateUs,
     testCall,
     tools,
 } as const;

@@ -2,24 +2,29 @@ import { action } from 'mobx';
 import { useEffect } from 'react';
 import { WebView } from 'react-native-webview';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import RadialGradient from 'react-native-radial-gradient';
 import { colors } from '../../consts';
 import { ConnectionError } from '../ConnectionError';
 import { BasePageView } from '../../Components/BasePageView';
+import { useDependencyInjector } from '../../services/container';
+import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import type { NavigatableScreenProps } from '../../App';
+import { Loader } from '../../Components/Loader';
 
 const BASE_URL = 'https://firebasestorage.googleapis.com/v0/b/project-3918384647339420127.appspot.com/o';
 const errorCompBuilder = () => <ConnectionError />;
 const loaderBuilder = () => (
     <RadialGradient colors={[colors.white, colors.bgShadowEnd]} stops={[0.9]} style={styles.loaderContainer}>
-        <ActivityIndicator size={60} color={colors.colorPrimaryDark} />
+        <Loader />
     </RadialGradient>
 );
 
 export const Privacy = observer<NavigatableScreenProps>(() => {
     const { i18n } = useTranslation();
+    const sharedPreferencesStore = useDependencyInjector(SharedPreferencesStore);
+
     const state = useLocalObservable(() => ({
         language: i18n.language,
         get uri() {
@@ -30,6 +35,9 @@ export const Privacy = observer<NavigatableScreenProps>(() => {
         },
         get source() {
             return { uri: this.uri };
+        },
+        onLoad() {
+            return sharedPreferencesStore.setItem('privacy', 'true');
         },
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,7 +50,7 @@ export const Privacy = observer<NavigatableScreenProps>(() => {
 
     return (
         <BasePageView scrollType="none">
-            <WebView source={state.source} startInLoadingState renderError={errorCompBuilder} renderLoading={loaderBuilder} />
+            <WebView source={state.source} startInLoadingState renderError={errorCompBuilder} renderLoading={loaderBuilder} onLoad={state.onLoad} />
         </BasePageView>
     );
 });
@@ -51,11 +59,12 @@ Privacy.displayName = 'Privacy';
 const styles = StyleSheet.create({
     loaderContainer: {
         flex: 1,
-        position: 'absolute',
         top: 0,
-        bottom: 0,
-        right: 0,
         left: 0,
+        right: 0,
+        bottom: 0,
+        position: 'absolute',
+        alignItems: 'center',
         justifyContent: 'center',
     },
 });

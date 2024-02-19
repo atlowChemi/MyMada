@@ -12,14 +12,9 @@ import com.google.android.play.core.splitcompat.SplitCompat;
 import java.util.Locale;
 
 public class LocalHelper {
-    private static String SELECTED_LANGUAGE = "lng";
+    private final static String SELECTED_LANGUAGE = "lng";
     public static Context onAttach(Context ctx) {
         String lang = getPersistedData(ctx, Locale.getDefault().getLanguage());
-        SplitCompat.install(ctx);
-        return setLocale(ctx, lang);
-    }
-    public static Context onAttach(Context ctx, String defLang) {
-        String lang = getPersistedData(ctx, defLang);
         SplitCompat.install(ctx);
         return setLocale(ctx, lang);
     }

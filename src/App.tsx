@@ -1,5 +1,7 @@
-import { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import RadialGradient from 'react-native-radial-gradient';
+import { FC, useEffect } from 'react';
+import { PortalProvider } from '@gorhom/portal';
+import { StatusBar, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from './consts';
@@ -12,16 +14,18 @@ import { ContactUs } from './containers/Pages/ContactUs';
 import { RequestCode } from './containers/Pages/RequestCode';
 import { AboutTheApp } from './containers/Pages/AboutTheApp';
 import { CodeActivation } from './containers/Pages/CodeActivation';
+import { Settings } from './containers/Pages/Settings';
 import { DialogWrapper } from './services/DialogStore';
 import { MessagingStore } from './services/MessagingStore';
 import { MetronomeStore } from './services/MetronomeStore';
 import { SnackbarWrapper } from './services/SnackbarStore';
-import { DependencyInjectionProvider, container } from './services/container';
+import { DependencyInjectionProvider, useDependencyInjector, container } from './services/container';
 import { NavigationStore, Page, Tools as ToolsType } from './services/NavigationStore';
 import { Toolbar } from './containers/Toolbar';
-import { setLanguage } from './localization';
+import { languageSetup } from './localization';
 import { AppPropsStore } from './services/AppPropsStore';
-import { PortalProvider } from '@gorhom/portal';
+import { Loader } from './Components/Loader';
+import { observer } from 'mobx-react-lite';
 
 const NOTIFICATION_HELPER_SOURCE = 'NOTIFICATION_HELPER';
 type NavigatablePage = 'Dispatch' | 'Settings' | 'Tools';
@@ -30,12 +34,11 @@ type RootStackParamList = Record<Exclude<Page, NavigatablePage>, undefined> & { 
 export type NavigatableScreenProps<T extends Page = Page> = NativeStackScreenProps<RootStackParamList, T>;
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const App: React.FC = (props: any) => {
-    const appPropsStore = container.get(AppPropsStore);
-    const navigationStore = container.get(NavigationStore);
-    const messagingStore = container.get(MessagingStore);
-    const metronomeStore = container.get(MetronomeStore);
-    setLanguage('he');
+export const AppWithDI = observer((props: any) => {
+    const appPropsStore = useDependencyInjector(AppPropsStore);
+    const navigationStore = useDependencyInjector(NavigationStore);
+    const messagingStore = useDependencyInjector(MessagingStore);
+    const metronomeStore = useDependencyInjector(MetronomeStore);
 
     useEffect(() => {
         const { source, target, navigateToTools = false } = props || {};
@@ -48,8 +51,16 @@ export const App: React.FC = (props: any) => {
     useEffect(() => appPropsStore.setProps(props), [appPropsStore, props]);
     useEffect(() => messagingStore.setUpMessaging(), [messagingStore]);
 
+    if (languageSetup.state !== 'fulfilled') {
+        return (
+            <RadialGradient colors={[colors.white, colors.bgShadowEnd]} stops={[0.9]} style={styles.loaderContainer}>
+                <Loader />
+            </RadialGradient>
+        );
+    }
+
     return (
-        <DependencyInjectionProvider container={container}>
+        <>
             <StatusBar barStyle="light-content" backgroundColor={colors.colorPrimary} />
             <Toolbar />
             <DialogWrapper />
@@ -65,11 +76,34 @@ export const App: React.FC = (props: any) => {
                         <Stack.Screen name="ActivateCode" component={CodeActivation} />
                         <Stack.Screen name="About" component={AboutTheApp} />
                         <Stack.Screen name="Privacy" component={Privacy} />
+                        <Stack.Screen name="Settings" component={Settings} />
                     </Stack.Navigator>
                 </NavigationContainer>
             </PortalProvider>
             <SnackbarWrapper />
+        </>
+    );
+});
+AppWithDI.displayName = 'AppWithDI';
+
+export const App: FC = (props: any) => {
+    return (
+        <DependencyInjectionProvider container={container}>
+            <AppWithDI {...props} />
         </DependencyInjectionProvider>
     );
 };
 App.displayName = 'App';
+
+const styles = StyleSheet.create({
+    loaderContainer: {
+        flex: 1,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        position: 'absolute',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});

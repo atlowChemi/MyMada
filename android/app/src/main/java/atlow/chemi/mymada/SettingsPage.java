@@ -148,10 +148,6 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
             Detect.setIcon(icon);
         }
     }
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(LocalHelper.onAttach(base));
-    }
     private void resetTitle() {
         try {
             int label = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA).labelRes;

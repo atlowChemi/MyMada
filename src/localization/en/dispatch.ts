@@ -1,4 +1,5 @@
 export default {
+    toolbarTitle: 'Send To Dispatch',
     form: {
         title: 'Form dictation',
         ambulanceNumber: 'AMB. number',

@@ -34,6 +34,10 @@ export class DialogStore {
         makeAutoObservable(this);
     }
 
+    public get hasDialogs() {
+        return this[kDialogInstances].size > 0;
+    }
+
     public openDialog<T extends IDialogInstance>(Component: React.FC<T>, props: Omit<T, 'closeDialog'> = {} as any) {
         const dialog = new Dialog<T>(Component, props, (value: CloseDialog<T>) => {
             dialog[kResolve](value);

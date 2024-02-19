@@ -1,7 +1,7 @@
 import { NativeModules, Platform } from 'react-native';
 import type { Page, Tools } from './NavigationStore';
 import { injectable } from 'inversify';
-import { ANDROID_VERSION } from '../utils/constants';
+import { ANDROID_VERSION } from '../consts';
 
 const { NotificationsModule } = NativeModules;
 
@@ -64,6 +64,8 @@ interface NotificationChannelGroupConfig {
 }
 
 export const enum Importance {
+    UNSPECIFIED = -1000,
+    NONE = 0,
     MIN = 1,
     LOW = 2,
     DEFAULT = 3,
@@ -131,6 +133,10 @@ export class NotificationService {
         return await NotificationsModule.publishNotification(notificationConfig);
     }
 
+    public async getChannelImportance(channelId: string): Promise<Importance> {
+        return await NotificationsModule.getChannelImportance(channelId);
+    }
+
     private async setupChannels() {
         if (Platform.OS !== 'android' || Platform.Version < ANDROID_VERSION.OREO) {
             return;
@@ -155,7 +161,7 @@ export class NotificationService {
                 importance: Importance.HIGH,
                 group: NOTIFICATION_MAP.GROUPS.OTHERS,
                 lightsColor: NotificationLightColor.RED,
-                id: NOTIFICATION_MAP.CHANNELS.BACKGROUND,
+                id: NOTIFICATION_MAP.CHANNELS.PUSH,
                 description: "התראות להודעות פוש שישלחו כגון בקשות קוד וכדו'",
             }),
             this.createNotificationChannel({
@@ -163,7 +169,7 @@ export class NotificationService {
                 name: 'זיהוי הודעות',
                 importance: Importance.LOW,
                 group: NOTIFICATION_MAP.GROUPS.CALLS,
-                id: NOTIFICATION_MAP.CHANNELS.BACKGROUND,
+                id: NOTIFICATION_MAP.CHANNELS.CALLS,
                 description: 'התראות עבור הודעות כאשר מוגדר להקפיץ גם חלון',
             }),
         ]);
