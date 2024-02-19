@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
@@ -10,8 +9,8 @@ import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { TextInput } from '../../Components/TextInput';
 import { BasePageView } from '../../Components/BasePageView';
-import { NavigationStore } from '../../services/NavigationStore';
-import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
+import { useInnerNavigator } from '../../utils/useInnerNavigator';
+import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const LITER_PER_MINUTE = 10;
@@ -85,16 +84,12 @@ class OxygenCalculatorLocalStore {
     }
 }
 
-export const OxygenCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
+export const OxygenCalculator = observer<NavigatableToolsScreenProps>(props => {
+    useInnerNavigator('Tools', props);
     const { t } = useTranslation();
-    const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(OxygenCalculatorLocalStore);
 
-    useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation);
-    }, [navigationStore, navigation]);
-
-    // Handle landscape orientation
+    // TODO: Handle landscape orientation
     return (
         <BasePageView
             postScroll={

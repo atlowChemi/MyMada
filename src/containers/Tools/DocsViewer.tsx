@@ -1,21 +1,20 @@
 import { useEffect } from 'react';
+import { fromPromise } from 'mobx-utils';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import PDFView from 'react-native-view-pdf';
 import storage from '@react-native-firebase/storage';
 import { colors } from '../../consts';
-import { BasePageView } from '../../Components/BasePageView';
-import { NavigationStore } from '../../services/NavigationStore';
-import { useDependencyInjector } from '../../services/container';
 import { ConnectionError } from '../ConnectionError';
-import { fromPromise } from 'mobx-utils';
+import { BasePageView } from '../../Components/BasePageView';
+import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const allowedDocs = ['bls', 'als', 'kuntres'] as const;
 type AllowedDoc = (typeof allowedDocs)[number];
 
 export const DocsViewer = observer<NavigatableToolsScreenProps>(({ navigation, route }) => {
-    const navigationStore = useDependencyInjector(NavigationStore);
+    useInnerNavigator('Tools', { navigation });
     const localStore = useLocalObservable(() => ({
         type: undefined as AllowedDoc | undefined,
         isLoaded: false,
@@ -50,9 +49,6 @@ export const DocsViewer = observer<NavigatableToolsScreenProps>(({ navigation, r
         const type = route.params?.type;
         localStore.setType(type);
     }, [route.params, localStore]);
-    useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation);
-    }, [navigationStore, navigation]);
 
     if (localStore.docUrl.state === 'rejected' || localStore.hasErrored) {
         return <ConnectionError />;

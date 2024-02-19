@@ -6,18 +6,18 @@ import { StyleSheet, View, Pressable } from 'react-native';
 import Animated, { withTiming, useAnimatedProps, useSharedValue, withRepeat, Easing } from 'react-native-reanimated';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
-import { NavigationStore } from '../../services/NavigationStore';
+import { BasePageView } from '../../Components/BasePageView';
 import { MetronomeStore } from '../../services/MetronomeStore';
 import { useDependencyInjector } from '../../services/container';
-import { BasePageView } from '../../Components/BasePageView';
+import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-export const Metronome = observer<NavigatableToolsScreenProps>(({ navigation }) => {
+export const Metronome = observer<NavigatableToolsScreenProps>(props => {
+    useInnerNavigator('Tools', props);
     const { t } = useTranslation();
     const store = useDependencyInjector(MetronomeStore);
-    const navigationStore = useDependencyInjector(NavigationStore);
     const scale = useSharedValue(49);
     const strokeDashoffset = useSharedValue(store.circle * (store.progressBarDiameter * 1));
 
@@ -38,14 +38,10 @@ export const Metronome = observer<NavigatableToolsScreenProps>(({ navigation }) 
     }, [scale, store.startTime]);
 
     useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation);
-    }, [navigationStore, navigation]);
-
-    useEffect(() => {
         store.updateStartTimeFromModule();
     }, [store]);
 
-    // Handle landscape orientation
+    // TODO: Handle landscape orientation
     return (
         <BasePageView scrollType="none">
             <Pressable style={styles.page} onPress={store.toggleMetronome}>

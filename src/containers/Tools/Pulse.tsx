@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
@@ -9,9 +8,9 @@ import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { TextInput } from '../../Components/TextInput';
 import { BasePageView } from '../../Components/BasePageView';
-import { NavigationStore } from '../../services/NavigationStore';
-import { useDependencyInjector, useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { audioGenerator } from '../../services/AudioGenerator';
+import { useInnerNavigator } from '../../utils/useInnerNavigator';
+import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 @injectable()
@@ -121,16 +120,12 @@ class PulseCalculatorLocalStore {
     };
 }
 
-export const PulseCalculator = observer<NavigatableToolsScreenProps>(({ navigation }) => {
+export const PulseCalculator = observer<NavigatableToolsScreenProps>(props => {
+    useInnerNavigator('Tools', props);
     const { t } = useTranslation();
-    const navigationStore = useDependencyInjector(NavigationStore);
     const localStore = useLocalStoreWithInjectedDependencies(PulseCalculatorLocalStore);
 
-    useEffect(() => {
-        return navigationStore.setToolsNavigator(navigation);
-    }, [navigationStore, navigation]);
-
-    // Handle landscape orientation
+    // TODO: Handle landscape orientation
     return (
         <BasePageView
             postScroll={
