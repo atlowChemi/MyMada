@@ -83,6 +83,7 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
 
     @Override
     protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
 //        super.attachBaseContext(LocalHelper.onAttach(base));
         MultiDex.install(this);
     }

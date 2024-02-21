@@ -3,14 +3,11 @@ package atlow.chemi.mymada;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
-import com.facebook.react.modules.i18nmanager.I18nUtil;
 
 public class MainReactActivity extends ReactActivity implements DefaultHardwareBackBtnHandler {
     /**
@@ -20,6 +17,11 @@ public class MainReactActivity extends ReactActivity implements DefaultHardwareB
     @Override
     protected String getMainComponentName() {
         return "Root";
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(null);
     }
 
     public static class MyActivityDelegate extends DefaultReactActivityDelegate {

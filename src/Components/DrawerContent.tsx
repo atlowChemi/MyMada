@@ -4,44 +4,48 @@ import { StyleSheet, View } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { CommonActions, DrawerActions } from '@react-navigation/native';
 import { DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
-import { colors } from '../../consts';
-import { Text } from '../../Components/Text';
-import { Icon, IconName } from '../../Components/Icon';
-import { useDependencyInjector } from '../../services/container';
-import { NavigationStore, Tools } from '../../services/NavigationStore';
+import { colors } from '../consts';
+import { Text } from './Text';
+import { Icon, IconName } from './Icon';
+import { NavigationStore } from '../services/NavigationStore';
+import { useDependencyInjector } from '../services/container';
 import { useEffect, type ComponentProps, useCallback } from 'react';
-import type { TranslationKeys } from '../../localization';
+import type { TranslationKeys } from '../localization';
 
-type DrawerContentProps = ComponentProps<typeof DrawerItemList>;
-const TOOL_DATA_MAP = new Map<Tools, { icon: IconName; translation: TranslationKeys }>([
-    ['ContractionTimer', { icon: 'contractions', translation: 'tools:contraction:menuName' }],
-    ['PulseCalc', { icon: 'pulse', translation: 'tools:pulse:menuName' }],
-    ['MetronomeActivity', { icon: 'metronome', translation: 'tools:metronome:menuName' }],
-    ['VitalsChecker', { icon: 'vital', translation: 'tools:vitals:menuName' }],
-    ['OxygenCalculator', { icon: 'oxygen', translation: 'tools:oxygen:menuName' }],
-    ['ApgarCalculator', { icon: 'apgar', translation: 'tools:apgar:menuName' }],
-    ['GlazgowCalculator', { icon: 'glazgo', translation: 'tools:glazgow:menuName' }],
-    ['Dictionary', { icon: 'dictionary', translation: 'tools:dictionary:menuName' }],
-    ['BlsProtocoles', { icon: 'bls', translation: 'tools:protocols:bls' }],
-    ['AlsProtocoles', { icon: 'als', translation: 'tools:protocols:als' }],
-    ['Kuntres', { icon: 'dead', translation: 'tools:protocols:death' }],
-]);
+type Separator = { type: 'separator'; label: TranslationKeys };
+type Btn = { type: 'btn'; label: TranslationKeys; icon: IconName; onPress: () => void };
+type Link<T extends string> = { type: 'link'; label: TranslationKeys; icon: IconName; page: T };
+export type Item<T extends string> = Separator | Btn | Link<T>;
+interface DrawerContentProps<T extends string> extends ComponentProps<typeof DrawerItemList> {
+    items: Item<T>[];
+}
 
-const DrawerItemWrapper = observer<DrawerContentProps & { page: Tools | 'ProtocolCategory' }>(({ page, state, navigation }) => {
+interface DrawerItemWrapperProps<T extends string> extends ComponentProps<typeof DrawerItemList> {
+    item: Item<T>;
+}
+
+const DrawerItemWrapper = observer(<T extends string>({ item, state, navigation }: DrawerItemWrapperProps<T>) => {
     const { t } = useTranslation();
     const localStore = useLocalObservable(
         () => ({
-            page,
+            item,
             key: state.key,
             index: state.index,
             routes: state.routes,
             get indexOfRoute() {
-                return this.routes.findIndex(({ name }) => name === page);
+                const { item: _item, routes } = this;
+                if (_item.type !== 'link') {
+                    return -1;
+                }
+                return routes.findIndex(({ name }) => name === _item.page);
             },
             get isFocused() {
                 return this.index === this.indexOfRoute;
             },
             navigate() {
+                if (item.type === 'btn') {
+                    return item.onPress();
+                }
                 const { key, routes } = this;
                 const { key: routeKey, name } = routes[this.indexOfRoute];
                 const event = navigation?.emit({
@@ -63,28 +67,26 @@ const DrawerItemWrapper = observer<DrawerContentProps & { page: Tools | 'Protoco
 
     useEffect(() => {
         runInAction(() => {
-            localStore.page = page;
+            localStore.item = item;
             localStore.key = state.key;
             localStore.index = state.index;
             localStore.routes = state.routes;
         });
-    }, [state.key, state.index, state.routes, page, localStore]);
+    }, [state.key, state.index, state.routes, item, localStore]);
 
-    if (page === 'ProtocolCategory') {
+    if (item.type === 'separator') {
         return (
             <View style={styles.category}>
-                <Text style={styles.categoryText}>{t('tools:protocols:menuName')}</Text>
+                <Text style={styles.categoryText}>{t(item.label)}</Text>
             </View>
         );
     }
 
-    const data = TOOL_DATA_MAP.get(page)!;
-
     return (
         <DrawerItem
-            label={t(data.translation)}
+            label={t(item.label)}
             labelStyle={styles.label}
-            icon={({ size, color }) => <Icon name={data.icon} size={size} color={color} />}
+            icon={({ size, color }) => <Icon name={item.icon} size={size} color={color} />}
             onPress={localStore.navigate}
             focused={localStore.isFocused}
             activeTintColor={colors.navPickedTextColor}
@@ -93,7 +95,7 @@ const DrawerItemWrapper = observer<DrawerContentProps & { page: Tools | 'Protoco
 });
 DrawerItemWrapper.displayName = 'DrawerItemWrapper';
 
-export const ToolsDrawerContent = observer<DrawerContentProps & { toolsToShow: (Tools | 'ProtocolCategory')[] }>(props => {
+export const DrawerContent = observer(<T extends string>({ items, ...props }: DrawerContentProps<T>) => {
     const { t } = useTranslation();
     const navigationStore = useDependencyInjector(NavigationStore);
     const pressBack = useCallback(() => {
@@ -104,13 +106,13 @@ export const ToolsDrawerContent = observer<DrawerContentProps & { toolsToShow: (
     return (
         <DrawerContentScrollView {...props}>
             <DrawerItem label={t('common:toolbarBack')} labelStyle={styles.label} icon={({ size }) => <Icon name="backArrow" size={size} />} onPress={pressBack} />
-            {props.toolsToShow.map(page => (
-                <DrawerItemWrapper key={page} {...props} page={page} />
+            {items.map(item => (
+                <DrawerItemWrapper key={item.label} {...props} item={item} />
             ))}
         </DrawerContentScrollView>
     );
 });
-ToolsDrawerContent.displayName = 'Tools.DrawerContent';
+DrawerContent.displayName = 'DrawerContent';
 
 const styles = StyleSheet.create({
     label: {

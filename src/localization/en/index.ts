@@ -9,6 +9,7 @@ import lock from './lock';
 import permissions from './permissions';
 import privacy from './privacy';
 import rateUs from './rateUs';
+import settings from './settings';
 import testCall from './testCall';
 import tools from './tools';
 
@@ -24,6 +25,7 @@ export default {
     permissions,
     privacy,
     rateUs,
+    settings,
     testCall,
     tools,
 } as const;
