@@ -9,6 +9,7 @@ import lock from './lock';
 import permissions from './permissions';
 import privacy from './privacy';
 import rateUs from './rateUs';
+import settings from './settings';
 import testCall from './testCall';
 import tools from './tools';
 
@@ -24,6 +25,7 @@ export default {
     permissions,
     privacy,
     rateUs,
+    settings,
     testCall,
     tools,
     // smsMoni: 'הפעלת האפליקציה ברקע',
@@ -137,7 +139,6 @@ export default {
 //     <string name="title_notif">התראה</string>
 //     <string name="pick_sound">בחר צליל</string>
 //     <string name="numberNone">לא רשמת מספר!</string>
-//     <string name="general_settings">הגדרות כלליות</string>
 //     <string name="langBad">החלפת שפה הופסקה בשל תקלה. ודא שיש חיבור לרשת ונסה שוב!</string>
 //     <string name="langLoad">מוריד את השפה המבוקשת %s</string>
 // </resources>

@@ -11,7 +11,7 @@ interface RadioButtonItemProps<T extends {} = any> {
     onChange(value: T): void;
 }
 
-interface RadioButtonGroupProps<T extends {} = any> {
+export interface RadioButtonGroupProps<T extends {} = any> {
     value: T;
     direction?: 'horizontal' | 'vertical';
     options: { [label: string]: T };
