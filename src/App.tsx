@@ -1,7 +1,7 @@
-import RadialGradient from 'react-native-radial-gradient';
 import { FC, useEffect } from 'react';
+import { StatusBar } from 'react-native';
+import { observer } from 'mobx-react-lite';
 import { PortalProvider } from '@gorhom/portal';
-import { StatusBar, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from './consts';
@@ -22,10 +22,7 @@ import { SnackbarWrapper } from './services/SnackbarStore';
 import { DependencyInjectionProvider, useDependencyInjector, container } from './services/container';
 import { NavigationStore, Page, Tools as ToolsType } from './services/NavigationStore';
 import { Toolbar } from './containers/Toolbar';
-import { languageSetup } from './localization';
 import { AppPropsStore } from './services/AppPropsStore';
-import { Loader } from './Components/Loader';
-import { observer } from 'mobx-react-lite';
 
 const NOTIFICATION_HELPER_SOURCE = 'NOTIFICATION_HELPER';
 type NavigatablePage = 'Dispatch' | 'Settings' | 'Tools';
@@ -50,14 +47,6 @@ export const AppWithDI = observer((props: any) => {
 
     useEffect(() => appPropsStore.setProps(props), [appPropsStore, props]);
     useEffect(() => messagingStore.setUpMessaging(), [messagingStore]);
-
-    if (languageSetup.state !== 'fulfilled') {
-        return (
-            <RadialGradient colors={[colors.white, colors.bgShadowEnd]} stops={[0.9]} style={styles.loaderContainer}>
-                <Loader />
-            </RadialGradient>
-        );
-    }
 
     return (
         <>
@@ -94,16 +83,3 @@ export const App: FC = (props: any) => {
     );
 };
 App.displayName = 'App';
-
-const styles = StyleSheet.create({
-    loaderContainer: {
-        flex: 1,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        position: 'absolute',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
