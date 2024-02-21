@@ -70,7 +70,7 @@ export const Metronome = observer<NavigatableToolsScreenProps>(props => {
         </BasePageView>
     );
 });
-Metronome.displayName = 'Metronome';
+Metronome.displayName = 'Tools.Metronome';
 
 const styles = StyleSheet.create({
     page: {

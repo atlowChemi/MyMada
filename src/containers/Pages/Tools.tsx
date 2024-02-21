@@ -14,7 +14,7 @@ import { VitalsCalculator } from '../Tools/Vitals';
 import { OxygenCalculator } from '../Tools/Oxygen';
 import { GlazgowCalculator } from '../Tools/Glazgow';
 import { ContractionTimer } from '../Tools/ContractionTimer';
-import { DrawerContent } from '../Tools/DrawerContent';
+import { ToolsDrawerContent } from '../Tools/ToolsDrawerContent';
 import { useDependencyInjector } from '../../services/container';
 import { useDeviceOrientation } from '../../utils/useDeviceOrientation';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
@@ -96,7 +96,7 @@ export const Tools = observer<NavigatableScreenProps>(() => {
             <Drawer.Navigator
                 backBehavior="none"
                 screenOptions={{ headerShown: false, drawerType: isTablet() && orientation === 'landscape' ? 'permanent' : 'front' }}
-                drawerContent={props => <DrawerContent {...props} toolsToShow={toolsToShow} />}
+                drawerContent={props => <ToolsDrawerContent {...props} toolsToShow={toolsToShow} />}
                 initialRouteName={localStore.initialPage}>
                 <Drawer.Screen name="ContractionTimer" component={ContractionTimer} />
                 <Drawer.Screen name="PulseCalc" component={PulseCalculator} />

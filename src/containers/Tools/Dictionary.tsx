@@ -156,7 +156,7 @@ const Item = observer<ListRenderItemInfo<DictionaryEntry> & { localStore: Dictio
         </TouchableOpacity>
     );
 });
-Item.displayName = 'DictionaryItem';
+Item.displayName = 'Tools.DictionaryItem';
 
 export const Dictionary = observer<NavigatableToolsScreenProps>(props => {
     useInnerNavigator('Tools', props);
@@ -167,7 +167,7 @@ export const Dictionary = observer<NavigatableToolsScreenProps>(props => {
 
     return <BasePageView scrollType="flat" data={localStore.dictionaryValues} renderItem={itemProps => <Item localStore={localStore} {...itemProps} />} keyExtractor={item => item.key} />;
 });
-Dictionary.displayName = 'Dictionary';
+Dictionary.displayName = 'Tools.Dictionary';
 
 const styles = StyleSheet.create({
     item: {

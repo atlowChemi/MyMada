@@ -247,7 +247,7 @@ export const VitalsCalculator = observer<NavigatableToolsScreenProps>(props => {
         </BasePageView>
     );
 });
-VitalsCalculator.displayName = 'VitalsCalculator';
+VitalsCalculator.displayName = 'Tools.VitalsCalculator';
 
 const styles = StyleSheet.create({
     wrapperStyles: {
