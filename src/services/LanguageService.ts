@@ -3,13 +3,12 @@ import { AllowedLanguages } from '../localization';
 
 const { LocalizationSettings, I18nManager } = NativeModules;
 
-/** @returns Language in IETF BCP 47 format (like 'en-US') */
 export function getLanguage(): AllowedLanguages {
     LocalizationSettings.getLanguage();
     return LocalizationSettings.language.split(/[_-]/)[0];
 }
 
-export function setLanguage(language: string): void {
+export function setLanguage(language: AllowedLanguages): void {
     LocalizationSettings.setLanguage(language);
     I18nManager.forceRTL(language === 'he');
 }
@@ -28,5 +27,5 @@ interface I18nLanguageDetectorModule {
     type: 'languageDetector';
     init?(): void;
     detect(): string | readonly string[] | undefined;
-    cacheUserLanguage?(lng: string): void;
+    cacheUserLanguage?(lng: AllowedLanguages): void;
 }
