@@ -112,7 +112,7 @@ export const GlazgowCalculator = observer<NavigatableToolsScreenProps>(props => 
         </BasePageView>
     );
 });
-GlazgowCalculator.displayName = 'GlazgowCalculator';
+GlazgowCalculator.displayName = 'Tools.GlazgowCalculator';
 
 const styles = StyleSheet.create({
     dropdownTitle: {

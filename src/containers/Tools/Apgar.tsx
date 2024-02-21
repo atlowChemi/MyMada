@@ -109,7 +109,7 @@ export const ApgarCalculator = observer<NavigatableToolsScreenProps>(props => {
         </BasePageView>
     );
 });
-ApgarCalculator.displayName = 'ApgarCalculator';
+ApgarCalculator.displayName = 'Tools.ApgarCalculator';
 
 const styles = StyleSheet.create({
     dropdownTitle: {

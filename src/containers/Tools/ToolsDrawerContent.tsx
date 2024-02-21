@@ -93,7 +93,7 @@ const DrawerItemWrapper = observer<DrawerContentProps & { page: Tools | 'Protoco
 });
 DrawerItemWrapper.displayName = 'DrawerItemWrapper';
 
-export const DrawerContent = observer<DrawerContentProps & { toolsToShow: (Tools | 'ProtocolCategory')[] }>(props => {
+export const ToolsDrawerContent = observer<DrawerContentProps & { toolsToShow: (Tools | 'ProtocolCategory')[] }>(props => {
     const { t } = useTranslation();
     const navigationStore = useDependencyInjector(NavigationStore);
     const pressBack = useCallback(() => {
@@ -110,7 +110,7 @@ export const DrawerContent = observer<DrawerContentProps & { toolsToShow: (Tools
         </DrawerContentScrollView>
     );
 });
-DrawerContent.displayName = 'DrawerContent';
+ToolsDrawerContent.displayName = 'Tools.DrawerContent';
 
 const styles = StyleSheet.create({
     label: {

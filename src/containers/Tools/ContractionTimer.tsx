@@ -229,7 +229,7 @@ const ContractionsTimerFooter = observer<{ localStore: ContractionTimerLocalStor
         </View>
     );
 });
-ContractionsTimerFooter.displayName = 'ContractionsTimerFooter';
+ContractionsTimerFooter.displayName = 'Tools.ContractionsTimerFooter';
 
 const ContractionItem = observer<ListRenderItemInfo<NodeOf<Contraction>>>(({ item }) => {
     const localStore = useLocalObservable(() => ({
@@ -262,7 +262,7 @@ const ContractionItem = observer<ListRenderItemInfo<NodeOf<Contraction>>>(({ ite
         </View>
     );
 });
-ContractionItem.displayName = 'ContractionItem';
+ContractionItem.displayName = 'Tools.ContractionItem';
 
 export const ContractionTimer = observer<NavigatableToolsScreenProps>(props => {
     useInnerNavigator('Tools', props);
@@ -290,7 +290,7 @@ export const ContractionTimer = observer<NavigatableToolsScreenProps>(props => {
         />
     );
 });
-ContractionTimer.displayName = 'ContractionTimer';
+ContractionTimer.displayName = 'Tools.ContractionTimer';
 
 const styles = StyleSheet.create({
     centeredLoader: {
