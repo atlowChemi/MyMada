@@ -11,10 +11,11 @@ import { Detection } from '../Settings/Detection';
 import { DialogStore } from '../../services/DialogStore';
 import { BasePageView } from '../../Components/BasePageView';
 import { DrawerContent } from '../../Components/DrawerContent';
-import { RadioSelectDialog, RadioSelectDialogProps } from '../dialogs/RadioSelectDialog';
 import { useDeviceOrientation } from '../../utils/useDeviceOrientation';
+import { DispatchService, Region } from '../../services/DispatchService';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
+import { RadioSelectDialog, RadioSelectDialogProps } from '../dialogs/RadioSelectDialog';
 import type { NavigatableScreenProps } from '../../App';
 import type { Item } from '../../Components/DrawerContent';
 
@@ -29,7 +30,7 @@ const Nullish = () => null;
 
 @injectable()
 class SettingsLocalStore {
-    constructor(private readonly dialogStore: DialogStore, private readonly sharedPreferencesStore: SharedPreferencesStore) {
+    constructor(private readonly dialogStore: DialogStore, private readonly dispatchService: DispatchService, private readonly sharedPreferencesStore: SharedPreferencesStore) {
         makeAutoObservable(this, { drawerItems: computed.struct }, { autoBind: true });
     }
 
@@ -37,7 +38,15 @@ class SettingsLocalStore {
         return fromPromise(this.buildOptions());
     }
 
+    private async getSettingsItems() {
+        const { Mapp } = await this.sharedPreferencesStore.settingsChannel;
+        return {
+            isCallRecognitionOn: this.sharedPreferencesStore.makePrefBoolean(Mapp, false),
+        };
+    }
+
     private async buildOptions(): Promise<Item<SettingPage>[]> {
+        const { isCallRecognitionOn } = await this.getSettingsItems();
         return [
             { type: 'link', icon: 'notification', label: 'settings:detection:menuName', page: 'Detection' },
             { type: 'link', icon: 'audio', label: 'settings:notification:menuName', page: 'Notification' },
@@ -45,7 +54,12 @@ class SettingsLocalStore {
             { type: 'link', icon: 'clock', label: 'settings:amPm:menuName', page: 'AmPm' },
             { type: 'link', icon: 'edit', label: 'settings:tools:menuName', page: 'Tools' },
             { type: 'separator', label: 'settings:generalSettings:menuName' },
-            { type: 'btn', label: 'settings:generalSettings:detectionDisabled', icon: 'detection', onPress: Nullish },
+            {
+                type: 'btn',
+                label: `settings:generalSettings:${isCallRecognitionOn ? 'detectionEnabled' : 'detectionDisabled'}`,
+                icon: isCallRecognitionOn ? 'detection' : 'detectionDisabled',
+                onPress: Nullish,
+            },
             { type: 'btn', label: 'settings:generalSettings:language', icon: 'translate', onPress: this.setLanguage },
             { type: 'btn', label: 'settings:generalSettings:region', icon: 'mada', onPress: this.setRegion },
         ];
@@ -57,11 +71,20 @@ class SettingsLocalStore {
             options: { English: 'en', עברית: 'he' },
             initialValue: i18n.language as any,
         });
+        if (!language) {
+            return;
+        }
         i18n.changeLanguage(language);
     }
 
-    private setRegion() {
-        this.dialogStore.openDialog(RadioSelectDialog, { title: 'hi', options: { moked1: 'en', moked2: 'he' }, initialValue: i18n.language });
+    private async setRegion() {
+        const initialValue = await this.dispatchService.getRegion();
+        const options = Object.fromEntries(this.dispatchService.regions.map(region => [i18n.t(`dispatch:regions:${region}`), region] as const));
+        const selectedRegion = await this.dialogStore.openDialog<RadioSelectDialogProps<Region>>(RadioSelectDialog, { title: i18n.t('settings:generalSettings:region'), options, initialValue });
+        if (!selectedRegion) {
+            return;
+        }
+        await this.dispatchService.setRegion(selectedRegion);
     }
 }
 

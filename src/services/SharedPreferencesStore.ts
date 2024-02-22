@@ -47,6 +47,15 @@ export class SharedPreferencesStore {
         runInAction(() => (channelData[key] = value));
     }
 
+    public async setItems(values: { [key: string]: string }, channel: PreferenceChannel = 'Settings') {
+        await SharedPreferencesModule.setItems(channel, values);
+        if (!this.cache.has(channel)) {
+            return;
+        }
+        const channelData = this.cache.get(channel)!;
+        runInAction(() => Object.assign(channelData, values));
+    }
+
     public makePrefBoolean(value: string | undefined, defaultValue: boolean) {
         if (value === undefined) {
             return defaultValue;

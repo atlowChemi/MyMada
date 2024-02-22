@@ -66,6 +66,6 @@ Enjoy your shift!`,
         Lachish: 'Lachish',
         Negev: 'Negev',
         Sharon: 'Sharon',
-        'Moked 4': 'Moked 4',
+        Moked4: 'Moked 4',
     },
 } as const;

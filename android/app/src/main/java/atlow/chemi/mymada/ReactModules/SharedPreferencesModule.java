@@ -1,5 +1,7 @@
 package atlow.chemi.mymada.ReactModules;
 
+import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -9,12 +11,15 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 @ReactModule(name = SharedPreferencesModule.NAME)
@@ -43,6 +48,23 @@ public class SharedPreferencesModule extends ReactContextBaseJavaModule {
         var sharedPref = initSharedHandler(name);
         var editor = sharedPref.edit();
         editor.putString(key, value);
+        editor.apply();
+        promise.resolve(null);
+    }
+
+    @ReactMethod
+    public void setItems(String name, ReadableMap items, Promise promise) {
+        var sharedPref = initSharedHandler(name);
+        var editor = sharedPref.edit();
+        var iterator = items.keySetIterator();
+        while (iterator.hasNextKey()) {
+            var key = iterator.nextKey();
+            if (!items.getType(key).equals(ReadableType.String)) {
+                promise.reject(ERROR_INVALID_CONFIG, String.format("%s: Items being set have to be of type String.", NAME));
+                return;
+            }
+            editor.putString(key, items.getString(key));
+        }
         editor.apply();
         promise.resolve(null);
     }
