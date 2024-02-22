@@ -16,7 +16,7 @@ export const AboutTheApp = React.memo<NavigatableScreenProps>(() => {
     return (
         <BasePageView>
             <Text style={styles.text}>{t('aboutUs:message', { version: BuildConfig.VERSION_NAME || 'TEST VERSION' })}</Text>
-            <HomeBtn style={styles.privacyButton} textStyle={styles.btnTextStyle} size={70} icon="privacy" onPress={navigationStore.goToPrivacyPolicy} />
+            <HomeBtn wrapperStyle={styles.privacyButtonWrapper} style={styles.privacyButton} textStyle={styles.btnTextStyle} size={70} icon="privacy" onPress={navigationStore.goToPrivacyPolicy} />
         </BasePageView>
     );
 });
@@ -29,15 +29,17 @@ const styles = StyleSheet.create({
     btnTextStyle: {
         flex: 1,
     },
-    privacyButton: {
-        flex: 1,
-        flexDirection: 'row',
+    privacyButtonWrapper: {
         width: '100%',
         height: 85,
         maxHeight: 85,
-        paddingHorizontal: 10,
         maxWidth: 390,
-        borderRadius: 23,
+        borderRadius: 7,
+    },
+    privacyButton: {
+        flex: 1,
+        flexDirection: 'row',
+        paddingHorizontal: 10,
         alignSelf: 'center',
     },
 });

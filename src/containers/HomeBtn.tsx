@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { observable } from 'mobx';
+import Color from 'color';
+import { StyleSheet } from 'react-native';
+import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet } from 'react-native';
-import { observer, useLocalObservable } from 'mobx-react-lite';
 import { colors } from '../consts';
 import { Text } from '../Components/Text';
 import { Icon, type IconName } from '../Components/Icon';
-import type { GestureResponderEvent, PressableStateCallbackType, StyleProp, ViewStyle } from 'react-native';
+import { PressableRippleWrapper } from '../Components/PressableRippleWrapper';
+import type { GestureResponderEvent, StyleProp, ViewStyle } from 'react-native';
 
 interface HomeBtnProps {
     big?: boolean;
@@ -14,58 +14,46 @@ interface HomeBtnProps {
     size?: number;
     style?: StyleProp<ViewStyle>;
     textStyle?: StyleProp<ViewStyle>;
+    wrapperStyle?: StyleProp<ViewStyle>;
     onPress(event: GestureResponderEvent): void;
 }
 
-export const HomeBtn = observer<HomeBtnProps>(({ big, icon, size = 80, textStyle, style, onPress }) => {
-    const { t, i18n } = useTranslation();
-    const state = useLocalObservable(
-        () => ({
-            big,
-            style,
-            pressableStyle({ pressed }: PressableStateCallbackType): StyleProp<ViewStyle> {
-                return [
-                    styles.btnCard,
-                    !this.big && { flexBasis: '50%' },
-                    pressed && {
-                        opacity: 0.7,
-                    },
-                    this.style,
-                ];
-            },
-        }),
-        { style: observable.ref },
-    );
+const rippleColor = Color(colors.white).darken(0.3).string();
 
-    useEffect(() => {
-        state.big = big;
-    }, [state, big]);
-    useEffect(() => {
-        state.style = style;
-    }, [state, style]);
+export const HomeBtn = observer<HomeBtnProps>(({ big, icon, size = 80, textStyle, style, wrapperStyle, onPress }) => {
+    const { t, i18n } = useTranslation();
 
     return (
-        <Pressable style={state.pressableStyle} onPress={onPress}>
+        <PressableRippleWrapper
+            onPress={onPress}
+            style={[styles.btnCard, style]}
+            android_ripple={{ color: rippleColor, borderless: true }}
+            wrapperStyle={[styles.btnWrapper, !big && styles.bigBtn, wrapperStyle]}>
             <Icon name={icon} size={size} color={colors.oldPrimary} />
             <Text style={[styles.name, i18n.language === 'en' && styles.englishName, textStyle]}>{t(`home:${icon}`)}</Text>
-        </Pressable>
+        </PressableRippleWrapper>
     );
 });
 HomeBtn.displayName = 'HomeBtn';
 
 const styles = StyleSheet.create({
-    btnCard: {
-        elevation: 5,
-        borderRadius: 27,
-        padding: 'auto',
-        flexShrink: 1,
+    btnWrapper: {
         height: 150,
-        overflow: 'hidden',
+        elevation: 5,
+        flexShrink: 1,
+        borderRadius: 10,
+        backgroundColor: colors.white,
+    },
+    btnCard: {
+        flex: 1,
+        padding: 'auto',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
         textAlignVertical: 'center',
-        backgroundColor: colors.white,
+    },
+    bigBtn: {
+        flexBasis: '50%',
     },
     image: {
         maxWidth: '100%',
