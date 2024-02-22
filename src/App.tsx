@@ -14,7 +14,7 @@ import { ContactUs } from './containers/Pages/ContactUs';
 import { RequestCode } from './containers/Pages/RequestCode';
 import { AboutTheApp } from './containers/Pages/AboutTheApp';
 import { CodeActivation } from './containers/Pages/CodeActivation';
-import { Settings } from './containers/Pages/Settings';
+import { SettingPage, Settings } from './containers/Pages/Settings';
 import { DialogWrapper } from './services/DialogStore';
 import { MessagingStore } from './services/MessagingStore';
 import { MetronomeStore } from './services/MetronomeStore';
@@ -26,8 +26,9 @@ import { AppPropsStore } from './services/AppPropsStore';
 
 const NOTIFICATION_HELPER_SOURCE = 'NOTIFICATION_HELPER';
 type NavigatablePage = 'Dispatch' | 'Settings' | 'Tools';
-// TODO: add Settings page types
-type RootStackParamList = Record<Exclude<Page, NavigatablePage>, undefined> & { Dispatch: { page?: DispatchPage } } & { Settings: { page?: string } } & { Tools: { page?: ToolsType } };
+type RootStackParamList = Record<Exclude<Page, NavigatablePage>, undefined> & { Dispatch: { page?: DispatchPage } } & { Settings: { page?: SettingPage; setRegion?: true } } & {
+    Tools: { page?: ToolsType };
+};
 export type NavigatableScreenProps<T extends Page = Page> = NativeStackScreenProps<RootStackParamList, T>;
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
