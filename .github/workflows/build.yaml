@@ -55,7 +55,6 @@ jobs:
                 env:
                     KEYSTORE_FILE: ${{ steps.decode_keystore.outputs.keystoreFile }}
                     SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
-                    SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_ALIAS }}
                     SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
                 run: |
                     cd android
@@ -64,7 +63,6 @@ jobs:
                 env:
                     KEYSTORE_FILE: ${{ steps.decode_keystore.outputs.keystoreFile }}
                     SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
-                    SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_ALIAS }}
                     SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
                 run: |
                     cd android

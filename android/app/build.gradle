@@ -11,7 +11,7 @@ android {
                 if (keystoreFile == null) {
                     keystoreFile = '../../../cert.jks'
                 }
-                keyAlias System.getenv("SIGNING_KEY_ALIAS")
+                keyAlias 'hi'
                 keyPassword System.getenv("SIGNING_KEY_PASSWORD")
                 storeFile = file(keystoreFile)
                 storePassword System.getenv("SIGNING_STORE_PASSWORD")
