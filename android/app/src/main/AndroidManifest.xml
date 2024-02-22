@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <uses-feature
         android:name="android.hardware.telephony"
@@ -87,7 +88,9 @@
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".ForegroundService" />
+            android:name=".ForegroundService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false" />
         <service
             android:name=".NotificationService"
             android:enabled="@bool/listener"

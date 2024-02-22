@@ -89,6 +89,9 @@ class RequestCodeLocalStore {
     public async askForSendingApproval() {
         const { email, emailError, name, nameError, info, infoError } = this;
         if (!email || emailError || !name || nameError || !info || infoError) {
+            this.email ||= '';
+            this.name ||= '';
+            this.info ||= '';
             return;
         }
         const trimmedEmail = email.trim();
@@ -151,7 +154,8 @@ class RequestCodeLocalStore {
         }
     }
 
-    private openDisclaimerDialog() {
+    private async openDisclaimerDialog() {
+        await Promise.resolve();
         return this.dialogStore.openDialog(BaseDialog, {
             title: i18n.t('contact:plsNote'),
             description: i18n.t('activationCode:requestCodeExplanation'),

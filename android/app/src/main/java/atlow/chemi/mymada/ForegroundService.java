@@ -1,5 +1,6 @@
 package atlow.chemi.mymada;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK;
 import static atlow.chemi.mymada.Constants.ACTION_FOREGROUND_SERVICE_START;
 import static atlow.chemi.mymada.Constants.ACTION_FOREGROUND_SERVICE_STOP;
 import static atlow.chemi.mymada.Constants.NOTIFICATION_CONFIG;
@@ -7,6 +8,8 @@ import static atlow.chemi.mymada.Constants.NOTIFICATION_CONFIG;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+
+import androidx.core.app.ServiceCompat;
 
 import atlow.chemi.mymada.helpers.NotificationHelper;
 
@@ -28,7 +31,7 @@ public class ForegroundService extends Service {
                     var notification = NotificationHelper.getInstance(getApplicationContext())
                             .buildNotification(getApplicationContext(), notificationConfig);
 
-                    startForeground((int)notificationConfig.getDouble("id"), notification);
+                    ServiceCompat.startForeground(this, (int)notificationConfig.getDouble("id"), notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
                 }
             }
         } else if (action.equals(ACTION_FOREGROUND_SERVICE_STOP)) {
