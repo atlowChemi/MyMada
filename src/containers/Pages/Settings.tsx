@@ -1,4 +1,5 @@
 import i18n from '../../localization';
+import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { fromPromise } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
@@ -38,6 +39,28 @@ class SettingsLocalStore {
         return fromPromise(this.buildOptions());
     }
 
+    public async setRegion() {
+        const initialValue = await this.dispatchService.getRegion();
+        const options = Object.fromEntries(this.dispatchService.regions.map(region => [i18n.t(`dispatch:regions:${region}`), region] as const));
+        const selectedRegion = await this.dialogStore.openDialog<RadioSelectDialogProps<Region>>(RadioSelectDialog, { title: i18n.t('settings:generalSettings:region'), options, initialValue });
+        if (!selectedRegion) {
+            return;
+        }
+        await this.dispatchService.setRegion(selectedRegion);
+    }
+
+    private async setLanguage() {
+        const language = await this.dialogStore.openDialog<RadioSelectDialogProps<'he' | 'en'>>(RadioSelectDialog, {
+            title: i18n.t('settings:generalSettings:selectLanguage'),
+            options: { English: 'en', עברית: 'he' },
+            initialValue: i18n.language as any,
+        });
+        if (!language) {
+            return;
+        }
+        await i18n.changeLanguage(language);
+    }
+
     private async getSettingsItems() {
         const { Mapp } = await this.sharedPreferencesStore.settingsChannel;
         return {
@@ -64,33 +87,17 @@ class SettingsLocalStore {
             { type: 'btn', label: 'settings:generalSettings:region', icon: 'mada', onPress: this.setRegion },
         ];
     }
-
-    private async setLanguage() {
-        const language = await this.dialogStore.openDialog<RadioSelectDialogProps<'he' | 'en'>>(RadioSelectDialog, {
-            title: i18n.t('settings:generalSettings:selectLanguage'),
-            options: { English: 'en', עברית: 'he' },
-            initialValue: i18n.language as any,
-        });
-        if (!language) {
-            return;
-        }
-        i18n.changeLanguage(language);
-    }
-
-    private async setRegion() {
-        const initialValue = await this.dispatchService.getRegion();
-        const options = Object.fromEntries(this.dispatchService.regions.map(region => [i18n.t(`dispatch:regions:${region}`), region] as const));
-        const selectedRegion = await this.dialogStore.openDialog<RadioSelectDialogProps<Region>>(RadioSelectDialog, { title: i18n.t('settings:generalSettings:region'), options, initialValue });
-        if (!selectedRegion) {
-            return;
-        }
-        await this.dispatchService.setRegion(selectedRegion);
-    }
 }
 
-export const Settings = observer<NavigatableScreenProps>(() => {
+export const Settings = observer<NavigatableScreenProps<'Settings'>>(({ route }) => {
     const orientation = useDeviceOrientation();
     const localStore = useLocalStoreWithInjectedDependencies(SettingsLocalStore);
+    useEffect(() => {
+        if (!route.params?.setRegion) {
+            return;
+        }
+        localStore.setRegion();
+    }, [localStore]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (localStore.drawerItems.state !== 'fulfilled') {
         return (

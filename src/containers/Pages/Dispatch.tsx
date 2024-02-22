@@ -69,7 +69,7 @@ class DispatchLocalStore {
             description: i18n.t('dispatch:pickDefaultDispatchText'),
         });
         if (goToSettings) {
-            this.navigationStore.navigate('Settings', { page: 'Dispatch' });
+            this.navigationStore.navigate('Settings', { setRegion: true });
         }
     }
 }

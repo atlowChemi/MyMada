@@ -24,7 +24,7 @@ export class RateUsStore {
             return;
         }
         const launchCount = parseInt(launch_count || '0', 10) + 1;
-        const firstLaunchDate = parseInt(date_first_launch.padEnd(13, '0') || '0', 10);
+        const firstLaunchDate = parseInt(date_first_launch?.padEnd(13, '0') || '0', 10);
         await this.sharedPreferencesStore.setItem('launch_count', launchCount.toString(), 'rate_app');
         if (!firstLaunchDate) {
             await this.sharedPreferencesStore.setItem('date_first_launch', Date.now().toString(), 'rate_app');
