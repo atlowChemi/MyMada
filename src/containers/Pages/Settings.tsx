@@ -39,6 +39,10 @@ class SettingsLocalStore {
         return fromPromise(this.buildOptions());
     }
 
+    public async markSettingsAsVisited() {
+        await this.sharedPreferencesStore.setItem('oldU', 'true');
+    }
+
     public async setRegion() {
         const initialValue = await this.dispatchService.getRegion();
         const options = Object.fromEntries(this.dispatchService.regions.map(region => [i18n.t(`dispatch:regions:${region}`), region] as const));
@@ -93,6 +97,7 @@ export const Settings = observer<NavigatableScreenProps<'Settings'>>(({ route })
     const orientation = useDeviceOrientation();
     const localStore = useLocalStoreWithInjectedDependencies(SettingsLocalStore);
     useEffect(() => {
+        localStore.markSettingsAsVisited();
         if (!route.params?.setRegion) {
             return;
         }
