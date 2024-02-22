@@ -6,8 +6,8 @@ import { DialogStore } from './DialogStore';
 import { SmsApproval } from '../containers/dialogs/SmsApproval';
 import { SharedPreferencesStore } from './SharedPreferencesStore';
 
-export type Region = 'Jerusalem' | 'Ayalon' | 'Asher' | 'Gilboa' | 'Dan' | 'Yarden' | 'Yarkon' | 'Carmel' | 'Lachish' | 'Negev' | 'Sharon' | 'Moked 4';
-const REGIONS: Region[] = ['Jerusalem', 'Ayalon', 'Asher', 'Gilboa', 'Dan', 'Yarden', 'Yarkon', 'Carmel', 'Lachish', 'Negev', 'Sharon', 'Moked 4'];
+export type Region = 'Jerusalem' | 'Ayalon' | 'Asher' | 'Gilboa' | 'Dan' | 'Yarden' | 'Yarkon' | 'Carmel' | 'Lachish' | 'Negev' | 'Sharon' | 'Moked4';
+const REGIONS: Region[] = ['Jerusalem', 'Ayalon', 'Asher', 'Gilboa', 'Dan', 'Yarden', 'Yarkon', 'Carmel', 'Lachish', 'Negev', 'Sharon', 'Moked4'];
 const REGION_PHONE_MAP = new Map<Region, String>([
     ['Jerusalem', '+972523993348'],
     ['Ayalon', '+972523993345'],
@@ -20,16 +20,24 @@ const REGION_PHONE_MAP = new Map<Region, String>([
     ['Lachish', '+972523993346'],
     ['Negev', '+972523993356'],
     ['Sharon', '+972523993341'],
-    ['Moked 4', '+972586309592'],
+    ['Moked4', '+972586309592'],
 ]);
+const REGION_SHARED_PREFERENCES_KEY = 'merhav';
 
 @injectable()
 export class DispatchService {
+    public readonly regions = REGIONS;
+
     constructor(private readonly dialogStore: DialogStore, private readonly sharedPreferencesStore: SharedPreferencesStore) {}
     public async getRegion() {
-        const { merhav: regionIndexStr } = await this.sharedPreferencesStore.settingsChannel;
+        const { [REGION_SHARED_PREFERENCES_KEY]: regionIndexStr } = await this.sharedPreferencesStore.settingsChannel;
         const regionIndex = parseInt(regionIndexStr, 10);
         return REGIONS[regionIndex] ?? 'Jerusalem';
+    }
+
+    public async setRegion(region: Region) {
+        const regionIndex = REGIONS.indexOf(region);
+        await this.sharedPreferencesStore.setItems({ [REGION_SHARED_PREFERENCES_KEY]: regionIndex.toString(), pickedMoked: 'true' });
     }
 
     public async sendSms(msg: string) {

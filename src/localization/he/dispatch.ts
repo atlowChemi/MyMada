@@ -66,6 +66,6 @@ export default {
         Lachish: 'לכיש',
         Negev: 'נגב',
         Sharon: 'שרון',
-        'Moked 4': 'מוקד 4',
+        Moked4: 'מוקד 4',
     },
 } as const;

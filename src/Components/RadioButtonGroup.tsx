@@ -1,14 +1,19 @@
+import Color from 'color';
 import { useEffect } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { Text } from './Text';
+import { colors } from '../consts';
 import { RadioButton } from './RadioButton';
+import { PressableRippleWrapper } from './PressableRippleWrapper';
+import type { StyleProp, ViewStyle } from 'react-native';
 
 interface RadioButtonItemProps<T extends {} = any> {
     value: T;
     label: string;
     selectedValue: T;
     onChange(value: T): void;
+    itemStyle?: StyleProp<ViewStyle>;
 }
 
 export interface RadioButtonGroupProps<T extends {} = any> {
@@ -16,9 +21,12 @@ export interface RadioButtonGroupProps<T extends {} = any> {
     direction?: 'horizontal' | 'vertical';
     options: { [label: string]: T };
     onChange(value: T): void;
+    itemStyle?: StyleProp<ViewStyle>;
 }
 
-const RadioButtonItem = observer(<T extends {}>({ value, onChange, label, selectedValue }: RadioButtonItemProps<T>) => {
+const rippleColor = Color(colors.materialGrey600).fade(0.5).string();
+
+const RadioButtonItem = observer(<T extends {}>({ value, onChange, label, selectedValue, itemStyle }: RadioButtonItemProps<T>) => {
     const localStore = useLocalObservable(() => ({
         label,
         value,
@@ -39,24 +47,27 @@ const RadioButtonItem = observer(<T extends {}>({ value, onChange, label, select
     }));
     useEffect(() => localStore.updateStore(value, onChange, label, selectedValue), [value, onChange, label, selectedValue, localStore]);
     return (
-        <Pressable style={styles.container} onPress={localStore.onPress}>
+        <PressableRippleWrapper android_ripple={{ color: rippleColor, borderless: false }} style={[styles.container, itemStyle]} wrapperStyle={styles.radius} onPress={localStore.onPress}>
             <RadioButton value={value} status={localStore.status} onPress={localStore.onPress} />
             <Text style={styles.label}>{label}</Text>
-        </Pressable>
+        </PressableRippleWrapper>
     );
 });
 RadioButtonItem.displayName = 'RadioButtonItem';
 
-export const RadioButtonGroup = observer(<T extends {}>({ value, onChange, options, direction = 'horizontal' }: RadioButtonGroupProps<T>) => (
+export const RadioButtonGroup = observer(<T extends {}>({ value, onChange, options, itemStyle, direction = 'horizontal' }: RadioButtonGroupProps<T>) => (
     <View style={direction === 'horizontal' && styles.groupHorizontal} accessibilityRole="radiogroup">
         {Object.entries(options).map(([label, val]) => (
-            <RadioButtonItem key={label} label={label} value={val} selectedValue={value} onChange={onChange} />
+            <RadioButtonItem key={label} label={label} value={val} selectedValue={value} onChange={onChange} itemStyle={itemStyle} />
         ))}
     </View>
 ));
 RadioButtonGroup.displayName = 'RadioButtonGroup';
 
 const styles = StyleSheet.create({
+    radius: {
+        borderRadius: 8,
+    },
     container: {
         flexDirection: 'row',
         alignItems: 'center',

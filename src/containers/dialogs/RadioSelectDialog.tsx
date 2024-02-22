@@ -27,7 +27,7 @@ export const RadioSelectDialog = observer(<T extends {}>({ title, options, initi
     return (
         <Dialog.Container visible onBackdropPress={localStore.onCancel} onRequestClose={localStore.onCancel}>
             {title && <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{title}</Dialog.Title>}
-            <RadioButtonGroup direction="vertical" options={options} value={localStore.value} onChange={localStore.setValue} />
+            <RadioButtonGroup direction="vertical" options={options} value={localStore.value} onChange={localStore.setValue} itemStyle={styles.items} />
             <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:cancel')} onPress={localStore.onCancel} />
         </Dialog.Container>
     );
@@ -43,5 +43,8 @@ const styles = StyleSheet.create({
     },
     dialogColor: {
         color: colors.colorNice,
+    },
+    items: {
+        paddingVertical: 3,
     },
 });
