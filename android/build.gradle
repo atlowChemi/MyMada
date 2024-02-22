@@ -35,6 +35,8 @@ allprojects {
         }
     }
 }
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
+
+apply plugin: "com.facebook.react.rootproject"

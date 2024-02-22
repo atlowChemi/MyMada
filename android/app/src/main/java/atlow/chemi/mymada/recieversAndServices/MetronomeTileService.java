@@ -68,16 +68,10 @@ public class MetronomeTileService extends TileService {
         } catch (Exception e)    {
             e.printStackTrace();
         }
-        switch (state) {
-            case Tile.STATE_ACTIVE:
-                tile.setIcon(tile.getIcon().setTint(Color.WHITE));
-                break;
-            case Tile.STATE_INACTIVE:
-            case Tile.STATE_UNAVAILABLE:
-            default:
-                tile.setIcon(tile.getIcon().setTint(Color.GRAY));
-                break;
-
+        if (state == Tile.STATE_ACTIVE) {
+            tile.setIcon(tile.getIcon().setTint(Color.WHITE));
+        } else {
+            tile.setIcon(tile.getIcon().setTint(Color.GRAY));
         }
         tile.updateTile();
     }

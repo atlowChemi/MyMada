@@ -1,5 +1,7 @@
 package atlow.chemi.mymada;
 
+import static androidx.core.content.ContextCompat.RECEIVER_EXPORTED;
+import static androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED;
 import static atlow.chemi.mymada.Constants.ACTION_FOREGROUND_SERVICE_START;
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
 import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
@@ -22,6 +24,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -91,20 +94,13 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
         intent.putExtra(NOTIFICATION_CONFIG, Arguments.toBundle(notificationConfig));
         ComponentName componentName = null;
         try {
-            componentName = context.startService(intent);
+            ContextCompat.startForegroundService(context, intent);
         } catch (IllegalStateException e) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                componentName = context.startForegroundService(intent);
-            }
-
+            throw new JSException(ERROR_SERVICE_ERROR, "MetronomeManager: Foreground service is not started");
         }
         var filter = new IntentFilter();
         filter.addAction(METRONOME_NOTIFICATION_BUTTON_PRESSED);
-        context.registerReceiver(buttonPressReceiver, filter);
-
-        if (componentName == null) {
-            throw new JSException(ERROR_SERVICE_ERROR, "MetronomeManager: Foreground service is not started");
-        }
+        ContextCompat.registerReceiver(context, buttonPressReceiver, filter, RECEIVER_EXPORTED);
     }
 
     private int maximizeVolume(Context context) {

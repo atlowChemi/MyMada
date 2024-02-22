@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
@@ -21,6 +22,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
+import com.facebook.react.flipper.ReactNativeFlipper;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.soloader.SoLoader;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
@@ -38,38 +40,38 @@ import static atlow.chemi.mymada.Constants.TEST_CALL_ACTION;
 import java.util.List;
 
 public class Applicatio extends MultiDexApplication implements ReactApplication {
-    private final ReactNativeHost mReactNativeHost =
-            new DefaultReactNativeHost(this) {
-                @Override
-                public boolean getUseDeveloperSupport() {
-                    return BuildConfig.DEBUG;
-                }
+    private final ReactNativeHost mReactNativeHost = new DefaultReactNativeHost(this) {
+        @Override
+        public boolean getUseDeveloperSupport() {
+            return BuildConfig.DEBUG;
+        }
 
-                @Override
-                protected List<ReactPackage> getPackages() {
-                    List<ReactPackage> packages = new PackageList(this).getPackages();
-                     packages.add(new MyMadaReactPackage());
-                    return packages;
-                }
+        @Override
+        protected List<ReactPackage> getPackages() {
+            List<ReactPackage> packages = new PackageList(this).getPackages();
+             packages.add(new MyMadaReactPackage());
+            return packages;
+        }
 
-                @Override
-                protected String getJSMainModuleName() {
-                    return "index";
-                }
+        @Override
+        protected String getJSMainModuleName() {
+            return "index";
+        }
 
-                @Override
-                protected boolean isNewArchEnabled() {
-                    return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
-                }
+        @Override
+        protected boolean isNewArchEnabled() {
+            return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+        }
 
-                @Override
-                protected Boolean isHermesEnabled() {
-                    return BuildConfig.IS_HERMES_ENABLED;
-                }
-            };
+        @Override
+        protected Boolean isHermesEnabled() {
+            return BuildConfig.IS_HERMES_ENABLED;
+        }
+    };
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
+    @NonNull
     @Override
     public ReactNativeHost getReactNativeHost() {
         return mReactNativeHost;

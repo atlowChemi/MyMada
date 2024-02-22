@@ -7,7 +7,7 @@ export default {
         address: 'Call address',
         formNumber: 'Patient form',
         billNumber: 'Bill',
-        paymentSum: 'סכום',
+        paymentSum: 'Amount',
         firstName: 'First name',
         lastName: 'Last name',
         medicalCode: 'Medical code',
