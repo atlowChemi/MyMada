@@ -29,7 +29,7 @@ const BannerAdFooter = observer(() => {
     }
     return (
         <View style={styles.banner}>
-            <BannerAd unitId={adsStore.bannerAdUnitId} onAdFailedToLoad={console.error} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+            <BannerAd unitId={adsStore.bannerAdUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
         </View>
     );
 });
