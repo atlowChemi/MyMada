@@ -16,8 +16,8 @@ import { ContractionTimer } from '../Tools/ContractionTimer';
 import { useDependencyInjector } from '../../services/container';
 import { DrawerContent, Item } from '../../Components/DrawerContent';
 import { useDeviceOrientation } from '../../utils/useDeviceOrientation';
-import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { TOOLS_PAGES, type Tools as ToolsType } from '../../services/NavigationStore';
+import { SharedPreferencesStore, TOOL_SHARED_PREF_MAP } from '../../services/SharedPreferencesStore';
 import type { NavigatableScreenProps } from '../../App';
 
 type ProtocolPages = 'BlsProtocoles' | 'AlsProtocoles' | 'Kuntres';
@@ -26,19 +26,6 @@ export type NavigatableToolsScreenProps = DrawerScreenProps<ToolsStackParamList,
 
 const Drawer = createDrawerNavigator<ToolsStackParamList>();
 
-const TOOL_SETTING_MAP = new Map<ToolsType, string>([
-    ['ContractionTimer', 'contrac'],
-    ['PulseCalc', 'pulse'],
-    ['MetronomeActivity', 'metro'],
-    ['VitalsChecker', 'vital'],
-    ['OxygenCalculator', 'oxy'],
-    ['ApgarCalculator', 'apgar'],
-    ['GlazgowCalculator', 'glaz'],
-    ['Dictionary', 'dict'],
-    ['BlsProtocoles', 'prot'],
-    ['AlsProtocoles', 'prot'],
-    ['Kuntres', 'prot'],
-]);
 const TOOL_DRAWER_DATA_MAP = new Map<ToolsType, Item<ToolsType>>([
     ['ContractionTimer', { type: 'link', icon: 'contractions', label: 'tools:contraction:menuName', page: 'ContractionTimer' }],
     ['PulseCalc', { type: 'link', icon: 'pulse', label: 'tools:pulse:menuName', page: 'PulseCalc' }],
@@ -74,17 +61,11 @@ export const Tools = observer<NavigatableScreenProps>(() => {
         get toolsToShow() {
             return fromPromise(this.buildToolsList());
         },
-        async loadToolsToShow() {
-            const sharedPreferences = await sharedPreferencesStore.settingsChannel;
-            const { Tools: toolsArrString = `[${Array.from(TOOL_SETTING_MAP.values()).join(', ')}]` } = sharedPreferences;
-            const [, toolsString] = toolsArrString.split(/[[\]]/);
-            return new Set(toolsString.split(/,\s?/));
-        },
         async buildToolsList() {
-            const toolsToShow = await this.loadToolsToShow();
-            const hasProtocols = toolsToShow.has(TOOL_SETTING_MAP.get('BlsProtocoles')!);
+            const toolsToShow = await sharedPreferencesStore.selectedTools;
+            const hasProtocols = toolsToShow.has(TOOL_SHARED_PREF_MAP.get('BlsProtocoles')!);
             const toolsForDisplay: Item<ToolsType>[] = Array.from(TOOLS_PAGES)
-                .filter(page => toolsToShow.has(TOOL_SETTING_MAP.get(page)!))
+                .filter(page => toolsToShow.has(TOOL_SHARED_PREF_MAP.get(page)!))
                 .map(page => TOOL_DRAWER_DATA_MAP.get(page)!);
             if (hasProtocols) {
                 const index = toolsForDisplay.indexOf(TOOL_DRAWER_DATA_MAP.get('BlsProtocoles')!);
