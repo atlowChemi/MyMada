@@ -111,12 +111,6 @@ export default {
 
 //     <string name="service_exp">בכדי שנוכל לזהות את המקרים המגיעים למכשיר, אפשרות זו צריכה להיות דולקת.\nבמידה ואפשרות זו לא דולקת, לא יזוהו מקרים כלל.</string>
 //     <string name="seconds">שניות</string>
-//     <string name="notifDay">התראות בשעות יום</string>
-//     <string name="notifNight">התראות בשעות לילה</string>
-//     <string name="nightEnd">סוף משמרת לילה</string>
-//     <string name="nightStart">תחילת משמרת לילה</string>
-//     <string name="nightStartDesc">בחר מאיזו שעה יתריעו מקרים לפי הגדרת הלילה</string>
-//     <string name="nightEndDesc">בחר מאיזו שעה יחזרו מקרים להתריע לפי הגדרת יום</string>
 //     <string name="subject">"נושא: "</string>
 //     <string name="note">הערות</string>
 
