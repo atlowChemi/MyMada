@@ -43,8 +43,8 @@ export class ToolbarStore {
         if (this.navigationStore.currentPage === 'Dispatch') {
             return 'dispatch:toolbarTitle';
         }
-        if (this.navigationStore.currentPage === 'Settings') {
-            // TODO: Add settings titles
+        if (this.navigationStore.currentPage === 'Settings' && this.navigationStore.currentSubPage) {
+            return `settings:${this.navigationStore.currentSubPage.toLowerCase()}:menuName` as TranslationKeys;
         }
         return 'common:appName';
     }
