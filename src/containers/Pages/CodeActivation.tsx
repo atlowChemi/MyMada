@@ -9,8 +9,8 @@ import { makeObservable, observable, runInAction } from 'mobx';
 import { GestureResponderEvent, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
-import { Loader } from '../../Components/Loader';
 import { BaseDialog } from '../dialogs/BaseDialog';
+import { PageLoader } from '../../Components/Loader';
 import { DialogStore } from '../../services/DialogStore';
 import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
@@ -113,13 +113,7 @@ export const CodeActivation = observer<NavigatableScreenProps>(() => {
     const localStore = useLocalStoreWithInjectedDependencies(CodeActivationLocalStore);
 
     if (localStore.isRunningAction) {
-        return (
-            <BasePageView scrollType="none">
-                <View style={styles.wrapper}>
-                    <Loader />
-                </View>
-            </BasePageView>
-        );
+        return <PageLoader />;
     }
 
     return (

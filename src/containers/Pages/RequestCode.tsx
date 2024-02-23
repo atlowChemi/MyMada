@@ -11,8 +11,8 @@ import { colors } from '../../consts';
 import { randomString } from '../../utils';
 import { Icon } from '../../Components/Icon';
 import { Text } from '../../Components/Text';
-import { Loader } from '../../Components/Loader';
 import { BaseDialog } from '../dialogs/BaseDialog';
+import { PageLoader } from '../../Components/Loader';
 import { TextInput } from '../../Components/TextInput';
 import { DialogStore } from '../../services/DialogStore';
 import { BasePageView } from '../../Components/BasePageView';
@@ -185,17 +185,8 @@ export const RequestCode = observer<NavigatableScreenProps>(() => {
     const localStore = useLocalStoreWithInjectedDependencies(RequestCodeLocalStore);
 
     if (localStore.isNotFulfilled) {
-        return (
-            <BasePageView scrollType="none">
-                {/* {messagingStore.token.state === 'rejected' ? (
-                    <ConnectionError />
-                ) : ( */}
-                <View style={styles.loadingWrapper}>
-                    <Loader />
-                </View>
-                {/* )} */}
-            </BasePageView>
-        );
+        // TODO: handle state === 'rejected'
+        return <PageLoader />;
     }
 
     return (
@@ -235,11 +226,6 @@ export const RequestCode = observer<NavigatableScreenProps>(() => {
 RequestCode.displayName = 'RequestCode';
 
 const styles = StyleSheet.create({
-    loadingWrapper: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     scrollContent: {
         flex: undefined,
         paddingBottom: 10,

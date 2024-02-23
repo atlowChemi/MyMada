@@ -3,14 +3,13 @@ import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { fromPromise } from 'mobx-utils';
 import { observer } from 'mobx-react-lite';
-import { StyleSheet, View } from 'react-native';
 import { computed, makeAutoObservable } from 'mobx';
 import { createDrawerNavigator, DrawerScreenProps } from '@react-navigation/drawer';
 import { isTablet } from '../../utils';
-import { Loader } from '../../Components/Loader';
+import { Tools } from '../Settings/Tools';
 import { Detection } from '../Settings/Detection';
+import { PageLoader } from '../../Components/Loader';
 import { DialogStore } from '../../services/DialogStore';
-import { BasePageView } from '../../Components/BasePageView';
 import { DrawerContent } from '../../Components/DrawerContent';
 import { useDeviceOrientation } from '../../utils/useDeviceOrientation';
 import { DispatchService, Region } from '../../services/DispatchService';
@@ -78,7 +77,7 @@ class SettingsLocalStore {
             { type: 'link', icon: 'notification', label: 'settings:detection:menuName', page: 'Detection' },
             { type: 'link', icon: 'audio', label: 'settings:notification:menuName', page: 'Notification' },
             { type: 'link', icon: 'advanced', label: 'settings:advanced:menuName', page: 'Advanced' },
-            { type: 'link', icon: 'clock', label: 'settings:amPm:menuName', page: 'AmPm' },
+            { type: 'link', icon: 'clock', label: 'settings:ampm:menuName', page: 'AmPm' },
             { type: 'link', icon: 'edit', label: 'settings:tools:menuName', page: 'Tools' },
             { type: 'separator', label: 'settings:generalSettings:menuName' },
             {
@@ -105,13 +104,7 @@ export const Settings = observer<NavigatableScreenProps<'Settings'>>(({ route })
     }, [localStore]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (localStore.drawerItems.state !== 'fulfilled') {
-        return (
-            <BasePageView scrollType="none">
-                <View style={styles.loaderWrapper}>
-                    <Loader />
-                </View>
-            </BasePageView>
-        );
+        return <PageLoader />;
     }
 
     const drawerItems = localStore.drawerItems.value;
@@ -126,16 +119,8 @@ export const Settings = observer<NavigatableScreenProps<'Settings'>>(({ route })
             <Drawer.Screen name="Notification" component={Nullish} />
             <Drawer.Screen name="Advanced" component={Nullish} />
             <Drawer.Screen name="AmPm" component={Nullish} />
-            <Drawer.Screen name="Tools" component={Nullish} />
+            <Drawer.Screen name="Tools" component={Tools} />
         </Drawer.Navigator>
     );
 });
 Settings.displayName = 'Dispatch';
-
-const styles = StyleSheet.create({
-    loaderWrapper: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-});
