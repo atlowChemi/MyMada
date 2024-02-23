@@ -13,6 +13,8 @@ export default {
     },
     tools: {
         menuName: 'Utilities & tools settings',
+        pageTitle: 'Pick tools to show on the tools page',
+        minimumMsg: 'Pick at least one tool!',
     },
     generalSettings: {
         menuName: 'General settings',

@@ -13,6 +13,8 @@ export default {
     },
     tools: {
         menuName: 'הגדרות כלי עזר',
+        pageTitle: 'בחרו איזה כלים יוצגו בעמוד כלי עזר',
+        minimumMsg: 'יש לסמן לכל הפחות כלי עזר אחד!',
     },
     generalSettings: {
         menuName: 'הגדרות כלליות',
