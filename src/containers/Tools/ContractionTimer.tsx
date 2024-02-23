@@ -8,11 +8,11 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../../localization';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
-import { Loader } from '../../Components/Loader';
 import { BaseDialog } from '../dialogs/BaseDialog';
 import { DialogStore } from '../../services/DialogStore';
 import { ToolbarStore } from '../../services/ToolbarStore';
 import { LinkedList, NodeOf } from '../../utils/linkedList';
+import { Loader, PageLoader } from '../../Components/Loader';
 import { BasePageView } from '../../Components/BasePageView';
 import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
@@ -269,13 +269,7 @@ export const ContractionTimer = observer<NavigatableToolsScreenProps>(props => {
     const localStore = useLocalStoreWithInjectedDependencies(ContractionTimerLocalStore);
 
     if (localStore.loading.state === 'pending') {
-        return (
-            <BasePageView scrollType="none">
-                <View style={styles.centeredLoader}>
-                    <Loader />
-                </View>
-            </BasePageView>
-        );
+        return <PageLoader />;
     }
 
     // Handle landscape orientation
@@ -293,11 +287,6 @@ export const ContractionTimer = observer<NavigatableToolsScreenProps>(props => {
 ContractionTimer.displayName = 'Tools.ContractionTimer';
 
 const styles = StyleSheet.create({
-    centeredLoader: {
-        flexGrow: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     contractionItem: {
         margin: 5,
         height: 65,

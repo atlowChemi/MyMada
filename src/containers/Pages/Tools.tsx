@@ -1,10 +1,7 @@
 import { fromPromise } from 'mobx-utils';
-import { StyleSheet, View } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { createDrawerNavigator, DrawerScreenProps } from '@react-navigation/drawer';
 import { isTablet } from '../../utils';
-import { BasePageView } from '../../Components/BasePageView';
-import { Loader } from '../../Components/Loader';
 import { Metronome } from '../Tools/Metronome';
 import { DocsViewer } from '../Tools/DocsViewer';
 import { Dictionary } from '../Tools/Dictionary';
@@ -12,7 +9,9 @@ import { ApgarCalculator } from '../Tools/Apgar';
 import { PulseCalculator } from '../Tools/Pulse';
 import { VitalsCalculator } from '../Tools/Vitals';
 import { OxygenCalculator } from '../Tools/Oxygen';
+import { PageLoader } from '../../Components/Loader';
 import { GlazgowCalculator } from '../Tools/Glazgow';
+import { BasePageView } from '../../Components/BasePageView';
 import { ContractionTimer } from '../Tools/ContractionTimer';
 import { useDependencyInjector } from '../../services/container';
 import { DrawerContent, Item } from '../../Components/DrawerContent';
@@ -96,16 +95,9 @@ export const Tools = observer<NavigatableScreenProps>(() => {
     }));
 
     if (localStore.toolsToShow.state !== 'fulfilled') {
-        return (
-            <BasePageView scrollType="none">
-                <View style={styles.loaderWrapper}>
-                    <Loader />
-                </View>
-            </BasePageView>
-        );
+        return <PageLoader />;
     }
     const toolsToShow = localStore.toolsToShow.value;
-    // If tablet lock drawer open
     return (
         <BasePageView scrollType="none">
             <Drawer.Navigator
@@ -129,11 +121,3 @@ export const Tools = observer<NavigatableScreenProps>(() => {
     );
 });
 Tools.displayName = 'Tools';
-
-const styles = StyleSheet.create({
-    loaderWrapper: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-});

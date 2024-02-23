@@ -56,14 +56,6 @@ export default {
 } as const;
 
 // <resources>
-//     <string-array name="languages_entry">
-//         <item>en</item>
-//         <item>iw</item>
-//     </string-array>
-//     <string-array name="languages">
-//         <item>English</item>
-//         <item>עברית</item>
-//     </string-array>
 //     <string-array name="sleep_entry">
 //         <item>0</item>
 //         <item>1</item>
@@ -134,11 +126,8 @@ export default {
 //     <string name="BGServiceTtl">מאזין ברקע להודעות</string>
 //     <string name="BGServiceTicker">מזהה הודעות חדשות ממד\"א</string>
 //     <string name="BGServiceTxt">מזהה הודעות חדשות שנשלחות ממוקד מד\"א ברקע</string>
-//     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
 //     <string name="title_low_calls">הודעות לא קריטיות</string>
 //     <string name="title_notif">התראה</string>
 //     <string name="pick_sound">בחר צליל</string>
 //     <string name="numberNone">לא רשמת מספר!</string>
-//     <string name="langBad">החלפת שפה הופסקה בשל תקלה. ודא שיש חיבור לרשת ונסה שוב!</string>
-//     <string name="langLoad">מוריד את השפה המבוקשת %s</string>
 // </resources>

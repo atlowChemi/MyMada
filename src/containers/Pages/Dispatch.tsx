@@ -2,18 +2,16 @@ import { injectable } from 'inversify';
 import { fromPromise } from 'mobx-utils';
 import { makeAutoObservable } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { StyleSheet, View } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import i18n from '../../localization';
 import { colors } from '../../consts';
-import { Loader } from '../../Components/Loader';
 import { CustomMsg } from '../Dispatch/CustomMsg';
 import { BaseDialog } from '../dialogs/BaseDialog';
 import { TeamReport } from '../Dispatch/TeamReport';
 import { DispatchTabBar } from '../Dispatch/TabBar';
+import { PageLoader } from '../../Components/Loader';
 import { DialogStore } from '../../services/DialogStore';
 import { FormDictation } from '../Dispatch/FormDictation';
-import { BasePageView } from '../../Components/BasePageView';
 import { NavigationStore } from '../../services/NavigationStore';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
@@ -78,13 +76,7 @@ export const Dispatch = observer<NavigatableScreenProps<'Dispatch'>>(({ route })
     const localStore = useLocalStoreWithInjectedDependencies(DispatchLocalStore);
 
     if (localStore.showPagePromise.state === 'pending') {
-        return (
-            <BasePageView scrollType="none">
-                <View style={styles.loadingWrapper}>
-                    <Loader />
-                </View>
-            </BasePageView>
-        );
+        return <PageLoader />;
     }
 
     return (
@@ -96,11 +88,3 @@ export const Dispatch = observer<NavigatableScreenProps<'Dispatch'>>(({ route })
     );
 });
 Dispatch.displayName = 'Dispatch';
-
-const styles = StyleSheet.create({
-    loadingWrapper: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, memo, useCallback } from 'react';
-import { StyleSheet, Animated, Easing } from 'react-native';
+import { StyleSheet, Animated, Easing, View, StyleProp, ViewStyle } from 'react-native';
 import { colors as COLORS } from '../consts';
+import { BasePageView } from './BasePageView';
 
 const defaultColors = [COLORS.black, COLORS.colorPrimaryDark, COLORS.ocean, COLORS.colorAqua];
 
@@ -74,11 +75,24 @@ export const Loader = memo<LoaderProps>(({ dots = 4, colors = defaultColors, siz
 });
 Loader.displayName = 'Loader';
 
+export const PageLoader = memo<LoaderProps & { wrapperStyles?: StyleProp<ViewStyle> }>(({ wrapperStyles, ...props }) => (
+    <BasePageView scrollType="none">
+        <View style={[styles.wrapper, wrapperStyles]}>
+            <Loader {...props} />
+        </View>
+    </BasePageView>
+));
+
 const styles = StyleSheet.create({
     loading: {
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
+    },
+    wrapper: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
