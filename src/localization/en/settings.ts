@@ -8,7 +8,7 @@ export default {
     advanced: {
         menuName: 'Advanced settings',
     },
-    amPm: {
+    ampm: {
         menuName: 'Day & night settings',
     },
     tools: {

@@ -81,7 +81,7 @@ export class NavigationStore {
     }
 
     public get currentSubPage() {
-        if (!['Tools'].includes(this.page)) {
+        if (!['Tools', 'Settings'].includes(this.page)) {
             return undefined;
         }
         return this.subPage || this.navigator?.getCurrentRoute()?.name;
