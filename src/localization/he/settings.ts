@@ -10,6 +10,12 @@ export default {
     },
     ampm: {
         menuName: 'הגדרות יום ולילה',
+        dayNotificationLevel: 'התראות בשעות יום',
+        nightNotificationLevel: 'התראות בשעות לילה',
+        nightStart: 'תחילת משמרת לילה',
+        nightEnd: 'סוף משמרת לילה',
+        nightEndDesc: 'בחר מאיזו שעה יחזרו מקרים להתריע לפי הגדרת יום',
+        nightStartDesc: 'בחר מאיזו שעה יתריעו מקרים לפי הגדרת הלילה',
     },
     tools: {
         menuName: 'הגדרות כלי עזר',

@@ -1,7 +1,7 @@
 import { computedFn } from 'mobx-utils';
 import { StyleSheet } from 'react-native';
-import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { Snackbar } from '../../Components/Snackbar';

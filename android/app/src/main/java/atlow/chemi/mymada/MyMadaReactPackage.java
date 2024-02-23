@@ -17,6 +17,7 @@ import atlow.chemi.mymada.ReactModules.MadaNotificationsModule;
 import atlow.chemi.mymada.ReactModules.MetronomeModule;
 import atlow.chemi.mymada.ReactModules.NotificationsModule;
 import atlow.chemi.mymada.ReactModules.SharedPreferencesModule;
+import atlow.chemi.mymada.ReactModules.TimePickerModule;
 
 public class MyMadaReactPackage  implements ReactPackage {
     @NonNull
@@ -29,6 +30,7 @@ public class MyMadaReactPackage  implements ReactPackage {
         modules.add(new MadaNotificationsModule(context));
         modules.add(new SharedPreferencesModule(context));
         modules.add(new LocalizationSettings(context));
+        modules.add(new TimePickerModule(context));
         return modules;
     }
 

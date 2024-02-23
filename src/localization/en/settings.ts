@@ -10,6 +10,12 @@ export default {
     },
     ampm: {
         menuName: 'Day & night settings',
+        dayNotificationLevel: 'Notifications during the day',
+        nightNotificationLevel: 'Notifications during the night',
+        nightStart: 'Night shift start',
+        nightEnd: 'Night shift end',
+        nightEndDesc: 'Pick time when calls will alert by the day pattern',
+        nightStartDesc: 'Pick time when calls will alert by the night pattern',
     },
     tools: {
         menuName: 'Utilities & tools settings',
