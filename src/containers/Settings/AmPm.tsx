@@ -26,9 +26,9 @@ const PREF_KEYS = {
     nightNotificationLevel: 'sleepNight',
 } as const;
 enum NOTIFICATION_LEVEL_VALUES {
-    silent = 0,
+    sound = 0,
     vibrate = 1,
-    sound = 2,
+    silent = 2,
 }
 
 @injectable()
@@ -40,9 +40,8 @@ class AmPmLocalStore {
     }
 
     public get notificationLevels() {
-        return [[i18n.t('settings:ampm:notificationLevel:silent')], [i18n.t('settings:ampm:notificationLevel:vibrate')], [i18n.t('settings:ampm:notificationLevel:soundVibrate')]];
+        return [[i18n.t('settings:ampm:notificationLevel:soundVibrate')], [i18n.t('settings:ampm:notificationLevel:vibrate')], [i18n.t('settings:ampm:notificationLevel:silent')]];
     }
-
     public async selectNightStart() {
         const response = await this.openTimePicker(PREF_KEYS.nightStart);
         if (response === null) {
