@@ -26,7 +26,7 @@ public class TimePickerModule extends ReactContextBaseJavaModule implements Time
     }
 
     @ReactMethod
-    public void openHourPicker(int hour, String title, Promise promise) {
+    public void openHourPicker(int hour, String title, String color, Promise promise) {
         var pickerDialog = TimePickerDialog.newInstance(this, hour, 25, 0, true);
         pickerDialog.enableMinutes(false);
         pickerDialog.setTitle(title);
@@ -36,6 +36,7 @@ public class TimePickerModule extends ReactContextBaseJavaModule implements Time
             return;
         }
         this.promise = promise;
+        pickerDialog.setAccentColor(color);
         pickerDialog.setOnCancelListener((v) -> promise.resolve(null));
         pickerDialog.show(((AppCompatActivity)activity).getSupportFragmentManager(), "tAg");
     }
