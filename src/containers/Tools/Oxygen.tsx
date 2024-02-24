@@ -67,14 +67,14 @@ class OxygenCalculatorLocalStore {
 
     public setAtmPressure(value: string) {
         const numeralValue = value.replace(/\D/g, '');
-        const pulse = parseInt(numeralValue, 10);
+        const pulse = Number.parseInt(numeralValue, 10);
         this._pressureATM = pulse;
         this._pressurePSI = pulse * 15;
     }
 
     public setPsiPressure(value: string) {
         const numeralValue = value.replace(/\D/g, '');
-        const pulse = parseInt(numeralValue, 10);
+        const pulse = Number.parseInt(numeralValue, 10);
         this._pressureATM = Math.round(pulse / 15);
         this._pressurePSI = pulse;
     }

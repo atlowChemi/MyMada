@@ -65,7 +65,7 @@ class PulseCalculatorLocalStore {
     public setPulseInQuarterMin = (pulseInQuarterMin: string) => {
         const numeralValue = pulseInQuarterMin.replace(/\D/g, '');
         this.isPulseInputInvalid = !numeralValue.length;
-        const pulse = parseInt(numeralValue, 10);
+        const pulse = Number.parseInt(numeralValue, 10);
         this.pulseInQuarterMin = pulse;
     };
 
