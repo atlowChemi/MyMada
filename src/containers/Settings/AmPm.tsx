@@ -24,11 +24,11 @@ export const AmPm = observer<NavigatableSettingsScreenProps>(props => {
     const sharedPreferencesStore = useDependencyInjector(SharedPreferencesStore);
     const localStore = useLocalObservable(() => ({
         async selectNightStart() {
-            const t = await NativeModules.TimePickerModule.openHourPicker(23, 'hi');
+            const t = await NativeModules.TimePickerModule.openHourPicker(23, 'hi', colors.colorPrimaryDark);
             console.log(t);
         },
         async selectNightEnd() {
-            const t = await NativeModules.TimePickerModule.openHourPicker(23, 'bi');
+            const t = await NativeModules.TimePickerModule.openHourPicker(23, 'bi', colors.colorPrimaryDark);
             console.log(t);
         },
     }));
