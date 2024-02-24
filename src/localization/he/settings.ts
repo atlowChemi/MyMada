@@ -16,6 +16,11 @@ export default {
         nightEnd: 'סוף משמרת לילה',
         nightEndDesc: 'בחר מאיזו שעה יחזרו מקרים להתריע לפי הגדרת יום',
         nightStartDesc: 'בחר מאיזו שעה יתריעו מקרים לפי הגדרת הלילה',
+        notificationLevel: {
+            silent: 'שקט',
+            vibrate: 'רטט',
+            soundVibrate: 'צליל ורטט',
+        },
     },
     tools: {
         menuName: 'הגדרות כלי עזר',

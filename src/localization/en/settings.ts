@@ -16,6 +16,11 @@ export default {
         nightEnd: 'Night shift end',
         nightEndDesc: 'Pick time when calls will alert by the day pattern',
         nightStartDesc: 'Pick time when calls will alert by the night pattern',
+        notificationLevel: {
+            silent: 'Silent',
+            vibrate: 'Vibrate',
+            soundVibrate: 'Sound & Vibrate',
+        },
     },
     tools: {
         menuName: 'Utilities & tools settings',
