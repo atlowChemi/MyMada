@@ -97,7 +97,7 @@ class VitalsCalculatorLocalStore {
                 this[inputType] = '';
                 return;
             }
-            const numeralValue = parseInt(numeralStringValue, 10);
+            const numeralValue = Number.parseInt(numeralStringValue, 10);
             if (Number.isNaN(numeralValue)) {
                 return;
             }

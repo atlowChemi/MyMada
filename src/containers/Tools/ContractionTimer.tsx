@@ -109,7 +109,7 @@ class ContractionTimerLocalStore {
             if (!contractList || !this.contractions.isEmpty) {
                 return undefined;
             }
-            const oldContractions = parseInt(contractLong || TWENTY_MINUTES.toString(), 10);
+            const oldContractions = Number.parseInt(contractLong || TWENTY_MINUTES.toString(), 10);
             const areOldContractionsLessThan20MinOld = Date.now() - oldContractions <= TWENTY_MINUTES;
             if (!areOldContractionsLessThan20MinOld) {
                 // The saved contractions have breached the 20 min threshold - we can delete and ignore them.
