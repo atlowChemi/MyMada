@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import atlow.chemi.mymada.ReactModules.AudioGeneratorModule;
-import atlow.chemi.mymada.ReactModules.LocalizationSettings;
+import atlow.chemi.mymada.ReactModules.LocalizationSettingsModule;
 import atlow.chemi.mymada.ReactModules.MadaNotificationsModule;
 import atlow.chemi.mymada.ReactModules.MetronomeModule;
 import atlow.chemi.mymada.ReactModules.NotificationsModule;
@@ -29,7 +29,7 @@ public class MyMadaReactPackage  implements ReactPackage {
         modules.add(new MetronomeModule(context));
         modules.add(new MadaNotificationsModule(context));
         modules.add(new SharedPreferencesModule(context));
-        modules.add(new LocalizationSettings(context));
+        modules.add(new LocalizationSettingsModule(context));
         modules.add(new TimePickerModule(context));
         return modules;
     }
