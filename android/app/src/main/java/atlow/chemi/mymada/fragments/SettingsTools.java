@@ -75,7 +75,7 @@ public class SettingsTools extends Fragment implements View.OnClickListener {
 
         //get SharedPref
         sp = getActivity().getSharedPreferences("Settings", 0);
-        Set<String> toolsToShow = sp.getStringSet("Tools", new LinkedHashSet<>(Arrays.asList(toolsS)));
+        var toolsToShow = sp.getString("Tools", Arrays.asList(toolsS).toString());
         tzirimB = toolsToShow.contains("contrac");
         pulseB = toolsToShow.contains("pulse");
         metroB = toolsToShow.contains("metro");

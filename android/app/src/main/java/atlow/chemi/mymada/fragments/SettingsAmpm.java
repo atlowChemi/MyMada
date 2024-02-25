@@ -56,10 +56,10 @@ public class SettingsAmpm extends Fragment implements View.OnClickListener, Time
 
         //get SharedPref
         sp = getActivity().getSharedPreferences("Settings", 0);
-        nightStartI = sp.getInt("nightStart", 23);
-        nightEndI = sp.getInt("nightEnd", 7);
-        sleepDayI = sp.getInt("sleepDay", 0);
-        sleepNightI = sp.getInt("sleepNight", 0);
+        nightStartI = Integer.parseInt(sp.getString("nightStart", "23"));
+        nightEndI = Integer.parseInt(sp.getString("nightEnd", "7"));
+        sleepDayI = Integer.parseInt(sp.getString("sleepDay", "0"));
+        sleepNightI = Integer.parseInt(sp.getString("sleepNight", "0"));
 
         //set by the SharedPreferences
         setInfo(sleepDay.getId());
@@ -134,9 +134,9 @@ public class SettingsAmpm extends Fragment implements View.OnClickListener, Time
         String title = morningOrNight == 0 ? "sleepDay" : "sleepNight";
         int result = 0;
         if (morningOrNight == 1)    {
-            int other = sp.getInt("sleepDay", 0);
-            switch (other)  {
-                case 0:
+            int day = Integer.parseInt(sp.getString("sleepDay", "0"));
+            switch (day) {
+                case 0 -> {
                     switch (newValue) {
                         case 0:
                             result = 0;
@@ -148,8 +148,8 @@ public class SettingsAmpm extends Fragment implements View.OnClickListener, Time
                             result = 2;
                             break;
                     }
-                    break;
-                case 1:
+                }
+                case 1 -> {
                     switch (newValue) {
                         case 0:
                             result = 3;
@@ -161,8 +161,8 @@ public class SettingsAmpm extends Fragment implements View.OnClickListener, Time
                             result = 5;
                             break;
                     }
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     switch (newValue) {
                         case 0:
                             result = 6;
@@ -174,51 +174,36 @@ public class SettingsAmpm extends Fragment implements View.OnClickListener, Time
                             result = 8;
                             break;
                     }
-                    break;
+                }
             }
         }
         if (morningOrNight == 0)    {
-            int night = sp.getInt("sleepNight", 0);
-            switch (night)  {
-                case 0:
-                    switch (newValue) {
-                        case 0:
-                            result = 0;
-                            break;
-                        case 1:
-                            result = 3;
-                            break;
-                        case 2:
-                            result = 6;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (newValue) {
-                        case 0:
-                            result = 1;
-                            break;
-                        case 1:
-                            result = 4;
-                            break;
-                        case 2:
-                            result = 7;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (newValue) {
-                        case 0:
-                            result = 2;
-                            break;
-                        case 1:
-                            result = 5;
-                            break;
-                        case 2:
-                            result = 8;
-                            break;
-                    }
-                    break;
+            int night = Integer.parseInt(sp.getString("sleepNight", "0"));
+            switch (night) {
+                case 0 -> {
+                    result = switch (newValue) {
+                        case 0 -> 0;
+                        case 1 -> 3;
+                        case 2 -> 6;
+                        default -> result;
+                    };
+                }
+                case 1 -> {
+                    result = switch (newValue) {
+                        case 0 -> 1;
+                        case 1 -> 4;
+                        case 2 -> 7;
+                        default -> result;
+                    };
+                }
+                case 2 -> {
+                    result = switch (newValue) {
+                        case 0 -> 2;
+                        case 1 -> 5;
+                        case 2 -> 8;
+                        default -> result;
+                    };
+                }
             }
         }
         SharedPreferences.Editor editor = sp.edit();

@@ -29,7 +29,7 @@ import static androidx.core.content.ContextCompat.checkSelfPermission;
 public class SettingsNotificationsSounds extends Fragment implements View.OnClickListener {
     private SharedPreferences sp, permissionStatus;
     private static final int PERMISSION_T = 100, PERMISSION_T1 = 101, PERMISSION_T2 = 102, PERMISSION_T3 = 103, PERMISSION_T4 = 104;
-    private String[] permissionsRequired = {android.Manifest.permission.READ_EXTERNAL_STORAGE};
+    private String[] permissionsRequired = {android.Manifest.permission.READ_MEDIA_AUDIO};
     private int retPer = PERMISSION_T;
     private boolean sentToSettings = false;
     //T
