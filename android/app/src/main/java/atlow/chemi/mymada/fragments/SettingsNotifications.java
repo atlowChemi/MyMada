@@ -67,11 +67,11 @@ public class SettingsNotifications extends Fragment implements View.OnClickListe
 
         //get SharedPref
         sp = getActivity().getSharedPreferences("Settings", 0);
-        cutAB = sp.getBoolean("cut", false);
-        statB = sp.getBoolean("stat", false);
-        statVibB = sp.getBoolean("statVib", false);
-        T6B = sp.getBoolean("callT6", true);
-        findT4B = sp.getBoolean("callT4", true);
+        cutAB = sp.getString("cut", "false").equals("true");
+        statB = sp.getString("stat", "false").equals("true");
+        statVibB = sp.getString("statVib", "false").equals("true");
+        T6B = sp.getString("callT6", "true").equals("true");
+        findT4B = sp.getString("callT4", "true").equals("true");
 
         //set by the SharedPreferences
         setTrueOrFalse(cutAB, cutAPref.getId());

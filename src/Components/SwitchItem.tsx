@@ -1,7 +1,7 @@
 import Color from 'color';
 import { useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
-import { StyleSheet, Switch } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
 import { Text } from './Text';
 import { colors } from '../consts';
 import { PressableRippleWrapper } from './PressableRippleWrapper';
@@ -14,15 +14,19 @@ const inactiveTrack = Color(inactiveThumb).lighten(0.2).string();
 
 interface SwitchItemProps {
     label: string;
+    subLabel?: string;
     value?: boolean;
     onChange?(value: boolean): void;
 }
 
-export const SwitchItem = observer<SwitchItemProps>(({ label, value, onChange }) => {
+export const SwitchItem = observer<SwitchItemProps>(({ label, subLabel, value, onChange }) => {
     const onValueChange = useCallback(() => onChange?.(!value), [value, onChange]);
     return (
         <PressableRippleWrapper onPress={onValueChange} pointerEvents="box-only" android_ripple={{ color: rippleColor, borderless: true }} style={styles.switch} wrapperStyle={styles.switchWrapper}>
-            <Text style={styles.switchText}>{label}</Text>
+            <View style={styles.textWrapper}>
+                <Text style={styles.switchText}>{label}</Text>
+                {subLabel && <Text style={styles.switchSubText}>{subLabel}</Text>}
+            </View>
             <Switch value={value} thumbColor={value ? activeThumb : inactiveThumb} trackColor={{ false: inactiveTrack, true: activeTrack }} />
         </PressableRippleWrapper>
     );
@@ -35,13 +39,20 @@ const styles = StyleSheet.create({
         borderBottomColor: colors.colorBlueAlpha,
     },
     switch: {
-        height: 60,
+        minHeight: 60,
         alignItems: 'center',
         flexDirection: 'row',
+        paddingVertical: 8,
         paddingHorizontal: 15,
         justifyContent: 'space-between',
     },
+    textWrapper: {
+        flexShrink: 1,
+    },
     switchText: {
         fontSize: 21,
+    },
+    switchSubText: {
+        fontSize: 16,
     },
 });

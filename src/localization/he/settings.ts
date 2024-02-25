@@ -1,6 +1,32 @@
 export default {
     detection: {
         menuName: 'הגדרות התראות',
+        splitNotificationByCallType: {
+            title: 'הפרדת הגדרות התראה',
+            subTitleEnabled: 'ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בנפרד',
+            subTitleDisabled: 'ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בלי הבדלים',
+        },
+        notifySoundByDeviceStatus: {
+            title: 'התראה לפי סטטוס מכשיר',
+            subTitleEnabled: 'התראה תצפצף רק כאשר המכשיר לא במצב רטט/שקט.',
+            subTitleDisabled: 'התראה תצפצף גם כשהמכשיר במצב שקט.',
+        },
+        notifyVibrationByDeviceStatus: {
+            title: 'רטט לפי סטטוס מכשיר',
+            subTitleEnabled: 'התראה תרטוט רק כאשר המכשיר לא במצב שקט',
+            subTitleDisabled: 'התראה תרטוט גם כשהמכשיר במצב שקט.',
+        },
+        lowCallsCategory: 'הודעות מנהלתיות',
+        detectServiceCalls: {
+            title: 'זהה הודעות שירות',
+            subTitleEnabled: 'זיהוי הודעות שירות פועל',
+            subTitleDisabled: 'זיהוי הודעות שירות כבוי',
+        },
+        detectAdministrativeCalls: {
+            title: 'זהה הודעות מנהלתיות',
+            subTitleEnabled: 'זיהוי הודעות מנהלתיות פועל',
+            subTitleDisabled: 'זיהוי הודעות מנהלתיות כבוי',
+        },
     },
     notification: {
         menuName: 'הגדרות צליל ורטט',
