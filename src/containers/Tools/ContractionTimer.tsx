@@ -193,7 +193,7 @@ class ContractionTimerLocalStore {
             this.startContraction();
         }
         try {
-            if (this.contractions.isEmpty || !this.flatList) {
+            if (this.contractions.length < 2 || !this.flatList) {
                 return;
             }
             this.flatList.scrollToIndex({ index: 0, animated: true });
