@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { isValidElement, useEffect } from 'react';
+import { isValidElement } from 'react';
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import {
@@ -101,7 +101,7 @@ class MenuLocalStore {
         this.anchor = anchor;
     }
 
-    public updateProps(nextProps: MenuProps) {
+    public init(nextProps: MenuProps) {
         const { visible, onDismiss } = nextProps;
         this.rendered = visible;
         this.onDismiss = onDismiss;
@@ -239,8 +239,7 @@ class MenuLocalStore {
 }
 
 export const Menu = observer<MenuProps>(props => {
-    const localStore = useLocalStoreWithInjectedDependencies(MenuLocalStore);
-    useEffect(() => localStore.updateProps(props), [localStore, props]);
+    const localStore = useLocalStoreWithInjectedDependencies(MenuLocalStore, props);
 
     const { visible, anchor, anchorPosition, contentStyle, style, elevation = DEFAULT_ELEVATION, children, onDismiss, keyboardShouldPersistTaps } = props;
     const { rendered, menuLayout, anchorLayout, opacityAnimation, scaleAnimation, windowLayout } = localStore;

@@ -99,12 +99,6 @@ export default {
 //     <string name="callT">כל האירועים</string>
 //     <string name="callTS">הודעות שירות</string>
 
-//     <string name="pref_title_state">התראה לפי סטטוס מכשיר</string>
-//     <string name="pref_description_state_off">התראה תצפצף גם כשהמכשיר במצב שקט.</string>
-//     <string name="pref_description_state_on">התראה תצפצף רק כאשר המכשיר לא במצב רטט/שקט.</string>
-//     <string name="pref_title_stateVib">רטט לפי סטטוס מכשיר</string>
-//     <string name="pref_description_stateVib_off">התראה תרטוט גם כשהמכשיר במצב שקט.</string>
-//     <string name="pref_description_stateVib_on">התראה תרטוט רק כאשר המכשיר לא במצב שקט</string>
 //     <string name="pref_title_sleep">מצב יום-לילה</string>
 //     <string name="pref_description_sleep_off">פיצול סגנון התראה בהתאם לשעה (לילה מ23:00 עד 7:00).\\\\nשימו לב!\\\\nהגדרה זו לא מפעילה צליל ורטט, אלא מאפשרת אותם אם הם פעילים.</string>
 //     <string name="time">התקבל בשעה: %1$s</string>
@@ -120,7 +114,6 @@ export default {
 //     <string name="BGServiceTtl">מאזין ברקע להודעות</string>
 //     <string name="BGServiceTicker">מזהה הודעות חדשות ממד\"א</string>
 //     <string name="BGServiceTxt">מזהה הודעות חדשות שנשלחות ממוקד מד\"א ברקע</string>
-//     <string name="title_low_calls">הודעות לא קריטיות</string>
 //     <string name="title_notif">התראה</string>
 //     <string name="pick_sound">בחר צליל</string>
 //     <string name="numberNone">לא רשמת מספר!</string>

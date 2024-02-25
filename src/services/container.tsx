@@ -21,7 +21,7 @@ export const useDependencyInjector = <T extends {}>(identifier: interfaces.Servi
     return _container.get<T>(identifier);
 };
 
-export const useLocalStoreWithInjectedDependencies = <T extends {}>(Class: interfaces.Newable<T>) => {
+export const useLocalStoreWithInjectedDependencies = <T extends {}>(Class: interfaces.Newable<T>, props?: any) => {
     const { container: _container } = useContext(DIContext);
     if (!_container) {
         throw new Error('useLocalStoreWithInjectedDependencies missing DI container in context');
@@ -44,6 +44,12 @@ export const useLocalStoreWithInjectedDependencies = <T extends {}>(Class: inter
         return new (Class as any)(...dependencyConstructorParams) as T;
     }, [Class]);
 
+    useEffect(() => {
+        if (!props) {
+            return;
+        }
+        (store as any).init?.(props);
+    }, [store, props]);
     useEffect(() => () => (store as any).dispose?.(), [store]);
     return store;
 };
