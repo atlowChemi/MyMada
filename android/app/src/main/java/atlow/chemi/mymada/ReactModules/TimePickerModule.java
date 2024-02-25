@@ -11,9 +11,16 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
-public class TimePickerModule extends ReactContextBaseJavaModule implements TimePickerDialog.OnTimeSetListener {
+public class TimePickerModule extends ReactContextBaseJavaModule {
     public static final String NAME = "TimePickerModule";
     private Promise promise;
+    private final TimePickerDialog.OnTimeSetListener onTimeSet = (view, hourOfDay, minute, second) -> {
+        if (promise == null) {
+            return;
+        }
+        promise.resolve(hourOfDay);
+        promise = null;
+    };
 
     public TimePickerModule(ReactApplicationContext context) {
         super(context);
@@ -27,7 +34,7 @@ public class TimePickerModule extends ReactContextBaseJavaModule implements Time
 
     @ReactMethod
     public void openHourPicker(int hour, String title, String color, Promise promise) {
-        var pickerDialog = TimePickerDialog.newInstance(this, hour, 25, 0, true);
+        var pickerDialog = TimePickerDialog.newInstance(onTimeSet, hour, 25, 0, true);
         pickerDialog.enableMinutes(false);
         pickerDialog.setTitle(title);
         var activity = getCurrentActivity();
@@ -37,13 +44,8 @@ public class TimePickerModule extends ReactContextBaseJavaModule implements Time
         }
         this.promise = promise;
         pickerDialog.setAccentColor(color);
+        pickerDialog.setOnDismissListener((v) -> promise.resolve(null));
         pickerDialog.setOnCancelListener((v) -> promise.resolve(null));
         pickerDialog.show(((AppCompatActivity)activity).getSupportFragmentManager(), "tAg");
-    }
-
-    @Override
-    public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
-        promise.resolve(hourOfDay);
-        promise = null;
     }
 }
