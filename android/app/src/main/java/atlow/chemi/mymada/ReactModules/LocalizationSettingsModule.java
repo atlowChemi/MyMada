@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 
@@ -18,18 +19,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-@ReactModule(name = LocalizationSettings.NAME)
-public class LocalizationSettings extends ReactContextBaseJavaModule {
-    private final ReactApplicationContext reactContext;
+@ReactModule(name = LocalizationSettingsModule.NAME)
+public class LocalizationSettingsModule extends ReactContextBaseJavaModule {
     private final SharedPreferences sharedPreferences;
     private final static String LANGUAGE_SP_KEY = "lng";
     private final static String FIRST_TIME_MIGRATION = "first_time_migration";
     private final static String STATUS_DONE = "status_done";
-    public static final String NAME = "LocalizationSettings";
+    public static final String NAME = "LocalizationSettingsModule";
 
-    public LocalizationSettings(ReactApplicationContext reactContext) {
+    public LocalizationSettingsModule(ReactApplicationContext reactContext) {
         super(reactContext);
-        this.reactContext = reactContext;
         this.sharedPreferences = reactContext.getSharedPreferences("Settings", Context.MODE_PRIVATE);
     }
 
@@ -78,6 +77,7 @@ public class LocalizationSettings extends ReactContextBaseJavaModule {
         promise.resolve(getCurrentLanguage());
     }
 
+    @UiThread
     @ReactMethod
     public void setLanguage(String language) {
         setCurrentLanguage(language);

@@ -1,15 +1,15 @@
 import { NativeModules } from 'react-native';
 import { AllowedLanguages } from '../localization';
 
-const { LocalizationSettings, I18nManager } = NativeModules;
+const { LocalizationSettingsModule, I18nManager } = NativeModules;
 
 export function getLanguage(): AllowedLanguages {
-    LocalizationSettings.getLanguage();
-    return LocalizationSettings.language.split(/[_-]/)[0];
+    LocalizationSettingsModule.getLanguage();
+    return LocalizationSettingsModule.language.split(/[_-]/)[0];
 }
 
 export function setLanguage(language: AllowedLanguages): void {
-    LocalizationSettings.setLanguage(language);
+    LocalizationSettingsModule.setLanguage(language);
     I18nManager.forceRTL(language === 'he');
 }
 
