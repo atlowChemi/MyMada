@@ -1,15 +1,15 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
-import RadialGradient from 'react-native-radial-gradient';
+import { memo, useEffect, useRef } from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
-import { Text } from '../Components/Text';
+import RadialGradient from 'react-native-radial-gradient';
 import { colors } from '../consts';
+import { Text } from '../Components/Text';
 
-export const ConnectionError = React.memo(() => {
+export const ConnectionError = memo(() => {
     const { t } = useTranslation();
-    const left = React.useRef(new Animated.Value(0)).current;
+    const { current: left } = useRef(new Animated.Value(0));
 
-    React.useEffect(() => {
+    useEffect(() => {
         const move = Animated.timing(left, { toValue: 1, duration: 3000, useNativeDriver: false });
         Animated.loop(move).start();
     }, [left]);

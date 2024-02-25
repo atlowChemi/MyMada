@@ -85,7 +85,7 @@ const DrawerItemWrapper = observer(<T extends string>({ item, state, navigation 
     return (
         <DrawerItem
             label={t(item.label)}
-            labelStyle={styles.label}
+            labelStyle={[styles.label, localStore.isFocused && styles.focusedLabel]}
             icon={({ size, color }) => <Icon name={item.icon} size={size} color={color} />}
             onPress={localStore.navigate}
             focused={localStore.isFocused}
@@ -117,6 +117,9 @@ DrawerContent.displayName = 'DrawerContent';
 const styles = StyleSheet.create({
     label: {
         fontFamily: 'opensanshebrew',
+    },
+    focusedLabel: {
+        fontWeight: 'bold',
     },
     category: {
         borderTopWidth: 1,

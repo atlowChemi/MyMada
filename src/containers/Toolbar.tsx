@@ -1,27 +1,30 @@
+import Color from 'color';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { View, Pressable, StyleSheet, StyleProp, ViewStyle, TextInput } from 'react-native';
-import { Text } from '../Components/Text';
+import { View, StyleSheet, StyleProp, ViewStyle, TextInput } from 'react-native';
 import { colors } from '../consts';
+import { Text } from '../Components/Text';
+import { Icon } from '../Components/Icon';
 import { useDependencyInjector } from '../services/container';
 import { NavBarIcon, ToolbarStore } from '../services/ToolbarStore';
-import { Icon } from '../Components/Icon';
+import { PressableRippleWrapper } from '../Components/PressableRippleWrapper';
 
 interface ToolbarNavIconProps extends NavBarIcon {
     style?: StyleProp<ViewStyle>;
 }
 
+const rippleColor = Color(colors.white).alpha(0.5).string();
 const ToolbarNavIcon = observer<ToolbarNavIconProps>(({ icon, onPress, show, style }) => {
     if (typeof show === 'boolean' && !show) {
         return null;
     }
     return (
-        <Pressable style={style} onPress={onPress}>
-            <Icon size={30} color={colors.white} name={icon} />
-        </Pressable>
+        <PressableRippleWrapper android_ripple={{ color: rippleColor, borderless: true }} wrapperStyle={styles.iconRippleWrapper} style={style} onPress={onPress}>
+            <Icon size={26} color={colors.white} name={icon} />
+        </PressableRippleWrapper>
     );
 });
-ToolbarNavIcon.displayName = 'ToolbarNavIcon';
+ToolbarNavIcon.displayName = 'Toolbar.NavIcon';
 
 export const Toolbar = observer(() => {
     const { t } = useTranslation();
@@ -29,9 +32,16 @@ export const Toolbar = observer(() => {
 
     return (
         <View style={styles.toolbar}>
-            {toolbarStore.navBtn && <ToolbarNavIcon style={styles.backBtn} {...toolbarStore.navBtn} />}
+            {toolbarStore.navBtn && <ToolbarNavIcon {...toolbarStore.navBtn} />}
             {toolbarStore.showSearch ? (
-                <TextInput autoFocus style={styles.searchInput} placeholder={t('tools:dictionary:searchHint')} placeholderTextColor={colors.white} onChangeText={toolbarStore.setSearchQuery} />
+                <TextInput
+                    autoFocus
+                    style={styles.searchInput}
+                    cursorColor={colors.white}
+                    placeholderTextColor={colors.white}
+                    onChangeText={toolbarStore.setSearchQuery}
+                    placeholder={t('tools:dictionary:searchHint')}
+                />
             ) : (
                 <Text style={styles.titleText}>{toolbarStore.title}</Text>
             )}
@@ -55,9 +65,12 @@ const styles = StyleSheet.create({
         backgroundColor: colors.colorPrimary,
         gap: 5,
     },
-    backBtn: {
+    iconRippleWrapper: {
+        width: 40,
+        height: 40,
         flexShrink: 0,
-        alignContent: 'center',
+        borderRadius: 20,
+        alignItems: 'center',
         justifyContent: 'center',
     },
     rotated: {
