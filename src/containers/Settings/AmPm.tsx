@@ -24,6 +24,7 @@ const PREF_KEYS = {
     nightEnd: 'nightEnd',
     dayNotificationLevel: 'sleepDay',
     nightNotificationLevel: 'sleepNight',
+    overallNotificationLevel: 'sleep',
 } as const;
 enum NOTIFICATION_LEVEL_VALUES {
     sound = 0,
@@ -40,7 +41,7 @@ class AmPmLocalStore {
     }
 
     public get notificationLevels() {
-        return [[i18n.t('settings:ampm:notificationLevel:soundVibrate')], [i18n.t('settings:ampm:notificationLevel:vibrate')], [i18n.t('settings:ampm:notificationLevel:silent')]];
+        return [i18n.t('settings:ampm:notificationLevel:soundVibrate'), i18n.t('settings:ampm:notificationLevel:vibrate'), i18n.t('settings:ampm:notificationLevel:silent')] as string[];
     }
     public async selectNightStart() {
         const response = await this.openTimePicker(PREF_KEYS.nightStart);
@@ -111,8 +112,13 @@ class AmPmLocalStore {
         if (typeof selectedValue !== 'number') {
             return;
         }
-        await this.sharedPreferencesStore.setItem(PREF_KEYS[time], selectedValue.toString());
-        // TODO: handle `sleep` variable?
+        // TODO: remove `overallNotificationLevel`? seems to be redundant (should be computed when used, not stored in shared prefs)
+        const newTimes = {
+            dayNotificationLevel: time === 'dayNotificationLevel' ? selectedValue : settings.dayNotificationLevel,
+            nightNotificationLevel: time === 'nightNotificationLevel' ? selectedValue : settings.nightNotificationLevel,
+        };
+        const overallNotificationLevel = newTimes.dayNotificationLevel * 3 + newTimes.nightNotificationLevel;
+        await this.sharedPreferencesStore.setItems({ [PREF_KEYS[time]]: selectedValue.toString(), [PREF_KEYS.overallNotificationLevel]: overallNotificationLevel.toString() });
     }
 }
 

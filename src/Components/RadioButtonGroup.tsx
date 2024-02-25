@@ -14,6 +14,7 @@ interface RadioButtonItemProps<T extends {} = any> {
     selectedValue: T;
     onChange(value: T): void;
     itemStyle?: StyleProp<ViewStyle>;
+    direction?: 'horizontal' | 'vertical';
 }
 
 export interface RadioButtonGroupProps<T extends {} = any> {
@@ -26,7 +27,7 @@ export interface RadioButtonGroupProps<T extends {} = any> {
 
 const rippleColor = Color(colors.materialGrey600).fade(0.5).string();
 
-const RadioButtonItem = observer(<T extends {}>({ value, onChange, label, selectedValue, itemStyle }: RadioButtonItemProps<T>) => {
+const RadioButtonItem = observer(<T extends {}>({ value, onChange, label, selectedValue, itemStyle, direction }: RadioButtonItemProps<T>) => {
     const localStore = useLocalObservable(() => ({
         label,
         value,
@@ -47,7 +48,11 @@ const RadioButtonItem = observer(<T extends {}>({ value, onChange, label, select
     }));
     useEffect(() => localStore.updateStore(value, onChange, label, selectedValue), [value, onChange, label, selectedValue, localStore]);
     return (
-        <PressableRippleWrapper android_ripple={{ color: rippleColor, borderless: false }} style={[styles.container, itemStyle]} wrapperStyle={styles.radius} onPress={localStore.onPress}>
+        <PressableRippleWrapper
+            onPress={localStore.onPress}
+            style={[styles.container, itemStyle]}
+            android_ripple={{ color: rippleColor, borderless: false }}
+            wrapperStyle={[styles.radius, { flexGrow: Number(direction === 'horizontal') }]}>
             <RadioButton value={value} status={localStore.status} onPress={localStore.onPress} />
             <Text style={styles.label}>{label}</Text>
         </PressableRippleWrapper>
@@ -58,7 +63,7 @@ RadioButtonItem.displayName = 'RadioButtonItem';
 export const RadioButtonGroup = observer(<T extends {}>({ value, onChange, options, itemStyle, direction = 'horizontal' }: RadioButtonGroupProps<T>) => (
     <View style={direction === 'horizontal' && styles.groupHorizontal} accessibilityRole="radiogroup">
         {Object.entries(options).map(([label, val]) => (
-            <RadioButtonItem key={label} label={label} value={val} selectedValue={value} onChange={onChange} itemStyle={itemStyle} />
+            <RadioButtonItem key={label} label={label} value={val} selectedValue={value} onChange={onChange} itemStyle={itemStyle} direction={direction} />
         ))}
     </View>
 ));
@@ -76,12 +81,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     label: {
-        flexShrink: 1,
         flexGrow: 1,
+        flexShrink: 1,
     },
     groupHorizontal: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
         width: '100%',
+        flexDirection: 'row',
     },
 });
