@@ -1,5 +1,5 @@
 import Dialog from 'react-native-dialog';
-import { StyleSheet } from 'react-native';
+import { KeyboardTypeOptions, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { colors } from '../../consts';
@@ -12,12 +12,13 @@ interface TextInputDialogProps extends IDialogInstance<string> {
     placeholder: string;
     initialValue?: string;
     blockBackBtn?: boolean;
+    keyboardType?: KeyboardTypeOptions;
     blockBackdropPress?: boolean;
     isValid?(value: string): string | undefined;
     autoComplete?: ComponentProps<typeof Dialog.Input>['autoComplete'];
 }
 
-export const TextInputDialog = observer<TextInputDialogProps>(({ closeDialog, isValid, blockBackBtn, blockBackdropPress, placeholder, title, autoComplete, initialValue }) => {
+export const TextInputDialog = observer<TextInputDialogProps>(({ closeDialog, isValid, blockBackBtn, blockBackdropPress, placeholder, title, autoComplete, initialValue, keyboardType }) => {
     const { t } = useTranslation();
     const localStore = useLocalObservable(() => ({
         value: initialValue ?? '',
@@ -54,6 +55,7 @@ export const TextInputDialog = observer<TextInputDialogProps>(({ closeDialog, is
                 autoComplete={autoComplete}
                 cursorColor={colors.colorNice}
                 style={[styles.font, styles.dialogColorDark]}
+                keyboardType={keyboardType}
                 placeholder={placeholder}
                 placeholderTextColor={localStore.error ? colors.oldPrimaryDark : colors.colorNice}
                 underlineColorAndroid={localStore.error ? colors.oldPrimaryDark : colors.colorNice}

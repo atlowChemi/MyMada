@@ -33,6 +33,43 @@ export default {
     },
     advanced: {
         menuName: 'הגדרות מתקדמות',
+        notificationTitle: 'התראה',
+        moreTitle: 'הגדרות נוספות',
+        sendNotificationOnCall: {
+            title: 'יצירת התראה במקרה חדש',
+            subTitleEnabled: 'כשיגיע מקרה חדש, תיווצר התראה.',
+            subTitleDisabled: 'כשיגיע מקרה חדש, לא תיווצר התראה.',
+        },
+        openPopUpOnCall: {
+            title: 'יצירת חלון קופץ במקרה חדש',
+            subTitleEnabled: 'כשיגיע מקרה חדש, יוקפץ חלון עם ההודעה.',
+            subTitleDisabled: 'כשיגיע מקרה חדש, לא יוקפץ חלון עם ההודעה.',
+        },
+        overridePreviousCalls: {
+            title: 'דרוס התראות קודמות',
+            subTitleEnabled: 'מקרה חדש ימחק התראות ישנות.',
+            subTitleDisabled: 'מקרה חדש יתווסף להתראות קיימות.',
+        },
+        infiniteAlert: {
+            title: 'מצב נודניק (לילה)',
+            subTitleEnabled: 'באירוע חדש צלצול ימשך עד שיופסק.',
+            subTitleDisabled: 'באירוע חדש הצלצול יתנגן פעם אחת בלבד.',
+        },
+        autoStopAlert: {
+            title: 'כיבוי עצמי',
+            subTitleEnabled: 'התראה תיסגר בעצמה לאחר פרק הזמן שיוגדר.',
+            subTitleDisabled: 'התראה תיסגר רק לאחר אישור קבלה.',
+            duration: 'פרק הזמן עד סגירת התראה (בשניות)',
+            durationEmpty: 'לא הוזן ערך!',
+            durationInvalid: 'ערך חייב להיות מספר חיובי!',
+        },
+        alertVolume: {
+            link: 'עוצמת ווליום בהתראה',
+            title: 'שנה ווליום בהתראה',
+            subTitleEnabled: 'הווליום יותאם לפי מה שיוגדר באפליקציה',
+            subTitleDisabled: 'הווליום ישאר כמו שהוא במכשיר',
+            pickerTitle: 'בחר עוצמת התראה',
+        },
     },
     ampm: {
         menuName: 'הגדרות יום ולילה',

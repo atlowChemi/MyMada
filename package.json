@@ -24,6 +24,7 @@
   "homepage": "https://github.com/atlowChemi/MyMada#readme",
   "dependencies": {
     "@gorhom/portal": "^1.0.14",
+    "@react-native-community/slider": "^4.5.0",
     "@react-native-firebase/analytics": "18.9.0",
     "@react-native-firebase/app": "18.9.0",
     "@react-native-firebase/crashlytics": "18.9.0",

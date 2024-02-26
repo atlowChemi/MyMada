@@ -1,5 +1,6 @@
 package atlow.chemi.mymada.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,7 +18,6 @@ import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.SettingsPage;
 
 public class SettingsNotifications extends Fragment implements View.OnClickListener {
-    private ConstraintLayout cutAPref, statPref, statVibPref, T6Pref, findT4Pref;
     private TextView cutADesc, statDesc, statVibDesc, T6Desc, findT4Desc;
     private SwitchCompat cutA, stat, statVib, T6, findT4;
     boolean cutAB, statB, statVibB, T6B, findT4B;
@@ -41,19 +41,19 @@ public class SettingsNotifications extends Fragment implements View.OnClickListe
 
         cutA = view.findViewById(R.id.cutAlarm);
         cutADesc = view.findViewById(R.id.cutA_Desc);
-        cutAPref = view.findViewById(R.id.cutA_pref);
+        var cutAPref = view.findViewById(R.id.cutA_pref);
         stat = view.findViewById(R.id.stat);
         statDesc = view.findViewById(R.id.stat_Desc);
-        statPref = view.findViewById(R.id.stat_pref);
+        var statPref = view.findViewById(R.id.stat_pref);
         statVib = view.findViewById(R.id.statVib);
         statVibDesc = view.findViewById(R.id.statVib_Desc);
-        statVibPref = view.findViewById(R.id.statVib_pref);
+        var statVibPref = view.findViewById(R.id.statVib_pref);
         T6 = view.findViewById(R.id.T6);
         T6Desc = view.findViewById(R.id.T6_Desc);
-        T6Pref = view.findViewById(R.id.T6_pref);
+        var t6Pref = view.findViewById(R.id.T6_pref);
         findT4 = view.findViewById(R.id.findT4);
         findT4Desc = view.findViewById(R.id.findT4_Desc);
-        findT4Pref = view.findViewById(R.id.findT4_pref);
+        var findT4Pref = view.findViewById(R.id.findT4_pref);
 
         CardView SoundVib = view.findViewById(R.id.sound_vib_card);
 
@@ -61,12 +61,13 @@ public class SettingsNotifications extends Fragment implements View.OnClickListe
         cutAPref.setOnClickListener(this);
         statPref.setOnClickListener(this);
         statVibPref.setOnClickListener(this);
-        T6Pref.setOnClickListener(this);
+        t6Pref.setOnClickListener(this);
         findT4Pref.setOnClickListener(this);
         SoundVib.setOnClickListener(this);
 
         //get SharedPref
         sp = getActivity().getSharedPreferences("Settings", 0);
+
         cutAB = sp.getString("cut", "false").equals("true");
         statB = sp.getString("stat", "false").equals("true");
         statVibB = sp.getString("statVib", "false").equals("true");
@@ -77,7 +78,7 @@ public class SettingsNotifications extends Fragment implements View.OnClickListe
         setTrueOrFalse(cutAB, cutAPref.getId());
         setTrueOrFalse(statB, statPref.getId());
         setTrueOrFalse(statVibB, statVibPref.getId());
-        setTrueOrFalse(T6B, T6Pref.getId());
+        setTrueOrFalse(T6B, t6Pref.getId());
         setTrueOrFalse(findT4B, findT4Pref.getId());
     }
 
@@ -128,43 +129,43 @@ public class SettingsNotifications extends Fragment implements View.OnClickListe
             tv.setText(desc);
         }
     }
+    @SuppressLint("NonConstantResourceId")
     private void setTrueOrFalse(boolean set, int id) {
         SwitchCompat sc = null;
         String desc = null;
         TextView tv = null;
         SharedPreferences.Editor editor = sp.edit();
         switch (id) {
-            case R.id.cutA_pref:
+            case R.id.cutA_pref -> {
                 sc = cutA;
                 desc = !set ? getResources().getString(R.string.pref_description_cutA_off) : getResources().getString(R.string.pref_description_cutA_on);
-                editor.putBoolean("cut", set);
+                editor.putString("cut", String.valueOf(set));
                 tv = cutADesc;
-                break;
-            case R.id.stat_pref:
+            }
+            case R.id.stat_pref -> {
                 sc = stat;
                 desc = !set ? getResources().getString(R.string.pref_description_state_off) : getResources().getString(R.string.pref_description_state_on);
-                editor.putBoolean("stat", set);
+                editor.putString("stat", String.valueOf(set));
                 tv = statDesc;
-                break;
-            case R.id.statVib_pref:
+            }
+            case R.id.statVib_pref -> {
                 sc = statVib;
                 desc = !set ? getResources().getString(R.string.pref_description_stateVib_off) : getResources().getString(R.string.pref_description_stateVib_on);
-                editor.putBoolean("statVib", set);
+                editor.putString("statVib", String.valueOf(set));
                 tv = statVibDesc;
-                break;
-
-            case R.id.T6_pref:
+            }
+            case R.id.T6_pref -> {
                 sc = T6;
                 desc = !set ? getResources().getString(R.string.findT6_off) : getResources().getString(R.string.findT6_on);
-                editor.putBoolean("callT6", set);
+                editor.putString("callT6", String.valueOf(set));
                 tv = T6Desc;
-                break;
-            case R.id.findT4_pref:
+            }
+            case R.id.findT4_pref -> {
                 sc = findT4;
                 desc = !set ? getResources().getString(R.string.findT4_off) : getResources().getString(R.string.findT4_on);
-                editor.putBoolean("callT4", set);
+                editor.putString("callT4", String.valueOf(set));
                 tv = findT4Desc;
-                break;
+            }
         }
         editor.apply();
         if (sc != null && tv != null && !desc.isEmpty()) {

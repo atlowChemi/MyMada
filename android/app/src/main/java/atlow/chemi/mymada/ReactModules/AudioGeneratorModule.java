@@ -165,6 +165,12 @@ public class AudioGeneratorModule extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void getMaxVolumeForAlarmStream(Promise promise) {
+        var maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+        promise.resolve(maxVolume);
+    }
+
     private byte[] get16BitPcm(double[] samples) {
         var generatedSound = new byte[2 * samples.length];
         var index = 0;
