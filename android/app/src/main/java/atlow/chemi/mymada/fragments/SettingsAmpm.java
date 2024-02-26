@@ -207,8 +207,8 @@ public class SettingsAmpm extends Fragment implements View.OnClickListener, Time
             }
         }
         SharedPreferences.Editor editor = sp.edit();
-        editor.putInt(title, newValue);
-        editor.putInt("sleep", result);
+        editor.putString(title, String.valueOf(newValue));
+        editor.putString("sleep", String.valueOf(result));
         editor.apply();
     }
     @Override
@@ -219,7 +219,7 @@ public class SettingsAmpm extends Fragment implements View.OnClickListener, Time
             nightStartI = hourOfDay;
         else
             nightEndI = hourOfDay;
-        editor.putInt(intToChange, hourOfDay);
+        editor.putString(intToChange, String.valueOf(hourOfDay));
         editor.apply();
     }
 }

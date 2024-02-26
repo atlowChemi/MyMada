@@ -80,7 +80,6 @@ export default {
 //         <item>רטט</item>
 //         <item>שקט</item>
 //     </string-array>
-//     <string name="Mcode">קודים רפואיים</string>
 //     <string name="langSwitched">השינוי יכנס לתוקף בכניסה הבאה לאפליקציה.</string>
 //     <string name="apply">החל</string>
 //     <string name="emailGood">האימייל הגיע אלינו\nאנו נעשה מיטב המאמצים להגיב במהירות.</string>
@@ -114,7 +113,5 @@ export default {
 //     <string name="BGServiceTtl">מאזין ברקע להודעות</string>
 //     <string name="BGServiceTicker">מזהה הודעות חדשות ממד\"א</string>
 //     <string name="BGServiceTxt">מזהה הודעות חדשות שנשלחות ממוקד מד\"א ברקע</string>
-//     <string name="title_notif">התראה</string>
 //     <string name="pick_sound">בחר צליל</string>
-//     <string name="numberNone">לא רשמת מספר!</string>
 // </resources>

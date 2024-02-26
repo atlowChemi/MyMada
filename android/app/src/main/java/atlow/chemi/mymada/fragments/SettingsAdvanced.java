@@ -77,11 +77,11 @@ public class SettingsAdvanced extends Fragment implements View.OnClickListener {
 
         //get SharedPref
         sp = getActivity().getSharedPreferences("Settings", 0);
-        boolean notB = sp.getBoolean("not", true);
-        boolean newWinB = sp.getBoolean("win", true);
-        boolean rideB= sp.getBoolean("ride", false);
-        boolean loopB = sp.getBoolean("loop", false);
-        boolean shabatB = sp.getBoolean("killS", false);
+        boolean notB = sp.getString("not", "true").equals("true");
+        boolean newWinB = sp.getString("win", "true").equals("true");
+        boolean rideB= sp.getString("ride", "false").equals("true");
+        boolean loopB = sp.getString("loop", "false").equals("true");
+        boolean shabatB = sp.getString("killS", "false").equals("true");
 
         //set by the SharedPreferences
         setTrueOrFalse(notB, notPref.getId());
@@ -100,31 +100,31 @@ public class SettingsAdvanced extends Fragment implements View.OnClickListener {
             case R.id.not_pref:
                 sc = not;
                 desc = not.isChecked() ? getResources().getString(R.string.pref_description_not_off) : getResources().getString(R.string.pref_description_not_on);
-                editor.putBoolean("not", !sc.isChecked());
+                editor.putString("not", String.valueOf(!sc.isChecked()));
                 tv = notDesc;
                 break;
             case R.id.newWin_pref:
                 sc = newWin;
                 desc = newWin.isChecked() ? getResources().getString(R.string.pref_description_newWin_off) : getResources().getString(R.string.pref_description_newWin_on);
-                editor.putBoolean("win", !sc.isChecked());
+                editor.putString("win", String.valueOf(!sc.isChecked()));
                 tv = newWinDesc;
                 break;
             case R.id.ride_pref:
                 sc = ride;
                 desc = ride.isChecked() ? getResources().getString(R.string.pref_description_ride_off) : getResources().getString(R.string.pref_description_ride_on);
-                editor.putBoolean("ride", !sc.isChecked());
+                editor.putString("ride", String.valueOf(!sc.isChecked()));
                 tv = rideDesc;
                 break;
             case R.id.loop_pref:
                 sc = loop;
                 desc = loop.isChecked() ? getResources().getString(R.string.pref_description_loop_off) : getResources().getString(R.string.pref_description_loop_on);
-                editor.putBoolean("loop", !sc.isChecked());
+                editor.putString("loop", String.valueOf(!sc.isChecked()));
                 tv = loopDesc;
                 break;
             case R.id.shabat_pref:
                 sc = shabat;
                 desc = shabat.isChecked() ? getResources().getString(R.string.pref_description_shabat_off) : getResources().getString(R.string.pref_description_shabat_on);
-                editor.putBoolean("killS", !sc.isChecked());
+                editor.putString("killS", String.valueOf(!sc.isChecked()));
                 tv = shabatDesc;
                 shabbatTimePref.setClickable(!shabat.isChecked());
                 shabbatTimePref.setAlpha(!shabat.isChecked() ? 1 : 0.4f);
@@ -155,31 +155,31 @@ public class SettingsAdvanced extends Fragment implements View.OnClickListener {
             case R.id.not_pref:
                 sc = not;
                 desc = !set ? getResources().getString(R.string.pref_description_not_off) : getResources().getString(R.string.pref_description_not_on);
-                editor.putBoolean("not", set);
+                editor.putString("not", String.valueOf(set));
                 tv = notDesc;
                 break;
             case R.id.newWin_pref:
                 sc = newWin;
                 desc = !set ? getResources().getString(R.string.pref_description_newWin_off) : getResources().getString(R.string.pref_description_newWin_on);
-                editor.putBoolean("win", set);
+                editor.putString("win", String.valueOf(set));
                 tv = newWinDesc;
                 break;
             case R.id.ride_pref:
                 sc = ride;
                 desc = !set ? getResources().getString(R.string.pref_description_ride_off) : getResources().getString(R.string.pref_description_ride_on);
-                editor.putBoolean("ride", set);
+                editor.putString("ride", String.valueOf(set));
                 tv = rideDesc;
                 break;
             case R.id.loop_pref:
                 sc = loop;
                 desc = !set ? getResources().getString(R.string.pref_description_loop_off) : getResources().getString(R.string.pref_description_loop_on);
-                editor.putBoolean("loop", set);
+                editor.putString("loop", String.valueOf(set));
                 tv = loopDesc;
                 break;
             case R.id.shabat_pref:
                 sc = shabat;
                 desc = !set ? getResources().getString(R.string.pref_description_shabat_off) : getResources().getString(R.string.pref_description_shabat_on);
-                editor.putBoolean("killS", set);
+                editor.putString("killS", String.valueOf(set));
                 tv = shabatDesc;
                 shabbatTimePref.setClickable(set);
                 shabbatTimePref.setAlpha(set ? 1 : 0.4f);
@@ -187,7 +187,7 @@ public class SettingsAdvanced extends Fragment implements View.OnClickListener {
             case R.id.volume_app_pref:
                 sc = VolumeApp;
                 desc = sc.isChecked() ? getResources().getString(R.string.pref_description_volume_app_off) : getResources().getString(R.string.pref_description_volume_app_on);
-                editor.putBoolean("volumeApp", !sc.isChecked());
+                editor.putString("volumeApp", String.valueOf(!sc.isChecked()));
                 tv = VolumeAppDesc;
                 break;
         }
@@ -242,8 +242,8 @@ public class SettingsAdvanced extends Fragment implements View.OnClickListener {
                 VolumeApp.setChecked(!VolumeApp.isChecked());
                 VolumeAppDesc.setText(desc);
             });
-            VolumeAppB = sp.getBoolean("volumeApp", true);
-            VolumeAppNumber = sp.getInt("volumeAppNum", vol);
+            VolumeAppB = sp.getString("volumeApp", "true").equals("true");
+            VolumeAppNumber = Integer.parseInt(sp.getString("volumeAppNum", String.valueOf(vol)));
             setTrueOrFalse(VolumeAppB, VolumeAppPref.getId());
             VolumeSeek.setProgress(VolumeAppNumber);
             VolumeSeek.setMax(vol);
@@ -260,8 +260,8 @@ public class SettingsAdvanced extends Fragment implements View.OnClickListener {
             Button ok = langPicker.getButton(DialogInterface.BUTTON_POSITIVE);
             ok.setOnClickListener((view) -> {
                 SharedPreferences.Editor editor = sp.edit();
-                editor.putBoolean("volumeApp", VolumeApp.isChecked());
-                editor.putInt("volumeAppNum", VolumeAppNumber);
+                editor.putString("volumeApp", String.valueOf(VolumeApp.isChecked()));
+                editor.putString("volumeAppNum", String.valueOf(VolumeAppNumber));
                 editor.apply();
                     dialog.dismiss();
             });

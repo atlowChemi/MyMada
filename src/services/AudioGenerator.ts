@@ -10,6 +10,7 @@ interface AudioGenerator {
     getEmptySineWave(samples: number): Promise<string>;
     writeSound(playerId: string, waveId: string): Promise<void>;
     getSineWave(samples: number, frequencyOfTone: number): Promise<string>;
+    getMaxVolumeForAlarmStream(): Promise<number>;
 }
 
 export const audioGenerator = AudioGeneratorModule as AudioGenerator;

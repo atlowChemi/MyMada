@@ -33,6 +33,43 @@ export default {
     },
     advanced: {
         menuName: 'Advanced settings',
+        notificationTitle: 'Notification',
+        moreTitle: 'More',
+        sendNotificationOnCall: {
+            title: 'Notification at new call',
+            subTitleEnabled: 'When new call arrives, a notification will be fired.',
+            subTitleDisabled: "When new call arrives, a notification won't be fired.",
+        },
+        openPopUpOnCall: {
+            title: 'Pop-up window at new call',
+            subTitleEnabled: 'When new call arrives, a pop-up will be fired.',
+            subTitleDisabled: "When new call arrives, a pop-up won't be fired.",
+        },
+        overridePreviousCalls: {
+            title: 'Over-ride old notifications',
+            subTitleEnabled: 'A new call will over-ride old notifications.',
+            subTitleDisabled: 'A new call will join the old notifications.',
+        },
+        infiniteAlert: {
+            title: 'Snooze (night mode)',
+            subTitleEnabled: 'Notification will loop till stopped.',
+            subTitleDisabled: 'Notification will play once.',
+        },
+        autoStopAlert: {
+            title: 'Auto-stop',
+            subTitleEnabled: 'Notification will auto-stop.',
+            subTitleDisabled: 'Notification will require manually being closed.',
+            duration: 'Delay before auto-stop (seconds)',
+            durationEmpty: 'Please provide a value!',
+            durationInvalid: 'Value must be a positive whole number!',
+        },
+        alertVolume: {
+            link: 'Notification volume',
+            title: 'Change volume for notifications',
+            subTitleEnabled: "The volume will be set by the app's settings",
+            subTitleDisabled: "The volume will be set by the phone's settings",
+            pickerTitle: 'Pick notification volume',
+        },
     },
     ampm: {
         menuName: 'Day & night settings',

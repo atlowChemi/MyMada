@@ -8,6 +8,7 @@ import { createDrawerNavigator, DrawerScreenProps } from '@react-navigation/draw
 import { isTablet } from '../../utils';
 import { AmPm } from '../Settings/AmPm';
 import { Tools } from '../Settings/Tools';
+import { Advanced } from '../Settings/Advanced';
 import { Detection } from '../Settings/Detection';
 import { PageLoader } from '../../Components/Loader';
 import { DialogStore } from '../../services/DialogStore';
@@ -118,7 +119,7 @@ export const Settings = observer<NavigatableScreenProps<'Settings'>>(({ route })
             drawerContent={props => <DrawerContent {...props} items={drawerItems} />}>
             <Drawer.Screen name="Detection" component={Detection} />
             <Drawer.Screen name="Notification" component={Nullish} />
-            <Drawer.Screen name="Advanced" component={Nullish} />
+            <Drawer.Screen name="Advanced" component={Advanced} />
             <Drawer.Screen name="AmPm" component={AmPm} />
             <Drawer.Screen name="Tools" component={Tools} />
         </Drawer.Navigator>
