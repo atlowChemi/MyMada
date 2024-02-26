@@ -12,26 +12,35 @@ const activeTrack = Color(activeThumb).white(53).string();
 const inactiveThumb = colors.materialGrey600;
 const inactiveTrack = Color(inactiveThumb).lighten(0.2).string();
 
-interface SwitchItemProps {
+interface SettingItemProps {
+    type: 'switch' | 'row';
     label: string;
     subLabel?: string;
     value?: boolean;
+    disabled?: boolean;
+    onPress?(): void;
     onChange?(value: boolean): void;
 }
 
-export const SwitchItem = observer<SwitchItemProps>(({ label, subLabel, value, onChange }) => {
-    const onValueChange = useCallback(() => onChange?.(!value), [value, onChange]);
+export const SettingsItem = observer<SettingItemProps>(({ type, label, subLabel, value, disabled, onPress, onChange }) => {
+    const onPressHandler = useCallback(() => (type === 'switch' ? onChange?.(!value) : onPress?.()), [type, value, onChange, onPress]);
     return (
-        <PressableRippleWrapper onPress={onValueChange} pointerEvents="box-only" android_ripple={{ color: rippleColor, borderless: true }} style={styles.switch} wrapperStyle={styles.switchWrapper}>
+        <PressableRippleWrapper
+            disabled={disabled}
+            style={styles.switch}
+            onPress={onPressHandler}
+            pointerEvents="box-only"
+            wrapperStyle={styles.switchWrapper}
+            android_ripple={{ color: rippleColor, borderless: true }}>
             <View style={styles.textWrapper}>
-                <Text style={styles.switchText}>{label}</Text>
-                {subLabel && <Text style={styles.switchSubText}>{subLabel}</Text>}
+                <Text style={[styles.switchText, disabled && styles.disabled]}>{label}</Text>
+                {subLabel && <Text style={[styles.switchSubText, disabled && styles.disabled]}>{subLabel}</Text>}
             </View>
-            <Switch value={value} thumbColor={value ? activeThumb : inactiveThumb} trackColor={{ false: inactiveTrack, true: activeTrack }} />
+            {type === 'switch' && <Switch value={value} thumbColor={value ? activeThumb : inactiveThumb} trackColor={{ false: inactiveTrack, true: activeTrack }} />}
         </PressableRippleWrapper>
     );
 });
-SwitchItem.displayName = 'SwitchItem';
+SettingsItem.displayName = 'SettingsItem';
 
 const styles = StyleSheet.create({
     switchWrapper: {
@@ -54,5 +63,8 @@ const styles = StyleSheet.create({
     },
     switchSubText: {
         fontSize: 16,
+    },
+    disabled: {
+        color: colors.colorBlueAlpha,
     },
 });
