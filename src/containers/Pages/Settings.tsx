@@ -124,4 +124,4 @@ export const Settings = observer<NavigatableScreenProps<'Settings'>>(({ route })
         </Drawer.Navigator>
     );
 });
-Settings.displayName = 'Dispatch';
+Settings.displayName = 'Settings';

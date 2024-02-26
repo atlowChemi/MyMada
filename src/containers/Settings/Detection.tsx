@@ -7,7 +7,7 @@ import { fromPromise, computedFn } from 'mobx-utils';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { PageLoader } from '../../Components/Loader';
-import { SwitchItem } from '../../Components/SwitchItem';
+import { SettingsItem } from '../../Components/SettingsItem';
 import { BasePageView } from '../../Components/BasePageView';
 import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import { SettingsCardLink } from '../../Components/SettingsCardLink';
@@ -81,32 +81,37 @@ export const Detection = observer<NavigatableSettingsScreenProps>(props => {
 
     return (
         <BasePageView scrollContentStyle={styles.content}>
-            <SwitchItem
+            <SettingsItem
+                type="switch"
                 label={t('settings:detection:splitNotificationByCallType:title')}
                 value={localStore.detectionSettings.value.splitNotificationByCallType}
                 onChange={localStore.updateValue(PREF_KEYS.splitNotificationByCallType)}
                 subLabel={t(`settings:detection:splitNotificationByCallType:subTitle${localStore.detectionSettings.value.splitNotificationByCallType ? 'Enabled' : 'Disabled'}`)}
             />
-            <SwitchItem
+            <SettingsItem
+                type="switch"
                 label={t('settings:detection:notifySoundByDeviceStatus:title')}
                 value={localStore.detectionSettings.value.notifySoundByDeviceStatus}
                 onChange={localStore.updateValue(PREF_KEYS.notifySoundByDeviceStatus)}
                 subLabel={t(`settings:detection:notifySoundByDeviceStatus:subTitle${localStore.detectionSettings.value.notifySoundByDeviceStatus ? 'Enabled' : 'Disabled'}`)}
             />
-            <SwitchItem
+            <SettingsItem
+                type="switch"
                 label={t('settings:detection:notifyVibrationByDeviceStatus:title')}
                 value={localStore.detectionSettings.value.notifyVibrationByDeviceStatus}
                 onChange={localStore.updateValue(PREF_KEYS.notifyVibrationByDeviceStatus)}
                 subLabel={t(`settings:detection:notifyVibrationByDeviceStatus:subTitle${localStore.detectionSettings.value.notifyVibrationByDeviceStatus ? 'Enabled' : 'Disabled'}`)}
             />
             <Text style={styles.pageTitle}>{t('settings:detection:lowCallsCategory')}</Text>
-            <SwitchItem
+            <SettingsItem
+                type="switch"
                 label={t('settings:detection:detectServiceCalls:title')}
                 value={localStore.detectionSettings.value.detectServiceCalls}
                 onChange={localStore.updateValue(PREF_KEYS.detectServiceCalls)}
                 subLabel={t(`settings:detection:detectServiceCalls:subTitle${localStore.detectionSettings.value.detectServiceCalls ? 'Enabled' : 'Disabled'}`)}
             />
-            <SwitchItem
+            <SettingsItem
+                type="switch"
                 label={t('settings:detection:detectAdministrativeCalls:title')}
                 value={localStore.detectionSettings.value.detectAdministrativeCalls}
                 onChange={localStore.updateValue(PREF_KEYS.detectAdministrativeCalls)}

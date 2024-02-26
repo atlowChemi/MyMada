@@ -6,8 +6,8 @@ import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { Snackbar } from '../../Components/Snackbar';
 import { PageLoader } from '../../Components/Loader';
-import { SwitchItem } from '../../Components/SwitchItem';
 import { TOOLS_PAGES } from '../../services/NavigationStore';
+import { SettingsItem } from '../../Components/SettingsItem';
 import { BasePageView } from '../../Components/BasePageView';
 import { SnackbarStore } from '../../services/SnackbarStore';
 import { useDependencyInjector } from '../../services/container';
@@ -69,7 +69,7 @@ export const Tools = observer<NavigatableSettingsScreenProps>(props => {
         <BasePageView scrollContentStyle={styles.content}>
             <Text style={styles.pageTitle}>{t('settings:tools:pageTitle')}</Text>
             {Array.from(TOOL_LABEL_MAP.entries(), ([tool, labelKey]) => (
-                <SwitchItem key={tool} label={t(labelKey)} value={localStore.value(tool)} onChange={localStore.onChange(tool)} />
+                <SettingsItem key={tool} type="switch" label={t(labelKey)} value={localStore.value(tool)} onChange={localStore.onChange(tool)} />
             ))}
         </BasePageView>
     );

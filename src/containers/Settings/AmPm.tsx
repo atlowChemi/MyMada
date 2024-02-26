@@ -1,4 +1,3 @@
-import Color from 'color';
 import i18n from '../../localization';
 import { injectable } from 'inversify';
 import { fromPromise } from 'mobx-utils';
@@ -11,14 +10,13 @@ import { Text } from '../../Components/Text';
 import { PageLoader } from '../../Components/Loader';
 import { DialogStore } from '../../services/DialogStore';
 import { BasePageView } from '../../Components/BasePageView';
+import { SettingsItem } from '../../Components/SettingsItem';
 import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
-import { PressableRippleWrapper } from '../../Components/PressableRippleWrapper';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { RadioSelectDialog, RadioSelectDialogProps } from '../dialogs/RadioSelectDialog';
 import type { NavigatableSettingsScreenProps } from '../Pages/Settings';
 
-const rippleColor = Color(colors.white).darken(0.5).string();
 const PREF_KEYS = {
     nightStart: 'nightStart',
     nightEnd: 'nightEnd',
@@ -37,7 +35,7 @@ class AmPmLocalStore {
     private isPickerOpen = false;
     public amPmSettings = fromPromise(this.getAmPmSettings());
     constructor(private readonly dialogStore: DialogStore, private readonly sharedPreferencesStore: SharedPreferencesStore) {
-        makeAutoObservable(this, undefined, { autoBind: true });
+        makeAutoObservable(this, { notificationLevels: false }, { autoBind: true });
     }
 
     public get notificationLevels() {
@@ -134,22 +132,20 @@ export const AmPm = observer<NavigatableSettingsScreenProps>(props => {
     return (
         <BasePageView scrollContentStyle={styles.content}>
             <Text style={styles.pageTitle}>{t('settings:ampm:menuName')}</Text>
-            <PressableRippleWrapper wrapperStyle={styles.rowWrapper} style={styles.row} android_ripple={{ color: rippleColor, borderless: true }} onPress={localStore.selectNightStart}>
-                <Text style={styles.rowTitle}>{t('settings:ampm:nightStart')}</Text>
-                <Text style={styles.rowDesc}>{t('settings:ampm:nightStartDesc')}</Text>
-            </PressableRippleWrapper>
-            <PressableRippleWrapper wrapperStyle={styles.rowWrapper} style={styles.row} android_ripple={{ color: rippleColor, borderless: true }} onPress={localStore.selectNightEnd}>
-                <Text style={styles.rowTitle}>{t('settings:ampm:nightEnd')}</Text>
-                <Text style={styles.rowDesc}>{t('settings:ampm:nightEndDesc')}</Text>
-            </PressableRippleWrapper>
-            <PressableRippleWrapper wrapperStyle={styles.rowWrapper} style={styles.row} android_ripple={{ color: rippleColor, borderless: true }} onPress={localStore.selectDayNotificationLevel}>
-                <Text style={styles.rowTitle}>{t('settings:ampm:dayNotificationLevel')}</Text>
-                <Text style={styles.rowDesc}>{localStore.notificationLevels[localStore.amPmSettings.value.dayNotificationLevel]}</Text>
-            </PressableRippleWrapper>
-            <PressableRippleWrapper wrapperStyle={styles.rowWrapper} style={styles.row} android_ripple={{ color: rippleColor, borderless: true }} onPress={localStore.selectNightNotificationLevel}>
-                <Text style={styles.rowTitle}>{t('settings:ampm:nightNotificationLevel')}</Text>
-                <Text style={styles.rowDesc}>{localStore.notificationLevels[localStore.amPmSettings.value.nightNotificationLevel]}</Text>
-            </PressableRippleWrapper>
+            <SettingsItem type="row" onPress={localStore.selectNightStart} label={t('settings:ampm:nightStart')} subLabel={t('settings:ampm:nightStartDesc')} />
+            <SettingsItem type="row" onPress={localStore.selectNightEnd} label={t('settings:ampm:nightEnd')} subLabel={t('settings:ampm:nightEndDesc')} />
+            <SettingsItem
+                type="row"
+                onPress={localStore.selectDayNotificationLevel}
+                label={t('settings:ampm:dayNotificationLevel')}
+                subLabel={localStore.notificationLevels[localStore.amPmSettings.value.dayNotificationLevel]}
+            />
+            <SettingsItem
+                type="row"
+                onPress={localStore.selectNightNotificationLevel}
+                label={t('settings:ampm:nightNotificationLevel')}
+                subLabel={localStore.notificationLevels[localStore.amPmSettings.value.nightNotificationLevel]}
+            />
         </BasePageView>
     );
 });
