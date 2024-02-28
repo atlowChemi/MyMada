@@ -44,8 +44,9 @@ class DispatchLocalStore {
     }
 
     private async isAllowedToViewDispatchPage() {
-        const { realM } = await this.sharedPreferencesStore.settingsChannel;
-        const isMarkedAsVolunteer = this.sharedPreferencesStore.makePrefBoolean(realM, false);
+        const {
+            general: { isMarkedAsVolunteer },
+        } = await this.sharedPreferencesStore.applicationSettings;
         if (isMarkedAsVolunteer) {
             return;
         }
@@ -54,8 +55,9 @@ class DispatchLocalStore {
     }
 
     private async ensureDefaultDispatchSet() {
-        const { pickedMoked } = await this.sharedPreferencesStore.settingsChannel;
-        const hasUserSelectedDefaultDispatch = this.sharedPreferencesStore.makePrefBoolean(pickedMoked, false);
+        const {
+            region: { hasUserSelectedDefaultDispatch },
+        } = await this.sharedPreferencesStore.applicationSettings;
         if (this.hasNavigated || hasUserSelectedDefaultDispatch) {
             return;
         }

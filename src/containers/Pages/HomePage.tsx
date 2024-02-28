@@ -46,14 +46,15 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
 
     const localStore = useLocalObservable(() => ({
         async getNotificationPreferences() {
-            const { callT1, callT3, cut, Mapp, not, win } = await sharedPreferencesStore.settingsChannel;
+            const settings = await sharedPreferencesStore.applicationSettings;
             return {
-                callRecognition: sharedPreferencesStore.makePrefBoolean(Mapp, false),
-                notifyOnCall: sharedPreferencesStore.makePrefBoolean(not, true),
-                windowOnCall: sharedPreferencesStore.makePrefBoolean(win, true),
-                detectShiftCalls: sharedPreferencesStore.makePrefBoolean(callT3, true),
-                detectOnCallCalls: sharedPreferencesStore.makePrefBoolean(callT1, true),
-                splitNotificationByCallType: sharedPreferencesStore.makePrefBoolean(cut, false),
+                callRecognition: settings.callDetection.isCallRecognitionOn,
+                notifyOnCall: settings.callDetection.sendNotificationOnCall,
+                windowOnCall: settings.callDetection.openPopUpOnCall,
+
+                detectShiftCalls: settings.callDetection.shift.detectCalls,
+                detectOnCallCalls: settings.callDetection.onCall.detectCalls,
+                splitNotificationByCallType: settings.callDetection.splitNotificationByCallType,
             };
         },
         async onRequestTest() {
@@ -87,20 +88,17 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
             }
         },
         async showRelevantDialogs() {
-            const { privacy, oldU, Mapp } = await sharedPreferencesStore.settingsChannel;
-            const hasVisitedPrivacy = sharedPreferencesStore.makePrefBoolean(privacy, false);
-            const hasVisitedSettings = sharedPreferencesStore.makePrefBoolean(oldU, false);
-            const isCallRecognitionOn = sharedPreferencesStore.makePrefBoolean(Mapp, false);
+            const { general, callDetection } = await sharedPreferencesStore.applicationSettings;
             if (dialogStore.hasDialogs) {
                 return;
             }
-            if (!hasVisitedPrivacy) {
+            if (!general.hasVisitedPrivacy) {
                 return this.showDialog({ description: 'home:privacyMsg', okText: 'privacy:toolbarTitle', page: 'Privacy' });
             }
-            if (!hasVisitedSettings) {
+            if (!general.hasVisitedSettings) {
                 return this.showDialog({ description: 'home:suggestVisitingSettings', okText: 'common:goToSettings', page: 'Settings' });
             }
-            if (isCallRecognitionOn && Platform.OS === 'android' && Platform.Version >= ANDROID_VERSION.OREO) {
+            if (callDetection.isCallRecognitionOn && Platform.OS === 'android' && Platform.Version >= ANDROID_VERSION.OREO) {
                 const importance = await notificationService.getChannelImportance(NOTIFICATION_MAP.CHANNELS.BACKGROUND);
                 if (importance <= Importance.MIN) {
                     return;

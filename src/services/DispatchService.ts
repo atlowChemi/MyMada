@@ -30,9 +30,8 @@ export class DispatchService {
 
     constructor(private readonly dialogStore: DialogStore, private readonly sharedPreferencesStore: SharedPreferencesStore) {}
     public async getRegion() {
-        const { [REGION_SHARED_PREFERENCES_KEY]: regionIndexStr } = await this.sharedPreferencesStore.settingsChannel;
-        const regionIndex = Number.parseInt(regionIndexStr, 10);
-        return REGIONS[regionIndex] ?? 'Jerusalem';
+        const { region } = await this.sharedPreferencesStore.applicationSettings;
+        return REGIONS[region.selectedRegionIndex] ?? 'Jerusalem';
     }
 
     public async setRegion(region: Region) {

@@ -73,7 +73,9 @@ class CodeActivationLocalStore {
             return this.dialogStore.openDialog(BaseDialog, { title: i18n.t('common:error'), description: i18n.t('activationCode:partialCode'), okText: i18n.t('common:ok') });
         }
         if (typeof key !== 'string' || !key) {
-            const { firebaseGenratedKey: firebaseGeneratedKey = '' } = await this.sharedPreferences.settingsChannel;
+            const {
+                general: { firebaseGeneratedKey },
+            } = await this.sharedPreferences.applicationSettings;
             key = firebaseGeneratedKey;
             if (!key) {
                 return this.dialogStore.openDialog(BaseDialog, { title: i18n.t('common:error'), description: i18n.t('activationCode:nonRequested'), okText: i18n.t('common:ok') });

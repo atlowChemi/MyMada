@@ -67,15 +67,10 @@ class SettingsLocalStore {
         await i18n.changeLanguage(language);
     }
 
-    private async getSettingsItems() {
-        const { Mapp } = await this.sharedPreferencesStore.settingsChannel;
-        return {
-            isCallRecognitionOn: this.sharedPreferencesStore.makePrefBoolean(Mapp, false),
-        };
-    }
-
     private async buildOptions(): Promise<Item<SettingPage>[]> {
-        const { isCallRecognitionOn } = await this.getSettingsItems();
+        const {
+            callDetection: { isCallRecognitionOn },
+        } = await this.sharedPreferencesStore.applicationSettings;
         return [
             { type: 'link', icon: 'notification', label: 'settings:detection:menuName', page: 'Detection' },
             { type: 'link', icon: 'audio', label: 'settings:notification:menuName', page: 'Notification' },

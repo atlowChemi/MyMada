@@ -104,12 +104,12 @@ class ContractionTimerLocalStore {
     private async loadSavedContractions() {
         this.isHandlingReload = true;
         try {
-            const sharedPreferences = await this.sharedPreferencesStore.settingsChannel;
-            const { contractList, contractLong } = sharedPreferences;
-            if (!contractList || !this.contractions.isEmpty) {
+            const appSettings = await this.sharedPreferencesStore.applicationSettings;
+            const { savedContractionsJSON, contractionPageExitTime } = appSettings.contractions;
+            if (!savedContractionsJSON || !this.contractions.isEmpty) {
                 return undefined;
             }
-            const oldContractions = Number.parseInt(contractLong || TWENTY_MINUTES.toString(), 10);
+            const oldContractions = Number.parseInt(contractionPageExitTime || TWENTY_MINUTES.toString(), 10);
             const areOldContractionsLessThan20MinOld = Date.now() - oldContractions <= TWENTY_MINUTES;
             if (!areOldContractionsLessThan20MinOld) {
                 // The saved contractions have breached the 20 min threshold - we can delete and ignore them.
@@ -127,7 +127,7 @@ class ContractionTimerLocalStore {
             if (!shouldRestore) {
                 return await this.cleanupSavedData();
             }
-            const sanitized = this.sanitizeSavedContractions(contractList);
+            const sanitized = this.sanitizeSavedContractions(savedContractionsJSON);
             if (!sanitized) {
                 return undefined;
             }

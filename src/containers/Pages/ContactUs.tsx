@@ -74,21 +74,17 @@ class ContactUsLocalStore {
                 { fireImmediately: true },
             ),
             reaction(
-                () => this.sharedPreferences.state,
+                () => this.sharedPreferencesStore.applicationSettings.state,
                 () => {
-                    if (this.sharedPreferences.state !== 'fulfilled') {
+                    if (this.sharedPreferencesStore.applicationSettings.state !== 'fulfilled') {
                         return;
                     }
-                    this.nameChanged(this.sharedPreferences.value.UserName || '');
+                    this.nameChanged(this.sharedPreferencesStore.applicationSettings.value.chat.userName || '');
                 },
                 { fireImmediately: true },
             ),
         ];
         this.openDisclaimerDialogAndEnforceName();
-    }
-
-    private get sharedPreferences() {
-        return this.sharedPreferencesStore.settingsChannel;
     }
 
     private get chatRootDocument() {
@@ -111,7 +107,7 @@ class ContactUsLocalStore {
     }
 
     public get isNotFulfilled() {
-        return [this.messagingStore.token.state, this.sharedPreferences.state].every(state => state !== 'fulfilled');
+        return [this.messagingStore.token.state, this.sharedPreferencesStore.applicationSettings.state].every(state => state !== 'fulfilled');
     }
 
     public get hasError() {
@@ -135,11 +131,11 @@ class ContactUsLocalStore {
             blockBackBtn: true,
             blockBackdropPress: true,
         });
-        if (this.sharedPreferences.state !== 'fulfilled') {
+        if (this.sharedPreferencesStore.applicationSettings.state !== 'fulfilled') {
             crashlytics().log('Shared preferences not fulfilled in openDisclaimerDialogAndEnforceName');
             return;
         }
-        if (!this.sharedPreferences.value.UserName?.length) {
+        if (!this.sharedPreferencesStore.applicationSettings.value.chat.userName?.length) {
             await this.askForName(false);
         }
     }
