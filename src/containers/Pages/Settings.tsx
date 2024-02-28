@@ -12,6 +12,7 @@ import { Advanced } from '../Settings/Advanced';
 import { Detection } from '../Settings/Detection';
 import { PageLoader } from '../../Components/Loader';
 import { DialogStore } from '../../services/DialogStore';
+import { Notifications } from '../Settings/Notifications';
 import { DrawerContent } from '../../Components/DrawerContent';
 import { useDeviceOrientation } from '../../utils/useDeviceOrientation';
 import { DispatchService, Region } from '../../services/DispatchService';
@@ -118,7 +119,7 @@ export const Settings = observer<NavigatableScreenProps<'Settings'>>(({ route })
             screenOptions={{ headerShown: false, drawerType: isTablet() && orientation === 'landscape' ? 'permanent' : 'front' }}
             drawerContent={props => <DrawerContent {...props} items={drawerItems} />}>
             <Drawer.Screen name="Detection" component={Detection} />
-            <Drawer.Screen name="Notification" component={Nullish} />
+            <Drawer.Screen name="Notification" component={Notifications} />
             <Drawer.Screen name="Advanced" component={Advanced} />
             <Drawer.Screen name="AmPm" component={AmPm} />
             <Drawer.Screen name="Tools" component={Tools} />

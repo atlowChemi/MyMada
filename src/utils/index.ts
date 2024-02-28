@@ -2,6 +2,7 @@ import { DependencyList, useEffect } from 'react';
 import { Dimensions, PixelRatio } from 'react-native';
 
 export type ValueOf<T> = T[keyof T];
+export type DeepValueOf<T> = T extends (infer U)[] ? DeepValueOf<U> : T extends object ? DeepValueOf<ValueOf<T>> : T;
 
 export const createDeferredPromise = <T = void>() => {
     let resolve!: (value: T | PromiseLike<T>) => void;
