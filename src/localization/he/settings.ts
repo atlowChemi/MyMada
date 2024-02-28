@@ -16,7 +16,6 @@ export default {
             subTitleEnabled: 'התראה תרטוט רק כאשר המכשיר לא במצב שקט',
             subTitleDisabled: 'התראה תרטוט גם כשהמכשיר במצב שקט.',
         },
-        lowCallsCategory: 'הודעות מנהלתיות',
         detectServiceCalls: {
             title: 'זהה הודעות שירות',
             subTitleEnabled: 'זיהוי הודעות שירות פועל',
@@ -30,6 +29,46 @@ export default {
     },
     notification: {
         menuName: 'הגדרות צליל ורטט',
+        vibrate: {
+            title: 'רטט',
+            subTitleEnabled: 'רטט בעת קבלת מקרים פועל.',
+            subTitleDisabled: 'רטט בעת קבלת מקרים כבוי.',
+        },
+        sound: {
+            title: 'צליל',
+            subTitleEnabled: 'צליל בעת קבלת מקרים פועל.',
+            subTitleDisabled: 'צליל בעת קבלת מקרים כבוי.',
+        },
+        detect: {
+            title: 'זהה {{ callType }}',
+            subTitleEnabled: 'זיהוי {{ callType }} פועל.',
+            subTitleDisabled: 'זיהוי {{ callType }} כבוי.',
+        },
+        overrideSound: {
+            title: 'בחר צליל התראה מותאם אישית',
+            subTitleEnabled: 'הצליל שיושמע בקבלת מקרה הינו הצליל שתגדיר.',
+            subTitleDisabled: 'הצליל שיושמע בקבלת מקרה הינו הצליל שהוגדר ביישום.',
+        },
+        grouped: {
+            title: 'כל האירועים',
+        },
+        onCall: {
+            title: 'אירועי כונן',
+            callType: 'מקרי כונן',
+        },
+        group: {
+            title: 'אירועי קבוצה',
+            titleCallType: 'אירועים של קבוצת צוות',
+            callType: 'מקרים קבוצתיים',
+        },
+        shift: {
+            title: 'אירועי משמרת',
+            titleCallType: 'אירועים של משמרת',
+            callType: 'מקרי משמרת',
+        },
+        administrative: {
+            title: 'הודעות מנהלתיות',
+        },
     },
     advanced: {
         menuName: 'הגדרות מתקדמות',

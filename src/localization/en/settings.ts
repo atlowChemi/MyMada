@@ -16,7 +16,6 @@ export default {
             subTitleEnabled: 'Emergency call will vibrate only if phone is not on silent mode.',
             subTitleDisabled: 'Emergency call will vibrate even if phone is on silent mode.',
         },
-        lowCallsCategory: 'Non emergency calls',
         detectServiceCalls: {
             title: 'Recognize service calls',
             subTitleEnabled: 'Service calls recognition off',
@@ -30,6 +29,44 @@ export default {
     },
     notification: {
         menuName: 'Sound & vibration settings',
+        vibrate: {
+            title: 'Vibrate',
+            subTitleEnabled: 'Vibration on new call is on.',
+            subTitleDisabled: 'Vibration on new call is off.',
+        },
+        sound: {
+            title: 'Sound alert',
+            subTitleEnabled: 'Sound on new call is on.',
+            subTitleDisabled: 'Sound on new call is off.',
+        },
+        detect: {
+            title: 'Recognize "{{ callType }}" calls',
+            subTitleEnabled: '{{ callType }} calls recognition off.',
+            subTitleDisabled: '{{ callType }} calls recognition on.',
+        },
+        overrideSound: {
+            title: 'Pick a custom sound',
+            subTitleEnabled: 'The sound played on new call, will be the sound you pick.',
+            subTitleDisabled: 'The sound played on new call, is the default.',
+        },
+        grouped: {
+            title: 'All the calls',
+        },
+        onCall: {
+            title: 'on-call calls',
+            callType: 'on-call',
+        },
+        group: {
+            title: 'Group calls',
+            callType: 'team group',
+        },
+        shift: {
+            title: 'Shift calls',
+            callType: 'shift calls',
+        },
+        administrative: {
+            title: 'Non emergency calls',
+        },
     },
     advanced: {
         menuName: 'Advanced settings',

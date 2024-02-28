@@ -102,7 +102,7 @@ export const Detection = observer<NavigatableSettingsScreenProps>(props => {
                 onChange={localStore.updateValue(PREF_KEYS.notifyVibrationByDeviceStatus)}
                 subLabel={t(`settings:detection:notifyVibrationByDeviceStatus:subTitle${localStore.detectionSettings.value.notifyVibrationByDeviceStatus ? 'Enabled' : 'Disabled'}`)}
             />
-            <Text style={styles.pageTitle}>{t('settings:detection:lowCallsCategory')}</Text>
+            <Text style={styles.pageTitle}>{t('settings:notification:administrative:title')}</Text>
             <SettingsItem
                 type="switch"
                 label={t('settings:detection:detectServiceCalls:title')}

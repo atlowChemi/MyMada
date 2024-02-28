@@ -77,9 +77,9 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
 
         //get Shared Preferences and decide what to show and hide
         sp = getActivity().getSharedPreferences("Settings", 0);
-        boolean cutAB = sp.getBoolean("cut", false);
-        boolean t6B = sp.getBoolean("callT6", true);
-        boolean findT4B = sp.getBoolean("callT4", true);
+        boolean cutAB = sp.getString("cut", "false").equals("true");
+        boolean t6B = sp.getString("callT6", "true").equals("true");
+        boolean findT4B = sp.getString("callT4", "true").equals("true");
         if (cutAB) {
             trueCut.setVisibility(View.VISIBLE);
             falseCut.setVisibility(View.GONE);
@@ -147,20 +147,20 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             NrinT3_Pref.setOnClickListener(this);
             //get shared preferences
             /*T1*/
-            boolean findT1B = sp.getBoolean("callT1", true);
-            boolean NvibT1B = sp.getBoolean("NvibT1", true);
-            boolean NsouT1B = sp.getBoolean("NsouT1", true);
-            boolean NappT1B = sp.getBoolean("NappT1", false);
+            boolean findT1B = sp.getString("callT1", "true").equals("true");
+            boolean NvibT1B = sp.getString("NvibT1", "true").equals("true");
+            boolean NsouT1B = sp.getString("NsouT1", "true").equals("true");
+            boolean NappT1B = sp.getString("NappT1", "false").equals("true");
             /*T2*/
-            boolean findT2B = sp.getBoolean("callT2", true);
-            boolean NvibT2B = sp.getBoolean("NvibT2", true);
-            boolean NsouT2B = sp.getBoolean("NsouT2", true);
-            boolean NappT2B = sp.getBoolean("NappT2", false);
+            boolean findT2B = sp.getString("callT2", "true").equals("true");
+            boolean NvibT2B = sp.getString("NvibT2", "true").equals("true");
+            boolean NsouT2B = sp.getString("NsouT2", "true").equals("true");
+            boolean NappT2B = sp.getString("NappT2", "false").equals("true");
             /*T2*/
-            boolean findT3B = sp.getBoolean("callT3", true);
-            boolean NvibT3B = sp.getBoolean("NvibT3", true);
-            boolean NsouT3B = sp.getBoolean("NsouT3", true);
-            boolean NappT3B = sp.getBoolean("NappT3", false);
+            boolean findT3B = sp.getString("callT3", "true").equals("true");
+            boolean NvibT3B = sp.getString("NvibT3", "true").equals("true");
+            boolean NsouT3B = sp.getString("NsouT3", "true").equals("true");
+            boolean NappT3B = sp.getString("NappT3", "false").equals("true");
             //set the switches
             /*T1*/
             setTrueOrFalse(findT1B, findT1_Pref.getId());
@@ -198,9 +198,9 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             NappT_Pref.setOnClickListener(this);
             NrinT_Pref.setOnClickListener(this);
             //get shared preferences
-            boolean NvibTB = sp.getBoolean("Nvib", true);
-            boolean NsouTB = sp.getBoolean("Nsou", true);
-            boolean NappTB = sp.getBoolean("Napp", false);
+            boolean NvibTB = sp.getString("Nvib", "true").equals("true");
+            boolean NsouTB = sp.getString("Nsou", "true").equals("true");
+            boolean NappTB = sp.getString("Napp", "false").equals("true");
             //set the switches
             setTrueOrFalse(NvibTB, NvibT_Pref.getId());
             setTrueOrFalse(NsouTB, NsouT_Pref.getId());
@@ -230,9 +230,9 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             NappT4_Pref.setOnClickListener(this);
             NrinT4_Pref.setOnClickListener(this);
             //get shared preferences
-            boolean NvibT4B = sp.getBoolean("NvibT4", true);
-            boolean NsouT4B = sp.getBoolean("NsouT4", true);
-            boolean NappT4B = sp.getBoolean("NappT4", false);
+            boolean NvibT4B = sp.getString("NvibT4", "true").equals("true");
+            boolean NsouT4B = sp.getString("NsouT4", "true").equals("true");
+            boolean NappT4B = sp.getString("NappT4", "false").equals("true");
             //set the switches
             setTrueOrFalse(NvibT4B, NvibT4_Pref.getId());
             setTrueOrFalse(NsouT4B, NsouT4_Pref.getId());
@@ -251,14 +251,14 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT_pref:
                 sc = NvibT;
                 desc = NvibT.isChecked() ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("Nvib", !sc.isChecked());
+                editor.putString("Nvib", String.valueOf(!sc.isChecked()));
                 tv = NvibT_Desc;
                 break;
             case R.id.NsouT_pref:
                 sc = NsouT;
                 newB = !sc.isChecked();
                 desc = !newB ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("Nsou", newB);
+                editor.putString("Nsou", String.valueOf(newB));
                 NrinT_Pref.setClickable(newB && NappT.isChecked());
                 NrinT_Pref.setAlpha(newB && NappT.isChecked() ? 1 : 0.4f);
                 NappT_Pref.setClickable(newB);
@@ -271,7 +271,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                 if (newB)
                     getAllowed(0);
                 desc = !newB ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("Napp", newB);
+                editor.putString("Napp", String.valueOf(newB));
                 NrinT_Pref.setClickable(newB);
                 NrinT_Pref.setAlpha(newB ? 1 : 0.4f);
                 tv = NappT_Desc;
@@ -285,7 +285,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                 sc = findT1;
                 newB = !sc.isChecked();
                 desc = findT1.isChecked() ? getResources().getString(R.string.findT1_off) : getResources().getString(R.string.findT1_on);
-                editor.putBoolean("callT1", !sc.isChecked());
+                editor.putString("callT1", String.valueOf(!sc.isChecked()));
                 NvibT1_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
                 NsouT1_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
                 NappT1_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
@@ -295,14 +295,14 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT1_pref:
                 sc = NvibT1;
                 desc = NvibT1.isChecked() ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("NvibT1", !sc.isChecked());
+                editor.putString("NvibT1", String.valueOf(!sc.isChecked()));
                 tv = NvibT1_Desc;
                 break;
             case R.id.NsouT1_pref:
                 sc = NsouT1;
                 newB = !sc.isChecked();
                 desc = !newB ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("NsouT1", newB);
+                editor.putString("NsouT1", String.valueOf(newB));
                 NrinT1_Pref.setClickable(newB && NappT1.isChecked());
                 NrinT1_Pref.setAlpha(newB && NappT1.isChecked() ? 1 : 0.4f);
                 NappT1_Pref.setClickable(newB);
@@ -315,7 +315,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                 if (newB)
                     getAllowed(1);
                 desc = !newB ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("NappT1", newB);
+                editor.putString("NappT1", String.valueOf(newB));
                 NrinT1_Pref.setClickable(newB);
                 NrinT1_Pref.setAlpha(newB ? 1 : 0.4f);
                 tv = NappT1_Desc;
@@ -329,7 +329,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                 sc = findT2;
                 newB = !sc.isChecked();
                 desc = findT2.isChecked() ? getResources().getString(R.string.findT2_off) : getResources().getString(R.string.findT2_on);
-                editor.putBoolean("callT2", !sc.isChecked());
+                editor.putString("callT2", String.valueOf(!sc.isChecked()));
                 NvibT2_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
                 NsouT2_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
                 NappT2_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
@@ -339,14 +339,14 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT2_pref:
                 sc = NvibT2;
                 desc = NvibT2.isChecked() ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("NvibT2", !sc.isChecked());
+                editor.putString("NvibT2", String.valueOf(!sc.isChecked()));
                 tv = NvibT2_Desc;
                 break;
             case R.id.NsouT2_pref:
                 sc = NsouT2;
                 newB = !sc.isChecked();
                 desc = !newB ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("NsouT2", newB);
+                editor.putString("NsouT2", String.valueOf(newB));
                 NrinT2_Pref.setClickable(newB && NappT2.isChecked());
                 NrinT2_Pref.setAlpha(newB && NappT2.isChecked() ? 1 : 0.4f);
                 NappT2_Pref.setClickable(newB);
@@ -359,7 +359,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                 if (newB)
                     getAllowed(2);
                 desc = !newB ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("NappT2", newB);
+                editor.putString("NappT2", String.valueOf(newB));
                 NrinT2_Pref.setClickable(newB);
                 NrinT2_Pref.setAlpha(newB ? 1 : 0.4f);
                 tv = NappT2_Desc;
@@ -373,7 +373,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                 sc = findT3;
                 newB = !sc.isChecked();
                 desc = findT3.isChecked() ? getResources().getString(R.string.findT3_off) : getResources().getString(R.string.findT3_on);
-                editor.putBoolean("callT3", !sc.isChecked());
+                editor.putString("callT3", String.valueOf(!sc.isChecked()));
                 NvibT3_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
                 NsouT3_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
                 NappT3_Pref.setVisibility(newB ? View.VISIBLE : View.GONE);
@@ -383,14 +383,14 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT3_pref:
                 sc = NvibT3;
                 desc = NvibT3.isChecked() ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("NvibT3", !sc.isChecked());
+                editor.putString("NvibT3", String.valueOf(!sc.isChecked()));
                 tv = NvibT3_Desc;
                 break;
             case R.id.NsouT3_pref:
                 sc = NsouT3;
                 newB = !sc.isChecked();
                 desc = !newB ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("NsouT3", newB);
+                editor.putString("NsouT3", String.valueOf(newB));
                 NrinT3_Pref.setClickable(newB && NappT3.isChecked());
                 NrinT3_Pref.setAlpha(newB && NappT3.isChecked() ? 1 : 0.4f);
                 NappT3_Pref.setClickable(newB);
@@ -403,7 +403,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                 if (newB)
                     getAllowed(3);
                 desc = !newB ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("NappT3", newB);
+                editor.putString("NappT3", String.valueOf(newB));
                 NrinT3_Pref.setClickable(newB);
                 NrinT3_Pref.setAlpha(newB ? 1 : 0.4f);
                 tv = NappT3_Desc;
@@ -416,14 +416,14 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT4_pref:
                 sc = NvibT4;
                 desc = NvibT4.isChecked() ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("NvibT4", !sc.isChecked());
+                editor.putString("NvibT4", String.valueOf(!sc.isChecked()));
                 tv = NvibT4_Desc;
                 break;
             case R.id.NsouT4_pref:
                 sc = NsouT4;
                 newB = !sc.isChecked();
                 desc = NsouT4.isChecked() ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("NsouT4", newB);
+                editor.putString("NsouT4", String.valueOf(newB));
                 NrinT4_Pref.setClickable(newB && NappT4.isChecked());
                 NrinT4_Pref.setAlpha(newB && NappT4.isChecked() ? 1 : 0.4f);
                 NappT4_Pref.setClickable(newB);
@@ -436,7 +436,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                 if (newB)
                     getAllowed(4);
                 desc = NappT4.isChecked() ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("NappT4", newB);
+                editor.putString("NappT4", String.valueOf(newB));
                 NrinT4_Pref.setClickable(newB);
                 NrinT4_Pref.setAlpha(newB ? 1 : 0.4f);
                 tv = NappT4_Desc;
@@ -462,13 +462,13 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT_pref:
                 sc = NvibT;
                 desc = !set ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("Nvib", set);
+                editor.putString("Nvib", String.valueOf(set));
                 tv = NvibT_Desc;
                 break;
             case R.id.NsouT_pref:
                 sc = NsouT;
                 desc = !set ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("Nsou", set);
+                editor.putString("Nsou", String.valueOf(set));
                 NrinT_Pref.setClickable(set && NappT.isChecked());
                 NrinT_Pref.setAlpha(set && NappT.isChecked() ? 1 : 0.4f);
                 NappT_Pref.setClickable(set);
@@ -478,7 +478,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT_pref:
                 sc = NappT;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("Napp", set);
+                editor.putString("Napp", String.valueOf(set));
                 NrinT_Pref.setClickable(set && NsouT.isChecked());
                 NrinT_Pref.setAlpha(set && NsouT.isChecked() ? 1 : 0.4f);
                 tv = NappT_Desc;
@@ -487,7 +487,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.findT1_pref:
                 sc = findT1;
                 desc = !set ? getResources().getString(R.string.findT1_off) : getResources().getString(R.string.findT1_on);
-                editor.putBoolean("callT1", set);
+                editor.putString("callT1", String.valueOf(set));
                 tv = findT1_Desc;
                 NvibT1_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
                 NsouT1_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
@@ -497,13 +497,13 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT1_pref:
                 sc = NvibT1;
                 desc = !set ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("NvibT1", set);
+                editor.putString("NvibT1", String.valueOf(set));
                 tv = NvibT1_Desc;
                 break;
             case R.id.NsouT1_pref:
                 sc = NsouT1;
                 desc = !set ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("NsouT1", set);
+                editor.putString("NsouT1", String.valueOf(set));
                 NrinT1_Pref.setClickable(set && NappT1.isChecked());
                 NrinT1_Pref.setAlpha(set && NappT1.isChecked() ? 1 : 0.4f);
                 NappT1_Pref.setClickable(set && findT1.isChecked());
@@ -513,7 +513,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT1_pref:
                 sc = NappT1;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("NappT1", set);
+                editor.putString("NappT1", String.valueOf(set));
                 NrinT1_Pref.setClickable(set && NsouT1.isChecked());
                 NrinT1_Pref.setAlpha(set && NsouT1.isChecked() ? 1 : 0.4f);
                 tv = NappT1_Desc;
@@ -522,7 +522,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.findT2_pref:
                 sc = findT2;
                 desc = !set ? getResources().getString(R.string.findT2_off) : getResources().getString(R.string.findT2_on);
-                editor.putBoolean("callT2", set);
+                editor.putString("callT2", String.valueOf(set));
                 tv = findT2_Desc;
                 NvibT2_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
                 NsouT2_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
@@ -532,13 +532,13 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT2_pref:
                 sc = NvibT2;
                 desc = !set ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("NvibT2", set);
+                editor.putString("NvibT2", String.valueOf(set));
                 tv = NvibT2_Desc;
                 break;
             case R.id.NsouT2_pref:
                 sc = NsouT2;
                 desc = !set ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("NsouT2", set);
+                editor.putString("NsouT2", String.valueOf(set));
                 NrinT2_Pref.setClickable(set && NappT2.isChecked());
                 NrinT2_Pref.setAlpha(set && NappT2.isChecked() ? 1 : 0.4f);
                 NappT2_Pref.setClickable(set && findT2.isChecked());
@@ -548,7 +548,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT2_pref:
                 sc = NappT2;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("NappT2", set);
+                editor.putString("NappT2", String.valueOf(set));
                 NrinT2_Pref.setClickable(set && NsouT2.isChecked());
                 NrinT2_Pref.setAlpha(set && NsouT2.isChecked() ? 1 : 0.4f);
                 tv = NappT2_Desc;
@@ -557,7 +557,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.findT3_pref:
                 sc = findT3;
                 desc = !set ? getResources().getString(R.string.findT3_off) : getResources().getString(R.string.findT3_on);
-                editor.putBoolean("callT3", set);
+                editor.putString("callT3", String.valueOf(set));
                 tv = findT3_Desc;
                 NvibT3_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
                 NsouT3_Pref.setVisibility(set ? View.VISIBLE : View.GONE);
@@ -567,13 +567,13 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT3_pref:
                 sc = NvibT3;
                 desc = !set ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("NvibT3", set);
+                editor.putString("NvibT3", String.valueOf(set));
                 tv = NvibT3_Desc;
                 break;
             case R.id.NsouT3_pref:
                 sc = NsouT3;
                 desc = !set ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("NsouT3", set);
+                editor.putString("NsouT3", String.valueOf(set));
                 NrinT3_Pref.setClickable(set && NappT3.isChecked());
                 NrinT3_Pref.setAlpha(set && NappT3.isChecked() ? 1 : 0.4f);
                 NappT3_Pref.setClickable(set && findT3.isChecked());
@@ -583,7 +583,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT3_pref:
                 sc = NappT3;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("NappT3", set);
+                editor.putString("NappT3", String.valueOf(set));
                 NrinT3_Pref.setClickable(set && NsouT3.isChecked());
                 NrinT3_Pref.setAlpha(set && NsouT3.isChecked() ? 1 : 0.4f);
                 tv = NappT3_Desc;
@@ -592,13 +592,13 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NvibT4_pref:
                 sc = NvibT4;
                 desc = !set ? getResources().getString(R.string.pref_description_vibrate_off) : getResources().getString(R.string.pref_description_vibrate_on);
-                editor.putBoolean("NvibT4", set);
+                editor.putString("NvibT4", String.valueOf(set));
                 tv = NvibT4_Desc;
                 break;
             case R.id.NsouT4_pref:
                 sc = NsouT4;
                 desc = !set ? getResources().getString(R.string.pref_description_ringtone_off) : getResources().getString(R.string.pref_description_ringtone_on);
-                editor.putBoolean("NsouT4", set);
+                editor.putString("NsouT4", String.valueOf(set));
                 NrinT4_Pref.setClickable(set && NappT4.isChecked());
                 NrinT4_Pref.setAlpha(set && NappT4.isChecked() ? 1 : 0.4f);
                 NappT4_Pref.setClickable(set);
@@ -608,7 +608,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
             case R.id.NappT4_pref:
                 sc = NappT4;
                 desc = !set ? getResources().getString(R.string.pref_description_app_off) : getResources().getString(R.string.pref_description_app_on);
-                editor.putBoolean("NappT4", set);
+                editor.putString("NappT4", String.valueOf(set));
                 NrinT4_Pref.setClickable(set && NsouT4.isChecked());
                 NrinT4_Pref.setAlpha(set && NsouT4.isChecked() ? 1 : 0.4f);
                 tv = NappT4_Desc;
@@ -667,7 +667,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
                 requestPermissions(permissionsRequired, retPer);
             }
             SharedPreferences.Editor editor = permissionStatus.edit();
-            editor.putBoolean(permissionsRequired[0],true);
+            editor.putString(permissionsRequired[0],"true");
             editor.apply();
         }
     }
@@ -716,7 +716,7 @@ public class SettingsNotificationsSounds extends Fragment implements View.OnClic
 //                Crashlytics.log("return from permission - return was true");
                 //Got Permission
                 SharedPreferences.Editor ed = sp.edit();
-                ed.putBoolean("allowed", true);
+                ed.putString("allowed", "true");
                 ed.apply();
             }
             else {
