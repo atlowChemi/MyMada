@@ -76,7 +76,6 @@ class NotificationsLocalStore {
     public get updateValue() {
         return computedFn((key: DeepValueOf<typeof PREF_KEYS>) => async (value: boolean) => {
             await this.sharedPreferencesStore.setItem(key, value.toString());
-            this.updateNotificationObservable();
         });
     }
 
@@ -85,72 +84,8 @@ class NotificationsLocalStore {
     }
 
     private async getNotificationSettings() {
-        const {
-            [PREF_KEYS.splitNotificationByCallType]: splitNotificationByCallType,
-            [PREF_KEYS.detectServiceCalls]: detectServiceCalls,
-            [PREF_KEYS.detectAdministrativeCalls]: detectAdministrativeCalls,
-
-            [PREF_KEYS.grouped.vibrate]: groupedVibrate,
-            [PREF_KEYS.grouped.sound]: groupedSound,
-            [PREF_KEYS.grouped.overrideSound]: groupedOverrideSound,
-
-            [PREF_KEYS.onCall.detectCalls]: onCallDetectCalls,
-            [PREF_KEYS.onCall.vibrate]: onCallVibrate,
-            [PREF_KEYS.onCall.sound]: onCallSound,
-            [PREF_KEYS.onCall.overrideSound]: onCallOverrideSound,
-
-            [PREF_KEYS.group.detectCalls]: groupDetectCalls,
-            [PREF_KEYS.group.vibrate]: groupVibrate,
-            [PREF_KEYS.group.sound]: groupSound,
-            [PREF_KEYS.group.overrideSound]: groupOverrideSound,
-
-            [PREF_KEYS.shift.detectCalls]: shiftDetectCalls,
-            [PREF_KEYS.shift.vibrate]: shiftVibrate,
-            [PREF_KEYS.shift.sound]: shiftSound,
-            [PREF_KEYS.shift.overrideSound]: shiftOverrideSound,
-
-            [PREF_KEYS.administrative.vibrate]: administrativeVibrate,
-            [PREF_KEYS.administrative.sound]: administrativeSound,
-            [PREF_KEYS.administrative.overrideSound]: administrativeOverrideSound,
-        } = await this.sharedPreferencesStore.settingsChannel;
-        return {
-            splitNotificationByCallType: this.sharedPreferencesStore.makePrefBoolean(splitNotificationByCallType, false),
-            detectServiceCalls: this.sharedPreferencesStore.makePrefBoolean(detectServiceCalls, true),
-            detectAdministrativeCalls: this.sharedPreferencesStore.makePrefBoolean(detectAdministrativeCalls, true),
-
-            grouped: {
-                vibrate: this.sharedPreferencesStore.makePrefBoolean(groupedVibrate, true),
-                sound: this.sharedPreferencesStore.makePrefBoolean(groupedSound, true),
-                overrideSound: this.sharedPreferencesStore.makePrefBoolean(groupedOverrideSound, false),
-            },
-            onCall: {
-                detectCalls: this.sharedPreferencesStore.makePrefBoolean(onCallDetectCalls, true),
-                vibrate: this.sharedPreferencesStore.makePrefBoolean(onCallVibrate, true),
-                sound: this.sharedPreferencesStore.makePrefBoolean(onCallSound, true),
-                overrideSound: this.sharedPreferencesStore.makePrefBoolean(onCallOverrideSound, false),
-            },
-            group: {
-                detectCalls: this.sharedPreferencesStore.makePrefBoolean(groupDetectCalls, true),
-                vibrate: this.sharedPreferencesStore.makePrefBoolean(groupVibrate, true),
-                sound: this.sharedPreferencesStore.makePrefBoolean(groupSound, true),
-                overrideSound: this.sharedPreferencesStore.makePrefBoolean(groupOverrideSound, false),
-            },
-            shift: {
-                detectCalls: this.sharedPreferencesStore.makePrefBoolean(shiftDetectCalls, true),
-                vibrate: this.sharedPreferencesStore.makePrefBoolean(shiftVibrate, true),
-                sound: this.sharedPreferencesStore.makePrefBoolean(shiftSound, true),
-                overrideSound: this.sharedPreferencesStore.makePrefBoolean(shiftOverrideSound, false),
-            },
-            administrative: {
-                vibrate: this.sharedPreferencesStore.makePrefBoolean(administrativeVibrate, true),
-                sound: this.sharedPreferencesStore.makePrefBoolean(administrativeSound, true),
-                overrideSound: this.sharedPreferencesStore.makePrefBoolean(administrativeOverrideSound, false),
-            },
-        };
-    }
-
-    private updateNotificationObservable() {
-        this.notificationSettings = fromPromise(this.getNotificationSettings(), this.notificationSettings);
+        const { callDetection } = await this.sharedPreferencesStore.applicationSettings;
+        return callDetection;
     }
 }
 
@@ -175,39 +110,38 @@ const NotificationGroup = observer<{ group: Group; localStore: NotificationsLoca
                     subLabel={t(`settings:notification:detect:subTitle${localStore.notificationSettings.value[group].detectCalls ? 'Enabled' : 'Disabled'}`, { callType })}
                 />
             )}
-            {!isToggleableGroup(group) ||
-                (localStore.notificationSettings.value[group].detectCalls && (
-                    <>
-                        <SettingsItem
-                            type="switch"
-                            label={t('settings:notification:vibrate:title')}
-                            onChange={localStore.updateValue(PREF_KEYS[group].vibrate)}
-                            value={localStore.notificationSettings.value[group].vibrate}
-                            subLabel={t(`settings:notification:vibrate:subTitle${localStore.notificationSettings.value[group].vibrate ? 'Enabled' : 'Disabled'}`)}
-                        />
-                        <SettingsItem
-                            type="switch"
-                            label={t('settings:notification:sound:title')}
-                            onChange={localStore.updateValue(PREF_KEYS[group].sound)}
-                            value={localStore.notificationSettings.value[group].sound}
-                            subLabel={t(`settings:notification:sound:subTitle${localStore.notificationSettings.value[group].sound ? 'Enabled' : 'Disabled'}`)}
-                        />
-                        <SettingsItem
-                            type="switch"
-                            label={t('settings:notification:overrideSound:title')}
-                            disabled={!localStore.notificationSettings.value[group].sound}
-                            onChange={localStore.updateValue(PREF_KEYS[group].overrideSound)}
-                            value={localStore.notificationSettings.value[group].overrideSound}
-                            subLabel={t(`settings:notification:overrideSound:subTitle${localStore.notificationSettings.value[group].overrideSound ? 'Enabled' : 'Disabled'}`)}
-                        />
-                        <SettingsItem
-                            type="row"
-                            onPress={localStore.pickGroupRingtone}
-                            label={t('settings:notification:sound:title')}
-                            disabled={!localStore.notificationSettings.value[group].sound || !localStore.notificationSettings.value[group].overrideSound}
-                        />
-                    </>
-                ))}
+            {(!isToggleableGroup(group) || localStore.notificationSettings.value[group].detectCalls) && (
+                <>
+                    <SettingsItem
+                        type="switch"
+                        label={t('settings:notification:vibrate:title')}
+                        onChange={localStore.updateValue(PREF_KEYS[group].vibrate)}
+                        value={localStore.notificationSettings.value[group].vibrate}
+                        subLabel={t(`settings:notification:vibrate:subTitle${localStore.notificationSettings.value[group].vibrate ? 'Enabled' : 'Disabled'}`)}
+                    />
+                    <SettingsItem
+                        type="switch"
+                        label={t('settings:notification:sound:title')}
+                        onChange={localStore.updateValue(PREF_KEYS[group].sound)}
+                        value={localStore.notificationSettings.value[group].sound}
+                        subLabel={t(`settings:notification:sound:subTitle${localStore.notificationSettings.value[group].sound ? 'Enabled' : 'Disabled'}`)}
+                    />
+                    <SettingsItem
+                        type="switch"
+                        label={t('settings:notification:overrideSound:title')}
+                        disabled={!localStore.notificationSettings.value[group].sound}
+                        onChange={localStore.updateValue(PREF_KEYS[group].overrideSound)}
+                        value={localStore.notificationSettings.value[group].overrideSound}
+                        subLabel={t(`settings:notification:overrideSound:subTitle${localStore.notificationSettings.value[group].overrideSound ? 'Enabled' : 'Disabled'}`)}
+                    />
+                    <SettingsItem
+                        type="row"
+                        onPress={localStore.pickGroupRingtone}
+                        label={t('settings:notification:sound:title')}
+                        disabled={!localStore.notificationSettings.value[group].sound || !localStore.notificationSettings.value[group].overrideSound}
+                    />
+                </>
+            )}
         </>
     );
 });

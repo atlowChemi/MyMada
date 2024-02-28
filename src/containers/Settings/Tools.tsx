@@ -36,10 +36,10 @@ export const Tools = observer<NavigatableSettingsScreenProps>(props => {
     const snackbarStore = useDependencyInjector(SnackbarStore);
     const localStore = useLocalObservable(() => ({
         get selectedTools() {
-            return sharedPreferencesStore.selectedTools.case({
+            return sharedPreferencesStore.applicationSettings.case({
                 pending: () => new Set<string>(),
                 rejected: () => new Set<string>(),
-                fulfilled: selectedTools => selectedTools,
+                fulfilled: ({ general: { toolsToShow } }) => toolsToShow,
             });
         },
         get value() {
@@ -61,7 +61,7 @@ export const Tools = observer<NavigatableSettingsScreenProps>(props => {
         },
     }));
 
-    if (sharedPreferencesStore.selectedTools.state === 'pending') {
+    if (sharedPreferencesStore.applicationSettings.state === 'pending') {
         return <PageLoader />;
     }
 

@@ -42,41 +42,31 @@ class AdvancedLocalStore {
     }
 
     public get updateValue() {
-        return computedFn((key: ValueOf<typeof PREF_KEYS>) => async (value: boolean) => {
-            await this.sharedPreferencesStore.setItem(key, value.toString());
-            this.updateAdvancedObservable();
-        });
+        return computedFn((key: ValueOf<typeof PREF_KEYS>) => async (value: boolean) => await this.sharedPreferencesStore.setItem(key, value.toString()));
     }
 
     private async getAdvancedSettings() {
         const [
             {
-                [PREF_KEYS.sendNotificationOnCall]: sendNotificationOnCall,
-                [PREF_KEYS.openPopUpOnCall]: openPopUpOnCall,
-                [PREF_KEYS.overridePreviousCalls]: overridePreviousCalls,
-                [PREF_KEYS.infiniteAlert]: infiniteAlert,
-                [PREF_KEYS.autoStopAlert]: autoStopAlert,
-                [PREF_KEYS.autoStopAlertDuration]: autoStopAlertDuration,
-                [PREF_KEYS.overrideVolume]: overrideVolume,
-                [PREF_KEYS.volume]: volume,
+                callDetection: {
+                    sendNotificationOnCall,
+                    openPopUpOnCall,
+                    advancedSettings: { overridePreviousCalls, infiniteAlert, autoStopAlert, autoStopAlertDuration, overrideVolume, volume },
+                },
             },
             maxVolume,
-        ] = await Promise.all([this.sharedPreferencesStore.settingsChannel, audioGenerator.getMaxVolumeForAlarmStream()]);
+        ] = await Promise.all([this.sharedPreferencesStore.applicationSettings, audioGenerator.getMaxVolumeForAlarmStream()]);
         return {
-            sendNotificationOnCall: this.sharedPreferencesStore.makePrefBoolean(sendNotificationOnCall, true),
-            openPopUpOnCall: this.sharedPreferencesStore.makePrefBoolean(openPopUpOnCall, true),
-            overridePreviousCalls: this.sharedPreferencesStore.makePrefBoolean(overridePreviousCalls, false),
-            infiniteAlert: this.sharedPreferencesStore.makePrefBoolean(infiniteAlert, false),
-            autoStopAlert: this.sharedPreferencesStore.makePrefBoolean(autoStopAlert, false),
-            autoStopAlertDuration: autoStopAlertDuration ?? '6',
-            overrideVolume: this.sharedPreferencesStore.makePrefBoolean(overrideVolume, true),
-            volume: Number.parseInt(volume, 10) || maxVolume,
+            sendNotificationOnCall,
+            openPopUpOnCall,
+            overridePreviousCalls,
+            infiniteAlert,
+            autoStopAlert,
+            autoStopAlertDuration,
+            overrideVolume,
+            volume: volume || maxVolume,
             maxVolume,
         };
-    }
-
-    private updateAdvancedObservable() {
-        this.advancedSettings = fromPromise(this.getAdvancedSettings(), this.advancedSettings);
     }
 
     public init(props: NavigatableSettingsScreenProps) {
@@ -110,7 +100,6 @@ class AdvancedLocalStore {
             return;
         }
         await this.sharedPreferencesStore.setItem(PREF_KEYS.autoStopAlertDuration, Number.parseInt(result, 10).toString());
-        this.updateAdvancedObservable();
     }
 
     public async openAlertVolumeDialog() {
@@ -120,7 +109,6 @@ class AdvancedLocalStore {
             return;
         }
         await this.sharedPreferencesStore.setItems({ [PREF_KEYS.overrideVolume]: result.overrideVolume.toString(), [PREF_KEYS.volume]: result.volume.toString() });
-        this.updateAdvancedObservable();
     }
 }
 

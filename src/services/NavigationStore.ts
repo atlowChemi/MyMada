@@ -128,8 +128,9 @@ export class NavigationStore {
         this.settingsNavigator?.jumpTo(route);
     };
     public goToDispatch = async () => {
-        const { realM } = await this.sharedPreferencesStore.settingsChannel;
-        const isMarkedAsVolunteer = this.sharedPreferencesStore.makePrefBoolean(realM, false);
+        const {
+            general: { isMarkedAsVolunteer },
+        } = await this.sharedPreferencesStore.applicationSettings;
         if (BuildConfig.DEBUG || BuildConfig.BUILD_TYPE === 'debug' || BuildConfig.APPLICATION_ID?.endsWith('.debug')) {
             const navigateToLockPage = await this.dialogStore.openDialog(BaseDialog, {
                 description: 'זוהי גרסה לבדיקה. עמוד חסימה או עמוד דיווחים',
@@ -151,8 +152,9 @@ export class NavigationStore {
         return this.navigate('Lock');
     };
     public goToContactUs = async () => {
-        const { realM } = await this.sharedPreferencesStore.settingsChannel;
-        const isMarkedAsVolunteer = this.sharedPreferencesStore.makePrefBoolean(realM, false);
+        const {
+            general: { isMarkedAsVolunteer },
+        } = await this.sharedPreferencesStore.applicationSettings;
         if (!isMarkedAsVolunteer && !(await this.madaNotificationsStore.hasMadaApp())) {
             const navigateToContact = await this.dialogStore.openDialog(BaseDialog, {
                 title: i18n.t('contact:plsNote'),

@@ -47,7 +47,6 @@ class AmPmLocalStore {
             return;
         }
         await this.sharedPreferencesStore.setItem(PREF_KEYS.nightStart, response.toString());
-        this.updateAmPmObservable();
     }
 
     public async selectNightEnd() {
@@ -56,32 +55,23 @@ class AmPmLocalStore {
             return;
         }
         await this.sharedPreferencesStore.setItem(PREF_KEYS.nightEnd, response.toString());
-        this.updateAmPmObservable();
     }
 
     public async selectDayNotificationLevel() {
         await this.openNotificationLevelPicker('dayNotificationLevel');
-        this.updateAmPmObservable();
     }
 
     public async selectNightNotificationLevel() {
         await this.openNotificationLevelPicker('nightNotificationLevel');
-        this.updateAmPmObservable();
     }
 
     private async getAmPmSettings() {
         const {
-            [PREF_KEYS.nightStart]: nightStart,
-            [PREF_KEYS.nightEnd]: nightEnd,
-            [PREF_KEYS.dayNotificationLevel]: dayNotificationLevel,
-            [PREF_KEYS.nightNotificationLevel]: nightNotificationLevel,
-        } = await this.sharedPreferencesStore.settingsChannel;
-        return {
-            nightStart: Number.parseInt(nightStart, 10) || 23,
-            nightEnd: Number.parseInt(nightEnd, 10) || 7,
-            dayNotificationLevel: Number.parseInt(dayNotificationLevel, 10) || 0,
-            nightNotificationLevel: Number.parseInt(nightNotificationLevel, 10) || 0,
-        };
+            callDetection: {
+                dayAndNightSettings: { nightStart, nightEnd, dayNotificationLevel, nightNotificationLevel },
+            },
+        } = await this.sharedPreferencesStore.applicationSettings;
+        return { nightStart, nightEnd, dayNotificationLevel, nightNotificationLevel };
     }
 
     private async openTimePicker(time: Extract<keyof typeof PREF_KEYS, 'nightStart' | 'nightEnd'>): Promise<number | null> {
@@ -94,10 +84,6 @@ class AmPmLocalStore {
         const value = await NativeModules.TimePickerModule.openHourPicker(settings[time], title, colors.colorPrimaryDark);
         this.isPickerOpen = false;
         return value;
-    }
-
-    private updateAmPmObservable() {
-        this.amPmSettings = fromPromise(this.getAmPmSettings(), this.amPmSettings);
     }
 
     private async openNotificationLevelPicker(time: Extract<keyof typeof PREF_KEYS, 'dayNotificationLevel' | 'nightNotificationLevel'>) {

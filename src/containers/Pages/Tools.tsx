@@ -62,7 +62,9 @@ export const Tools = observer<NavigatableScreenProps>(() => {
             return fromPromise(this.buildToolsList());
         },
         async buildToolsList() {
-            const toolsToShow = await sharedPreferencesStore.selectedTools;
+            const {
+                general: { toolsToShow },
+            } = await sharedPreferencesStore.applicationSettings;
             const hasProtocols = toolsToShow.has(TOOL_SHARED_PREF_MAP.get('BlsProtocoles')!);
             const toolsForDisplay: Item<ToolsType>[] = Array.from(TOOLS_PAGES)
                 .filter(page => toolsToShow.has(TOOL_SHARED_PREF_MAP.get(page)!))

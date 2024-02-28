@@ -36,29 +36,14 @@ class DetectionLocalStore {
     public get updateValue() {
         return computedFn((key: ValueOf<typeof PREF_KEYS>) => async (value: boolean) => {
             await this.sharedPreferencesStore.setItem(key, value.toString());
-            this.updateDetectionObservable();
         });
     }
 
     private async getDetectionSettings() {
         const {
-            [PREF_KEYS.splitNotificationByCallType]: splitNotificationByCallType,
-            [PREF_KEYS.notifySoundByDeviceStatus]: notifySoundByDeviceStatus,
-            [PREF_KEYS.notifyVibrationByDeviceStatus]: notifyVibrationByDeviceStatus,
-            [PREF_KEYS.detectServiceCalls]: detectServiceCalls,
-            [PREF_KEYS.detectAdministrativeCalls]: detectAdministrativeCalls,
-        } = await this.sharedPreferencesStore.settingsChannel;
-        return {
-            splitNotificationByCallType: this.sharedPreferencesStore.makePrefBoolean(splitNotificationByCallType, false),
-            notifySoundByDeviceStatus: this.sharedPreferencesStore.makePrefBoolean(notifySoundByDeviceStatus, false),
-            notifyVibrationByDeviceStatus: this.sharedPreferencesStore.makePrefBoolean(notifyVibrationByDeviceStatus, false),
-            detectServiceCalls: this.sharedPreferencesStore.makePrefBoolean(detectServiceCalls, true),
-            detectAdministrativeCalls: this.sharedPreferencesStore.makePrefBoolean(detectAdministrativeCalls, true),
-        };
-    }
-
-    private updateDetectionObservable() {
-        this.detectionSettings = fromPromise(this.getDetectionSettings(), this.detectionSettings);
+            callDetection: { splitNotificationByCallType, notifySoundByDeviceStatus, notifyVibrationByDeviceStatus, detectServiceCalls, detectAdministrativeCalls },
+        } = await this.sharedPreferencesStore.applicationSettings;
+        return { splitNotificationByCallType, notifySoundByDeviceStatus, notifyVibrationByDeviceStatus, detectServiceCalls, detectAdministrativeCalls };
     }
 
     public init(props: NavigatableSettingsScreenProps) {
