@@ -43,8 +43,6 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import atlow.chemi.mymada.helpers.LocalHelper;
-
 public class smsRes extends AppCompatActivity {
     private MediaPlayer mMediaPlayer;
     int currentVolume;

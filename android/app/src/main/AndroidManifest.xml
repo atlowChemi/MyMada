@@ -82,6 +82,7 @@
 
         <service
             android:name=".recieversAndServices.SMSMonitorService"
+            android:foregroundServiceType="mediaPlayback"
             android:label="@string/smsMoni" />
         <service
             android:name=".recieversAndServices.FloatingWidgetService"
