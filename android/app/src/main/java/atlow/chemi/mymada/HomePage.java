@@ -28,7 +28,6 @@ import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 
 public class HomePage extends AppCompatActivity {
-    private homeBAdapter adapter;
     private final int OVERLAY_PER_REQ = 345;
     private MenuItem Detect;
     @Override
@@ -40,7 +39,7 @@ public class HomePage extends AppCompatActivity {
         RecyclerView rv = findViewById(R.id.rv);
         GridLayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 1);
         List<HomeB> albumList = new ArrayList<>();
-        adapter = new homeBAdapter(HomePage.this, albumList);
+        homeBAdapter adapter = new homeBAdapter(HomePage.this, albumList);
         rv.setLayoutManager(layoutManager);
         rv.setAdapter(adapter);
         HomeB Tool = new HomeB("tol", R.drawable.new_tol);

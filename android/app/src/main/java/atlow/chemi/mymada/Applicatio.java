@@ -28,7 +28,6 @@ import com.facebook.soloader.SoLoader;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
 import atlow.chemi.mymada.helpers.FontsOverride;
-import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.recieversAndServices.BootCompleteReceiver;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;

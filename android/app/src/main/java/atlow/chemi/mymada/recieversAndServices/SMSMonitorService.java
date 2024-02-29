@@ -1,5 +1,7 @@
 package atlow.chemi.mymada.recieversAndServices;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
@@ -14,6 +16,7 @@ import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
 
 import atlow.chemi.mymada.HomePage;
 import atlow.chemi.mymada.R;
@@ -63,7 +66,7 @@ public class SMSMonitorService extends Service {
             builder.setPriority(NotificationManager.IMPORTANCE_MIN);
         }
         Notification notification = builder.build();
-        startForeground(78, notification);
+        ServiceCompat.startForeground(this, 78, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
 //        Crashlytics.log("started foreground");
     }
 

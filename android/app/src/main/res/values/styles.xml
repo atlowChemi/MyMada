@@ -70,15 +70,6 @@
         <item name="android:colorBackground">@color/materialBlueGrey800</item>
         <item name="android:colorBackgroundCacheHint">@color/materialGrey850</item>
 
-        <item name="android:textColorPrimary">@color/s_text</item>
-        <item name="android:textColorPrimaryInverse">@color/s_text</item>
-        <item name="android:textColorPrimaryDisableOnly">@color/materialGrey600</item>
-        <item name="android:textColorSecondary">@color/s_text</item>
-        <item name="android:textColorSecondaryInverse">@color/s_text</item>
-        <item name="android:textColorTertiary">@color/s_text</item>
-        <item name="android:textColorTertiaryInverse">@color/s_text</item>
-        <item name="android:textColorHint">@color/s_text</item>
-        <item name="android:textColorHintInverse">@color/s_text</item>
         <item name="android:textColorHighlight">@color/highlightedTextMaterialLight</item>
 
         <item name="colorControlNormal">?android:attr/textColorSecondary</item>
