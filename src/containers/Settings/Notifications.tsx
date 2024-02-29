@@ -76,7 +76,7 @@ class NotificationsLocalStore {
                 crashlytics().log('Picking ringtone');
                 const settings = await this.notificationSettings;
                 const defaultRingtone = settings[group].ringtone || (await this.madaNotificationStore.getDefaultRingtone());
-                const selected = await this.madaNotificationStore.selectRingtone('title', defaultRingtone);
+                const selected = await this.madaNotificationStore.selectRingtone(i18n.t('settings:notification:overrideSound:pickSound'), defaultRingtone);
                 await this.sharedPreferencesStore.setItem(PREF_KEYS.callDetection[group].ringtone, selected);
             } catch (e) {
                 if (!(e instanceof Error) || (e as any).code === ERROR_PICKER_CANCELLED) {

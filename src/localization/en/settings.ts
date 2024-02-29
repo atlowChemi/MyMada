@@ -48,6 +48,7 @@ export default {
             title: 'Pick a custom sound',
             subTitleEnabled: 'The sound played on new call, will be the sound you pick.',
             subTitleDisabled: 'The sound played on new call, is the default.',
+            pickSound: 'Pick ringtone',
         },
         grouped: {
             title: 'All the calls',

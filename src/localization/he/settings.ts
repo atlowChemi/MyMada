@@ -48,6 +48,7 @@ export default {
             title: 'בחר צליל התראה מותאם אישית',
             subTitleEnabled: 'הצליל שיושמע בקבלת מקרה הינו הצליל שתגדיר.',
             subTitleDisabled: 'הצליל שיושמע בקבלת מקרה הינו הצליל שהוגדר ביישום.',
+            pickSound: 'בחר צליל התראה',
         },
         grouped: {
             title: 'כל האירועים',
