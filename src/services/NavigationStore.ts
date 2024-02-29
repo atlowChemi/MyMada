@@ -1,8 +1,8 @@
 import BuildConfig from 'react-native-build-config';
 import analytics from '@react-native-firebase/analytics';
 import i18n from '../localization';
-import { Linking } from 'react-native';
 import { inject, injectable } from 'inversify';
+import { Linking, PermissionsAndroid } from 'react-native';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { makeAutoObservable, observable, reaction, when } from 'mobx';
 import { colors } from '../consts';
@@ -12,9 +12,9 @@ import { PermissionsStore } from './PermissionsStore';
 import { BaseDialog } from '../containers/dialogs/BaseDialog';
 import { SharedPreferencesStore } from './SharedPreferencesStore';
 import { MadaNotificationsStore } from './MadaNotificationsStore';
+import { NavigatableSettingsScreenProps, SETTINGS_PAGES, SettingPage } from '../containers/Pages/Settings';
 import type { NavigatableScreenProps } from '../App';
 import type { NavigatableToolsScreenProps } from '../containers/Pages/Tools';
-import { NavigatableSettingsScreenProps, SETTINGS_PAGES, SettingPage } from '../containers/Pages/Settings';
 
 export type Tools =
     | 'ContractionTimer'
@@ -176,7 +176,7 @@ export class NavigationStore {
             buttonPositive: i18n.t('permissions:approve'),
             buttonNegative: i18n.t('permissions:deny'),
         });
-        if (permissionStatus !== 'granted') {
+        if (permissionStatus !== PermissionsAndroid.RESULTS.GRANTED) {
             const goToSettings = await this.dialogStore.openDialog(BaseDialog, {
                 title: i18n.t('permissions:alertTitle'),
                 description: i18n.t('permissions:blocked'),

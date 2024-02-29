@@ -21,7 +21,7 @@ export const TOOL_SHARED_PREF_MAP = new Map<Tools, string>([
     ['AlsProtocoles', 'prot'],
     ['Kuntres', 'prot'],
 ]);
-const PREF_KEYS = {
+export const PREF_KEYS = {
     general: {
         tools: 'Tools',
         isMarkedAsVolunteer: 'realM',

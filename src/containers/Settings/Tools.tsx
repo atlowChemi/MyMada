@@ -12,7 +12,7 @@ import { BasePageView } from '../../Components/BasePageView';
 import { SnackbarStore } from '../../services/SnackbarStore';
 import { useDependencyInjector } from '../../services/container';
 import { useInnerNavigator } from '../../utils/useInnerNavigator';
-import { SharedPreferencesStore, TOOL_SHARED_PREF_MAP } from '../../services/SharedPreferencesStore';
+import { PREF_KEYS, SharedPreferencesStore, TOOL_SHARED_PREF_MAP } from '../../services/SharedPreferencesStore';
 import type { TranslationKeys } from '../../localization';
 import type { NavigatableSettingsScreenProps } from '../Pages/Settings';
 import type { Tools as ToolsType } from '../../services/NavigationStore';
@@ -56,7 +56,7 @@ export const Tools = observer<NavigatableSettingsScreenProps>(props => {
                     .filter(([, val]) => val)
                     .map(([key]) => key)
                     .join(', ');
-                return sharedPreferencesStore.setItem('Tools', `[${toolsStr}]`);
+                return sharedPreferencesStore.setItem(PREF_KEYS.general.tools, `[${toolsStr}]`);
             });
         },
     }));

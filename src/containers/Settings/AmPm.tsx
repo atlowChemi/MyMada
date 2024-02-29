@@ -12,18 +12,14 @@ import { DialogStore } from '../../services/DialogStore';
 import { BasePageView } from '../../Components/BasePageView';
 import { SettingsItem } from '../../Components/SettingsItem';
 import { useInnerNavigator } from '../../utils/useInnerNavigator';
-import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { RadioSelectDialog, RadioSelectDialogProps } from '../dialogs/RadioSelectDialog';
+import { SharedPreferencesStore, PREF_KEYS } from '../../services/SharedPreferencesStore';
 import type { NavigatableSettingsScreenProps } from '../Pages/Settings';
+import { DeepValueOf } from '../../utils';
 
-const PREF_KEYS = {
-    nightStart: 'nightStart',
-    nightEnd: 'nightEnd',
-    dayNotificationLevel: 'sleepDay',
-    nightNotificationLevel: 'sleepNight',
-    overallNotificationLevel: 'sleep',
-} as const;
+const dayNotificationLevelKey = PREF_KEYS.callDetection.dayAndNightSettings.dayNotificationLevel;
+const nightNotificationLevelKey = PREF_KEYS.callDetection.dayAndNightSettings.nightNotificationLevel;
 enum NOTIFICATION_LEVEL_VALUES {
     sound = 0,
     vibrate = 1,
@@ -42,27 +38,27 @@ class AmPmLocalStore {
         return [i18n.t('settings:ampm:notificationLevel:soundVibrate'), i18n.t('settings:ampm:notificationLevel:vibrate'), i18n.t('settings:ampm:notificationLevel:silent')] as string[];
     }
     public async selectNightStart() {
-        const response = await this.openTimePicker(PREF_KEYS.nightStart);
+        const response = await this.openTimePicker(PREF_KEYS.callDetection.dayAndNightSettings.nightStart);
         if (response === null) {
             return;
         }
-        await this.sharedPreferencesStore.setItem(PREF_KEYS.nightStart, response.toString());
+        await this.sharedPreferencesStore.setItem(PREF_KEYS.callDetection.dayAndNightSettings.nightStart, response.toString());
     }
 
     public async selectNightEnd() {
-        const response = await this.openTimePicker(PREF_KEYS.nightEnd);
+        const response = await this.openTimePicker(PREF_KEYS.callDetection.dayAndNightSettings.nightEnd);
         if (response === null) {
             return;
         }
-        await this.sharedPreferencesStore.setItem(PREF_KEYS.nightEnd, response.toString());
+        await this.sharedPreferencesStore.setItem(PREF_KEYS.callDetection.dayAndNightSettings.nightEnd, response.toString());
     }
 
     public async selectDayNotificationLevel() {
-        await this.openNotificationLevelPicker('dayNotificationLevel');
+        await this.openNotificationLevelPicker(dayNotificationLevelKey);
     }
 
     public async selectNightNotificationLevel() {
-        await this.openNotificationLevelPicker('nightNotificationLevel');
+        await this.openNotificationLevelPicker(nightNotificationLevelKey);
     }
 
     private async getAmPmSettings() {
@@ -71,10 +67,12 @@ class AmPmLocalStore {
                 dayAndNightSettings: { nightStart, nightEnd, dayNotificationLevel, nightNotificationLevel },
             },
         } = await this.sharedPreferencesStore.applicationSettings;
-        return { nightStart, nightEnd, dayNotificationLevel, nightNotificationLevel };
+        return { nightStart, nightEnd, [dayNotificationLevelKey]: dayNotificationLevel, [nightNotificationLevelKey]: nightNotificationLevel };
     }
 
-    private async openTimePicker(time: Extract<keyof typeof PREF_KEYS, 'nightStart' | 'nightEnd'>): Promise<number | null> {
+    private async openTimePicker(
+        time: Extract<DeepValueOf<typeof PREF_KEYS>, typeof PREF_KEYS.callDetection.dayAndNightSettings.nightStart | typeof PREF_KEYS.callDetection.dayAndNightSettings.nightEnd>,
+    ): Promise<number | null> {
         if (this.isPickerOpen) {
             return null;
         }
@@ -86,10 +84,10 @@ class AmPmLocalStore {
         return value;
     }
 
-    private async openNotificationLevelPicker(time: Extract<keyof typeof PREF_KEYS, 'dayNotificationLevel' | 'nightNotificationLevel'>) {
+    private async openNotificationLevelPicker(time: Extract<DeepValueOf<typeof PREF_KEYS>, typeof dayNotificationLevelKey | typeof nightNotificationLevelKey>) {
         const settings = await this.amPmSettings;
         const selectedValue = await this.dialogStore.openDialog<RadioSelectDialogProps<NOTIFICATION_LEVEL_VALUES>>(RadioSelectDialog, {
-            title: i18n.t(`settings:ampm:${time}`),
+            title: i18n.t(`settings:ampm:${time === dayNotificationLevelKey ? 'day' : 'night'}NotificationLevel`),
             options: Object.fromEntries(this.notificationLevels.map((val, index) => [val, index] as const)),
             initialValue: settings[time],
         });
@@ -98,11 +96,14 @@ class AmPmLocalStore {
         }
         // TODO: remove `overallNotificationLevel`? seems to be redundant (should be computed when used, not stored in shared prefs)
         const newTimes = {
-            dayNotificationLevel: time === 'dayNotificationLevel' ? selectedValue : settings.dayNotificationLevel,
-            nightNotificationLevel: time === 'nightNotificationLevel' ? selectedValue : settings.nightNotificationLevel,
+            dayNotificationLevel: time === dayNotificationLevelKey ? selectedValue : settings[dayNotificationLevelKey],
+            nightNotificationLevel: time === nightNotificationLevelKey ? selectedValue : settings[nightNotificationLevelKey],
         };
         const overallNotificationLevel = newTimes.dayNotificationLevel * 3 + newTimes.nightNotificationLevel;
-        await this.sharedPreferencesStore.setItems({ [PREF_KEYS[time]]: selectedValue.toString(), [PREF_KEYS.overallNotificationLevel]: overallNotificationLevel.toString() });
+        await this.sharedPreferencesStore.setItems({
+            [time]: selectedValue.toString(),
+            [PREF_KEYS.callDetection.dayAndNightSettings.overallNotificationLevel]: overallNotificationLevel.toString(),
+        });
     }
 }
 
@@ -124,13 +125,13 @@ export const AmPm = observer<NavigatableSettingsScreenProps>(props => {
                 type="row"
                 onPress={localStore.selectDayNotificationLevel}
                 label={t('settings:ampm:dayNotificationLevel')}
-                subLabel={localStore.notificationLevels[localStore.amPmSettings.value.dayNotificationLevel]}
+                subLabel={localStore.notificationLevels[localStore.amPmSettings.value[dayNotificationLevelKey]]}
             />
             <SettingsItem
                 type="row"
                 onPress={localStore.selectNightNotificationLevel}
                 label={t('settings:ampm:nightNotificationLevel')}
-                subLabel={localStore.notificationLevels[localStore.amPmSettings.value.nightNotificationLevel]}
+                subLabel={localStore.notificationLevels[localStore.amPmSettings.value[nightNotificationLevelKey]]}
             />
         </BasePageView>
     );

@@ -11,18 +11,10 @@ import { SettingsItem } from '../../Components/SettingsItem';
 import { BasePageView } from '../../Components/BasePageView';
 import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import { SettingsCardLink } from '../../Components/SettingsCardLink';
-import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
-import type { ValueOf } from '../../utils';
+import { SharedPreferencesStore, PREF_KEYS } from '../../services/SharedPreferencesStore';
+import type { DeepValueOf } from '../../utils';
 import type { NavigatableSettingsScreenProps } from '../Pages/Settings';
-
-const PREF_KEYS = {
-    splitNotificationByCallType: 'cut',
-    notifySoundByDeviceStatus: 'stat',
-    notifyVibrationByDeviceStatus: 'statVib',
-    detectServiceCalls: 'callT6',
-    detectAdministrativeCalls: 'callT4',
-} as const;
 
 @injectable()
 class DetectionLocalStore {
@@ -34,7 +26,7 @@ class DetectionLocalStore {
     }
 
     public get updateValue() {
-        return computedFn((key: ValueOf<typeof PREF_KEYS>) => async (value: boolean) => {
+        return computedFn((key: DeepValueOf<typeof PREF_KEYS>) => async (value: boolean) => {
             await this.sharedPreferencesStore.setItem(key, value.toString());
         });
     }
@@ -70,21 +62,21 @@ export const Detection = observer<NavigatableSettingsScreenProps>(props => {
                 type="switch"
                 label={t('settings:detection:splitNotificationByCallType:title')}
                 value={localStore.detectionSettings.value.splitNotificationByCallType}
-                onChange={localStore.updateValue(PREF_KEYS.splitNotificationByCallType)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.splitNotificationByCallType)}
                 subLabel={t(`settings:detection:splitNotificationByCallType:subTitle${localStore.detectionSettings.value.splitNotificationByCallType ? 'Enabled' : 'Disabled'}`)}
             />
             <SettingsItem
                 type="switch"
                 label={t('settings:detection:notifySoundByDeviceStatus:title')}
                 value={localStore.detectionSettings.value.notifySoundByDeviceStatus}
-                onChange={localStore.updateValue(PREF_KEYS.notifySoundByDeviceStatus)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.notifySoundByDeviceStatus)}
                 subLabel={t(`settings:detection:notifySoundByDeviceStatus:subTitle${localStore.detectionSettings.value.notifySoundByDeviceStatus ? 'Enabled' : 'Disabled'}`)}
             />
             <SettingsItem
                 type="switch"
                 label={t('settings:detection:notifyVibrationByDeviceStatus:title')}
                 value={localStore.detectionSettings.value.notifyVibrationByDeviceStatus}
-                onChange={localStore.updateValue(PREF_KEYS.notifyVibrationByDeviceStatus)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.notifyVibrationByDeviceStatus)}
                 subLabel={t(`settings:detection:notifyVibrationByDeviceStatus:subTitle${localStore.detectionSettings.value.notifyVibrationByDeviceStatus ? 'Enabled' : 'Disabled'}`)}
             />
             <Text style={styles.pageTitle}>{t('settings:notification:administrative:title')}</Text>
@@ -92,14 +84,14 @@ export const Detection = observer<NavigatableSettingsScreenProps>(props => {
                 type="switch"
                 label={t('settings:detection:detectServiceCalls:title')}
                 value={localStore.detectionSettings.value.detectServiceCalls}
-                onChange={localStore.updateValue(PREF_KEYS.detectServiceCalls)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.detectServiceCalls)}
                 subLabel={t(`settings:detection:detectServiceCalls:subTitle${localStore.detectionSettings.value.detectServiceCalls ? 'Enabled' : 'Disabled'}`)}
             />
             <SettingsItem
                 type="switch"
                 label={t('settings:detection:detectAdministrativeCalls:title')}
                 value={localStore.detectionSettings.value.detectAdministrativeCalls}
-                onChange={localStore.updateValue(PREF_KEYS.detectAdministrativeCalls)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.detectAdministrativeCalls)}
                 subLabel={t(`settings:detection:detectAdministrativeCalls:subTitle${localStore.detectionSettings.value.detectAdministrativeCalls ? 'Enabled' : 'Disabled'}`)}
             />
             <SettingsCardLink label={'settings:notification:menuName'} onPress={localStore.navigateToNotifications} />
