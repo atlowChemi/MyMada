@@ -1,6 +1,9 @@
 package atlow.chemi.mymada.ReactModules;
 
+import static atlow.chemi.mymada.Constants.ERROR_ACTIVITY_RESULT_BUSY;
+import static atlow.chemi.mymada.Constants.ERROR_FAILED_TO_SHOW_PICKER;
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
+import static atlow.chemi.mymada.Constants.ERROR_PICKER_CANCELLED;
 import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
 import static atlow.chemi.mymada.Constants.MADA_APP_PACKAGE;
 import static atlow.chemi.mymada.Constants.TEST_CALL_ACTION;
@@ -10,8 +13,10 @@ import android.app.AppOpsManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -32,13 +37,15 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
+import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 
 @ReactModule(name = MadaNotificationsModule.NAME)
 public class MadaNotificationsModule extends ReactContextBaseJavaModule implements ActivityEventListener {
     private final ReactApplicationContext reactContext;
-    private Promise permissionPromise;
+    private Promise resultPromise;
     private final int REQUEST_CODE_CAN_DRAW_OVERLAYS = 8396;
+    private final int REQUEST_CODE_RINGTONE_PICKER = 8397;
     public static final String NAME = "MadaNotificationsModule";
 
     public MadaNotificationsModule(ReactApplicationContext reactContext) {
@@ -117,7 +124,11 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
             if (canDrawOverlays()) {
                 promise.resolve(true);
             } else {
-                permissionPromise = promise;
+                if (resultPromise != null) {
+                    promise.reject(ERROR_ACTIVITY_RESULT_BUSY, "MadaNotificationsModule: can't request overlay permissions when result promise is set.");
+                    return;
+                }
+                resultPromise = promise;
                 var intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + reactContext.getPackageName()));
                 reactContext.startActivityForResult(intent, REQUEST_CODE_CAN_DRAW_OVERLAYS, null);
             }
@@ -126,13 +137,68 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
         }
     }
 
-    @Override
-    public void onActivityResult(Activity activity, int requestCode, int resultCode, @Nullable Intent intent) {
-        if (permissionPromise == null || resultCode != REQUEST_CODE_CAN_DRAW_OVERLAYS) {
+    @ReactMethod
+    public void getDefaultRingtone(Promise promise) {
+        promise.resolve(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString());
+    }
+
+    @ReactMethod
+    public void getDefaultAppRingtone(Promise promise) {
+        var ringUri = Uri.parse("android.resource://" + reactContext.getPackageName() + "/" + R.raw.alert);
+        promise.resolve(ringUri.toString());
+    }
+
+    @ReactMethod
+    public void selectRingtone(String title, String uri, Promise promise) {
+        if (resultPromise != null) {
+            promise.reject(ERROR_ACTIVITY_RESULT_BUSY, "MadaNotificationsModule: can't select ringtone when result promise is set.");
             return;
         }
-        permissionPromise.resolve(canDrawOverlays());
-        permissionPromise = null;
+        try {
+            if (uri == null || uri.equals("")) {
+                uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString();
+            }
+            resultPromise = promise;
+            var picker = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, title);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, Uri.parse(uri));
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(uri));
+            reactContext.startActivityForResult(picker, REQUEST_CODE_RINGTONE_PICKER, null);
+        } catch (Exception e) {
+            promise.reject(ERROR_FAILED_TO_SHOW_PICKER, e);
+        }
+    }
+
+    @Override
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, @Nullable Intent intent) {
+        if (resultPromise == null || (requestCode != REQUEST_CODE_CAN_DRAW_OVERLAYS && requestCode != REQUEST_CODE_RINGTONE_PICKER)) {
+            return;
+        }
+        try {
+            if (requestCode == REQUEST_CODE_CAN_DRAW_OVERLAYS) {
+                resultPromise.resolve(canDrawOverlays());
+                return;
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                resultPromise.reject(ERROR_PICKER_CANCELLED, "MadaNotificationsModule: Ringtone picker canceled");
+                return;
+            }
+            if (resultCode != Activity.RESULT_OK) {
+                resultPromise.reject(ERROR_PICKER_CANCELLED, "MadaNotificationsModule: Ringtone picker failed with result code: " + resultCode);
+                return;
+            }
+            if (intent == null) {
+                resultPromise.reject(ERROR_PICKER_CANCELLED, "MadaNotificationsModule: intent not set");
+                return;
+            }
+            var ringUri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            resultPromise.resolve(ringUri.toString());
+        } finally {
+            resultPromise = null;
+        }
     }
 
     @Override public void onNewIntent(Intent intent) {}

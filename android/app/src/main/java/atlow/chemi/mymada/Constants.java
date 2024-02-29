@@ -12,6 +12,10 @@ public class Constants {
     public static final String ERROR_INVALID_PERMISSION = "ERROR_INVALID_PERMISSION";
     public static final String ERROR_SERVICE_ERROR = "ERROR_SERVICE_ERROR";
     public static final String ERROR_ANDROID_VERSION = "ERROR_ANDROID_VERSION";
+    public static final String ERROR_ACTIVITY_RESULT_BUSY = "ERROR_ACTIVITY_RESULT_BUSY";
+    public static final String ERROR_PICKER_CANCELLED = "ERROR_PICKER_CANCELLED";
+    public static final String ERROR_FAILED_TO_SHOW_PICKER = "ERROR_FAILED_TO_SHOW_PICKER";
+    public static final String ERROR_NO_RINGTONE_DATA_FOUND = "ERROR_NO_RINGTONE_DATA_FOUND";
 
     public static final String METRONOME_NOTIFICATION_BUTTON_PRESSED = "METRONOME_NOTIFICATION_BUTTON_PRESSED";
     public static final String METRONOME_TOGGLED = "METRONOME_TOGGLED";
