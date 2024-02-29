@@ -12,25 +12,14 @@ import { SettingsItem } from '../../Components/SettingsItem';
 import { DialogStore } from '../../services/DialogStore';
 import { BasePageView } from '../../Components/BasePageView';
 import { TextInputDialog } from '../dialogs/TextInputDialog';
+import { audioGenerator } from '../../services/AudioGenerator';
+import { AlertVolumeDialog } from '../dialogs/AlertVolumeDialog';
 import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import { SettingsCardLink } from '../../Components/SettingsCardLink';
-import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
-import type { ValueOf } from '../../utils';
+import { SharedPreferencesStore, PREF_KEYS } from '../../services/SharedPreferencesStore';
+import type { DeepValueOf } from '../../utils';
 import type { NavigatableSettingsScreenProps } from '../Pages/Settings';
-import { AlertVolumeDialog } from '../dialogs/AlertVolumeDialog';
-import { audioGenerator } from '../../services/AudioGenerator';
-
-const PREF_KEYS = {
-    sendNotificationOnCall: 'not',
-    openPopUpOnCall: 'win',
-    overridePreviousCalls: 'ride',
-    infiniteAlert: 'loop',
-    autoStopAlert: 'killS',
-    autoStopAlertDuration: 'timeK',
-    overrideVolume: 'volumeApp',
-    volume: 'volumeAppNum',
-} as const;
 
 @injectable()
 class AdvancedLocalStore {
@@ -42,7 +31,7 @@ class AdvancedLocalStore {
     }
 
     public get updateValue() {
-        return computedFn((key: ValueOf<typeof PREF_KEYS>) => async (value: boolean) => await this.sharedPreferencesStore.setItem(key, value.toString()));
+        return computedFn((key: DeepValueOf<typeof PREF_KEYS>) => async (value: boolean) => await this.sharedPreferencesStore.setItem(key, value.toString()));
     }
 
     private async getAdvancedSettings() {
@@ -99,7 +88,7 @@ class AdvancedLocalStore {
         if (!result) {
             return;
         }
-        await this.sharedPreferencesStore.setItem(PREF_KEYS.autoStopAlertDuration, Number.parseInt(result, 10).toString());
+        await this.sharedPreferencesStore.setItem(PREF_KEYS.callDetection.advancedSettings.autoStopAlertDuration, Number.parseInt(result, 10).toString());
     }
 
     public async openAlertVolumeDialog() {
@@ -108,7 +97,10 @@ class AdvancedLocalStore {
         if (!result) {
             return;
         }
-        await this.sharedPreferencesStore.setItems({ [PREF_KEYS.overrideVolume]: result.overrideVolume.toString(), [PREF_KEYS.volume]: result.volume.toString() });
+        await this.sharedPreferencesStore.setItems({
+            [PREF_KEYS.callDetection.advancedSettings.overrideVolume]: result.overrideVolume.toString(),
+            [PREF_KEYS.callDetection.advancedSettings.volume]: result.volume.toString(),
+        });
     }
 }
 
@@ -128,35 +120,35 @@ export const Advanced = observer<NavigatableSettingsScreenProps>(props => {
                 type="switch"
                 label={t('settings:advanced:sendNotificationOnCall:title')}
                 value={localStore.advancedSettings.value.sendNotificationOnCall}
-                onChange={localStore.updateValue(PREF_KEYS.sendNotificationOnCall)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.sendNotificationOnCall)}
                 subLabel={t(`settings:advanced:sendNotificationOnCall:subTitle${localStore.advancedSettings.value.sendNotificationOnCall ? 'Enabled' : 'Disabled'}`)}
             />
             <SettingsItem
                 type="switch"
                 label={t('settings:advanced:openPopUpOnCall:title')}
                 value={localStore.advancedSettings.value.openPopUpOnCall}
-                onChange={localStore.updateValue(PREF_KEYS.openPopUpOnCall)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.openPopUpOnCall)}
                 subLabel={t(`settings:advanced:openPopUpOnCall:subTitle${localStore.advancedSettings.value.openPopUpOnCall ? 'Enabled' : 'Disabled'}`)}
             />
             <SettingsItem
                 type="switch"
                 label={t('settings:advanced:overridePreviousCalls:title')}
                 value={localStore.advancedSettings.value.overridePreviousCalls}
-                onChange={localStore.updateValue(PREF_KEYS.overridePreviousCalls)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.advancedSettings.overridePreviousCalls)}
                 subLabel={t(`settings:advanced:overridePreviousCalls:subTitle${localStore.advancedSettings.value.overridePreviousCalls ? 'Enabled' : 'Disabled'}`)}
             />
             <SettingsItem
                 type="switch"
                 label={t('settings:advanced:infiniteAlert:title')}
                 value={localStore.advancedSettings.value.infiniteAlert}
-                onChange={localStore.updateValue(PREF_KEYS.infiniteAlert)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.advancedSettings.infiniteAlert)}
                 subLabel={t(`settings:advanced:infiniteAlert:subTitle${localStore.advancedSettings.value.infiniteAlert ? 'Enabled' : 'Disabled'}`)}
             />
             <SettingsItem
                 type="switch"
                 label={t('settings:advanced:autoStopAlert:title')}
                 value={localStore.advancedSettings.value.autoStopAlert}
-                onChange={localStore.updateValue(PREF_KEYS.autoStopAlert)}
+                onChange={localStore.updateValue(PREF_KEYS.callDetection.advancedSettings.autoStopAlert)}
                 subLabel={t(`settings:advanced:autoStopAlert:subTitle${localStore.advancedSettings.value.autoStopAlert ? 'Enabled' : 'Disabled'}`)}
             />
             <SettingsItem

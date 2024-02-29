@@ -37,6 +37,9 @@ export class PermissionsStore {
         if (Array.isArray(permission)) {
             return this.requestMultiplePermissions(permission);
         }
+        if (this.grantedPermissions.has(permission)) {
+            return PermissionsAndroid.RESULTS.GRANTED;
+        }
         const result = await PermissionsAndroid.request(permission, rationale);
         return this.handlePermissionResult(permission, result);
     }
