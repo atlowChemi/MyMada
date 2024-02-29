@@ -1,3 +1,4 @@
+import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../../localization';
 import { injectable } from 'inversify';
 import { makeAutoObservable } from 'mobx';
@@ -12,8 +13,10 @@ import { PageLoader } from '../../Components/Loader';
 import { DialogStore } from '../../services/DialogStore';
 import { SettingsItem } from '../../Components/SettingsItem';
 import { BasePageView } from '../../Components/BasePageView';
+import { ERROR_PICKER_CANCELLED } from '../../utils/errorCodes';
 import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import { PermissionsStore } from '../../services/PermissionsStore';
+import { MadaNotificationsStore } from '../../services/MadaNotificationsStore';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { SharedPreferencesStore, PREF_KEYS } from '../../services/SharedPreferencesStore';
 import type { DeepValueOf } from '../../utils';
@@ -29,6 +32,7 @@ class NotificationsLocalStore {
 
     constructor(
         private readonly dialogStore: DialogStore,
+        private readonly madaNotificationStore: MadaNotificationsStore,
         private readonly permissionsStore: PermissionsStore,
         private readonly sharedPreferencesStore: SharedPreferencesStore,
     ) {
@@ -64,6 +68,22 @@ class NotificationsLocalStore {
 
     public get pickGroupRingtone() {
         return computedFn((group: Group) => async () => {
+            if (!(await this.ensurePermissions())) {
+                await this.sharedPreferencesStore.setItem(PREF_KEYS.callDetection[group].overrideSound, 'false');
+                return;
+            }
+            try {
+                crashlytics().log('Picking ringtone');
+                const settings = await this.notificationSettings;
+                const defaultRingtone = settings[group].ringtone || (await this.madaNotificationStore.getDefaultRingtone());
+                const selected = await this.madaNotificationStore.selectRingtone('title', defaultRingtone);
+                await this.sharedPreferencesStore.setItem(PREF_KEYS.callDetection[group].ringtone, selected);
+            } catch (e) {
+                if (!(e instanceof Error) || (e as any).code === ERROR_PICKER_CANCELLED) {
+                    return;
+                }
+                crashlytics().recordError(e);
+            }
         });
     }
 

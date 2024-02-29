@@ -31,4 +31,16 @@ export class MadaNotificationsStore {
     public requestOverlayPermission(): Promise<boolean> {
         return MadaNotificationsModule.requestOverlayPermission();
     }
+
+    public getDefaultRingtone(): Promise<string> {
+        return MadaNotificationsModule.getDefaultRingtone();
+    }
+
+    public getDefaultAppRingtone(): Promise<string> {
+        return MadaNotificationsModule.getDefaultAppRingtone();
+    }
+
+    public selectRingtone(title: string, picked: string): Promise<string> {
+        return MadaNotificationsModule.selectRingtone(title, picked);
+    }
 }
