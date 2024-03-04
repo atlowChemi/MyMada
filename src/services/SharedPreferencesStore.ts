@@ -115,8 +115,8 @@ export class SharedPreferencesStore {
         return fromPromise(this.getApplicationSettings());
     }
 
-    public async loadChannel(name: PreferenceChannel = 'Settings') {
-        return this.cache.get(name) || (await this.getAll(name));
+    public async loadChannel(name: PreferenceChannel = 'Settings', ignoreCache?: boolean) {
+        return (!ignoreCache && this.cache.get(name)) || (await this.getAll(name));
     }
 
     public async getItemIgnoreCache(key: string, channel: PreferenceChannel) {

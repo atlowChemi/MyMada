@@ -1,25 +1,20 @@
 package atlow.chemi.mymada;
 
-import android.annotation.SuppressLint;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
-import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.flipper.ReactNativeFlipper;
@@ -30,9 +25,7 @@ import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 import atlow.chemi.mymada.helpers.FontsOverride;
 import atlow.chemi.mymada.recieversAndServices.BootCompleteReceiver;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
-import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
-
-import static android.service.notification.NotificationListenerService.requestRebind;
+import atlow.chemi.mymada.recieversAndServices.HeadlessJsService;
 
 import static atlow.chemi.mymada.Constants.TEST_CALL_ACTION;
 
@@ -76,16 +69,9 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
         return mReactNativeHost;
     }
 
-    @SuppressLint("VisibleForTests")
-    public ReactContext getReactContext() {
-        var instanceManager = getReactNativeHost().getReactInstanceManager();
-        return instanceManager.getCurrentReactContext();
-    }
-
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-//        super.attachBaseContext(LocalHelper.onAttach(base));
         MultiDex.install(this);
     }
     @Override
@@ -109,34 +95,16 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SERIF", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SANS_SERIF", "fonts/opensanshebrew.ttf");
-        var sharedPreferences = getSharedPreferences("Settings",0);
-        var mapp = sharedPreferences.getBoolean("Mapp", false);
-        if (mapp) {
-            var serviceIntent = new Intent(getApplicationContext(), SMSMonitorService.class);
-            ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
-            try {
-                tryConnectService(getApplicationContext());
-            } catch (NoClassDefFoundError e) {
-//                Crashlytics.log("Connecting service failed");
-//                Crashlytics.logException(e);
-            }
-        }
-        makeRec();
+
+        var headlessService = new Intent(getApplicationContext(), HeadlessJsService.class);
+        var bundle = new Bundle();
+        bundle.putString("type", "appStart");
+        headlessService.putExtras(bundle);
+        headlessService.putExtra("type", "appStart");
+        startService(headlessService);
+        setupBroadcastReceivers();
     }
-    public static void tryConnectService(Context mContext) {
-        toggleNotificationListenerService(mContext);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            var componentName = new ComponentName(mContext, NotificationService.class);
-            requestRebind(componentName);
-        }
-    }
-    public static void toggleNotificationListenerService(Context mContext) {
-        var pm = mContext.getPackageManager();
-        var componentName = new ComponentName(mContext, NotificationService.class);
-        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-    }
-    private void makeRec() {
+    private void setupBroadcastReceivers() {
         var broadcastManager = LocalBroadcastManager.getInstance(this);
         var receiver = new GrobootRec();
         var filter = new IntentFilter("MADA_APP");

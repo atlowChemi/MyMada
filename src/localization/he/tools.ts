@@ -7,7 +7,6 @@ export default {
         stop: 'עצור',
         notificationTitle: 'מטרונום פעיל ברקע',
         notificationTxt: 'התראה זו מונעת כיבוי המטרונום באופן אוטומטי במטרת חיסכון בסוללה.',
-        notificationBtn: 'עצור',
     },
     contraction: {
         menuName: 'שעון צירים',

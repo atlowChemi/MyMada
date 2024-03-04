@@ -1,11 +1,14 @@
 import i18n from '../localization';
 import { inject, injectable } from 'inversify';
 import { makeAutoObservable, runInAction } from 'mobx';
-import { NavigationStore } from './NavigationStore';
+import { NavigationStore, Page } from './NavigationStore';
+import { MadaNotificationsStore } from './MadaNotificationsStore';
+import { SharedPreferencesStore } from './SharedPreferencesStore';
 import type { IconName } from '../Components/Icon';
 import type { TranslationKeys } from '../localization';
 
 const noop = () => null;
+const SETTINGS_BLOCKED_PAGES: Page[] = ['Lock', 'RequestCode', 'ActivateCode', 'Settings'];
 
 export interface NavBarIcon {
     key: string;
@@ -22,6 +25,8 @@ export class ToolbarStore {
     private dictionaryItemAdder: () => void = noop;
     private trashAction: () => void = noop;
     @inject(NavigationStore) private readonly navigationStore!: NavigationStore;
+    @inject(MadaNotificationsStore) private readonly madaNotificationsStore!: MadaNotificationsStore;
+    @inject(SharedPreferencesStore) private readonly sharedPreferencesStore!: SharedPreferencesStore;
 
     constructor() {
         makeAutoObservable(this);
@@ -72,8 +77,14 @@ export class ToolbarStore {
     }
 
     public get navIcons(): NavBarIcon[] {
+        const detectionIcon: IconName = this.sharedPreferencesStore.applicationSettings.case({
+            fulfilled: ({ callDetection }) => (callDetection.isCallRecognitionOn ? 'detection' : 'detectionDisabled'),
+            pending: () => 'detectionDisabled',
+            rejected: () => 'detectionDisabled',
+        });
         return [
-            { key: 'settings', onPress: this.navigationStore.goToSettings, icon: 'settings', show: !['Lock', 'ActivateCode', 'Settings'].includes(this.navigationStore.currentPage) },
+            { key: 'detection', onPress: this.madaNotificationsStore.toggleDetection, icon: detectionIcon, show: !SETTINGS_BLOCKED_PAGES.includes(this.navigationStore.currentPage) },
+            { key: 'settings', onPress: this.navigationStore.goToSettings, icon: 'settings', show: !SETTINGS_BLOCKED_PAGES.includes(this.navigationStore.currentPage) },
             { key: 'trash', onPress: this.trashAction, icon: 'trash', show: this.navigationStore.currentSubPage === 'ContractionTimer' && this.showTrashIcon },
             { key: 'search', onPress: this.search, icon: 'search', show: this.navigationStore.currentSubPage === 'Dictionary' && !this.isSearching },
             { key: 'add', onPress: this.dictionaryItemAdder, icon: 'add', show: this.navigationStore.currentSubPage === 'Dictionary' },

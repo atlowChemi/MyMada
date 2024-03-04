@@ -1,11 +1,11 @@
 import { now } from 'mobx-utils';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { Dimensions, NativeModules, NativeEventEmitter } from 'react-native';
 import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../localization';
 import { colors } from '../consts';
-import { Priority, NOTIFICATION_MAP, NotificationService } from './NotificationService';
+import { Priority, NOTIFICATION_MAP } from './NotificationService';
 
 const { MetronomeModule } = NativeModules;
 
@@ -23,13 +23,11 @@ const CLOCK_COMMON_PROPS = {
 @injectable()
 export class MetronomeStore {
     public startTime = 0;
-    private readonly beat = 30;
     public readonly circle = Math.PI * 2;
     public readonly strokeWidth = 17;
     public readonly diameter = Math.min(Dimensions.get('screen').width - 40, 390);
     public readonly progressBarDiameter = this.diameter * 0.43 - this.strokeWidth / 2;
     private readonly eventEmitter = new NativeEventEmitter(MetronomeModule);
-    @inject(NotificationService) private readonly notificationService!: NotificationService;
 
     constructor() {
         makeAutoObservable(this, { circle: false, strokeWidth: false, diameter: false, progressBarDiameter: false }, { autoBind: true });
@@ -103,7 +101,7 @@ export class MetronomeStore {
                 priority: Priority.PRIORITY_MIN,
                 channelId: NOTIFICATION_MAP.CHANNELS.BACKGROUND,
                 text: i18n.t('tools:metronome:notificationTxt'),
-                button: i18n.t('tools:metronome:notificationBtn'),
+                button: i18n.t('common:notificationBtn'),
                 title: i18n.t('tools:metronome:notificationTitle'),
             });
             runInAction(() => (this.startTime = startTime));

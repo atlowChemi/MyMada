@@ -20,9 +20,6 @@
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
 
     <application
         android:name=".Applicatio"
@@ -38,21 +35,7 @@
         <activity
             android:name=".MainReactActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:exported="false" />
-
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7600269766434003~4255496174" />
-
-        <activity
-            android:name=".HomePage"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:exported="true"
-            android:theme="@style/MyMaterialTheme">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -60,16 +43,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7600269766434003~4255496174" />
+
         <activity
             android:name=".smsRes"
             android:label="@string/title_activity_sms_res"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme.SmsRes" />
-        <activity
-            android:name=".SettingsPage"
-            android:label="@string/title_activity_settings"
-            android:theme="@style/MyMaterialTheme" />
 
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
@@ -79,42 +63,28 @@
                 android:name="autoStoreLocales"
                 android:value="true" />
         </service>
-
+        <service android:name=".recieversAndServices.HeadlessJsService" android:exported="false" />
         <service
             android:name=".recieversAndServices.SMSMonitorService"
             android:foregroundServiceType="mediaPlayback"
             android:label="@string/smsMoni" />
         <service
+            android:name=".recieversAndServices.ForegroundService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false" />
+
+        <service
             android:name=".recieversAndServices.FloatingWidgetService"
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".ForegroundService"
-            android:foregroundServiceType="mediaPlayback"
-            android:exported="false" />
-        <service
             android:name=".NotificationService"
-            android:enabled="@bool/listener"
+            android:enabled="true"
             android:label="@string/notiMoni"
             android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
-            </intent-filter>
-        </service>
-        <service
-            android:name=".recieversAndServices.NotificationServiceOld"
-            android:description="@string/address"
-            android:enabled="@bool/listenerO"
-            android:exported="true"
-            android:label="@string/notiMoni"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/service_config" />
-
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
         </service>
         <service
@@ -144,21 +114,17 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
-
                 <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_RESTARTED" />
-
                 <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
-
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".recieversAndServices.ActionReceiver" />
         <receiver
             android:name=".recieversAndServices.GrobootRec"
             android:enabled="true"
@@ -176,5 +142,4 @@
                 android:resource="@xml/metro_widget_info" />
         </receiver>
     </application>
-
 </manifest>

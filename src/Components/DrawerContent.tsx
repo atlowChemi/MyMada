@@ -11,9 +11,10 @@ import { NavigationStore } from '../services/NavigationStore';
 import { useDependencyInjector } from '../services/container';
 import { useEffect, type ComponentProps, useCallback } from 'react';
 import type { TranslationKeys } from '../localization';
+import Color from 'color';
 
 type Separator = { type: 'separator'; label: TranslationKeys };
-type Btn = { type: 'btn'; label: TranslationKeys; icon: IconName; onPress: () => void };
+type Btn = { type: 'btn'; label: TranslationKeys; icon: IconName; isActive?: boolean; onPress: () => void };
 type Link<T extends string> = { type: 'link'; label: TranslationKeys; icon: IconName; page: T };
 export type Item<T extends string> = Separator | Btn | Link<T>;
 interface DrawerContentProps<T extends string> extends ComponentProps<typeof DrawerItemList> {
@@ -23,6 +24,8 @@ interface DrawerContentProps<T extends string> extends ComponentProps<typeof Dra
 interface DrawerItemWrapperProps<T extends string> extends ComponentProps<typeof DrawerItemList> {
     item: Item<T>;
 }
+
+const itemBg = Color(colors.navPickedTextColor).alpha(0.12).rgb().string();
 
 const DrawerItemWrapper = observer(<T extends string>({ item, state, navigation }: DrawerItemWrapperProps<T>) => {
     const { t } = useTranslation();
@@ -40,7 +43,7 @@ const DrawerItemWrapper = observer(<T extends string>({ item, state, navigation 
                 return routes.findIndex(({ name }) => name === _item.page);
             },
             get isFocused() {
-                return this.index === this.indexOfRoute;
+                return (this.item.type === 'btn' && this.item.isActive) || this.index === this.indexOfRoute;
             },
             navigate() {
                 if (item.type === 'btn') {
@@ -85,11 +88,12 @@ const DrawerItemWrapper = observer(<T extends string>({ item, state, navigation 
     return (
         <DrawerItem
             label={t(item.label)}
-            labelStyle={[styles.label, localStore.isFocused && styles.focusedLabel]}
-            icon={({ size, color }) => <Icon name={item.icon} size={size} color={color} />}
             onPress={localStore.navigate}
             focused={localStore.isFocused}
             activeTintColor={colors.navPickedTextColor}
+            labelStyle={[styles.label, localStore.isFocused && styles.focusedLabel]}
+            activeBackgroundColor={item.type === 'btn' ? colors.transparent : itemBg}
+            icon={({ size, color }) => <Icon name={item.icon} size={size} color={color} />}
         />
     );
 });

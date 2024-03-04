@@ -1,5 +1,7 @@
 package atlow.chemi.mymada.recieversAndServices;
 
+import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
+
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
@@ -28,7 +30,7 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
-import atlow.chemi.mymada.HomePage;
+import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.R;
 
 public class FloatingWidgetService extends Service implements View.OnClickListener {
@@ -358,11 +360,12 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 break;
             case R.id.open_activity_button:
                 //open the activity and stop service
-//                Intent intent = new Intent(FloatingWidgetService.this, MokedPage.class);
-                Intent intent = new Intent(FloatingWidgetService.this, HomePage.class);
+                Intent intent = new Intent(FloatingWidgetService.this, MainReactActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("source", NOTIFICATION_HELPER_SOURCE);
+                intent.putExtra("target", "Dispatch");
+                intent.putExtra("page", "Form");
                 startActivity(intent);
-                //close the service and remove view from the view hierarchy
                 stopSelf();
                 break;
         }

@@ -10,4 +10,5 @@ export default {
     search: 'חיפוש',
     goToSettings: 'מעבר להגדרות',
     skip: 'דלג',
+    notificationBtn: 'עצור',
 } as const;

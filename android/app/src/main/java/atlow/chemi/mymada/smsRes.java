@@ -101,34 +101,34 @@ public class smsRes extends AppCompatActivity {
         Uri url = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.alert);
         long[] length = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
-        boolean cut = SP.getBoolean("cut", false);
+        boolean cut = SP.getString("cut", "false").equals("true");
         boolean vib;
         boolean soun;
         boolean app;
         Uri uri;
         if (string.equals("T6") || string.equals("T4"))    {
-            vib = SP.getBoolean("NvibT4", true);
-            soun = SP.getBoolean("NsouT4", true);
-            app = SP.getBoolean("NappT4",false);
+            vib = SP.getString("NvibT4", "true").equals("true");
+            soun = SP.getString("NsouT4", "true").equals("true");
+            app = SP.getString("NappT4","false").equals("true");
             uri = Uri.parse(SP.getString("NuRiT4", ""));
         }
         else if (cut) {
-            vib = SP.getBoolean("Nvib" + string, true);
-            soun = SP.getBoolean("Nsou" + string, true);
-            app = SP.getBoolean("Napp" + string,false);
+            vib = SP.getString("Nvib" + string, "true").equals("true");
+            soun = SP.getString("Nsou" + string, "true").equals("true");
+            app = SP.getString("Napp" + string,"false").equals("true");
             uri = Uri.parse(SP.getString("NuRi" + string, ""));
         }
         else {
-            vib = SP.getBoolean("Nvib", true);
-            soun = SP.getBoolean("Nsou", true);
-            app = SP.getBoolean("Napp", false);
+            vib = SP.getString("Nvib", "true").equals("true");
+            soun = SP.getString("Nsou", "true").equals("true");
+            app = SP.getString("Napp", "false").equals("true");
             uri = Uri.parse(SP.getString("NuRi", ""));
         }
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
         int hour = now.get(Calendar.HOUR_OF_DAY);
-        int sleep = SP.getInt("sleep", 0);
-        int nightStart = SP.getInt("nightStart", 23);
-        int nightEnd = SP.getInt("nightEnd", 7);
+        int sleep = Integer.parseInt(SP.getString("sleep", "0"));
+        int nightStart = Integer.parseInt(SP.getString("nightStart", "23"));
+        int nightEnd = Integer.parseInt(SP.getString("nightEnd", "7"));
         if (hour <= nightEnd || hour >= nightStart) {
             switch (sleep)  {
                 case 1:
@@ -161,10 +161,10 @@ public class smsRes extends AppCompatActivity {
             }
         }
         final boolean sou = soun;
-        boolean loop = SP.getBoolean("loop",false);
-        boolean ShabbatM = SP.getBoolean("killS",false);
-        boolean stat = SP.getBoolean("stat",false);
-        boolean statVib = SP.getBoolean("statVib",false);
+        boolean loop = SP.getString("loop","false").equals("true");
+        boolean ShabbatM = SP.getString("killS","false").equals("true");
+        boolean stat = SP.getString("stat","false").equals("true");
+        boolean statVib = SP.getString("statVib","false").equals("true");
         boolean silent = true;
         boolean silentVib = true;
         am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -389,9 +389,9 @@ public class smsRes extends AppCompatActivity {
             currentVolume = am.getStreamVolume(AudioManager.STREAM_ALARM);
             vo = am.getStreamVolume(AudioManager.STREAM_ALARM);
             SharedPreferences SP = getSharedPreferences("Settings",0);
-            boolean volumeApp = SP.getBoolean("volumeApp", true);
+            boolean volumeApp = SP.getString("volumeApp", "true").equals("true");
             if (volumeApp) {
-                int volumeAppNum = SP.getInt("volumeAppNum", vol);
+                int volumeAppNum = Integer.parseInt(SP.getString("volumeAppNum", String.valueOf(vol)));
                 am.setStreamVolume(AudioManager.STREAM_ALARM, volumeAppNum, 0);
                 mMediaPlayer.setVolume(volumeAppNum, volumeAppNum);
             }
@@ -420,7 +420,7 @@ public class smsRes extends AppCompatActivity {
     @Override
     public void onDestroy() {
         SharedPreferences SP = getSharedPreferences("settings",0);
-        final boolean sou = SP.getBoolean("Nsou" + string, true);
+        final boolean sou = SP.getString("Nsou" + string, "true").equals("true");
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
         if (vibe != null) {
             vibe.cancel();

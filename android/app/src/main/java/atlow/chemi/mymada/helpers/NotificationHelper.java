@@ -1,33 +1,43 @@
 package atlow.chemi.mymada.helpers;
 
 
+import static androidx.core.content.ContextCompat.RECEIVER_EXPORTED;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 
+import static atlow.chemi.mymada.Constants.ACTION_FOREGROUND_SERVICE_START;
 import static atlow.chemi.mymada.Constants.ERROR_ANDROID_VERSION;
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
-import static atlow.chemi.mymada.Constants.METRONOME_NOTIFICATION_BUTTON_PRESSED;
+import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
+import static atlow.chemi.mymada.Constants.NOTIFICATION_BUTTON_PRESSED;
+import static atlow.chemi.mymada.Constants.NOTIFICATION_CONFIG;
 import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.classes.JSException;
 
 public class NotificationHelper {
+    private Context context;
     private static NotificationHelper instance = null;
     private final NotificationManager mNotificationManager;
 
@@ -39,6 +49,7 @@ public class NotificationHelper {
     }
 
     private NotificationHelper(Context context) {
+        this.context = context;
         mNotificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
@@ -178,6 +189,9 @@ public class NotificationHelper {
         if (color.equals("red")) {
             notificationBuilder.setColor(Color.argb(50, 255, 57, 50));
         }
+        if (color.equals("blue")) {
+            notificationBuilder.setColor(Color.argb(50, 76, 119, 247));
+        }
 
         if (notificationConfig.getBoolean("useDefaults", false)) {
             notificationBuilder.setDefaults(Notification.DEFAULT_ALL);
@@ -185,9 +199,13 @@ public class NotificationHelper {
             notificationBuilder.setSound(null).setVibrate(null);
         }
 
+        if (notificationConfig.getBoolean("hideWhen", false)) {
+            notificationBuilder.setShowWhen(false);
+        }
+
         if (notificationConfig.containsKey("button")) {
             var buttonIntent = new Intent();
-            buttonIntent.setAction(METRONOME_NOTIFICATION_BUTTON_PRESSED);
+            buttonIntent.setAction(NOTIFICATION_BUTTON_PRESSED);
             var pendingButtonIntent = PendingIntent.getBroadcast(context, 0, buttonIntent,  PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
             notificationBuilder.addAction(0, notificationConfig.getString("button"), pendingButtonIntent);
@@ -196,19 +214,52 @@ public class NotificationHelper {
         return notificationBuilder.build();
     }
 
+    public void startForegroundService(Intent intent, ReadableMap notificationConfig, BroadcastReceiver buttonPressReceiver) throws JSException {
+        if (context == null) {
+            throw new JSException(ERROR_INVALID_CONFIG, "ForegroundService: context is missing");
+        }
+        if (notificationConfig == null) {
+            throw new JSException(ERROR_INVALID_CONFIG, "ForegroundService: Notification config is invalid");
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !notificationConfig.hasKey("channelId")) {
+            throw new JSException(ERROR_INVALID_CONFIG, "ForegroundService: channelId is required");
+        }
+        if (!notificationConfig.hasKey("id")) {
+            throw new JSException(ERROR_INVALID_CONFIG , "ForegroundService: id is required");
+        }
+        if (!notificationConfig.hasKey("icon")) {
+            throw new JSException(ERROR_INVALID_CONFIG, "ForegroundService: icon is required");
+        }
+        if (!notificationConfig.hasKey("title")) {
+            throw new JSException(ERROR_INVALID_CONFIG, "ForegroundService: title is required");
+        }
+        if (!notificationConfig.hasKey("text")) {
+            throw new JSException(ERROR_INVALID_CONFIG, "ForegroundService: text is required");
+        }
+
+        intent.setAction(ACTION_FOREGROUND_SERVICE_START);
+        intent.putExtra(NOTIFICATION_CONFIG, Arguments.toBundle(notificationConfig));
+        try {
+            ContextCompat.startForegroundService(context, intent);
+        } catch (IllegalStateException e) {
+            throw new JSException(ERROR_SERVICE_ERROR, "ForegroundService: Foreground service is not started");
+        }
+        var filter = new IntentFilter();
+        filter.addAction(NOTIFICATION_BUTTON_PRESSED);
+        ContextCompat.registerReceiver(context, buttonPressReceiver, filter, RECEIVER_EXPORTED);
+    }
+
     private Class getMainActivityClass(Context context) {
-        // TODO
-        return MainReactActivity.class;
-//        var packageName = context.getPackageName();
-//        var launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-//        if (launchIntent == null || launchIntent.getComponent() == null) {
-//            return null;
-//        }
-//        try {
-//            return Class.forName(launchIntent.getComponent().getClassName());
-//        } catch (ClassNotFoundException e) {
-//            return null;
-//        }
+        var packageName = context.getPackageName();
+        var launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        if (launchIntent == null || launchIntent.getComponent() == null) {
+            return null;
+        }
+        try {
+            return Class.forName(launchIntent.getComponent().getClassName());
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
     }
 
     private int getPriority(int priorityInt) {

@@ -20,7 +20,6 @@ import java.util.Objects;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 
 
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class NotificationService extends NotificationListenerService {
     protected String text;
     Context context;
@@ -32,7 +31,7 @@ public class NotificationService extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification statusBarNotification) {
         SharedPreferences sp = getSharedPreferences("Settings", 0);
-        boolean Mapp = sp.getBoolean("Mapp", false);
+        boolean Mapp = sp.getString("Mapp", "false").equals("true");
         Log.e("Mapp is!", Mapp ? "true" : "false");
         if (Mapp && statusBarNotification.getPackageName() != null && (statusBarNotification.getPackageName().contains("mdaemergency")
                 || statusBarNotification.getPackageName().contains("mda.health")
@@ -125,13 +124,13 @@ public class NotificationService extends NotificationListenerService {
             }
         }
     }
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("REBIND", "NotificationListenerService onStartCommand begin");
-        if (intent != null)
-            Applicatio.tryConnectService(context);
-        return START_STICKY;
-    }
+    // @Override
+    // public int onStartCommand(Intent intent, int flags, int startId) {
+    //     Log.d("REBIND", "NotificationListenerService onStartCommand begin");
+    //     if (intent != null)
+    //         Applicatio.tryConnectService(context);
+    //     return START_STICKY;
+    // }
     @Override
     @TargetApi(Build.VERSION_CODES.N)
     public void onListenerConnected() {
