@@ -64,7 +64,8 @@ jobs:
                     SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
                 run: |
                     cd android
-                    ./gradlew assembleRelease bundleRelease --scan --build-cache --configuration-cache
+                    ./gradlew assembleRelease bundleRelease --scan
+                    # --build-cache --configuration-cache
             -   name: Upload build reports
                 uses: actions/upload-artifact@v4
                 if: always()

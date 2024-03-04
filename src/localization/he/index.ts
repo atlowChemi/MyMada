@@ -32,13 +32,10 @@ export default {
     tools,
     // smsMoni: 'הפעלת האפליקציה ברקע',
     // notiMoni: 'זיהוי התראות ברקע',
-    // action_settings: 'הגדרות',
     // Mrec: 'אשר קבלה',
     // Mrec2: 'חזור',
     // Minf: 'פרטי מקרה',
-    // Mhac: 'עבור להכתבה',
     // title_activity_sms_res: 'הודעה חדשה',
-    // title_activity_dialog_parent: 'אישור קריאת התראות',
     // codeNote: 'כתוב את פרטיך והוסף בהערות את פרטי ההתנדבות שלך (מרחב ותפקיד) ואנו נבחן את הפרטים ונשלח קוד הפעלה בהקדם.',
 } as const;
 

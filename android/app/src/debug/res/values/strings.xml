@@ -10,27 +10,15 @@
     <string name="button_h">כלי עזר</string>
     <string name="smsMoni">הפעלת האפליקציה ברקע</string>
     <string name="notiMoni">זיהוי התראות ברקע</string>
-    <string name="metroMoni">הפעלת מטרונום ברקע</string>
     <string name="address">כתובת אירוע</string>
     <string name="button_d">מטרונום</string>
 
-
-    <string name="hello_world">הכתבת טופס</string>
-    <string name="ambN">מספר אמבולנס</string>
-    <string name="visa">מספר ויזה</string>
-    <string name="HN">חולה נפגע</string>
-    <string name="HT">התחייבות</string>
     <string name="title_activity_home_page">מסך כניסה</string>
     <string name="title_activity_main_mebu">מסך כניסה</string>
 
-    <string name="SUM">סכום</string>
-    <string name="Fna">שם פרטי</string>
-    <string name="Lna">שם משפחה</string>
-    <string name="code">קוד רפואי</string>
     <string name="suc">נא אשר לפני שליחה</string>
     <string name="succ">שלח</string>
     <string name="ret">ביטול</string>
-    <string name="action_settings">הגדרות</string>
     <string name="send">שלח</string>
     <string name="Mrec">אשר קבלה</string>
     <string name="Mrec2">חזור</string>
@@ -39,7 +27,6 @@
     <string name="test_beep">דמה קבלת מקרה</string>
     <string name="title_activity_msgaprove">אישור סופי</string>
     <string name="info">אודות האפליקציה</string>
-    <string name="TversionNumber">גרסה מספר: %1$s.\nפותח על ידי צוות \"AtlowApps\". כל הזכויות על העיצוב, הרעיונות והביצוע שמורים לChemi@low ולאיתיאל אטלו.\nתודתינו מסורה ליוסי קסוטו, ליוחאי בניטה ולשלום סאקס על סיועם הרב, וכן לזוהר ממן על \"קונטרס הגישה לנפטר\".\n\nהאפליקציה פותחה על ידי מתנדבים במטרה להנגיש פעולות קיימות ובמטרה ליצור פעולות חדשות שיקלו על המתנדבים בפעילות חירום ושגרה.\n\nבכל שאלה, בקשה, בעיה או תקלה ניתן לפנות אלינו דרך עמוד יצירת קשר, ואנו נעשה כמיטב יכולתנו לתת מענה לכל הבקשות.\n\nאפליקציה זו איננה אפליקציה רשמית של מד\"א, ואיננה קשורה באופן כלשהוא למד\"א. המשתמש בה נושא באחריות המלאה בהשלכות השימוש.</string>
     <string name="title_activity_main2">דיווח אנשי צוות</string>
     <string name="enjoy">משמרת מהנה!</string>
     <string name="Nteam">הוספת איש צוות</string>
@@ -49,15 +36,6 @@
 \nכדי לשלוח פרטי מתנדב יש להפעיל תחילה את השורה שלו באמצעות לחיצה על התיבה מימינו.
 \nמשמרת מהנה!</string>
     <string name="title_activity_dialog_parent">אישור קריאת התראות</string>
-    <string name="dialog_help">כדי לאפשר לאפליקציה לזהות מקרים באפליקציית מדא, יש לאפשר לה גישה להתראות.\nכדי לאשר גישה, יש ללחוץ אישור ובעמוד שיפתח לבחור ב\"דיווחי מגן דוד אדום\", ולאפשר את האפשרות הזו.</string>
-    <string name="dialog_yes">איפשור גישה להתראות</string>
-    <string name="dialog_no">לא כרגע</string>
-    <string name="dialog_rate_yes">דרג כעת</string>
-    <string name="dialog_never">לא תודה</string>
-    <string name="title_code">הכנסת קוד הפעלה</string>
-    <string name="contactUs">צור קשר</string>
-    <string name="from">כתובת המייל שלך</string>
-    <string name="name">שם</string>
     <string name="writeName">רשום את שמך</string>
     <string name="subjectT">נושא ההודעה</string>
     <string name="mailBT">כתוב הודעתך פה</string>
@@ -74,76 +52,6 @@
     <string name="pref_description_enable_on">זיהוי מקרים בסמס פועל.</string>
     <string name="pickC">לחץ לבחירת קוד</string>
     <string name="pref_description_vibrate_on">רטט בעת קבלת מקרים פועל.</string>
-    <string-array name="languages_entry">
-        <item>en</item>
-        <item>iw</item>
-    </string-array>
-    <string-array name="languages">
-        <item>English</item>
-        <item>עברית</item>
-    </string-array>
-    <string-array name="sleep_entry">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-    </string-array>
-    <string-array name="sleep">
-        <item>יום - צליל ורטט. לילה - צליל ורטט.</item>
-        <item>יום - צליל ורטט. לילה - רטט.</item>
-        <item>יום - צליל ורטט. לילה - שקט.</item>
-        <item>יום - רטט. לילה - צליל ורטט.</item>
-        <item>יום - שקט. לילה - צליל ורטט.</item>
-    </string-array>
-    <string-array name="ampm_entry">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-    <string-array name="ampm">
-        <item>צליל ורטט</item>
-        <item>רטט</item>
-        <item>שקט</item>
-    </string-array>
-    <string-array name="region_entry">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-    </string-array>
-    <string-array name="region">
-        <item>ירושלים</item>
-        <item>איילון</item>
-        <item>אשר</item>
-        <item>גלבוע</item>
-        <item>דן</item>
-        <item>ירדן</item>
-        <item>ירקון</item>
-        <item>כרמל</item>
-        <item>לכיש</item>
-        <item>נגב</item>
-        <item>שרון</item>
-        <item>מוקד 4</item>
-    </string-array>
-    <string name="goodVitalsOLD">מדדים תקינים ב%9$s הם:\nדופק: %1$d-%2$d\nנשימות: %3$d-%4$d\nלחץ דם: %5$d-%6$d/%7$d-%8$d</string>
-    <string-array name="goodVitals">
-        <item>מבוגר</item>
-        <item>ילד</item>
-        <item>תינוק</item>
-    </string-array>
-    <string-array name="oxySizes">
-        <item>בלון קטן</item>
-        <item>בלון גדול</item>
-    </string-array>
     <string name="Mcode">קודים רפואיים</string>
     <string name="langSwitched">השינוי יכנס לתוקף בכניסה הבאה לאפליקציה.</string>
     <string name="err">תקלה</string>
