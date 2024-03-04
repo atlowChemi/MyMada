@@ -57,22 +57,14 @@ jobs:
                     mkdir -p "${TMP_KEYSTORE_FILE_PATH}"
                     echo keystoreFile="${TMP_KEYSTORE_FILE_PATH}/cert.jks" >> "$GITHUB_OUTPUT"
                     echo ${{ secrets.ANDROID_SIGNING_KEY }} | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/cert.jks
-            -   name: Generate App APK
+            -   name: Generate APK & App Bundle
                 env:
                     KEYSTORE_FILE: ${{ steps.decode_keystore.outputs.keystoreFile }}
                     SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
                     SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
                 run: |
                     cd android
-                    ./gradlew assembleRelease --scan
-            -   name: Generate App Bundle
-                env:
-                    KEYSTORE_FILE: ${{ steps.decode_keystore.outputs.keystoreFile }}
-                    SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
-                    SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-                run: |
-                    cd android
-                    ./gradlew bundleRelease --scan
+                    ./gradlew assembleRelease bundleRelease --scan --build-cache --configuration-cache
             -   name: Upload build reports
                 uses: actions/upload-artifact@v4
                 if: always()

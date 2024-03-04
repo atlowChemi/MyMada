@@ -38,48 +38,6 @@
     <string name="notM">מתנדב פעיל ונתקל בחלונית זו?\nצור עימנו קשר ונסייע לך.</string>
     <string name="notMada">נראה לנו שאתה לא מתנדב מד"א.\nבכדי שהאפליקציה תפעל כראוי צריכה להיות מותקנת אצלך אפליקציית צוותי מגן דוד אדום.\nבאם האפליקציה מותקנת אצלך ובכל זאת אתה רואה מסך זה, התנתק מאפליקציית הצוותים והתחבר שנית.\nשימוש מהנה ומועיל!</string>
     <string name="passH">הזן כאן את הקוד</string>
-    <string name="pref_description_enable_off">זיהוי מקרים בסמס כבוי.</string>
-    <string name="pref_description_enable_on">זיהוי מקרים בסמס פועל.</string>
-    <string name="pref_description_loop_off">באירוע חדש הצלצול יתנגן פעם אחת בלבד.</string>
-    <string name="pref_description_loop_on">באירוע חדש צלצול ימשך עד שיופסק.</string>
-    <string name="pref_description_newWin_off">כשיגיע מקרה חדש, לא יוקפץ חלון עם ההודעה.</string>
-    <string name="pref_description_newWin_on">כשיגיע מקרה חדש, יוקפץ חלון עם ההודעה.</string>
-    <string name="pref_description_not_off">כשיגיע מקרה חדש, לא תיווצר התראה.</string>
-    <string name="pref_description_not_on">כשיגיע מקרה חדש, תיווצר התראה.</string>
-    <string name="pref_description_ride_off">מקרה חדש יתווסף להתראות קיימות.</string>
-    <string name="pref_description_ride_on">מקרה חדש ימחק התראות ישנות.</string>
-    <string name="pref_description_ringtone_off">צליל בעת קבלת מקרים כבוי.</string>
-    <string name="pref_description_ringtone_on">צליל בעת קבלת מקרים פועל.</string>
-    <string name="pref_description_shabat_off">התראה תיסגר רק לאחר אישור קבלה</string>
-    <string name="pref_description_shabat_on">התראה תיסגר בעצמה לאחר פרק הזמן שיוגדר</string>
-    <string name="pref_description_vibrate_off">רטט בעת קבלת מקרים כבוי.</string>
-    <string name="pref_description_vibrate_on">רטט בעת קבלת מקרים פועל.</string>
-    <string name="pref_header_general">סוג התראה</string>
-    <string name="pref_header_more">הגדרות נוספות</string>
-    <string name="pref_header_notifications">הגדרות התראות</string>
-    <string name="pref_header_notifictzia">הגדרות התראה</string>
-    <string name="pref_header_sending">הגדרות הכתבה</string>
-    <string name="pref_header_tools">הגדרות כלי עזר</string>
-    <string name="pref_header_sound_and_vib">הגדרות צליל ורטט</string>
-    <string name="pref_ringtone_silent">שקט</string>
-    <string name="pref_title_Maenable">אפשר זיהוי מקרים באפליקצייה</string>
-    <string name="pref_title_app">בחר צליל התראה מותאם אישית</string>
-    <string name="pref_title_apr">אישור הודעה לפני שליחה</string>
-    <string name="pref_title_enable">התראה על מקרים</string>
-    <string name="pref_title_loop">מצב נודניק (לילה)</string>
-    <string name="pref_title_newWin">יצירת חלון קופץ במקרה חדש</string>
-    <string name="pref_title_new_message_notifications">התראת הודעה חדשה</string>
-    <string name="pref_title_not">יצירת התראה במקרה חדש</string>
-    <string name="pref_title_ride">דרוס התראות קודמות</string>
-    <string name="pref_title_ringtone">צליל</string>
-    <string name="pref_title_shabat">כיבוי עצמי</string>
-    <string name="pref_title_shabatT">פרק הזמן עד סגירת התראה (בשניות)</string>
-    <string name="pref_title_volume">עוצמת ווליום בהתראה</string>
-    <string name="pref_title_vibrate">רטט</string>
-    <string name="pref_title_volume_pick">בחר עוצמת התראה</string>
-    <string name="pref_title_volume_app">שנה ווליום בהתראה</string>
-    <string name="pref_description_volume_app_on">הווליום יותאם לפי מה שתגדיר באפליקציה</string>
-    <string name="pref_description_volume_app_off">הווליום ישאר כמו שהוא במכשיר</string>
     <string name="ret">ביטול</string>
     <string name="send">שלח</string>
     <string name="subjectT">נושא ההודעה</string>
@@ -103,76 +61,9 @@
     <string name="title_activity_main2">דיווח אנשי צוות</string>
     <string name="title_activity_main_mebu">מסך כניסה</string>
     <string name="title_activity_msgaprove">אישור סופי</string>
-    <string name="title_activity_settings">הגדרות</string>
     <string name="title_activity_sms_res">הודעה חדשה</string>
     <string name="visa">מספר ויזה</string>
     <string name="pickC">לחץ לבחירת קוד</string>
-    <string name="pref_header_language">הגדרות שפה</string>
-    <string name="general_settings">הגדרות כלליות</string>
-    <string name="pref_description_lang">בחר באיזו שפה תוצג האפליקציה</string>
-    <string name="pref_notifictions_explain">הסבר על הגדרות התראות</string>
-    <string name="pref_notifictions_explain_content">בעמוד "הגדרות צליל ורטט", תוכל להגדיר את הצורה הבסיסית בה האפליקציה תגיב למקרים.\nמעל הגדרות בסיסיות אלו, ניתן "להלביש" תגובות מתוחכמות יותר, בהתאם לשעה, סטטוס המכשיר ועוד.\nכל ההגדרות הנוספות, הן ההגדרות המשמעותיות. כלומר, אם תגדירו לרטוט לפי סטטוס המכשיר, והמכשיר על מצב שקט - לא יופעל רטט, למרות שהגדרתם רטט להתראות כונן.\nדוגמא נוספת, אם הגדרתם ב"הגדרות יום ולילה" שבלילה אתם רוצים רטט בלבד, על אף שסימנתם התראה עם צליל, ההתראה תרטוט בלבד, בשעות שהגדרתם כלילה.</string>
-    <string name="pref_title_lang">בחירת שפה</string>
-    <string-array name="languages_entry">
-        <item>en</item>
-        <item>iw</item>
-    </string-array>
-    <string-array name="languages">
-        <item>English</item>
-        <item>עברית</item>
-    </string-array>
-    <string-array name="sleep_entry">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-    </string-array>
-    <string-array name="sleep">
-        <item>יום - צליל ורטט. לילה - צליל ורטט.</item>
-        <item>יום - צליל ורטט. לילה - רטט.</item>
-        <item>יום - צליל ורטט. לילה - שקט.</item>
-        <item>יום - רטט. לילה - צליל ורטט.</item>
-        <item>יום - שקט. לילה - צליל ורטט.</item>
-    </string-array>
-    <string-array name="ampm_entry">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-    <string-array name="ampm">
-        <item>צליל ורטט</item>
-        <item>רטט</item>
-        <item>שקט</item>
-    </string-array>
-    <string-array name="region_entry">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-    </string-array>
-    <string-array name="region">
-        <item>ירושלים</item>
-        <item>איילון</item>
-        <item>אשר</item>
-        <item>גלבוע</item>
-        <item>דן</item>
-        <item>ירדן</item>
-        <item>ירקון</item>
-        <item>כרמל</item>
-        <item>לכיש</item>
-        <item>נגב</item>
-        <item>שרון</item>
-        <item>מוקד 4</item>
-    </string-array>
 
     <string name="goodVitalsOLD">מדדים תקינים ב%9$s הם:\nדופק: %1$d-%2$d\nנשימות: %3$d-%4$d\nלחץ דם: %5$d-%6$d/%7$d-%8$d</string>
     <string-array name="goodVitals">
@@ -241,25 +132,6 @@
     <string name="smsCountChar">תווים בהודעה.</string>
     <string name="smsCountMsg">סמסים.</string>
     <string name="title_activity_moked_page">דיווחים למוקד</string>
-    <string name="callT1">אירועי כונן</string>
-    <string name="callT2">אירועי קבוצה</string>
-    <string name="callT3">אירועי משמרת</string>
-    <string name="callT4">הודעות מנהלתיות</string>
-    <string name="findT1">זהה מקרי כונן</string>
-    <string name="findT1_off">זיהוי מקרי כונן כבוי</string>
-    <string name="findT1_on">זיהוי מקרי כונן פועל</string>
-    <string name="findT2">זהה אירועים של קבוצת צוות</string>
-    <string name="findT2_off">זיהוי מקרים קבוצתיים כבוי</string>
-    <string name="findT2_on">זיהוי מקרים קבוצתיים פועל</string>
-    <string name="findT3">זהה אירועים של משמרת</string>
-    <string name="findT3_off">זיהוי מקרי משמרת כבוי</string>
-    <string name="findT3_on">זיהוי מקרי משמרת פועל</string>
-    <string name="findT4">זהה הודעות מנהלתיות</string>
-    <string name="findT4_on">זיהוי הודעות מנהלתיות פועל</string>
-    <string name="findT4_off">זיהוי הודעות מנהלתיות כבוי</string>
-    <string name="findT6">זהה הודעות שירות</string>
-    <string name="findT6_on">זיהוי הודעות שירות פועל</string>
-    <string name="findT6_off">זיהוי הודעות שירות כבוי</string>
     <string name="button_a">הכתבת טפסים</string>
     <string name="button_b">דיווח צוות</string>
     <string name="button_c">שעון דופק</string>
@@ -288,20 +160,9 @@
     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
     <string name="callT">כל האירועים</string>
     <string name="callTS">הודעות שירות</string>
-    <string name="pref_title_cutA">הפרדת הגדרות התראה</string>
-    <string name="pref_description_cutA_off">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בלי הבדלים</string>
-    <string name="pref_description_cutA_on">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בנפרד</string>
-    <string name="TversionNumber">גרסה מספר: %1$s.\nפותח על ידי צוות \"AtlowApps\". כל הזכויות על העיצוב, הרעיונות והביצוע שמורים לChemi@low ולאיתיאל אטלו.\nתודתינו מסורה ליוסי קסוטו, ליוחאי בניטה ולשלום סאקס על סיועם הרב, וכן לזוהר ממן על \"קונטרס הגישה לנפטר\".\n\nהאפליקציה פותחה על ידי מתנדבים במטרה להנגיש פעולות קיימות ובמטרה ליצור פעולות חדשות שיקלו על המתנדבים בפעילות חירום ושגרה.\n\nבכל שאלה, בקשה, בעיה או תקלה ניתן לפנות אלינו דרך עמוד יצירת קשר, ואנו נעשה כמיטב יכולתנו לתת מענה לכל הבקשות.\n\nאפליקציה זו איננה אפליקציה רשמית של מד\"א, ואיננה קשורה באופן כלשהוא למד\"א. המשתמש בה נושא באחריות המלאה בהשלכות השימוש.</string>
-    <string name="pref_title_state">התראה לפי סטטוס מכשיר</string>
-    <string name="pref_description_state_on">התראה תצפצף רק כאשר המכשיר לא במצב רטט/שקט. רטט יפעל כרגיל.</string>
-    <string name="pref_description_state_off">התראה תצפצף גם כשהמכשיר במצב רטט/שקט.</string>
     <string name="MISHM_reco_off">איתור הודעות משמרת כבוי בהגדרות.</string>
     <string name="CONAN_reco_off">איתור הודעות כונן כבוי בהגדרות.</string>
-    <string name="pref_title_sleep">מצב יום-לילה</string>
-    <string name="pref_description_sleep_on">החל מ23:00 ועד 7:00 לא יושמעו התראות על מקרים.</string>
-    <string name="pref_description_sleep_off">פיצול סגנון התראה בהתאם לשעה (לילה מ23:00 עד 7:00).\\\\nשימו לב!\\\\nהגדרה זו לא מפעילה צליל ורטט, אלא מאפשרת אותם אם הם פעילים.</string>
     <string name="CONANTest">אירוע חדש. 14:18 מונה:267 כתובת: בדיקה!!!ירושלים המ\"ג, קוד הזנקה: מחלה מבוגר, קוד רפואי: דום לב</string>
-    <string name="pref_title_region">בחירת מרחב ברירת מחדל</string>
     <string name="newCall">אירוע חדש</string>
     <string name="time">התקבל בשעה: %1$s</string>
     <string name="delete">הסר</string>
@@ -325,14 +186,6 @@
     <string name="seconds">שניות</string>
     <string name="startContract">תחילת ציר</string>
     <string name="endContract">סוף ציר</string>
-    <string name="pref_header_advanced">הגדרות מתקדמות</string>
-    <string name="pref_header_ampm">הגדרות יום ולילה</string>
-    <string name="pref_header_moked">הגדרות הכתבה</string>
-    <string name="pref_head_description_notifications">בחירת אופן ההתראה בעת קבלת מקרה - צליל רטט וכד\'</string>
-    <string name="pref_head_description_moked">בחירת מוקד אליו ישלחו ההודעות</string>
-    <string name="pref_head_description_lang">בחירת שפה להצגת האפליקציה</string>
-    <string name="pref_head_description_ampm">בחירת אופן ההתראה האפשרי בעת קבלת מקרה - בחלוקה ליום ולילה</string>
-    <string name="pref_head_description_advanced">בחירת אופן ההתראה בעת קבלת מקרה - משך פעולה ואופן פעולה</string>
     <string name="notifNight">התראות בשעות לילה</string>
     <string name="notifDay">התראות בשעות יום</string>
     <string name="nightEnd">סוף משמרת לילה</string>
@@ -359,9 +212,6 @@
     <string name="note">הערות</string>
     <string name="APP_reco_none">אנא התקן את אפליקציית מד\"א תחילה!</string>
     <string name="note2">יש לציין: תחנת  אם של מד\"א, מרחב והכשרה רפואית.</string>
-    <string name="pref_description_stateVib_on">התראה תרטוט רק כאשר המכשיר לא במצב שקט</string>
-    <string name="pref_description_stateVib_off">התראה תרטוט גם כשהמכשיר במצב שקט.</string>
-    <string name="pref_title_stateVib">רטט לפי סטטוס מכשיר</string>
     <string name="navigation_drawer_close">סגור מגירה</string>
     <string name="navigation_drawer_open">פתח מגירה</string>
     <string name="button_ag">מחשבון אפגאר</string>
@@ -441,8 +291,6 @@
     <string name="ContracRecover">שחזר נתונים קודמים?</string>
     <string name="ContracDelete">מחק צירים שמורים?</string>
     <string name="ContracDeleteEmpty">אין צירים למחוק</string>
-    <string name="pref_title_tools">בחירת כלי עזר</string>
-    <string name="pref_description_tools">בחר איזה כלים יוצגו בכלי עזר</string>
     <string name="NoPicked">יש לסמן לכל הפחות כלי עזר אחד!</string>
     <string name="title_low_calls">הודעות לא קריטיות</string>
     <string name="title_notif">התראה</string>
