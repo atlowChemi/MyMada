@@ -40,44 +40,6 @@
     <string name="passH">Write the code here</string>
     <string name="visa">Visa number</string>
     <string name="notMada">It seems to us you are not a MADA volunteer.\nIn order for the app to work on this phone, the official MADA app has to be installed.\nIf the MADA app is installed, try disconnecting and reconnecting in the MADA app, and then try again.\nEnjoy the app!</string>
-    <string name="pref_description_app_on">The sound played on new call, will be the sound you pick.</string>
-    <string name="pref_description_enable_off">SMS recognition off.</string>
-    <string name="pref_description_enable_on">SMS recognition on.</string>
-    <string name="pref_description_loop_off">Notification will play once.</string>
-    <string name="pref_description_newWin_off">When new call arrives, a pop-up won\'t be fired.</string>
-    <string name="pref_description_newWin_on">When new call arrives, a pop-up will be fired.</string>
-    <string name="pref_description_not_off">When new call arrives, a notification won\'t be fired.</string>
-    <string name="pref_description_not_on">When new call arrives, a notification will be fired.</string>
-    <string name="pref_description_ride_off">A new call will join the old notifications.</string>
-    <string name="pref_description_ride_on">A new call will over-ride old notifications.</string>
-    <string name="pref_description_ringtone_off">Sound on new call is off.</string>
-    <string name="pref_description_ringtone_on">Sound on new call is on.</string>
-    <string name="pref_description_shabat_off">Notification will close only if clicked</string>
-    <string name="pref_description_vibrate_off">Vibrate is off.</string>
-    <string name="pref_header_general">Alert type</string>
-    <string name="pref_header_more">More</string>
-    <string name="pref_header_notifications">Notification settings</string>
-    <string name="pref_header_notifictzia">Emergency call notifications</string>
-    <string name="pref_header_sending">Dictation settings</string>
-    <string name="pref_header_tools">Utilities &amp; tools settings</string>
-    <string name="pref_header_sound_and_vib">Sound &amp; vibration settings</string>
-    <string name="pref_ringtone_silent">Silent</string>
-    <string name="pref_title_Maenable">Recognize calls through MADA app</string>
-    <string name="pref_title_app">Pick a custom sound</string>
-    <string name="pref_title_enable">Recognize emergency calls</string>
-    <string name="pref_title_loop">Snooze (night mode)</string>
-    <string name="pref_title_newWin">Pop-up window at new call</string>
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-    <string name="pref_title_ride">Over-ride old notifications</string>
-    <string name="pref_title_ringtone">Sound alert</string>
-    <string name="pref_title_shabat">Auto-stop</string>
-    <string name="pref_title_shabatT">Delay before auto-stop (seconds)</string>
-    <string name="pref_title_volume">Notification volume</string>
-    <string name="pref_title_vibrate">Vibrate</string>
-    <string name="pref_title_volume_pick">Pick notification volume</string>
-    <string name="pref_title_volume_app">Change volume for notifications</string>
-    <string name="pref_description_volume_app_on">The volume will be set by the app\'s settings</string>
-    <string name="pref_description_volume_app_off">The volume will be set by the phone\'s settings</string>
     <string name="ret">Cancel</string>
     <string name="send">Send</string>
     <string name="subjectT">Message subject</string>
@@ -101,80 +63,8 @@
     <string name="title_activity_main2">Ambulance team dictation</string>
     <string name="title_activity_main_mebu">Home page</string>
     <string name="title_activity_msgaprove">Message approval</string>
-    <string name="title_activity_settings">Settings</string>
     <string name="title_activity_sms_res">New message</string>
     <string name="pickC">Pick a medical code</string>
-    <string name="pref_title_not">Notification at new call</string>
-    <string name="pref_title_apr">Review message before sending</string>
-    <string name="pref_description_vibrate_on">Vibrate is on.</string>
-    <string name="pref_description_shabat_on">Notification will auto-stop.</string>
-    <string name="pref_description_loop_on">Notification will loop till stopped.</string>
-    <string name="pref_header_language">Language settings</string>
-    <string name="pref_description_lang">Pick the language of the app</string>
-    <string name="pref_notifictions_explain">Explanation about notification setings</string>
-    <string name="pref_notifictions_explain_content">In "sound &amp; vibration" settings, you choose the basic reaction of a new notification.\n
-    On top of this basic setting\'s set, you can set from different tools how the app will react when detecting a new call.</string>
-    <string name="pref_title_lang">Pick language</string>
-    <string-array name="languages_entry">
-        <item>en</item>
-        <item>iw</item>
-    </string-array>
-    <string-array name="languages">
-        <item>English</item>
-        <item>עברית</item>
-    </string-array>
-    <string-array name="sleep_entry">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-    </string-array>
-    <string-array name="sleep">
-        <item>Day - sound &amp; vibration. Night - sound &amp; vibration.</item>
-        <item>Day - sound &amp; vibration. Night - vibration.</item>
-        <item>Day - sound &amp; vibration. Night - silent.</item>
-        <item>Day - vibration. Night - sound &amp; vibration.</item>
-        <item>Day - silent. Night - sound &amp; vibration.</item>
-    </string-array>
-    <string-array name="ampm_entry">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-    <string-array name="ampm">
-        <item>Sound &amp; vibration</item>
-        <item>Vibration</item>
-        <item>Silent</item>
-    </string-array>
-    <string-array name="region_entry">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-    </string-array>
-    <string-array name="region">
-        <item>ירושלים</item>
-        <item>איילון</item>
-        <item>אשר</item>
-        <item>גלבוע</item>
-        <item>דן</item>
-        <item>ירדן</item>
-        <item>ירקון</item>
-        <item>כרמל</item>
-        <item>לכיש</item>
-        <item>נגב</item>
-        <item>שרון</item>
-        <item>מוקד 4</item>
-    </string-array>
     <string name="goodVitalsOLD">%9$s vitals normal range:\npulse: %1$d-%2$d\nbreathing: %3$d-%4$d\nblood pressure: %5$d-%6$d/%7$d-%8$d</string>
     <string-array name="goodVitals">
         <item>Adult</item>
@@ -227,25 +117,6 @@
     <string name="smsCountChar">Characters.</string>
     <string name="smsCountMsg">Messages.</string>
     <string name="title_activity_moked_page">Send to dispatch </string>
-    <string name="callT3">Shift calls</string>
-    <string name="callT2">Group calls</string>
-    <string name="callT1">on-call calls</string>
-    <string name="callT4">Administrative messages</string>
-    <string name="findT1">Recognize \"on-call\" calls</string>
-    <string name="findT1_off">\"on-call\" calls recognition off</string>
-    <string name="findT1_on">"on-call\" calls recognition on</string>
-    <string name="findT2">Recognize \"team group\" calls</string>
-    <string name="findT2_off">\"team group\" calls recognition off</string>
-    <string name="findT2_on">\"team group\" calls recognition on</string>
-    <string name="findT3">Recognize shift calls</string>
-    <string name="findT3_off">Shift calls recognition off</string>
-    <string name="findT3_on">Shift calls recognition on</string>
-    <string name="findT4">Recognize Administrative messages</string>
-    <string name="findT4_on">Administrative messages recognition on</string>
-    <string name="findT4_off">Administrative messages recognition off</string>
-    <string name="findT6">Recognize service calls</string>
-    <string name="findT6_on">Service calls recognition off</string>
-    <string name="findT6_off">Service calls recognition on</string>
     <string name="button_j">Dispatch reports</string>
     <string name="button_i">Custom message</string>
     <string name="button_g">Oxygen calculator</string>
@@ -271,19 +142,9 @@
     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
     <string name="callT">All the calls</string>
     <string name="callTS">Service calls</string>
-    <string name="pref_title_cutA">Separate alert settings</string>
-    <string name="pref_description_cutA_on">Each call will alert by it\'s specific type.</string>
-    <string name="pref_description_cutA_off">All calls will alert the same way.</string>
     <string name="newSettings">We think you are new in this app.\nIt is suggested you check the settings before continuing</string>
-    <string name="pref_title_state">Alert by phone status</string>
-    <string name="pref_description_state_off">Emergency call will make sound even if phone is on silent mode.</string>
-    <string name="pref_description_state_on">Emergency call will make sound only if phone is not on silent/vibrate mode.</string>
     <string name="CONAN_reco_off">Conan message recognition is off.</string>
     <string name="MISHM_reco_off">Shift message recognition is off.</string>
-    <string name="pref_title_sleep">Day-night mode</string>
-    <string name="pref_description_sleep_on">Between 23:00 and 7:00 calls will not alert.</string>
-    <string name="pref_description_sleep_off">Different alert types by the time day (night is from 23:00 till 7:00)\\\\nplease note!\\\\nthis will not turn on the sound or vibration, but will allow them if sett.</string>
-    <string name="pref_title_region">Pick MDA region</string>
     <string name="newCall">אירוע חדש</string>
     <string name="time">התקבל בשעה: %1$s</string>
     <string name="edit">Edit</string>
@@ -310,14 +171,6 @@
     <string name="seconds">Seconds</string>
     <string name="startContract">Contraction start</string>
     <string name="endContract">Contraction end</string>
-    <string name="pref_header_moked">Dictation settings</string>
-    <string name="pref_header_ampm">Day &amp; night settings</string>
-    <string name="pref_header_advanced">Advanced settings</string>
-    <string name="pref_head_description_notifications">Pick notification behavior - sound, vibration etc.</string>
-    <string name="pref_head_description_moked">Pick MDA dispatch to send sms\'s to</string>
-    <string name="pref_head_description_lang">Pick application language</string>
-    <string name="pref_head_description_ampm">Pick the allowed notifying patterns divided by day &amp; night</string>
-    <string name="pref_head_description_advanced">Pick notification behavior - advanced</string>
     <string name="notifDay">Notifications during the day</string>
     <string name="notifNight">Notifications during the night</string>
     <string name="nightEnd">Night shift end</string>
@@ -358,9 +211,6 @@
     <string name="note">Notes</string>
     <string name="APP_reco_none">Please install the MADA app first!</string>
     <string name="note2">Notes</string>
-    <string name="pref_description_stateVib_on">Emergency call will vibrate only if phone is not on silent mode.</string>
-    <string name="pref_description_stateVib_off">Emergency call will vibrate even if phone is on silent mode.</string>
-    <string name="pref_title_stateVib">Vibrate by phone status</string>
     <string name="navigation_drawer_open">open drawer</string>
     <string name="navigation_drawer_close">close drawer</string>
     <string name="button_ag">APGAR calculator</string>
@@ -439,8 +289,6 @@
     <string name="ContracRecover">Recover previous data?</string>
     <string name="ContracDelete">Delete contractions present?</string>
     <string name="ContracDeleteEmpty">There are no contractions to remove!</string>
-    <string name="pref_title_tools">Pick tools</string>
-    <string name="pref_description_tools">Pick tools to show on tools page</string>
     <string name="NoPicked">Pick at least one tool!</string>
     <string name="title_low_calls">Non emergency calls</string>
     <string name="title_notif">Notification</string>
