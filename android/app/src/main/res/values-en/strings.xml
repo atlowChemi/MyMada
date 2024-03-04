@@ -37,15 +37,10 @@
     <string name="writeName">Write your name</string>
     <string name="changeName">Click here to change your name</string>
     <string name="notM">You\'re an active volunteer and you see this window?\nContact us and we will solve the problem.</string>
-    <string name="pref_default_shabatT">6</string>
     <string name="passH">Write the code here</string>
     <string name="visa">Visa number</string>
     <string name="notMada">It seems to us you are not a MADA volunteer.\nIn order for the app to work on this phone, the official MADA app has to be installed.\nIf the MADA app is installed, try disconnecting and reconnecting in the MADA app, and then try again.\nEnjoy the app!</string>
-    <string name="pref_description_Maenable_off">MADA app recognition off.</string>
-    <string name="pref_description_Maenable_on">MADA app recognition on.</string>
     <string name="pref_description_app_on">The sound played on new call, will be the sound you pick.</string>
-    <string name="pref_description_apr_off">The message will be sent immediately with no delay.</string>
-    <string name="pref_description_apr_on">Before message is sent, you\'ll be asked to approve it.</string>
     <string name="pref_description_enable_off">SMS recognition off.</string>
     <string name="pref_description_enable_on">SMS recognition on.</string>
     <string name="pref_description_loop_off">Notification will play once.</string>
@@ -113,7 +108,6 @@
     <string name="pref_title_apr">Review message before sending</string>
     <string name="pref_description_vibrate_on">Vibrate is on.</string>
     <string name="pref_description_shabat_on">Notification will auto-stop.</string>
-    <string name="pref_description_app_off">The sound played on new call, is the default.</string>
     <string name="pref_description_loop_on">Notification will loop till stopped.</string>
     <string name="pref_header_language">Language settings</string>
     <string name="pref_description_lang">Pick the language of the app</string>
