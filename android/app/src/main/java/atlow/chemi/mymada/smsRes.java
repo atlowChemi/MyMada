@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class smsRes extends AppCompatActivity {
@@ -93,7 +94,8 @@ public class smsRes extends AppCompatActivity {
                 break;
         }
         mMediaPlayer = new MediaPlayer();
-        SharedPreferences SP = getSharedPreferences("Settings",0);
+        var SP = getSharedPreferences("Settings", MODE_PRIVATE);
+        final var map = (Map<String, Object>) SP.getAll();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
@@ -101,34 +103,34 @@ public class smsRes extends AppCompatActivity {
         Uri url = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.alert);
         long[] length = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
-        boolean cut = SP.getString("cut", "false").equals("true");
+        boolean cut = map.compute("cut", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
         boolean vib;
         boolean soun;
         boolean app;
         Uri uri;
         if (string.equals("T6") || string.equals("T4"))    {
-            vib = SP.getString("NvibT4", "true").equals("true");
-            soun = SP.getString("NsouT4", "true").equals("true");
-            app = SP.getString("NappT4","false").equals("true");
+            vib = map.compute("NvibT4", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            soun = map.compute("NsouT4", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            app = map.compute("NappT4", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
             uri = Uri.parse(SP.getString("NuRiT4", ""));
         }
         else if (cut) {
-            vib = SP.getString("Nvib" + string, "true").equals("true");
-            soun = SP.getString("Nsou" + string, "true").equals("true");
-            app = SP.getString("Napp" + string,"false").equals("true");
+            vib = map.compute("Nvib" + string, (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            soun = map.compute("Nsou" + string, (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            app = map.compute("Napp" + string, (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
             uri = Uri.parse(SP.getString("NuRi" + string, ""));
         }
         else {
-            vib = SP.getString("Nvib", "true").equals("true");
-            soun = SP.getString("Nsou", "true").equals("true");
-            app = SP.getString("Napp", "false").equals("true");
+            vib = map.compute("Nvib", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            soun = map.compute("Nsou", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            app = map.compute("Napp", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
             uri = Uri.parse(SP.getString("NuRi", ""));
         }
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
         int hour = now.get(Calendar.HOUR_OF_DAY);
-        int sleep = Integer.parseInt(SP.getString("sleep", "0"));
-        int nightStart = Integer.parseInt(SP.getString("nightStart", "23"));
-        int nightEnd = Integer.parseInt(SP.getString("nightEnd", "7"));
+        int sleep = Integer.parseInt((String) map.compute("sleep", (key, val) -> String.valueOf(val == null ? "0" : val)));
+        int nightStart = Integer.parseInt((String) map.compute("nightStart", (key, val) -> String.valueOf(val == null ? "23" : val)));
+        int nightEnd = Integer.parseInt((String) map.compute("nightEnd", (key, val) -> String.valueOf(val == null ? "7" : val)));
         if (hour <= nightEnd || hour >= nightStart) {
             switch (sleep)  {
                 case 1:
@@ -161,10 +163,10 @@ public class smsRes extends AppCompatActivity {
             }
         }
         final boolean sou = soun;
-        boolean loop = SP.getString("loop","false").equals("true");
-        boolean ShabbatM = SP.getString("killS","false").equals("true");
-        boolean stat = SP.getString("stat","false").equals("true");
-        boolean statVib = SP.getString("statVib","false").equals("true");
+        boolean loop = map.compute("loop", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
+        boolean ShabbatM = map.compute("killS", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
+        boolean stat = map.compute("stat", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
+        boolean statVib = map.compute("statVib", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
         boolean silent = true;
         boolean silentVib = true;
         am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -388,10 +390,10 @@ public class smsRes extends AppCompatActivity {
             int vol = am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
             currentVolume = am.getStreamVolume(AudioManager.STREAM_ALARM);
             vo = am.getStreamVolume(AudioManager.STREAM_ALARM);
-            SharedPreferences SP = getSharedPreferences("Settings",0);
-            boolean volumeApp = SP.getString("volumeApp", "true").equals("true");
+            SharedPreferences SP = getSharedPreferences("Settings", MODE_PRIVATE);
+            boolean volumeApp = ((Map<String, Object>) SP.getAll()).compute("volumeApp", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
             if (volumeApp) {
-                int volumeAppNum = Integer.parseInt(SP.getString("volumeAppNum", String.valueOf(vol)));
+                var volumeAppNum = Integer.parseInt((String)((Map<String, Object>) SP.getAll()).compute("volumeAppNum", (key, val) -> String.valueOf(val == null ? vol : val)));
                 am.setStreamVolume(AudioManager.STREAM_ALARM, volumeAppNum, 0);
                 mMediaPlayer.setVolume(volumeAppNum, volumeAppNum);
             }
@@ -420,7 +422,7 @@ public class smsRes extends AppCompatActivity {
     @Override
     public void onDestroy() {
         SharedPreferences SP = getSharedPreferences("settings",0);
-        final boolean sou = SP.getString("Nsou" + string, "true").equals("true");
+        final boolean sou = ((Map<String, Object>) SP.getAll()).compute("Nsou" + string, (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
         if (vibe != null) {
             vibe.cancel();

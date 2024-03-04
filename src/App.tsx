@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
-import { StatusBar } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { PortalProvider } from '@gorhom/portal';
+import { AppRegistry, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from './consts';
@@ -77,6 +77,9 @@ export const AppWithDI = observer((props: any) => {
 AppWithDI.displayName = 'AppWithDI';
 
 export const App: FC = (props: any) => {
+    useEffect(() => {
+        AppRegistry.startHeadlessTask(334, 'HeadlessTask', { type: 'appStart' });
+    }, []);
     return (
         <DependencyInjectionProvider container={container}>
             <AppWithDI {...props} />

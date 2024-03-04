@@ -10,8 +10,10 @@ import androidx.core.os.LocaleListCompat;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import java.util.Objects;
 
 @ReactModule(name = LocalizationSettingsModule.NAME)
 public class LocalizationSettingsModule extends ReactContextBaseJavaModule {
+    private final ReactContext reactContext;
     private final SharedPreferences sharedPreferences;
     private final static String LANGUAGE_SP_KEY = "lng";
     private final static String FIRST_TIME_MIGRATION = "first_time_migration";
@@ -29,6 +32,7 @@ public class LocalizationSettingsModule extends ReactContextBaseJavaModule {
 
     public LocalizationSettingsModule(ReactApplicationContext reactContext) {
         super(reactContext);
+        this.reactContext = reactContext;
         this.sharedPreferences = reactContext.getSharedPreferences("Settings", Context.MODE_PRIVATE);
     }
 
@@ -77,10 +81,9 @@ public class LocalizationSettingsModule extends ReactContextBaseJavaModule {
         promise.resolve(getCurrentLanguage());
     }
 
-    @UiThread
     @ReactMethod
     public void setLanguage(String language) {
-        setCurrentLanguage(language);
+        UiThreadUtil.runOnUiThread(() -> setCurrentLanguage(language));
     }
 
     @Override

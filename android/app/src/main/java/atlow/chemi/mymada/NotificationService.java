@@ -15,6 +15,7 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import java.util.Map;
 import java.util.Objects;
 
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
@@ -30,9 +31,8 @@ public class NotificationService extends NotificationListenerService {
     }
     @Override
     public void onNotificationPosted(StatusBarNotification statusBarNotification) {
-        SharedPreferences sp = getSharedPreferences("Settings", 0);
-        boolean Mapp = sp.getString("Mapp", "false").equals("true");
-        Log.e("Mapp is!", Mapp ? "true" : "false");
+        var sp = getSharedPreferences("Settings", MODE_PRIVATE);
+        var Mapp = ((Map<String, Object>) sp.getAll()).compute("Mapp", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
         if (Mapp && statusBarNotification.getPackageName() != null && (statusBarNotification.getPackageName().contains("mdaemergency")
                 || statusBarNotification.getPackageName().contains("mda.health")
                 || statusBarNotification.getPackageName().equals("atlow.mymadaadmin"))) {
