@@ -38,13 +38,6 @@
     <string name="notM">מתנדב פעיל ונתקל בחלונית זו?\nצור עימנו קשר ונסייע לך.</string>
     <string name="notMada">נראה לנו שאתה לא מתנדב מד"א.\nבכדי שהאפליקציה תפעל כראוי צריכה להיות מותקנת אצלך אפליקציית צוותי מגן דוד אדום.\nבאם האפליקציה מותקנת אצלך ובכל זאת אתה רואה מסך זה, התנתק מאפליקציית הצוותים והתחבר שנית.\nשימוש מהנה ומועיל!</string>
     <string name="passH">הזן כאן את הקוד</string>
-    <string name="pref_default_shabatT">6</string>
-    <string name="pref_description_Maenable_off">זיהוי מקרים באפליקצייה כבוי</string>
-    <string name="pref_description_Maenable_on">זיהוי מקרים באפליקצייה פועל</string>
-    <string name="pref_description_app_off">הצליל שיושמע בקבלת מקרה הינו הצליל שהוגדר ביישום.</string>
-    <string name="pref_description_app_on">הצליל שיושמע בקבלת מקרה הינו הצליל שתגדיר.</string>
-    <string name="pref_description_apr_off">כאשר תלחץ לשלוח את ההודעה, היא תישלח מיידית בלא אפשרות לאישור.</string>
-    <string name="pref_description_apr_on">לפני שליחת ההודעה יוצג נוסח ההודעה לאישורך.</string>
     <string name="pref_description_enable_off">זיהוי מקרים בסמס כבוי.</string>
     <string name="pref_description_enable_on">זיהוי מקרים בסמס פועל.</string>
     <string name="pref_description_loop_off">באירוע חדש הצלצול יתנגן פעם אחת בלבד.</string>
