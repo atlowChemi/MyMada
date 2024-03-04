@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import android.util.Log;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public class BootCompleteReceiver extends BroadcastReceiver {
 
@@ -18,7 +19,7 @@ public class BootCompleteReceiver extends BroadcastReceiver {
         if (action != null && Arrays.stream(actions).anyMatch(action::equalsIgnoreCase)) {
             Log.d("started BCR", action);
             var sp = context.getSharedPreferences("Settings", 0);
-            if (!sp.getString("Mapp", "false").equals("true")) {
+            if (!((Map<String, Object>) sp.getAll()).compute("Mapp", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true")) {
                 return;
             }
             var serviceIntent = new Intent(context, SMSMonitorService.class);

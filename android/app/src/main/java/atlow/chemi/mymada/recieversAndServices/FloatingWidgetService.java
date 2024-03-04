@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.Map;
 
 import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.R;
@@ -135,10 +136,10 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             int vol = am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
             currentVolume = am.getStreamVolume(AudioManager.STREAM_ALARM);
             vo = am.getStreamVolume(AudioManager.STREAM_ALARM);
-            SharedPreferences SP = getSharedPreferences("Settings",0);
-            boolean volumeApp = SP.getBoolean("volumeApp", true);
+            SharedPreferences SP = getSharedPreferences("Settings",MODE_PRIVATE);
+            var volumeApp = ((Map<String, Object>) SP.getAll()).compute("volumeApp", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
             if (volumeApp) {
-                int volumeAppNum = SP.getInt("volumeAppNum", vol);
+                var volumeAppNum = Integer.parseInt((String)((Map<String, Object>) SP.getAll()).compute("volumeAppNum", (key, val) -> String.valueOf(val == null ? vol : val)));
                 am.setStreamVolume(AudioManager.STREAM_ALARM, volumeAppNum, 0);
                 mMediaPlayer.setVolume(volumeAppNum, volumeAppNum);
             }

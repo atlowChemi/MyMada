@@ -23,6 +23,7 @@ import android.util.Log;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import atlow.chemi.mymada.MainReactActivity;
@@ -52,11 +53,13 @@ public class GrobootRec extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         final SharedPreferences sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
-        boolean win = sp.getString("win", "true").equals("true");
-        boolean not = sp.getString("not", "true").equals("true");
-        boolean ShabbatM = sp.getString("killS", "false").equals("true");
-        boolean stat = sp.getString("stat", "false").equals("true");
-        boolean statVib = sp.getString("statVib", "false").equals("true");
+        final var map = (Map<String, Object>) sp.getAll();
+        boolean win = map.compute("win", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+        boolean not = map.compute("not", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+        boolean ShabbatM = map.compute("ShabbatM", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
+        boolean stat = map.compute("stat", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
+        boolean statVib = map.compute("statVib", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
+
         boolean silent = true;
         boolean silentVib = true;
         Uri url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
@@ -93,31 +96,31 @@ public class GrobootRec extends BroadcastReceiver {
             Log.d("callT", "" + callT);
             switch (callT) {
                 case 1:
-                    callType = sp.getString("callT1", "true").equals("true");
+                    callType = map.compute("callT1", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T1";
                     break;
                 case 2:
-                    callType = sp.getString("callT2", "true").equals("true");
+                    callType = map.compute("callT2", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T2";
                     break;
                 case 3:
-                    callType = sp.getString("callT3", "true").equals("true");
+                    callType = map.compute("callT3", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T3";
                     break;
                 case 4:
-                    callType = sp.getString("callT4", "true").equals("true");
+                    callType = map.compute("callT4", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T4";
                     break;
                 case 5:
-                    callType = sp.getString("callT3", "true").equals("true");
+                    callType = map.compute("callT3", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T3";
                     break;
                 case 6:
-                    callType = sp.getString("callT6", "true").equals("true");
+                    callType = map.compute("callT6", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T6";
                     break;
                 default:
-                    callType = sp.getString("callT1", "true").equals("true");
+                    callType = map.compute("callT1", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T1";
                     break;
             }
@@ -125,34 +128,34 @@ public class GrobootRec extends BroadcastReceiver {
             smsRes.newC(text);
             smsRes.alerT(madasApp);
         }
-        cut = sp.getString("cut", "false").equals("true");
+        cut = map.compute("cut", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
         if (testAp) {
             callType = true;
         }
         Log.d("callT", "t6 is now: " + callType);
         Uri uri;
         if (string.equals("T6") || string.equals("T4")) {
-            vib = sp.getString("NvibT4", "true").equals("true");
-            sou = sp.getString("NsouT4", "true").equals("true");
-            app = sp.getString("NappT4", "false").equals("true");
+            vib = map.compute("NvibT4", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            sou = map.compute("NsouT4", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            app = map.compute("NappT4", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
             uri = Uri.parse(sp.getString("NuRiT4", ""));
         } else if (cut) {
-            vib = sp.getString("Nvib" + string, "true").equals("true");
-            sou = sp.getString("Nsou" + string, "true").equals("true");
-            app = sp.getString("Napp" + string, "false").equals("true");
+            vib = map.compute("Nvib" + string, (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            sou = map.compute("Nsou" + string, (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            app = map.compute("Napp" + string, (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
             uri = Uri.parse(sp.getString("NuRi" + string, ""));
         } else {
             callType = true;
-            vib = sp.getString("Nvib", "true").equals("true");
-            sou = sp.getString("Nsou", "true").equals("true");
-            app = sp.getString("Napp", "false").equals("true");
+            vib = map.compute("Nvib", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            sou = map.compute("Nsou", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+            app = map.compute("Napp", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
             uri = Uri.parse(sp.getString("NuRi", ""));
         }
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
         int hour = now.get(Calendar.HOUR_OF_DAY);
-        int sleep = Integer.parseInt(sp.getString("sleep", "0"));
-        int nightStart = Integer.parseInt(sp.getString("nightStart", "23"));
-        int nightEnd = Integer.parseInt(sp.getString("nightEnd", "7"));
+        int sleep = Integer.parseInt((String) map.compute("sleep", (key, val) -> String.valueOf(val == null ? "0" : val)));
+        int nightStart = Integer.parseInt((String) map.compute("nightStart", (key, val) -> String.valueOf(val == null ? "23" : val)));
+        int nightEnd = Integer.parseInt((String) map.compute("nightEnd", (key, val) -> String.valueOf(val == null ? "7" : val)));
         if (hour <= nightEnd || hour >= nightStart) {
             switch (sleep) {
                 case 1:
@@ -207,7 +210,7 @@ public class GrobootRec extends BroadcastReceiver {
                 /*if (sp.getBoolean("loop", false)) {
                     mNotification.flags |= Notification.FLAG_INSISTENT;
                 }*/
-                if (sp.getString("ride", "false").equals("true")) {
+                if (map.compute("ride", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true")) {
                     notifManager.cancelAll();
                     notifManager.notify(notNum, mNotification);
                 } else {
@@ -219,7 +222,7 @@ public class GrobootRec extends BroadcastReceiver {
                     Intent service = new Intent(context , FloatingWidgetService.class);
                     service.putExtra("vib", vib && (!statVib || !silentVib));
                     service.putExtra("sou", sou && (!stat || !silent));
-                    service.putExtra("loop", sp.getString("loop", "false").equals("true"));
+                    service.putExtra("loop", map.compute("loop", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true"));
                     service.putExtra("uri", app ? uri.toString() : url.toString());
                     service.putExtra("timeK", sp.getString("timeK", "6"));
                     service.putExtra("ShabbatM", ShabbatM);
@@ -232,7 +235,7 @@ public class GrobootRec extends BroadcastReceiver {
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                 i.putExtra("notNum", notNum);
-                i.putExtra("loop", sp.getString("loop", "false").equals("true"));
+                i.putExtra("loop", map.compute("loop", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true"));
                 i.putExtra("callT", callT);
                 context.startActivity(i);
             }
@@ -243,7 +246,7 @@ public class GrobootRec extends BroadcastReceiver {
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             i.putExtra("notNum", notNum);
-            i.putExtra("loop", sp.getString("loop", "false").equals("true"));
+            i.putExtra("loop", map.compute("loop", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true"));
             i.putExtra("callT", callT);
             context.startActivity(i);
         }
