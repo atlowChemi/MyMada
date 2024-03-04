@@ -31,7 +31,6 @@
         <item name="android:actionMenuTextColor">@color/Black</item>
         <item name="android:itemBackground">@color/materialGrey300</item>
         <item name="android:textColorSecondary">@color/ColorRedDark</item>
-        <item name="android:windowBackground">@drawable/ic_bgg</item>
         <item name="android:typeface">monospace</item>
 
         <item name="android:textColorHint">@color/ColorAqua</item>
