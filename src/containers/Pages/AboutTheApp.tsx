@@ -1,5 +1,4 @@
 import React from 'react';
-import BuildConfig from 'react-native-build-config';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { HomeBtn } from '../HomeBtn';
@@ -7,15 +6,17 @@ import { Text } from '../../Components/Text';
 import { BasePageView } from '../../Components/BasePageView';
 import { useDependencyInjector } from '../../services/container';
 import { NavigationStore } from '../../services/NavigationStore';
+import { MadaNotificationsStore } from '../../services/MadaNotificationsStore';
 import type { NavigatableScreenProps } from '../../App';
 
 export const AboutTheApp = React.memo<NavigatableScreenProps>(() => {
     const { t } = useTranslation();
     const navigationStore = useDependencyInjector(NavigationStore);
+    const madaNotificationsStore = useDependencyInjector(MadaNotificationsStore);
 
     return (
         <BasePageView>
-            <Text style={styles.text}>{t('aboutUs:message', { version: BuildConfig.VERSION_NAME || 'TEST VERSION' })}</Text>
+            <Text style={styles.text}>{t('aboutUs:message', { version: madaNotificationsStore.appData.VERSION_NAME || 'TEST VERSION' })}</Text>
             <HomeBtn wrapperStyle={styles.privacyButtonWrapper} style={styles.privacyButton} textStyle={styles.btnTextStyle} size={70} icon="privacy" onPress={navigationStore.goToPrivacyPolicy} />
         </BasePageView>
     );

@@ -1,4 +1,3 @@
-import BuildConfig from 'react-native-build-config';
 import analytics from '@react-native-firebase/analytics';
 import i18n from '../localization';
 import { inject, injectable } from 'inversify';
@@ -131,7 +130,8 @@ export class NavigationStore {
         const {
             general: { isMarkedAsVolunteer },
         } = await this.sharedPreferencesStore.applicationSettings;
-        if (BuildConfig.DEBUG || BuildConfig.BUILD_TYPE === 'debug' || BuildConfig.APPLICATION_ID?.endsWith('.debug')) {
+        const { DEBUG, BUILD_TYPE, APPLICATION_ID } = this.madaNotificationsStore.appData;
+        if (DEBUG || BUILD_TYPE === 'debug' || APPLICATION_ID?.endsWith('.debug')) {
             const navigateToLockPage = await this.dialogStore.openDialog(BaseDialog, {
                 description: 'זוהי גרסה לבדיקה. עמוד חסימה או עמוד דיווחים',
                 okText: 'עמוד חסימה',
@@ -184,11 +184,11 @@ export class NavigationStore {
                 okText: i18n.t('common:goToSettings'),
             });
             if (goToSettings) {
-                const { packageName, uid } = await this.madaNotificationsStore.getAppData();
+                const { APPLICATION_ID, uid } = this.madaNotificationsStore.appData;
                 await Linking.sendIntent('android.settings.APP_NOTIFICATION_SETTINGS', [
                     { key: 'app_uid', value: uid },
-                    { key: 'app_package', value: packageName },
-                    { key: 'android.provider.extra.APP_PACKAGE', value: packageName },
+                    { key: 'app_package', value: APPLICATION_ID },
+                    { key: 'android.provider.extra.APP_PACKAGE', value: APPLICATION_ID },
                 ]);
             }
             return;
