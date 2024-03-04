@@ -31,8 +31,14 @@ export class MadaNotificationsStore {
         return MadaNotificationsModule.hasMadaApp();
     }
 
-    public getAppData(): Promise<{ packageName: string; uid: number }> {
-        return MadaNotificationsModule.getAppData();
+    public get appData(): {
+        readonly uid: number;
+        readonly VERSION_NAME?: string;
+        readonly APPLICATION_ID: string;
+        readonly DEBUG?: boolean;
+        readonly BUILD_TYPE?: string;
+    } {
+        return MadaNotificationsModule.getConstants();
     }
 
     public triggerTestCall(config: { callType: CallType; callText: string }): Promise<void> {

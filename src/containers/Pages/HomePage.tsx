@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, ToastAndroid, Platform, Linking } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
-import BuildConfig from 'react-native-build-config';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { HomeBtn } from '../HomeBtn';
 import { RoundBG } from '../RoundBG';
@@ -115,7 +114,7 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
                     return;
                 }
                 await Linking.sendIntent('android.settings.CHANNEL_NOTIFICATION_SETTINGS', [
-                    { key: 'android.provider.extra.APP_PACKAGE', value: BuildConfig.APPLICATION_ID },
+                    { key: 'android.provider.extra.APP_PACKAGE', value: madaNotificationsStore.appData.APPLICATION_ID },
                     { key: 'android.provider.extra.CHANNEL_ID', value: NOTIFICATION_MAP.CHANNELS.BACKGROUND },
                 ]);
             }

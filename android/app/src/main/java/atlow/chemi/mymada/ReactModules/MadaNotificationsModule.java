@@ -25,6 +25,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.provider.Settings;
 import android.service.notification.NotificationListenerService;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -34,7 +35,6 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -43,6 +43,11 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
+import atlow.chemi.mymada.BuildConfig;
 import atlow.chemi.mymada.NotificationService;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.helpers.NotificationHelper;
@@ -88,18 +93,7 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
             return;
         }
         var list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        promise.resolve(list.size() > 0);
-    }
-
-    @ReactMethod
-    public void getAppData(Promise promise) {
-        var pkgName = reactContext.getPackageName();
-        var uid = reactContext.getApplicationInfo().uid;
-
-        var result = Arguments.createMap();
-        result.putString("packageName", pkgName);
-        result.putInt("uid", uid);
-        promise.resolve(result);
+        promise.resolve(!list.isEmpty());
     }
 
     @ReactMethod
@@ -174,7 +168,7 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
             return;
         }
         try {
-            if (uri == null || uri.equals("")) {
+            if (uri == null || uri.isEmpty()) {
                 uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString();
             }
             resultPromise = promise;
@@ -314,5 +308,23 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
         if (launchIntent == null) launchIntent = reactContext.getPackageManager().getLaunchIntentForPackage(MADA_APP_PACKAGE);
         if (launchIntent != null) launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         return launchIntent;
+    }
+
+    @Override
+    public Map<String, Object> getConstants() {
+        final var constants = new HashMap<String, Object>();
+
+        var fields = BuildConfig.class.getDeclaredFields();
+        for (Field f : fields) {
+            try {
+                constants.put(f.getName(), f.get(null));
+            } catch (IllegalAccessException e) {
+                Log.d(NAME, "Could not access BuildConfig field " + f.getName());
+            }
+        }
+
+        constants.put("uid", reactContext.getApplicationInfo().uid);
+
+        return constants;
     }
 }

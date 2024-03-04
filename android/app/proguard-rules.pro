@@ -31,3 +31,6 @@
 -ignorewarnings
 -keep class * {public private *;}
 -keepclassmembers class atlow.chemi.mymada.models.** {*;}
+
+-keep class com.facebook.hermes.unicode.** { *; }
+-keep class com.facebook.jni.** { *; }
