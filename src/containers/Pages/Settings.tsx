@@ -17,6 +17,7 @@ import { DrawerContent } from '../../Components/DrawerContent';
 import { useDeviceOrientation } from '../../utils/useDeviceOrientation';
 import { DispatchService, Region } from '../../services/DispatchService';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
+import { MadaNotificationsStore } from '../../services/MadaNotificationsStore';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { RadioSelectDialog, RadioSelectDialogProps } from '../dialogs/RadioSelectDialog';
 import type { NavigatableScreenProps } from '../../App';
@@ -29,11 +30,14 @@ export const SETTINGS_PAGES = new Set<SettingPage>(['Detection', 'Notification',
 
 const Drawer = createDrawerNavigator<SettingsStackParamList>();
 
-const Nullish = () => null;
-
 @injectable()
 class SettingsLocalStore {
-    constructor(private readonly dialogStore: DialogStore, private readonly dispatchService: DispatchService, private readonly sharedPreferencesStore: SharedPreferencesStore) {
+    constructor(
+        private readonly dialogStore: DialogStore,
+        private readonly dispatchService: DispatchService,
+        private readonly madaNotificationsStore: MadaNotificationsStore,
+        private readonly sharedPreferencesStore: SharedPreferencesStore,
+    ) {
         makeAutoObservable(this, { drawerItems: computed.struct }, { autoBind: true });
     }
 
@@ -80,9 +84,10 @@ class SettingsLocalStore {
             { type: 'separator', label: 'settings:generalSettings:menuName' },
             {
                 type: 'btn',
-                label: `settings:generalSettings:${isCallRecognitionOn ? 'detectionEnabled' : 'detectionDisabled'}`,
+                isActive: isCallRecognitionOn,
+                onPress: this.madaNotificationsStore.toggleDetection,
                 icon: isCallRecognitionOn ? 'detection' : 'detectionDisabled',
-                onPress: Nullish,
+                label: `settings:generalSettings:${isCallRecognitionOn ? 'detectionEnabled' : 'detectionDisabled'}`,
             },
             { type: 'btn', label: 'settings:generalSettings:language', icon: 'translate', onPress: this.setLanguage },
             { type: 'btn', label: 'settings:generalSettings:region', icon: 'mada', onPress: this.setRegion },

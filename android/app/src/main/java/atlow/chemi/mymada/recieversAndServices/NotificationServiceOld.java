@@ -61,7 +61,7 @@ public class NotificationServiceOld extends AccessibilityService {
                 String msg = ((TextView) localView.findViewById(INBOX)).getText().toString();
                 //text = (TextView) localView.findViewById(TEXT);
                 SharedPreferences sp = getSharedPreferences("Settings", 0);
-                Boolean Mapp = sp.getBoolean("Mapp", false);
+                Boolean Mapp = sp.getString("Mapp", "false").equals("true");
                 if (Mapp) {
                     try {
                         Intent mIntent = new Intent("MADA_APP");

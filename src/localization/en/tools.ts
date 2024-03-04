@@ -7,7 +7,6 @@ export default {
         stop: 'Stop',
         notificationTitle: 'Metronome running in Background',
         notificationTxt: 'This notification avoids the metronome shutting down for battery saving.',
-        notificationBtn: 'stop',
     },
     contraction: {
         menuName: 'Contractions timer',

@@ -10,4 +10,5 @@ export default {
     search: 'Search',
     goToSettings: 'Go to settings',
     skip: 'Skip',
+    notificationBtn: 'stop',
 } as const;

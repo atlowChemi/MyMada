@@ -1,5 +1,7 @@
 package atlow.chemi.mymada.ReactModules;
 
+import static atlow.chemi.mymada.Constants.ACTION_FOREGROUND_SERVICE_STOP;
+import static atlow.chemi.mymada.Constants.CALL_DETECTION_STATE;
 import static atlow.chemi.mymada.Constants.ERROR_ACTIVITY_RESULT_BUSY;
 import static atlow.chemi.mymada.Constants.ERROR_FAILED_TO_SHOW_PICKER;
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
@@ -11,9 +13,10 @@ import static atlow.chemi.mymada.Constants.TEST_CALL_ACTION;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.media.RingtoneManager;
@@ -21,11 +24,13 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.provider.Settings;
+import android.service.notification.NotificationListenerService;
 import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.facebook.react.bridge.ActivityEventListener;
@@ -36,9 +41,13 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import atlow.chemi.mymada.NotificationService;
 import atlow.chemi.mymada.R;
+import atlow.chemi.mymada.helpers.NotificationHelper;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
+import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 @ReactModule(name = MadaNotificationsModule.NAME)
 public class MadaNotificationsModule extends ReactContextBaseJavaModule implements ActivityEventListener {
@@ -47,6 +56,16 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
     private final int REQUEST_CODE_CAN_DRAW_OVERLAYS = 8396;
     private final int REQUEST_CODE_RINGTONE_PICKER = 8397;
     public static final String NAME = "MadaNotificationsModule";
+    private final class ButtonPressReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(stopForegroundService()) {
+                reactContext.getSharedPreferences("Settings", Context.MODE_PRIVATE).edit().putString("Mapp", "false").apply();
+                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(CALL_DETECTION_STATE, null);
+            }
+        }
+    }
+    private final ButtonPressReceiver buttonPressReceiver = new ButtonPressReceiver();
 
     public MadaNotificationsModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -112,7 +131,7 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void hasOverlayPermission(Promise promise) {
         try {
-            promise.resolve(canDrawOverlays());
+            promise.resolve(canDrawOverlays().equals("authorized"));
         } catch (Error e) {
             promise.reject(e);
         }
@@ -121,8 +140,8 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void requestOverlayPermission(Promise promise) {
         try {
-            if (canDrawOverlays()) {
-                promise.resolve(true);
+            if (canDrawOverlays().equals("authorized")) {
+                promise.resolve("authorized");
             } else {
                 if (resultPromise != null) {
                     promise.reject(ERROR_ACTIVITY_RESULT_BUSY, "MadaNotificationsModule: can't request overlay permissions when result promise is set.");
@@ -172,6 +191,49 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
         }
     }
 
+    @ReactMethod
+    public void getNotificationListenerPermissionStatus(Promise promise) {
+        if (reactContext == null) {
+            promise.resolve("unknown");
+            return;
+        }
+        var packageName = reactContext.getPackageName();
+        var enabledPackages = NotificationManagerCompat.getEnabledListenerPackages(this.reactContext);
+        promise.resolve(enabledPackages.contains(packageName) ? "authorized" : "denied");
+    }
+
+    @ReactMethod
+    public void startCallRecognitionForegroundService(ReadableMap notificationConfig, Promise promise) {
+        try {
+            NotificationHelper.getInstance(reactContext).startForegroundService(new Intent(reactContext, SMSMonitorService.class), notificationConfig, buttonPressReceiver);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject(ERROR_SERVICE_ERROR, e);
+        }
+    }
+
+    @ReactMethod
+    public void stopCallRecognitionForegroundService(Promise promise) {
+        promise.resolve(stopForegroundService());
+    }
+
+    @ReactMethod
+    public void restartAndRebindNotificationListener(Promise promise) {
+        var pm = reactContext.getPackageManager();
+        var componentName = new ComponentName(reactContext, NotificationService.class);
+        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            NotificationListenerService.requestRebind(componentName);
+        }
+        promise.resolve(null);
+    }
+
+    @ReactMethod
+    public void addListener(String eventName) {}
+    @ReactMethod
+    public void removeListeners(Integer count) {}
+
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, @Nullable Intent intent) {
         if (resultPromise == null || (requestCode != REQUEST_CODE_CAN_DRAW_OVERLAYS && requestCode != REQUEST_CODE_RINGTONE_PICKER)) {
@@ -203,23 +265,23 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
 
     @Override public void onNewIntent(Intent intent) {}
 
-    private boolean canDrawOverlays() {
+    private String canDrawOverlays() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M && Settings.canDrawOverlays(reactContext)) {
-            return true;
+            return "authorized";
         }
         //USING APP OPS MANAGER
         var manager = (AppOpsManager)reactContext.getSystemService(Context.APP_OPS_SERVICE);
         if (manager != null) {
             try {
                 var result = manager.checkOp(AppOpsManager.OPSTR_SYSTEM_ALERT_WINDOW, Binder.getCallingUid(), reactContext.getPackageName());
-                return result == AppOpsManager.MODE_ALLOWED;
+                return result == AppOpsManager.MODE_ALLOWED  ? "authorized" : "denied";
             } catch (Exception ignore) {}
         }
         // Last chance - if this fails, we definitely can't do it,
         try {
             var mgr = (WindowManager)reactContext.getSystemService(Context.WINDOW_SERVICE);
             if (mgr == null) {
-                return false;
+                return "denied";
             }
             var viewToAdd = new View(reactContext);
             var params = new WindowManager.LayoutParams(
@@ -232,10 +294,16 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
             viewToAdd.setLayoutParams(params);
             mgr.addView(viewToAdd, params);
             mgr.removeView(viewToAdd);
-            return true;
+            return "authorized";
         } catch (Exception ignore) {
         }
-        return false;
+        return "denied";
+    }
+
+    private boolean stopForegroundService() {
+        var intent = new Intent(reactContext, SMSMonitorService.class);
+        intent.setAction(ACTION_FOREGROUND_SERVICE_STOP);
+        return reactContext.stopService(intent);
     }
 
     private Intent buildMadaAppLaunchIntent() {

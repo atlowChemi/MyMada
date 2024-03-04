@@ -3,25 +3,26 @@ package atlow.chemi.mymada.recieversAndServices;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
 import androidx.core.content.ContextCompat;
 import android.util.Log;
+
+import java.util.Arrays;
 
 public class BootCompleteReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String act = intent.getAction();
-        if (act != null && (act.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED) || act.equalsIgnoreCase(Intent.ACTION_PACKAGE_ADDED) ||
-                act.equalsIgnoreCase(Intent.ACTION_PACKAGE_RESTARTED) || act.equalsIgnoreCase(Intent.ACTION_MY_PACKAGE_REPLACED))) {
-            Log.d("started BCR", intent.getAction());
-            SharedPreferences sp = context.getSharedPreferences("Settings", 0);
-            boolean mapp = sp.getBoolean("Mapp", false);
-            if (mapp) {
-                Intent serviceIntent = new Intent(context, SMSMonitorService.class);
-                ContextCompat.startForegroundService(context, serviceIntent);
+        var action = intent.getAction();
+        var actions = new String[]{Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_PACKAGE_ADDED, Intent.ACTION_PACKAGE_RESTARTED, Intent.ACTION_MY_PACKAGE_REPLACED};
+        if (action != null && Arrays.stream(actions).anyMatch(action::equalsIgnoreCase)) {
+            Log.d("started BCR", action);
+            var sp = context.getSharedPreferences("Settings", 0);
+            if (!sp.getString("Mapp", "false").equals("true")) {
+                return;
             }
+            var serviceIntent = new Intent(context, SMSMonitorService.class);
+            ContextCompat.startForegroundService(context, serviceIntent);
         }
     }
 }

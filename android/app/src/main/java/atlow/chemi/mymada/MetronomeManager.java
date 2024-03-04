@@ -1,30 +1,20 @@
 package atlow.chemi.mymada;
 
-import static androidx.core.content.ContextCompat.RECEIVER_EXPORTED;
-import static androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED;
-import static atlow.chemi.mymada.Constants.ACTION_FOREGROUND_SERVICE_START;
-import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
 import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
-import static atlow.chemi.mymada.Constants.METRONOME_NOTIFICATION_BUTTON_PRESSED;
 import static atlow.chemi.mymada.Constants.METRONOME_START_TIME;
 import static atlow.chemi.mymada.Constants.METRONOME_STATE;
 import static atlow.chemi.mymada.Constants.METRONOME_TOGGLED;
-import static atlow.chemi.mymada.Constants.NOTIFICATION_CONFIG;
 import static atlow.chemi.mymada.Constants.RUN_IN_BG_NOTIFICATION_CHANNEL;
 
 import android.app.Notification;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -35,6 +25,8 @@ import java.util.HashMap;
 import atlow.chemi.mymada.classes.AudioGenerator;
 import atlow.chemi.mymada.classes.JSException;
 import atlow.chemi.mymada.helpers.EventListener;
+import atlow.chemi.mymada.helpers.NotificationHelper;
+import atlow.chemi.mymada.recieversAndServices.ForegroundService;
 import java9.util.concurrent.CompletableFuture;
 
 public class MetronomeManager extends EventListener<HashMap<String, Object>> {
@@ -64,43 +56,6 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
             instance = new MetronomeManager();
         }
         return instance;
-    }
-
-    private void startBackgroundService(Context context, ReadableMap notificationConfig) throws JSException {
-        if (context == null) {
-            throw new JSException(ERROR_INVALID_CONFIG, "MetronomeManager: context is missing");
-        }
-        if (notificationConfig == null) {
-            throw new JSException(ERROR_INVALID_CONFIG, "MetronomeManager: Notification config is invalid");
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !notificationConfig.hasKey("channelId")) {
-            throw new JSException(ERROR_INVALID_CONFIG, "MetronomeManager: channelId is required");
-        }
-        if (!notificationConfig.hasKey("id")) {
-            throw new JSException(ERROR_INVALID_CONFIG , "MetronomeManager: id is required");
-        }
-        if (!notificationConfig.hasKey("icon")) {
-            throw new JSException(ERROR_INVALID_CONFIG, "MetronomeManager: icon is required");
-        }
-        if (!notificationConfig.hasKey("title")) {
-            throw new JSException(ERROR_INVALID_CONFIG, "MetronomeManager: title is required");
-        }
-        if (!notificationConfig.hasKey("text")) {
-            throw new JSException(ERROR_INVALID_CONFIG, "MetronomeManager: text is required");
-        }
-
-        var intent = new Intent(context, ForegroundService.class);
-        intent.setAction(ACTION_FOREGROUND_SERVICE_START);
-        intent.putExtra(NOTIFICATION_CONFIG, Arguments.toBundle(notificationConfig));
-        ComponentName componentName = null;
-        try {
-            ContextCompat.startForegroundService(context, intent);
-        } catch (IllegalStateException e) {
-            throw new JSException(ERROR_SERVICE_ERROR, "MetronomeManager: Foreground service is not started");
-        }
-        var filter = new IntentFilter();
-        filter.addAction(METRONOME_NOTIFICATION_BUTTON_PRESSED);
-        ContextCompat.registerReceiver(context, buttonPressReceiver, filter, RECEIVER_EXPORTED);
     }
 
     private int maximizeVolume(Context context) {
@@ -150,7 +105,7 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
 
     public void startMetronome(@NonNull Context context, ReadableMap notificationConfig, @Nullable Promise promise) throws JSException {
         try {
-            startBackgroundService(context, notificationConfig);
+            NotificationHelper.getInstance(context).startForegroundService(new Intent(context, ForegroundService.class), notificationConfig, buttonPressReceiver);
             var startTimeDouble = notificationConfig.getDouble("startTime");
             startTime = String.valueOf((long)startTimeDouble);
             playMetronomeTrack(context);
@@ -185,6 +140,7 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
     }
 
     public void toggleMetronome(Context context) {
+        // TODO: should this be handled by a HeadlessJsTaskService?
         try {
             if (isActive()) {
                 stopMetronome(context, null);

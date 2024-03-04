@@ -1,5 +1,7 @@
 package atlow.chemi.mymada.recieversAndServices;
 
+import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -23,7 +25,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import atlow.chemi.mymada.HomePage;
+import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.smsRes;
 
@@ -49,13 +51,12 @@ public class GrobootRec extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        final SharedPreferences sp = context.getSharedPreferences("Settings", 0);
-        SharedPreferences notSP = context.getSharedPreferences("notifications", 0);
-        boolean win = sp.getBoolean("win", true);
-        boolean not = sp.getBoolean("not", true);
-        boolean ShabbatM = sp.getBoolean("killS", false);
-        boolean stat = sp.getBoolean("stat", false);
-        boolean statVib = sp.getBoolean("statVib", false);
+        final SharedPreferences sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        boolean win = sp.getString("win", "true").equals("true");
+        boolean not = sp.getString("not", "true").equals("true");
+        boolean ShabbatM = sp.getString("killS", "false").equals("true");
+        boolean stat = sp.getString("stat", "false").equals("true");
+        boolean statVib = sp.getString("statVib", "false").equals("true");
         boolean silent = true;
         boolean silentVib = true;
         Uri url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
@@ -64,13 +65,16 @@ public class GrobootRec extends BroadcastReceiver {
             silent = false;
         if (am != null && am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
             silentVib = false;
-        Intent hachtava = new Intent(context, HomePage.class);
-//        Intent hachtava = new Intent(context, MokedPage.class);
-        hachtava.putExtra("msg", true);
-        hachtava.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        Intent hachtava = new Intent(context, MainReactActivity.class);
         hachtava.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Intent launchIntent = new Intent(context, HomePage.class);
-//        Intent launchIntent = new Intent(context, MokedPage.class);
+        hachtava.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        hachtava.putExtra("source", NOTIFICATION_HELPER_SOURCE);
+        hachtava.putExtra("target", "Dispatch");
+        hachtava.putExtra("page", "Form");
+        Intent launchIntent = new Intent(context, MainReactActivity.class);
+        launchIntent.putExtra("source", NOTIFICATION_HELPER_SOURCE);
+        launchIntent.putExtra("target", "Dispatch");
+        launchIntent.putExtra("page", "Form");
         if (isCallable(context.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency")))
             launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.groboot.mdaemergency");
         if (launchIntent != null) {
@@ -89,31 +93,31 @@ public class GrobootRec extends BroadcastReceiver {
             Log.d("callT", "" + callT);
             switch (callT) {
                 case 1:
-                    callType = sp.getBoolean("callT1", true);
+                    callType = sp.getString("callT1", "true").equals("true");
                     string = "T1";
                     break;
                 case 2:
-                    callType = sp.getBoolean("callT2", true);
+                    callType = sp.getString("callT2", "true").equals("true");
                     string = "T2";
                     break;
                 case 3:
-                    callType = sp.getBoolean("callT3", true);
+                    callType = sp.getString("callT3", "true").equals("true");
                     string = "T3";
                     break;
                 case 4:
-                    callType = sp.getBoolean("callT4", true);
+                    callType = sp.getString("callT4", "true").equals("true");
                     string = "T4";
                     break;
                 case 5:
-                    callType = sp.getBoolean("callT3", true);
+                    callType = sp.getString("callT3", "true").equals("true");
                     string = "T3";
                     break;
                 case 6:
-                    callType = sp.getBoolean("callT6", true);
+                    callType = sp.getString("callT6", "true").equals("true");
                     string = "T6";
                     break;
                 default:
-                    callType = sp.getBoolean("callT1", true);
+                    callType = sp.getString("callT1", "true").equals("true");
                     string = "T1";
                     break;
             }
@@ -121,34 +125,34 @@ public class GrobootRec extends BroadcastReceiver {
             smsRes.newC(text);
             smsRes.alerT(madasApp);
         }
-        cut = sp.getBoolean("cut", false);
+        cut = sp.getString("cut", "false").equals("true");
         if (testAp) {
             callType = true;
         }
         Log.d("callT", "t6 is now: " + callType);
         Uri uri;
         if (string.equals("T6") || string.equals("T4")) {
-            vib = sp.getBoolean("NvibT4", true);
-            sou = sp.getBoolean("NsouT4", true);
-            app = sp.getBoolean("NappT4", false);
+            vib = sp.getString("NvibT4", "true").equals("true");
+            sou = sp.getString("NsouT4", "true").equals("true");
+            app = sp.getString("NappT4", "false").equals("true");
             uri = Uri.parse(sp.getString("NuRiT4", ""));
         } else if (cut) {
-            vib = sp.getBoolean("Nvib" + string, true);
-            sou = sp.getBoolean("Nsou" + string, true);
-            app = sp.getBoolean("Napp" + string, false);
+            vib = sp.getString("Nvib" + string, "true").equals("true");
+            sou = sp.getString("Nsou" + string, "true").equals("true");
+            app = sp.getString("Napp" + string, "false").equals("true");
             uri = Uri.parse(sp.getString("NuRi" + string, ""));
         } else {
             callType = true;
-            vib = sp.getBoolean("Nvib", true);
-            sou = sp.getBoolean("Nsou", true);
-            app = sp.getBoolean("Napp", false);
+            vib = sp.getString("Nvib", "true").equals("true");
+            sou = sp.getString("Nsou", "true").equals("true");
+            app = sp.getString("Napp", "false").equals("true");
             uri = Uri.parse(sp.getString("NuRi", ""));
         }
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
         int hour = now.get(Calendar.HOUR_OF_DAY);
-        int sleep = sp.getInt("sleep", 0);
-        int nightStart = sp.getInt("nightStart", 23);
-        int nightEnd = sp.getInt("nightEnd", 7);
+        int sleep = Integer.parseInt(sp.getString("sleep", "0"));
+        int nightStart = Integer.parseInt(sp.getString("nightStart", "23"));
+        int nightEnd = Integer.parseInt(sp.getString("nightEnd", "7"));
         if (hour <= nightEnd || hour >= nightStart) {
             switch (sleep) {
                 case 1:
@@ -203,7 +207,7 @@ public class GrobootRec extends BroadcastReceiver {
                 /*if (sp.getBoolean("loop", false)) {
                     mNotification.flags |= Notification.FLAG_INSISTENT;
                 }*/
-                if (sp.getBoolean("ride", false)) {
+                if (sp.getString("ride", "false").equals("true")) {
                     notifManager.cancelAll();
                     notifManager.notify(notNum, mNotification);
                 } else {
@@ -215,7 +219,7 @@ public class GrobootRec extends BroadcastReceiver {
                     Intent service = new Intent(context , FloatingWidgetService.class);
                     service.putExtra("vib", vib && (!statVib || !silentVib));
                     service.putExtra("sou", sou && (!stat || !silent));
-                    service.putExtra("loop", sp.getBoolean("loop", false));
+                    service.putExtra("loop", sp.getString("loop", "false").equals("true"));
                     service.putExtra("uri", app ? uri.toString() : url.toString());
                     service.putExtra("timeK", sp.getString("timeK", "6"));
                     service.putExtra("ShabbatM", ShabbatM);
@@ -228,7 +232,7 @@ public class GrobootRec extends BroadcastReceiver {
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                 i.putExtra("notNum", notNum);
-                i.putExtra("loop", sp.getBoolean("loop", false));
+                i.putExtra("loop", sp.getString("loop", "false").equals("true"));
                 i.putExtra("callT", callT);
                 context.startActivity(i);
             }
@@ -239,7 +243,7 @@ public class GrobootRec extends BroadcastReceiver {
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             i.putExtra("notNum", notNum);
-            i.putExtra("loop", sp.getBoolean("loop", false));
+            i.putExtra("loop", sp.getString("loop", "false").equals("true"));
             i.putExtra("callT", callT);
             context.startActivity(i);
         }

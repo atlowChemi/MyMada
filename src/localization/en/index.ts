@@ -1,5 +1,6 @@
 import aboutUs from './aboutUs';
 import activationCode from './activationCode';
+import callDetection from './callDetection';
 import common from './common';
 import contact from './contact';
 import dispatch from './dispatch';
@@ -16,6 +17,7 @@ import tools from './tools';
 export default {
     aboutUs,
     activationCode,
+    callDetection,
     common,
     contact,
     dispatch,

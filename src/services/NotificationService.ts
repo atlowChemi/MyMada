@@ -35,7 +35,7 @@ export interface NotificationConfig {
     /** If this property exists, notification will contain button with given string as button value. */
     button?: string;
     /** Set the notifications color. */
-    color?: 'red';
+    color?: 'red' | 'blue';
     /** If this property exists, default sound and vibration will be used on Android M and below. */
     useDefaults?: boolean;
     /** If this property exists, notification will be canceled when user taps on it. */
@@ -48,8 +48,10 @@ export interface NotificationConfig {
     bigText?: string;
     /** If this property exists, clicking the notification will navigate to the given page. */
     target?: Tools | Page;
-    /** Marks wether ther @see {target} is a tools page */
+    /** Marks wether the @see {target} is a tools page */
     navigateToTools?: boolean;
+    /** Marks wether to show or hide the time the notification was published */
+    hideWhen?: boolean;
     /** additional data */
     [key: string]: any;
 }
