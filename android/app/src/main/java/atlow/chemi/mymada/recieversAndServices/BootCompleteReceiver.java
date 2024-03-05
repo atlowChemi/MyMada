@@ -4,26 +4,39 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.core.content.ContextCompat;
-import android.util.Log;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import java.util.Arrays;
 import java.util.Map;
 
-public class BootCompleteReceiver extends BroadcastReceiver {
+import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
 
+public class BootCompleteReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         var action = intent.getAction();
         var actions = new String[]{Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_PACKAGE_ADDED, Intent.ACTION_PACKAGE_RESTARTED, Intent.ACTION_MY_PACKAGE_REPLACED};
-        if (action != null && Arrays.stream(actions).anyMatch(action::equalsIgnoreCase)) {
-            Log.d("started BCR", action);
-            var sp = context.getSharedPreferences("Settings", 0);
-            if (!((Map<String, Object>) sp.getAll()).compute("Mapp", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true")) {
-                return;
-            }
-            var serviceIntent = new Intent(context, SMSMonitorService.class);
-            ContextCompat.startForegroundService(context, serviceIntent);
+        if (action == null || Arrays.stream(actions).noneMatch(action::equalsIgnoreCase)) {
+            return;
         }
+        var sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        if (!((Map<String, Object>) sp.getAll()).compute("Mapp", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true")) {
+            return;
+        }
+        var work = OneTimeWorkRequest.from(HeadlessJsTaskWorker.class);
+        WorkManager.getInstance(context).enqueue(work);
+
+//        var headlessService = new Intent(context, HeadlessJsService.class);
+//        headlessService.putExtra("type", "appStart");
+//        try {
+//            context.startService(headlessService);
+//            HeadlessJsService.acquireWakeLockNow(context);
+//        } catch (IllegalStateException e) {
+//            // TODO: Crashlytics
+//        }
+//        var serviceIntent = new Intent(context, SMSMonitorService.class);
+//        ContextCompat.startForegroundService(context, serviceIntent);
     }
 }
