@@ -6,9 +6,10 @@ import { AppRegistry } from 'react-native';
 import { App } from './src/App';
 import { container } from './src/services/container';
 import { MessagingStore } from './src/services/MessagingStore';
+import { MetronomeStore } from './src/services/MetronomeStore';
+import { MadaCallPage } from './src/containers/Pages/MadaCallPage';
 import { SharedPreferencesStore } from './src/services/SharedPreferencesStore';
 import { MadaNotificationsStore } from './src/services/MadaNotificationsStore';
-import { MetronomeStore } from './src/services/MetronomeStore';
 
 const messagingStore = container.get(MessagingStore);
 const metronomeStore = container.get(MetronomeStore);
@@ -30,3 +31,4 @@ AppRegistry.registerHeadlessTask('HeadlessTask', () => async (data) => {
     }
 });
 AppRegistry.registerComponent('Root', () => App);
+AppRegistry.registerComponent('MadaCallPage', () => MadaCallPage);

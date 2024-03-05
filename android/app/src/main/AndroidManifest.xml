@@ -32,6 +32,11 @@
         android:theme="@style/AppTheme"
         android:localeConfig="@xml/locale_config"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7600269766434003~4255496174" />
+
         <activity
             android:name=".MainReactActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
@@ -43,10 +48,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7600269766434003~4255496174" />
+        <activity
+            android:name=".MadaCallActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".smsRes"
