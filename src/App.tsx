@@ -1,7 +1,7 @@
-import { FC, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { PortalProvider } from '@gorhom/portal';
 import { AppRegistry, StatusBar } from 'react-native';
+import { FC, useEffect, useLayoutEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from './consts';
@@ -38,12 +38,16 @@ export const AppWithDI = observer((props: any) => {
     const messagingStore = useDependencyInjector(MessagingStore);
     const metronomeStore = useDependencyInjector(MetronomeStore);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const { source, target, navigateToTools = false } = props || {};
-        const navigationFn = navigateToTools ? navigationStore.goToToolsTab : navigationStore.navigate;
-        if (source === NOTIFICATION_HELPER_SOURCE && typeof target === 'string') {
-            navigationFn(target as never, props);
+        if (source !== NOTIFICATION_HELPER_SOURCE || typeof target !== 'string') {
+            return;
         }
+        if (navigateToTools) {
+            navigationStore.goToToolsTab(target as ToolsType, props);
+            return;
+        }
+        return navigationStore.navigateWithoutHistory(target as Page, props);
     }, [props, metronomeStore, navigationStore]);
 
     useEffect(() => appPropsStore.setProps(props), [appPropsStore, props]);

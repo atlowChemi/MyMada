@@ -84,7 +84,7 @@ class OxygenCalculatorLocalStore {
     }
 }
 
-export const OxygenCalculator = observer<NavigatableToolsScreenProps>(props => {
+export const OxygenCalculator = observer<NavigatableToolsScreenProps<'OxygenCalculator'>>(props => {
     useInnerNavigator('Tools', props);
     const { t } = useTranslation();
     const localStore = useLocalStoreWithInjectedDependencies(OxygenCalculatorLocalStore);

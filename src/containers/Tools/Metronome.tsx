@@ -14,7 +14,7 @@ import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-export const Metronome = observer<NavigatableToolsScreenProps>(props => {
+export const Metronome = observer<NavigatableToolsScreenProps<'MetronomeActivity'>>(props => {
     useInnerNavigator('Tools', props);
     const { t } = useTranslation();
     const store = useDependencyInjector(MetronomeStore);

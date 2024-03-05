@@ -145,6 +145,7 @@ public class NotificationHelper {
             return null;
         }
         var notificationIntent = new Intent(context, mainActivityClass);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         notificationIntent.putExtra("source", NOTIFICATION_HELPER_SOURCE);
         notificationIntent.putExtras(notificationConfig);
         var pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);

@@ -109,14 +109,19 @@ export class NavigationStore {
 
     // @ts-expect-error generic inconvenience
     public navigate = <T extends Page = Page>(page: T, params?: NavigatableScreenProps<T>['route']['params']) => this.navigator?.navigate(page, params);
-    public navigateWithoutHistory = (name: Page) => this.navigator?.reset({ index: name === 'Home' ? 0 : 1, routes: [{ name: 'Home' }, ...(name === 'Home' ? [] : [{ name }])] });
+    public navigateWithoutHistory = <T extends Page = Page>(name: T, params?: NavigatableScreenProps<T>['route']['params']) => {
+        const isHome = name === 'Home';
+        const index = isHome ? 0 : 1;
+        const routes = [{ name: 'Home', ...(isHome && { params }) }, ...(isHome ? [] : [{ name, params }])];
+        this.navigator?.reset({ index, routes });
+    };
 
     public goHome = () => this.navigate('Home');
     public goToTools = () => this.navigate('Tools');
     public goToSettings = () => this.navigate('Settings');
     public goToRequestCode = () => this.navigateWithoutHistory('RequestCode');
     public goToCodeActivation = () => this.navigateWithoutHistory('ActivateCode');
-    public goToToolsTab = async (route: Tools, params?: Record<string, any>) => {
+    public goToToolsTab = async <T extends Tools = Tools>(route: T, params?: NavigatableToolsScreenProps<T>['route']['params']) => {
         this.goToTools();
         await when(() => this.toolsNavigator !== undefined);
         this.toolsNavigator?.jumpTo(route, params);

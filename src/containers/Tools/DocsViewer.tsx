@@ -13,7 +13,7 @@ import type { NavigatableToolsScreenProps } from '../Pages/Tools';
 const allowedDocs = ['bls', 'als', 'kuntres'] as const;
 type AllowedDoc = (typeof allowedDocs)[number];
 
-export const DocsViewer = observer<NavigatableToolsScreenProps>(({ navigation, route }) => {
+export const DocsViewer = observer<NavigatableToolsScreenProps<'AlsProtocoles' | 'BlsProtocoles' | 'Kuntres'>>(({ navigation, route }) => {
     useInnerNavigator('Tools', { navigation });
     const localStore = useLocalObservable(() => ({
         type: undefined as AllowedDoc | undefined,

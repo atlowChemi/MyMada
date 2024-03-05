@@ -87,7 +87,7 @@ class GlazgowCalculatorLocalStore {
     }
 }
 
-export const GlazgowCalculator = observer<NavigatableToolsScreenProps>(props => {
+export const GlazgowCalculator = observer<NavigatableToolsScreenProps<'GlazgowCalculator'>>(props => {
     useInnerNavigator('Tools', props);
     const { t } = useTranslation();
     const localStore = useLocalStoreWithInjectedDependencies(GlazgowCalculatorLocalStore);
