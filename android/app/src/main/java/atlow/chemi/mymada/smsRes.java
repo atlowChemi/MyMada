@@ -4,7 +4,6 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,7 +12,6 @@ import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -329,7 +327,7 @@ public class smsRes extends AppCompatActivity {
             k.setText(kodimT);
             String ti = getResources().getString(R.string.time, time);
             t.setText(ti);
-            String add = Address.equals("") ? mikre : Address;
+            String add = Address.isEmpty() ? mikre : Address;
             a.setText(add);
             a.setMovementMethod(new ScrollingMovementMethod());
         }
