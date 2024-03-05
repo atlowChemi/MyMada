@@ -9,12 +9,17 @@ import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
 import java.util.HashMap;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
 import atlow.chemi.mymada.MetronomeManager;
+import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
 
 @TargetApi(Build.VERSION_CODES.N)
 public class MetronomeTileService extends TileService {
@@ -36,8 +41,12 @@ public class MetronomeTileService extends TileService {
     @Override
     public void onClick() {
         super.onClick();
-        var metronomeManager = MetronomeManager.getInstance();
-        metronomeManager.toggleMetronome(getApplicationContext());
+        var data = new Data.Builder().putString("type", "metronomeToggle").build();
+        var work = new OneTimeWorkRequest.Builder(HeadlessJsTaskWorker.class).setInputData(data).build();
+        WorkManager.getInstance(getApplicationContext()).enqueue(work);
+
+//        var metronomeManager = MetronomeManager.getInstance();
+//        metronomeManager.toggleMetronome(getApplicationContext());
     }
     @Override
     public void onStartListening() {

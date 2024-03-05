@@ -29,7 +29,12 @@ class HeadlessJsTaskWorker(appContext: Context, workerParameters: WorkerParamete
     private suspend fun runHeadlessJsTask(): Result {
 
         val intent = Intent(applicationContext, HeadlessJsService::class.java)
-        intent.putExtra("type", "appStart")
+
+        var type = inputData.getString("type");
+        if (type.isNullOrEmpty()) {
+            type = "appStart"
+        }
+        intent.putExtra("type", type)
         intent.putExtra("from", "worker")
 
 
