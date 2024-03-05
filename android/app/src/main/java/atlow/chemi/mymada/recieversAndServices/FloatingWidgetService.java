@@ -362,7 +362,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             case R.id.open_activity_button:
                 //open the activity and stop service
                 Intent intent = new Intent(FloatingWidgetService.this, MainReactActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("source", NOTIFICATION_HELPER_SOURCE);
                 intent.putExtra("target", "Dispatch");
                 intent.putExtra("page", "Form");
