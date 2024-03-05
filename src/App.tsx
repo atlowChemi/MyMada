@@ -19,7 +19,7 @@ import { DialogWrapper } from './services/DialogStore';
 import { MessagingStore } from './services/MessagingStore';
 import { MetronomeStore } from './services/MetronomeStore';
 import { SnackbarWrapper } from './services/SnackbarStore';
-import { DependencyInjectionProvider, useDependencyInjector, container } from './services/container';
+import { DependencyInjectionProvider, useDependencyInjector } from './services/container';
 import { NavigationStore, Page, Tools as ToolsType } from './services/NavigationStore';
 import { Toolbar } from './containers/Toolbar';
 import { AppPropsStore } from './services/AppPropsStore';
@@ -32,7 +32,7 @@ type RootStackParamList = Record<Exclude<Page, NavigatablePage>, undefined> & { 
 export type NavigatableScreenProps<T extends Page = Page> = NativeStackScreenProps<RootStackParamList, T>;
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const AppWithDI = observer((props: any) => {
+const AppWithDI = observer((props: any) => {
     const appPropsStore = useDependencyInjector(AppPropsStore);
     const navigationStore = useDependencyInjector(NavigationStore);
     const messagingStore = useDependencyInjector(MessagingStore);
@@ -85,7 +85,7 @@ export const App: FC = (props: any) => {
         AppRegistry.startHeadlessTask(334, 'HeadlessTask', { type: 'appStart' });
     }, []);
     return (
-        <DependencyInjectionProvider container={container}>
+        <DependencyInjectionProvider>
             <AppWithDI {...props} />
         </DependencyInjectionProvider>
     );

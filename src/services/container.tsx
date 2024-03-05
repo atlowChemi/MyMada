@@ -8,9 +8,7 @@ export const container = new Container({
 });
 
 export const DIContext = createContext<{ container: Container | null }>({ container: null });
-export const DependencyInjectionProvider: React.FC<{ container: Container; children: React.ReactNode }> = props => (
-    <DIContext.Provider value={{ container: props.container }}>{props.children}</DIContext.Provider>
-);
+export const DependencyInjectionProvider: React.FC<{ children: React.ReactNode }> = props => <DIContext.Provider value={{ container }} {...props} />;
 DependencyInjectionProvider.displayName = 'DependencyInjectionProvider';
 
 export const useDependencyInjector = <T extends {}>(identifier: interfaces.ServiceIdentifier<T>) => {
