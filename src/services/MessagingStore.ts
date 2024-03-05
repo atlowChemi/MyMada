@@ -4,7 +4,7 @@ import { fromPromise } from 'mobx-utils';
 import { inject, injectable } from 'inversify';
 import { computed, makeObservable } from 'mobx';
 import { SharedPreferencesStore } from './SharedPreferencesStore';
-import { NOTIFICATION_MAP, NotificationService } from './NotificationService';
+import { NOTIFICATION_MAP, NotificationConfig, NotificationService } from './NotificationService';
 import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 
 interface NewChat {
@@ -33,7 +33,6 @@ export class MessagingStore {
     }
 
     private updatePreferences = async (token: string) => {
-        this.sharedPreferencesStore.name = 'Settings';
         return await this.sharedPreferencesStore.setItem('fcm', token);
     };
 
@@ -61,13 +60,15 @@ export class MessagingStore {
             return;
         }
         const msgData = message.data as unknown as MessagePayload;
-        const commonConfig = {
+        const commonConfig: NotificationConfig = {
             channelId: NOTIFICATION_MAP.CHANNELS.PUSH,
             icon: 'ic_siren',
             largeIcon: 'ic_launcher',
             id: Date.now(),
             useDefaults: true,
             isAutoCancelable: true,
+            title: '',
+            text: '',
         };
         if (msgData.type === 'newChat') {
             await this.notificationService.publishNotification({
