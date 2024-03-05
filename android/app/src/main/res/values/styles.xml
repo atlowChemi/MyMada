@@ -22,15 +22,9 @@
         <item name="colorControlHighlight">@android:color/transparent</item>
     </style>
 
-    <style name="MyMaterialTheme.Base" parent="AppTheme">
+    <style name="MyMaterialTheme.SmsRes" parent="AppTheme">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="colorPrimary">@color/ColorPrimary</item>
-        <item name="colorPrimaryDark">@color/ColorPrimary</item>
-        <item name="colorAccent">@color/ColorPrimary</item>
-    </style>
-
-    <style name="MyMaterialTheme.SmsRes" parent="MyMaterialTheme.Base">
         <item name="colorPrimary">@color/OldPrimary</item>
         <item name="colorPrimaryDark">@color/OldPrimary</item>
         <item name="colorAccent">@color/OldPrimary</item>
