@@ -21,16 +21,16 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 
-import static atlow.chemi.mymada.Constants.ACTION_FOREGROUND_SERVICE_START;
 import static atlow.chemi.mymada.Constants.ERROR_ANDROID_VERSION;
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
 import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
-import static atlow.chemi.mymada.Constants.NOTIFICATION_BUTTON_PRESSED;
 import static atlow.chemi.mymada.Constants.NOTIFICATION_CONFIG;
 import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+
+import java.util.Objects;
 
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.classes.JSException;
@@ -209,9 +209,9 @@ public class NotificationHelper {
             notificationBuilder.setShowWhen(false);
         }
 
-        if (notificationConfig.containsKey("button")) {
+        if (notificationConfig.containsKey("button") && notificationConfig.containsKey("action")) {
             var buttonIntent = new Intent();
-            buttonIntent.setAction(NOTIFICATION_BUTTON_PRESSED);
+            buttonIntent.setAction(notificationConfig.getString("action"));
             var pendingButtonIntent = PendingIntent.getBroadcast(context, 0, buttonIntent,  PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
             notificationBuilder.addAction(0, notificationConfig.getString("button"), pendingButtonIntent);
@@ -220,7 +220,7 @@ public class NotificationHelper {
         return notificationBuilder.build();
     }
 
-    public void startForegroundService(Intent intent, ReadableMap notificationConfig, BroadcastReceiver buttonPressReceiver) throws JSException {
+    public void startForegroundService(Intent intent, ReadableMap notificationConfig, BroadcastReceiver buttonPressReceiver, String action) throws JSException {
         if (context == null) {
             throw new JSException(ERROR_INVALID_CONFIG, "ForegroundService: context is missing");
         }
@@ -243,15 +243,18 @@ public class NotificationHelper {
             throw new JSException(ERROR_INVALID_CONFIG, "ForegroundService: text is required");
         }
 
-        intent.setAction(ACTION_FOREGROUND_SERVICE_START);
-        intent.putExtra(NOTIFICATION_CONFIG, Arguments.toBundle(notificationConfig));
+        intent.setAction(action);
+        var bundle = Arguments.toBundle(notificationConfig);
+
+        Objects.requireNonNull(bundle).putString("action", action);
+        intent.putExtra(NOTIFICATION_CONFIG, bundle);
         try {
             ContextCompat.startForegroundService(context, intent);
         } catch (IllegalStateException e) {
             throw new JSException(ERROR_SERVICE_ERROR, "ForegroundService: Foreground service is not started");
         }
         var filter = new IntentFilter();
-        filter.addAction(NOTIFICATION_BUTTON_PRESSED);
+        filter.addAction(action);
         ContextCompat.registerReceiver(context, buttonPressReceiver, filter, RECEIVER_EXPORTED);
     }
 

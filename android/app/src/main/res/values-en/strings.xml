@@ -9,9 +9,6 @@
     <string name="button_d">CPR metronome</string>
     <string name="newCall">אירוע חדש</string>
     <string name="service_exp">In order for the app to recognize emergency calls sent by MADA, this must be on.</string>
-    <string name="MetroServiceTtl">Metronome running in Background</string>
-    <string name="MetroServiceTxt">This notification avoids the metronome shutting down for battery saving</string>
-    <string name="MetroStop">stop</string>
     <string name="hello_world">Form dictation</string>
     <!--  -->
     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>

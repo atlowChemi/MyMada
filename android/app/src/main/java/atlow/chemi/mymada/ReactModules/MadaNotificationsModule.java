@@ -8,6 +8,7 @@ import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
 import static atlow.chemi.mymada.Constants.ERROR_PICKER_CANCELLED;
 import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
 import static atlow.chemi.mymada.Constants.MADA_APP_PACKAGE;
+import static atlow.chemi.mymada.Constants.NOTIFICATION_LISTENER_NOTIFICATION_BUTTON_PRESSED;
 import static atlow.chemi.mymada.Constants.TEST_CALL_ACTION;
 
 import android.app.Activity;
@@ -199,7 +200,7 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void startCallRecognitionForegroundService(ReadableMap notificationConfig, Promise promise) {
         try {
-            NotificationHelper.getInstance(reactContext).startForegroundService(new Intent(reactContext, SMSMonitorService.class), notificationConfig, buttonPressReceiver);
+            NotificationHelper.getInstance(reactContext).startForegroundService(new Intent(reactContext, SMSMonitorService.class), notificationConfig, buttonPressReceiver, NOTIFICATION_LISTENER_NOTIFICATION_BUTTON_PRESSED);
             promise.resolve(null);
         } catch (Exception e) {
             promise.reject(ERROR_SERVICE_ERROR, e);

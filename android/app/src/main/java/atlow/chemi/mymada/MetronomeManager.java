@@ -1,6 +1,7 @@
 package atlow.chemi.mymada;
 
 import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
+import static atlow.chemi.mymada.Constants.METRONOME_NOTIFICATION_BUTTON_PRESSED;
 import static atlow.chemi.mymada.Constants.METRONOME_START_TIME;
 import static atlow.chemi.mymada.Constants.METRONOME_STATE;
 import static atlow.chemi.mymada.Constants.METRONOME_TOGGLED;
@@ -105,7 +106,7 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
 
     public void startMetronome(@NonNull Context context, ReadableMap notificationConfig, @Nullable Promise promise) throws JSException {
         try {
-            NotificationHelper.getInstance(context).startForegroundService(new Intent(context, ForegroundService.class), notificationConfig, buttonPressReceiver);
+            NotificationHelper.getInstance(context).startForegroundService(new Intent(context, ForegroundService.class), notificationConfig, buttonPressReceiver, METRONOME_NOTIFICATION_BUTTON_PRESSED);
             var startTimeDouble = notificationConfig.getDouble("startTime");
             startTime = String.valueOf((long)startTimeDouble);
             playMetronomeTrack(context);
@@ -136,34 +137,6 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
             }
         } else {
             new JSException(ERROR_SERVICE_ERROR, "MetronomeManager: Foreground service failed to stop").rejectPromiseForException(promise);
-        }
-    }
-
-    public void toggleMetronome(Context context) {
-        // TODO: should this be handled by a HeadlessJsTaskService?
-        try {
-            if (isActive()) {
-                stopMetronome(context, null);
-                return;
-            }
-            var notificationConfig = Arguments.createMap();
-            notificationConfig.putInt("id", 13);
-            notificationConfig.putString("color", "red");
-            notificationConfig.putString("icon", "ic_metronome_tile");
-            notificationConfig.putInt("priority", Notification.PRIORITY_MIN);
-            notificationConfig.putString("channelId", RUN_IN_BG_NOTIFICATION_CHANNEL);
-            notificationConfig.putString("text", context.getString(R.string.MetroServiceTxt));
-            notificationConfig.putString("button", context.getString(R.string.MetroStop));
-            notificationConfig.putString("title", context.getString(R.string.MetroServiceTtl));
-            notificationConfig.putDouble("startTime", System.currentTimeMillis());
-            notificationConfig.putBoolean("navigateToTools", true);
-            notificationConfig.putBoolean("isOnGoing", true);
-            notificationConfig.putString("target", "MetronomeActivity");
-
-            startMetronome(context, notificationConfig, null);
-        } catch (Exception e) {
-            Log.e("MetronomeManager", "Toggle poop", e);
-            // Crashlytics
         }
     }
 }

@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -27,16 +26,5 @@ public class BootCompleteReceiver extends BroadcastReceiver {
         }
         var work = OneTimeWorkRequest.from(HeadlessJsTaskWorker.class);
         WorkManager.getInstance(context).enqueue(work);
-
-//        var headlessService = new Intent(context, HeadlessJsService.class);
-//        headlessService.putExtra("type", "appStart");
-//        try {
-//            context.startService(headlessService);
-//            HeadlessJsService.acquireWakeLockNow(context);
-//        } catch (IllegalStateException e) {
-//            // TODO: Crashlytics
-//        }
-//        var serviceIntent = new Intent(context, SMSMonitorService.class);
-//        ContextCompat.startForegroundService(context, serviceIntent);
     }
 }

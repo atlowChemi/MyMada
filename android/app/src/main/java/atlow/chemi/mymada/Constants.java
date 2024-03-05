@@ -7,7 +7,8 @@ public class Constants {
     public static final String ACTION_FOREGROUND_SERVICE_STOP = "atlow.chemi.mymada.service_stop";
 
     public static final String NOTIFICATION_CONFIG = "atlow.chemi.mymada.notif_config";
-    public static final String NOTIFICATION_BUTTON_PRESSED = "NOTIFICATION_BUTTON_PRESSED";
+    public static final String METRONOME_NOTIFICATION_BUTTON_PRESSED = "METRONOME_NOTIFICATION_BUTTON_PRESSED";
+    public static final String NOTIFICATION_LISTENER_NOTIFICATION_BUTTON_PRESSED = "NOTIFICATION_LISTENER_NOTIFICATION_BUTTON_PRESSED";
 
     public static final String ERROR_INVALID_CONFIG = "ERROR_INVALID_CONFIG";
     public static final String ERROR_INVALID_PERMISSION = "ERROR_INVALID_PERMISSION";
