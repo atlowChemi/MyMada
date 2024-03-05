@@ -177,7 +177,7 @@ class VitalsCalculatorLocalStore {
     }
 }
 
-export const VitalsCalculator = observer<NavigatableToolsScreenProps>(props => {
+export const VitalsCalculator = observer<NavigatableToolsScreenProps<'VitalsChecker'>>(props => {
     useInnerNavigator('Tools', props);
     const { t } = useTranslation();
     const localStore = useLocalStoreWithInjectedDependencies(VitalsCalculatorLocalStore);

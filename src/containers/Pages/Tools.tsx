@@ -22,7 +22,7 @@ import type { NavigatableScreenProps } from '../../App';
 
 type ProtocolPages = 'BlsProtocoles' | 'AlsProtocoles' | 'Kuntres';
 type ToolsStackParamList = Record<Exclude<ToolsType, ProtocolPages>, undefined> & Record<Extract<ToolsType, ProtocolPages>, { type: 'bls' | 'als' | 'kuntres' }>;
-export type NavigatableToolsScreenProps = DrawerScreenProps<ToolsStackParamList, ToolsType>;
+export type NavigatableToolsScreenProps<T extends ToolsType = ToolsType> = DrawerScreenProps<ToolsStackParamList, T>;
 
 const Drawer = createDrawerNavigator<ToolsStackParamList>();
 

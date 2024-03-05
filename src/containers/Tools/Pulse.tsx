@@ -120,7 +120,7 @@ class PulseCalculatorLocalStore {
     };
 }
 
-export const PulseCalculator = observer<NavigatableToolsScreenProps>(props => {
+export const PulseCalculator = observer<NavigatableToolsScreenProps<'PulseCalc'>>(props => {
     useInnerNavigator('Tools', props);
     const { t } = useTranslation();
     const localStore = useLocalStoreWithInjectedDependencies(PulseCalculatorLocalStore);

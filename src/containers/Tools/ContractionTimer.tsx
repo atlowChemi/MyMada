@@ -264,7 +264,7 @@ const ContractionItem = observer<ListRenderItemInfo<NodeOf<Contraction>>>(({ ite
 });
 ContractionItem.displayName = 'Tools.ContractionItem';
 
-export const ContractionTimer = observer<NavigatableToolsScreenProps>(props => {
+export const ContractionTimer = observer<NavigatableToolsScreenProps<'ContractionTimer'>>(props => {
     useInnerNavigator('Tools', props);
     const localStore = useLocalStoreWithInjectedDependencies(ContractionTimerLocalStore);
 

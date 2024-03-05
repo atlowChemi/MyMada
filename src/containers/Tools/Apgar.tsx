@@ -84,7 +84,7 @@ class ApgarCalculatorLocalStore {
     }
 }
 
-export const ApgarCalculator = observer<NavigatableToolsScreenProps>(props => {
+export const ApgarCalculator = observer<NavigatableToolsScreenProps<'ApgarCalculator'>>(props => {
     const { t } = useTranslation();
     useInnerNavigator('Tools', props);
     const localStore = useLocalStoreWithInjectedDependencies(ApgarCalculatorLocalStore);

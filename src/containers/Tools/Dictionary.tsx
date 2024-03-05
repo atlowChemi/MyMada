@@ -158,7 +158,7 @@ const Item = observer<ListRenderItemInfo<DictionaryEntry> & { localStore: Dictio
 });
 Item.displayName = 'Tools.DictionaryItem';
 
-export const Dictionary = observer<NavigatableToolsScreenProps>(props => {
+export const Dictionary = observer<NavigatableToolsScreenProps<'Dictionary'>>(props => {
     useInnerNavigator('Tools', props);
     const localStore = useLocalStoreWithInjectedDependencies(DictionaryLocalStore);
     if (localStore.hasError) {
