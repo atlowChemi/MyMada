@@ -7,8 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
-import atlow.chemi.mymada.MetronomeManager;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
 import atlow.chemi.mymada.R;
+import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
 
 /**
  * Implementation of App Widget functionality.
@@ -31,8 +35,9 @@ public class MetroWidget extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         if (ON_CLICK_TAG.equals(intent.getAction())) {
-            var metronomeManager = MetronomeManager.getInstance();
-            metronomeManager.toggleMetronome(context.getApplicationContext());
+            var data = new Data.Builder().putString("type", "metronomeToggle").build();
+            var work = new OneTimeWorkRequest.Builder(HeadlessJsTaskWorker.class).setInputData(data).build();
+            WorkManager.getInstance(context).enqueue(work);
         }
     }
     @Override

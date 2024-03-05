@@ -44,9 +44,6 @@ public class MetronomeTileService extends TileService {
         var data = new Data.Builder().putString("type", "metronomeToggle").build();
         var work = new OneTimeWorkRequest.Builder(HeadlessJsTaskWorker.class).setInputData(data).build();
         WorkManager.getInstance(getApplicationContext()).enqueue(work);
-
-//        var metronomeManager = MetronomeManager.getInstance();
-//        metronomeManager.toggleMetronome(getApplicationContext());
     }
     @Override
     public void onStartListening() {
