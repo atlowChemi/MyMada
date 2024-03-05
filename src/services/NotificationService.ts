@@ -27,9 +27,9 @@ export interface NotificationConfig {
     /** Notification text */
     text: string;
     /** Small icon name */
-    icon: string;
+    icon: 'ic_noti' | 'ic_siren' | 'ic_metronome_tile';
     /** Large icon name */
-    largeIcon?: string;
+    largeIcon?: 'ic_launcher';
     /** Priority of this notification. */
     priority?: Priority;
     /** If this property exists, notification will contain button with given string as button value. */

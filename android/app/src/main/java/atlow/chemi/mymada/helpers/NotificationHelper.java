@@ -12,7 +12,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
@@ -33,12 +32,11 @@ import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
-import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.classes.JSException;
 
 public class NotificationHelper {
-    private Context context;
+    private final Context context;
     private static NotificationHelper instance = null;
     private final NotificationManager mNotificationManager;
 
@@ -183,14 +181,12 @@ public class NotificationHelper {
                 case "ic_noti" -> notificationBuilder.setSmallIcon(R.drawable.ic_noti);
                 case "ic_siren" -> notificationBuilder.setSmallIcon(R.drawable.ic_siren);
                 case "ic_metronome_tile" -> notificationBuilder.setSmallIcon(R.drawable.ic_metronome_tile);
-                default -> notificationBuilder.setSmallIcon(getResourceIdForResourceName(context, iconName));
             }
         }
         var largeIconName = notificationConfig.getString("largeIcon");
         if (largeIconName != null) {
-            switch (largeIconName) {
-                case "ic_launcher" -> notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher));
-                default -> notificationBuilder.setLargeIcon(getBitmapForResourceName(context, largeIconName));
+            if (largeIconName.equals("ic_launcher")) {
+                notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher));
             }
         }
 
@@ -258,7 +254,7 @@ public class NotificationHelper {
         ContextCompat.registerReceiver(context, buttonPressReceiver, filter, RECEIVER_EXPORTED);
     }
 
-    private Class getMainActivityClass(Context context) {
+    private Class<?> getMainActivityClass(Context context) {
         var packageName = context.getPackageName();
         var launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
         if (launchIntent == null || launchIntent.getComponent() == null) {
@@ -272,31 +268,12 @@ public class NotificationHelper {
     }
 
     private int getPriority(int priorityInt) {
-        switch (priorityInt) {
-            case 0:
-                return Notification.PRIORITY_DEFAULT;
-            case -1:
-                return Notification.PRIORITY_LOW;
-            case -2:
-                return Notification.PRIORITY_MIN;
-            case 2:
-                return Notification.PRIORITY_MAX;
-            case 1:
-            default:
-                return Notification.PRIORITY_HIGH;
-        }
-    }
-
-    private int getResourceIdForResourceName(Context context, String resourceName) {
-        var resourceId = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
-        if (resourceId == 0) {
-            resourceId = context.getResources().getIdentifier(resourceName, "mipmap", context.getPackageName());
-        }
-        return resourceId;
-    }
-
-    private Bitmap getBitmapForResourceName(Context context, String resourceName) {
-        var resource = getResourceIdForResourceName(context, resourceName);
-        return BitmapFactory.decodeResource(context.getResources(), resource);
+        return switch (priorityInt) {
+            case 0 -> Notification.PRIORITY_DEFAULT;
+            case -1 -> Notification.PRIORITY_LOW;
+            case -2 -> Notification.PRIORITY_MIN;
+            case 2 -> Notification.PRIORITY_MAX;
+            default -> Notification.PRIORITY_HIGH;
+        };
     }
 }
