@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">דיווחי מגן דוד אדום</string>
+    <string name="app_name">ניסוי דיווחי מד\"א</string>
     <string name="smsMoni">הפעלת האפליקציה ברקע</string>
     <string name="notiMoni">זיהוי התראות ברקע</string>
     <string name="Minf">פרטי מקרה</string>

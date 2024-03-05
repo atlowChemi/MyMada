@@ -1,22 +1,4 @@
 <resources>
-
-    <style name="CKS" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorControlActivated">@color/ColorAqua</item>
-        <item name="colorSwitchThumbNormal">@color/materialGrey600</item>
-        <!-- Inactive track color(30% transparency) -->
-        <item name="android:colorForeground">@color/materialGrey850</item>
-    </style>
-
-    <style name="CKP" parent="AlertDialog.AppCompat.Light">
-        <item name="android:paddingLeft">32dp</item>
-        <item name="android:paddingRight">32dp</item>
-        <item name="android:background">@color/ColorPrimaryDark</item>
-    </style>
-
-    <style name="SpinnerNoArrow" parent="Widget.AppCompat.Spinner"><!--@android:style/Widget.Spinner-->
-        <item name="android:background">@android:drawable/edit_text</item>
-    </style>
-
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="android:textColor">@color/Black</item>
@@ -40,19 +22,6 @@
         <item name="colorControlHighlight">@android:color/transparent</item>
     </style>
 
-    <style name="MyMaterialTheme.SmsRes" parent="MyMaterialTheme.Base">
-        <item name="colorPrimary">@color/OldPrimary</item>
-        <item name="colorPrimaryDark">@color/OldPrimary</item>
-        <item name="colorAccent">@color/OldPrimary</item>
-    </style>
-
-    <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
-
-        <item name="android:dialogTheme">@style/Theme.Preferences.Dialog</item>
-        <item name="android:alertDialogTheme">@style/Theme.Preferences.Dialog</item>
-        <item name="android:alertDialogStyle">@style/Theme.Preferences.Dialog</item>
-    </style>
-
     <style name="MyMaterialTheme.Base" parent="AppTheme">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
@@ -60,78 +29,22 @@
         <item name="colorPrimaryDark">@color/ColorPrimary</item>
         <item name="colorAccent">@color/ColorPrimary</item>
     </style>
-    <style name="PreTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/ColorPrimary</item>
-        <item name="colorPrimaryDark">@color/ColorPrimary</item>
 
-        <item name="android:windowBackground">@color/materialGrey300</item>
-        <item name="android:colorForegroundInverse">@color/Black</item>
-        <item name="android:colorBackground">@color/materialBlueGrey800</item>
-        <item name="android:colorBackgroundCacheHint">@color/materialGrey850</item>
-
-        <item name="android:textColorHighlight">@color/highlightedTextMaterialLight</item>
-
-        <item name="colorControlNormal">?android:attr/textColorSecondary</item>
-        <item name="colorControlActivated">@color/ColorAqua</item>
-        <!-- Inactive track color(30% transparency) -->
-        <item name="android:colorForeground">@color/materialGrey850</item>
-        <item name="colorControlHighlight">@color/rippleMaterialDark</item>
-        <item name="colorButtonNormal">@color/buttonMaterialDark</item>
-        <item name="colorSwitchThumbNormal">@color/switchThumbNormalMaterialDark</item>
-        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
-        <item name="windowActionBar">true</item>
-        <item name="windowActionBarOverlay">false</item>
-        <item name="android:dialogTheme">@style/Theme.Preferences.Dialog</item>
-        <item name="android:alertDialogTheme">@style/Theme.Preferences.Dialog</item>
-        <item name="android:alertDialogStyle">@style/Theme.Preferences.Dialog</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="android:typeface">monospace</item>
-
-    </style>
-
-    <style name="Theme.Preferences.Dialog" parent="@style/Base.V7.Theme.AppCompat.Light.Dialog">
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowTitleStyle">@null</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
-        <item name="android:backgroundDimEnabled">false</item>
-        <item name="android:background">@android:color/transparent</item>
+    <style name="MyMaterialTheme.SmsRes" parent="MyMaterialTheme.Base">
+        <item name="colorPrimary">@color/OldPrimary</item>
+        <item name="colorPrimaryDark">@color/OldPrimary</item>
+        <item name="colorAccent">@color/OldPrimary</item>
+        <item name="android:navigationBarColor">@color/OldPrimary</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <style name="CheckBox" parent="AppTheme">
-        <item name="colorAccent">@color/ColorBlue</item>
-        <item name="colorControlNormal">@color/ColorAqua</item>
-        <item name="colorControlActivated">@color/ColorAqua</item>
-    </style>
-
-    <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <!-- Used for the buttons -->
-        <item name="android:typeface">monospace</item>
-        <item name="colorAccent">@color/ColorAqua</item>
-        <item name="colorControlNormal">@color/Ocean</item>
-        <item name="colorControlActivated">@color/ColorAqua</item>
-        <item name="android:buttonStyle">@style/ADButton</item>
-        <!-- Used for the title and text -->
-        <item name="android:textColorPrimary">#000</item>
-        <!-- Used for the background -->
-        <item name="android:background">#ececec</item>
-    </style>
-
-    <style name="ADButton" parent="Theme.AppCompat.Light">
-        <item name="colorControlHighlight">@color/ColorBlue</item>
-        <item name="android:textColor">@color/ColorAqua</item>
-    </style>
     <style name="FButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/ColorBlue</item>
         <item name="android:textColor">@color/ColorAqua</item>
