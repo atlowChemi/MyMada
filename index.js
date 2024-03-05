@@ -13,7 +13,6 @@ const messagingStore = container.get(MessagingStore);
 const sharedPreferencesStore = container.get(SharedPreferencesStore);
 const madaNotificationsStore = container.get(MadaNotificationsStore);
 messaging().setBackgroundMessageHandler(messagingStore.onMessage);
-AppRegistry.registerComponent('Root', () => App);
 AppRegistry.registerHeadlessTask('HeadlessTask', () => async (data) => {
     if (data?.type !== 'appStart') {
         return;
@@ -23,3 +22,4 @@ AppRegistry.registerHeadlessTask('HeadlessTask', () => async (data) => {
         await Promise.all([madaNotificationsStore.startCallRecognitionForegroundService(), madaNotificationsStore.restartAndRebindNotificationListener()]);
     }
 });
+AppRegistry.registerComponent('Root', () => App);

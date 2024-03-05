@@ -10,6 +10,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
@@ -23,6 +25,7 @@ import com.facebook.soloader.SoLoader;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
 import atlow.chemi.mymada.helpers.FontsOverride;
+import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
 import atlow.chemi.mymada.recieversAndServices.BootCompleteReceiver;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 import atlow.chemi.mymada.recieversAndServices.HeadlessJsService;
@@ -80,6 +83,15 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
             return;
         super.onCreate();
         try {
+            var headlessService = new Intent(getApplicationContext(), HeadlessJsService.class);
+            headlessService.putExtra("type", "appStart");
+            startService(headlessService);
+        } catch (IllegalStateException e) {
+            var work = OneTimeWorkRequest.from(HeadlessJsTaskWorker.class);
+            WorkManager.getInstance(getApplicationContext()).enqueue(work);
+            // TODO: Crashlytics, maybe just move this to App.jsx?
+        }
+        try {
             SoLoader.init(this, false);
             var sharedI18nUtilInstance = I18nUtil.getInstance();
             sharedI18nUtilInstance.allowRTL(getApplicationContext(), true);
@@ -96,16 +108,6 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
         FontsOverride.setDefaultFont(this, "SERIF", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SANS_SERIF", "fonts/opensanshebrew.ttf");
 
-        try {
-            var headlessService = new Intent(getApplicationContext(), HeadlessJsService.class);
-            var bundle = new Bundle();
-            bundle.putString("type", "appStart");
-            headlessService.putExtras(bundle);
-            headlessService.putExtra("type", "appStart");
-            startService(headlessService);
-        } catch (IllegalStateException e) {
-            // TODO: Crashlytics, maybe just move this to App.jsx?
-        }
         setupBroadcastReceivers();
     }
     private void setupBroadcastReceivers() {
