@@ -6,6 +6,8 @@ on:
         branches:
             - 'dev'
             - 'master'
+    release:
+        types: [published]
 jobs:
     android-build:
         name: Android Dev Build
@@ -81,7 +83,7 @@ jobs:
                     path: |
                         android/app/build/outputs/apk/release/app-release.apk
                         android/app/build/outputs/bundle/release/app-release.aab
-            ## Distribute app to Firebase App Distribution for testing / use google play internal track if you have a google play account
+            # Distribute app to Firebase App Distribution for testing / use google play internal track if you have a google play account
             -   name: upload artifact to Firebase App Distribution
                 uses: wzieba/Firebase-Distribution-Github-Action@v1
                 with:
@@ -89,13 +91,14 @@ jobs:
                     serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
                     groups: testers
                     file: android/app/build/outputs/bundle/release/app-release.aab
-            ## Distribute  App to google play alpha track
-            # -   name: Upload App to Google Play
-            #     uses: r0adkll/upload-google-play@v1
-            #     with:
-            #         serviceAccountJsonPlainText: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON_TEXT }}
-            #         packageName: com.test.test
-            #         releaseFiles: android/app/build/outputs/bundle/release/*.aab
-            #         track: alpha
-            #         status: completed
-            #         inAppUpdatePriority: 2
+            # Distribute  App to google play alpha/beta track
+            -   name: Upload App to Google Play
+                uses: r0adkll/upload-google-play@v1
+                with:
+                    serviceAccountJsonPlainText: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON_TEXT }}
+                    packageName: atlow.chemi.mymada
+                    releaseFiles: android/app/build/outputs/bundle/release/*.aab
+                    mappingFile: app/build/outputs/mapping/release/mapping.txt
+                    track: ${{ github.event_name == 'release' && 'beta' || 'alpha' }}
+                    status: completed
+                    inAppUpdatePriority: 2
