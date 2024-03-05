@@ -8,12 +8,18 @@ import { container } from './src/services/container';
 import { MessagingStore } from './src/services/MessagingStore';
 import { SharedPreferencesStore } from './src/services/SharedPreferencesStore';
 import { MadaNotificationsStore } from './src/services/MadaNotificationsStore';
+import { MetronomeStore } from './src/services/MetronomeStore';
 
 const messagingStore = container.get(MessagingStore);
+const metronomeStore = container.get(MetronomeStore);
 const sharedPreferencesStore = container.get(SharedPreferencesStore);
 const madaNotificationsStore = container.get(MadaNotificationsStore);
 messaging().setBackgroundMessageHandler(messagingStore.onMessage);
 AppRegistry.registerHeadlessTask('HeadlessTask', () => async (data) => {
+    if (data?.type === 'metronomeToggle') {
+        await metronomeStore.toggleMetronome();
+        return;
+    }
     if (data?.type !== 'appStart') {
         return;
     }
