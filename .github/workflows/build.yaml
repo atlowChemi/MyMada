@@ -93,12 +93,13 @@ jobs:
                     file: android/app/build/outputs/bundle/release/app-release.aab
             # Distribute  App to google play alpha/beta track
             -   name: Upload App to Google Play
+                if: github.event_name == 'release'
                 uses: r0adkll/upload-google-play@v1
                 with:
                     serviceAccountJsonPlainText: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON_TEXT }}
                     packageName: atlow.chemi.mymada
                     releaseFiles: android/app/build/outputs/bundle/release/*.aab
-                    mappingFile: app/build/outputs/mapping/release/mapping.txt
-                    track: ${{ github.event_name == 'release' && 'beta' || 'alpha' }}
+                    mappingFile: android/app/build/outputs/mapping/release/mapping.txt
+                    track: beta
                     status: completed
                     inAppUpdatePriority: 2
