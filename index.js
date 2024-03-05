@@ -17,6 +17,7 @@ AppRegistry.registerHeadlessTask('HeadlessTask', () => async (data) => {
     if (data?.type !== 'appStart') {
         return;
     }
+    console.log('HeadlessTask', data);
     const { callDetection: { isCallRecognitionOn } } = await sharedPreferencesStore.applicationSettings;
     if (isCallRecognitionOn) {
         await Promise.all([madaNotificationsStore.startCallRecognitionForegroundService(), madaNotificationsStore.restartAndRebindNotificationListener()]);
