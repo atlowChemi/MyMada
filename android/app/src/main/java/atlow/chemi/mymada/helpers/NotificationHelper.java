@@ -34,6 +34,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import atlow.chemi.mymada.MainReactActivity;
+import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.classes.JSException;
 
 public class NotificationHelper {
@@ -178,11 +179,19 @@ public class NotificationHelper {
 
         var iconName = notificationConfig.getString("icon");
         if (iconName != null) {
-            notificationBuilder.setSmallIcon(getResourceIdForResourceName(context, iconName));
+            switch (iconName) {
+                case "ic_noti" -> notificationBuilder.setSmallIcon(R.drawable.ic_noti);
+                case "ic_siren" -> notificationBuilder.setSmallIcon(R.drawable.ic_siren);
+                case "ic_metronome_tile" -> notificationBuilder.setSmallIcon(R.drawable.ic_metronome_tile);
+                default -> notificationBuilder.setSmallIcon(getResourceIdForResourceName(context, iconName));
+            }
         }
         var largeIconName = notificationConfig.getString("largeIcon");
         if (largeIconName != null) {
-            notificationBuilder.setLargeIcon(getBitmapForResourceName(context, largeIconName));
+            switch (largeIconName) {
+                case "ic_launcher" -> notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher));
+                default -> notificationBuilder.setLargeIcon(getBitmapForResourceName(context, largeIconName));
+            }
         }
 
         var color = notificationConfig.getString("color", "");

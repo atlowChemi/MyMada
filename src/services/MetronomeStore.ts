@@ -5,7 +5,7 @@ import { Dimensions, NativeModules, NativeEventEmitter } from 'react-native';
 import crashlytics from '@react-native-firebase/crashlytics';
 import i18n from '../localization';
 import { colors } from '../consts';
-import { Priority, NOTIFICATION_MAP } from './NotificationService';
+import { Priority, NOTIFICATION_MAP, NotificationConfig } from './NotificationService';
 
 const { MetronomeModule } = NativeModules;
 
@@ -103,7 +103,7 @@ export class MetronomeStore {
                 text: i18n.t('tools:metronome:notificationTxt'),
                 button: i18n.t('common:notificationBtn'),
                 title: i18n.t('tools:metronome:notificationTitle'),
-            });
+            } satisfies NotificationConfig);
             runInAction(() => (this.startTime = startTime));
         } catch (e) {
             e instanceof Error && crashlytics().recordError(e);

@@ -7,7 +7,9 @@
   "scripts": {
     "android": "react-native run-android",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "react-native start"
+    "start": "react-native start",
+    "np": "np --no-publish",
+    "postversion": "react-native-version --target android"
   },
   "repository": {
     "type": "git",
@@ -79,7 +81,9 @@
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
+    "np": "^10.0.0",
     "prettier": "3.2.5",
+    "react-native-version": "^4.0.0",
     "react-test-renderer": "18.2.0",
     "typescript": "5.3.3"
   },
