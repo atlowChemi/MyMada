@@ -30,10 +30,6 @@ export default {
     settings,
     testCall,
     tools,
-    // Mrec: 'אשר קבלה',
-    // Mrec2: 'חזור',
-    // Minf: 'פרטי מקרה',
-    // newCall: 'אירוע חדש!',
     // kodimT: '\nקוד הזנקה: %1$s\nקוד רפואי: %2$s',
     // time: 'התקבל בשעה: %1$s',
 } as const;
