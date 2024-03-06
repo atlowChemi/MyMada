@@ -21,6 +21,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 
+import static atlow.chemi.mymada.Constants.ACTION_FOREGROUND_SERVICE_START;
 import static atlow.chemi.mymada.Constants.ERROR_ANDROID_VERSION;
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
 import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
@@ -243,7 +244,7 @@ public class NotificationHelper {
             throw new JSException(ERROR_INVALID_CONFIG, "ForegroundService: text is required");
         }
 
-        intent.setAction(action);
+        intent.setAction(ACTION_FOREGROUND_SERVICE_START);
         var bundle = Arguments.toBundle(notificationConfig);
 
         Objects.requireNonNull(bundle).putString("action", action);
