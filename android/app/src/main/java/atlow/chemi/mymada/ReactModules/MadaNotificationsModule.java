@@ -53,7 +53,7 @@ import atlow.chemi.mymada.NotificationService;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.helpers.NotificationHelper;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
-import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
+import atlow.chemi.mymada.recieversAndServices.NotificationListenerForegroundService;
 
 @ReactModule(name = MadaNotificationsModule.NAME)
 public class MadaNotificationsModule extends ReactContextBaseJavaModule implements ActivityEventListener {
@@ -200,7 +200,7 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void startCallRecognitionForegroundService(ReadableMap notificationConfig, Promise promise) {
         try {
-            NotificationHelper.getInstance(reactContext).startForegroundService(new Intent(reactContext, SMSMonitorService.class), notificationConfig, buttonPressReceiver, NOTIFICATION_LISTENER_NOTIFICATION_BUTTON_PRESSED);
+            NotificationHelper.getInstance(reactContext).startForegroundService(new Intent(reactContext, NotificationListenerForegroundService.class), notificationConfig, buttonPressReceiver, NOTIFICATION_LISTENER_NOTIFICATION_BUTTON_PRESSED);
             promise.resolve(null);
         } catch (Exception e) {
             promise.reject(ERROR_SERVICE_ERROR, e);
@@ -296,7 +296,7 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
     }
 
     private boolean stopForegroundService() {
-        var intent = new Intent(reactContext, SMSMonitorService.class);
+        var intent = new Intent(reactContext, NotificationListenerForegroundService.class);
         intent.setAction(ACTION_FOREGROUND_SERVICE_STOP);
         return reactContext.stopService(intent);
     }

@@ -5,14 +5,11 @@ import static atlow.chemi.mymada.Constants.METRONOME_NOTIFICATION_BUTTON_PRESSED
 import static atlow.chemi.mymada.Constants.METRONOME_START_TIME;
 import static atlow.chemi.mymada.Constants.METRONOME_STATE;
 import static atlow.chemi.mymada.Constants.METRONOME_TOGGLED;
-import static atlow.chemi.mymada.Constants.RUN_IN_BG_NOTIFICATION_CHANNEL;
 
-import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +24,7 @@ import atlow.chemi.mymada.classes.AudioGenerator;
 import atlow.chemi.mymada.classes.JSException;
 import atlow.chemi.mymada.helpers.EventListener;
 import atlow.chemi.mymada.helpers.NotificationHelper;
-import atlow.chemi.mymada.recieversAndServices.ForegroundService;
+import atlow.chemi.mymada.recieversAndServices.MetronomeForegroundService;
 import java9.util.concurrent.CompletableFuture;
 
 public class MetronomeManager extends EventListener<HashMap<String, Object>> {
@@ -106,7 +103,7 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
 
     public void startMetronome(@NonNull Context context, ReadableMap notificationConfig, @Nullable Promise promise) throws JSException {
         try {
-            NotificationHelper.getInstance(context).startForegroundService(new Intent(context, ForegroundService.class), notificationConfig, buttonPressReceiver, METRONOME_NOTIFICATION_BUTTON_PRESSED);
+            NotificationHelper.getInstance(context).startForegroundService(new Intent(context, MetronomeForegroundService.class), notificationConfig, buttonPressReceiver, METRONOME_NOTIFICATION_BUTTON_PRESSED);
             var startTimeDouble = notificationConfig.getDouble("startTime");
             startTime = String.valueOf((long)startTimeDouble);
             playMetronomeTrack(context);
@@ -123,7 +120,7 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
     }
 
     public void stopMetronome(@NonNull Context context, @Nullable Promise promise) throws JSException {
-        var intent = new Intent(context, ForegroundService.class);
+        var intent = new Intent(context, MetronomeForegroundService.class);
         intent.setAction(Constants.ACTION_FOREGROUND_SERVICE_STOP);
         var stopped = context.stopService(intent);
         if (stopped) {

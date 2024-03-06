@@ -30,19 +30,10 @@ export default {
     settings,
     testCall,
     tools,
-    // smsMoni: 'הפעלת האפליקציה ברקע',
-    // notiMoni: 'זיהוי התראות ברקע',
     // Mrec: 'אשר קבלה',
     // Mrec2: 'חזור',
     // Minf: 'פרטי מקרה',
-    // title_activity_sms_res: 'הודעה חדשה',
-    // codeNote: 'כתוב את פרטיך והוסף בהערות את פרטי ההתנדבות שלך (מרחב ותפקיד) ואנו נבחן את הפרטים ונשלח קוד הפעלה בהקדם.',
+    // newCall: 'אירוע חדש!',
+    // kodimT: '\nקוד הזנקה: %1$s\nקוד רפואי: %2$s',
+    // time: 'התקבל בשעה: %1$s',
 } as const;
-
-// <resources>
-//     <string name="newCall">אירוע חדש!</string>
-
-//     <string name="kodimT">\nקוד הזנקה: %1$s\nקוד רפואי: %2$s</string>
-
-//     <string name="time">התקבל בשעה: %1$s</string>
-// </resources>

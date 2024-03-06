@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ניסוי דיווחי מד\"א</string>
-    <string name="smsMoni">הפעלת האפליקציה ברקע</string>
-    <string name="notiMoni">זיהוי התראות ברקע</string>
     <string name="Minf">פרטי מקרה</string>
     <string name="Mrec2">חזור</string>
     <string name="title_activity_sms_res">הודעה חדשה</string>
-    <string name="button_d">מטרונום</string>
+    <string name="metronome">מטרונום</string>
     <string name="newCall">אירוע חדש</string>
     <string name="service_exp">בכדי שנוכל לזהות את המקרים המגיעים למכשיר, אפשרות זו צריכה להיות דולקת. במידה ואפשרות זו לא דולקת, לא יזוהו מקרים כלל.</string>
     <string name="hello_world">הכתבת טופס</string>

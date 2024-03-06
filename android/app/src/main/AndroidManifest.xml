@@ -71,14 +71,8 @@
                 android:value="true" />
         </service>
         <service android:name=".recieversAndServices.HeadlessJsService" android:exported="false" />
-        <service
-            android:name=".recieversAndServices.SMSMonitorService"
-            android:foregroundServiceType="mediaPlayback"
-            android:label="@string/smsMoni" />
-        <service
-            android:name=".recieversAndServices.ForegroundService"
-            android:foregroundServiceType="mediaPlayback"
-            android:exported="false" />
+        <service android:name=".recieversAndServices.NotificationListenerForegroundService" android:foregroundServiceType="mediaPlayback" />
+        <service android:name=".recieversAndServices.MetronomeForegroundService" android:foregroundServiceType="mediaPlayback" android:exported="false" />
 
         <service
             android:name=".recieversAndServices.FloatingWidgetService"
@@ -87,7 +81,6 @@
         <service
             android:name=".NotificationService"
             android:enabled="true"
-            android:label="@string/notiMoni"
             android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
@@ -98,7 +91,7 @@
             android:name=".recieversAndServices.MetronomeTileService"
             android:enabled="@bool/tile"
             android:icon="@drawable/ic_metronome_tile"
-            android:label="@string/button_d"
+            android:label="@string/metronome"
             android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
@@ -139,7 +132,7 @@
         <receiver
             android:name=".recieversAndServices.MetroWidget"
             android:exported="true"
-            android:label="@string/button_d">
+            android:label="@string/metronome">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
