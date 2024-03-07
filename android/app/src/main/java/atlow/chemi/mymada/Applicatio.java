@@ -24,12 +24,12 @@ import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.soloader.SoLoader;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
-import atlow.chemi.mymada.helpers.FontsOverride;
 import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
 import atlow.chemi.mymada.recieversAndServices.BootCompleteReceiver;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 import atlow.chemi.mymada.recieversAndServices.HeadlessJsService;
 
+import static atlow.chemi.mymada.Constants.CALL_RECEIVER_ACTION;
 import static atlow.chemi.mymada.Constants.TEST_CALL_ACTION;
 
 import java.util.List;
@@ -89,7 +89,7 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
         } catch (IllegalStateException e) {
             var work = OneTimeWorkRequest.from(HeadlessJsTaskWorker.class);
             WorkManager.getInstance(getApplicationContext()).enqueue(work);
-            // TODO: Crashlytics, maybe just move this to App.jsx?
+            // TODO: Crashlytics
         }
         try {
             SoLoader.init(this, false);
@@ -101,19 +101,16 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
             }
             ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
         } catch (Exception e) {
+            // TODO: Crashlytics
             e.printStackTrace();
         }
-        FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
-        FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");
-        FontsOverride.setDefaultFont(this, "SERIF", "fonts/opensanshebrew.ttf");
-        FontsOverride.setDefaultFont(this, "SANS_SERIF", "fonts/opensanshebrew.ttf");
 
         setupBroadcastReceivers();
     }
     private void setupBroadcastReceivers() {
         var broadcastManager = LocalBroadcastManager.getInstance(this);
         var receiver = new GrobootRec();
-        var filter = new IntentFilter("MADA_APP");
+        var filter = new IntentFilter(CALL_RECEIVER_ACTION);
         filter.addAction(TEST_CALL_ACTION);
         broadcastManager.registerReceiver(receiver, filter);
         var filter2 = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);

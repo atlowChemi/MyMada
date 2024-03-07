@@ -16,6 +16,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import android.provider.Settings;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import atlow.chemi.mymada.MadaCallActivity;
 import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.smsRes;
@@ -51,19 +53,19 @@ public class GrobootRec extends BroadcastReceiver {
     }
 
     @Override
-    public void onReceive(final Context context, Intent intent) {
+    public void onReceive(@NonNull final Context context, Intent intent) {
         final SharedPreferences sp = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
         final var map = (Map<String, Object>) sp.getAll();
-        boolean win = map.compute("win", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
-        boolean not = map.compute("not", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
-        boolean ShabbatM = map.compute("ShabbatM", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
-        boolean stat = map.compute("stat", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
-        boolean statVib = map.compute("statVib", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
+        var win = map.compute("win", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+        var not = map.compute("not", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
+        var ShabbatM = map.compute("ShabbatM", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
+        var stat = map.compute("stat", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
+        var statVib = map.compute("statVib", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
 
-        boolean silent = true;
-        boolean silentVib = true;
-        Uri url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
-        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        var silent = true;
+        var silentVib = true;
+        var url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
+        var am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         if (am != null && am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
             silent = false;
         if (am != null && am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
@@ -95,25 +97,17 @@ public class GrobootRec extends BroadcastReceiver {
             callT = intent.getIntExtra("callT", 1);
             Log.d("callT", "" + callT);
             switch (callT) {
-                case 1:
-                    callType = map.compute("callT1", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
-                    string = "T1";
-                    break;
                 case 2:
                     callType = map.compute("callT2", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T2";
                     break;
-                case 3:
+                case 3, 5:
                     callType = map.compute("callT3", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T3";
                     break;
                 case 4:
                     callType = map.compute("callT4", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
                     string = "T4";
-                    break;
-                case 5:
-                    callType = map.compute("callT3", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
-                    string = "T3";
                     break;
                 case 6:
                     callType = map.compute("callT6", (key, val) -> String.valueOf(val == null ? "true" : val)).equals("true");
@@ -158,28 +152,20 @@ public class GrobootRec extends BroadcastReceiver {
         int nightEnd = Integer.parseInt((String) map.compute("nightEnd", (key, val) -> String.valueOf(val == null ? "7" : val)));
         if (hour <= nightEnd || hour >= nightStart) {
             switch (sleep) {
-                case 1:
-                case 4:
-                case 7:
+                case 1, 4, 7:
                     sou = false;
                     break;
-                case 2:
-                case 5:
-                case 8:
+                case 2, 5, 8:
                     sou = false;
                     vib = false;
                     break;
             }
         } else {
             switch (sleep) {
-                case 3:
-                case 4:
-                case 5:
+                case 3, 4, 5:
                     sou = false;
                     break;
-                case 6:
-                case 7:
-                case 8:
+                case 6, 7, 8:
                     sou = false;
                     vib = false;
                     break;
@@ -217,7 +203,7 @@ public class GrobootRec extends BroadcastReceiver {
                     notNum = ++NOTIF_ID;
                     notifManager.notify(NOTIF_ID, mNotification);
                 }
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(context)) {
+                if (Settings.canDrawOverlays(context)) {
                     //If permission is granted start floating widget service
                     Intent service = new Intent(context , FloatingWidgetService.class);
                     service.putExtra("vib", vib && (!statVib || !silentVib));
@@ -231,7 +217,7 @@ public class GrobootRec extends BroadcastReceiver {
             }
             /**/
             if (win && (callType || testAp)) {
-                Intent i = new Intent(context, smsRes.class);
+                Intent i = new Intent(context, MadaCallActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                 i.putExtra("notNum", notNum);
@@ -242,7 +228,7 @@ public class GrobootRec extends BroadcastReceiver {
             testAp = false;
         }
         else if (!not && win && (callType || testAp)) {
-            Intent i = new Intent(context, smsRes.class);
+            Intent i = new Intent(context, MadaCallActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             i.putExtra("notNum", notNum);
@@ -254,7 +240,7 @@ public class GrobootRec extends BroadcastReceiver {
     private boolean isCallable(Intent intent) {
         try {
             List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            return list.size() > 0;
+            return !list.isEmpty();
         } catch (Exception e) {
             e.printStackTrace();
             return false;

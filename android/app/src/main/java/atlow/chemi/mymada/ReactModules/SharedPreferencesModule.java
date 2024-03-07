@@ -1,5 +1,6 @@
 package atlow.chemi.mymada.ReactModules;
 
+import static android.content.Context.MODE_PRIVATE;
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
 
 import android.content.Context;
@@ -19,7 +20,6 @@ import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 @ReactModule(name = SharedPreferencesModule.NAME)
@@ -40,7 +40,7 @@ public class SharedPreferencesModule extends ReactContextBaseJavaModule {
     }
 
     private SharedPreferences initSharedHandler(String name) {
-        return sharedPreferencesMap.computeIfAbsent(name, s -> reactContext.getSharedPreferences(s, Context.MODE_PRIVATE));
+        return sharedPreferencesMap.computeIfAbsent(name, s -> reactContext.getSharedPreferences(s, MODE_PRIVATE));
     }
 
     @ReactMethod
@@ -91,5 +91,12 @@ public class SharedPreferencesModule extends ReactContextBaseJavaModule {
             response.pushArray(arr);
         }
         promise.resolve(response);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static boolean isCallRecognitionOn(Context context) {
+        var sp = context.getSharedPreferences("Settings", MODE_PRIVATE);
+        var data = (Map<String, Object>)sp.getAll();
+        return data.compute("Mapp", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
     }
 }
