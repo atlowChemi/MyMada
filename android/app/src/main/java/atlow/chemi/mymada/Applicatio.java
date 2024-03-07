@@ -24,6 +24,7 @@ import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.soloader.SoLoader;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
+import atlow.chemi.mymada.helpers.FontsHelper;
 import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
 import atlow.chemi.mymada.recieversAndServices.BootCompleteReceiver;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
@@ -104,7 +105,7 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
             // TODO: Crashlytics
             e.printStackTrace();
         }
-
+        FontsHelper.setupFonts(this);
         setupBroadcastReceivers();
     }
     private void setupBroadcastReceivers() {
