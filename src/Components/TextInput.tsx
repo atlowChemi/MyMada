@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     font: {
-        fontFamily: 'opensanshebrew',
+        fontFamily: 'OpenSans',
     },
     input: {
         textAlignVertical: 'top',

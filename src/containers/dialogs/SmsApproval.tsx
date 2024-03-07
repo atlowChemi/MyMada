@@ -1,4 +1,4 @@
-import Dialog from 'react-native-dialog';
+import Dialog from './@FontWrappers';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -24,14 +24,14 @@ export const SmsApproval = observer<SmsApprovalProps>(({ region, msg, closeDialo
 
     return (
         <Dialog.Container visible>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t('dispatch:smsReviewTitle')}</Dialog.Title>
+            <Dialog.Title style={styles.dialogColorDark}>{t('dispatch:smsReviewTitle')}</Dialog.Title>
             <View style={styles.contentView}>
                 <Text style={styles.targetDispatch}>{t('dispatch:smsDispatchTarget', { region })}</Text>
-                <Text style={[styles.font, styles.dialogColorDark]}>{msg}</Text>
+                <Text style={styles.dialogColorDark}>{msg}</Text>
                 <Text style={styles.msg}>{t('dispatch:smsCounter', { length: msg.length, msgCount: 1 + Math.floor(msg.length / 70) })}</Text>
             </View>
-            <Dialog.Button style={[styles.font, styles.negativeColor]} label={t('common:cancel')} onPress={localStore.onCancel} />
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:ok')} onPress={localStore.onApprove} />
+            <Dialog.Button style={styles.negativeColor} label={t('common:cancel')} onPress={localStore.onCancel} />
+            <Dialog.Button style={styles.dialogColor} label={t('common:ok')} onPress={localStore.onApprove} />
         </Dialog.Container>
     );
 });
@@ -40,9 +40,6 @@ SmsApproval.displayName = 'SmsApproval';
 const styles = StyleSheet.create({
     contentView: {
         gap: 10,
-    },
-    font: {
-        fontFamily: 'opensanshebrew',
     },
     targetDispatch: {
         fontSize: 16,

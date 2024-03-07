@@ -210,7 +210,7 @@ public class smsRes extends AppCompatActivity {
         TextView k = findViewById(R.id.KodR);
         TextView t = findViewById(R.id.SMS);
         TextView one = findViewById(R.id.newC), two = findViewById(R.id.name);
-        Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
+        Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans.ttf");
         m.setTypeface(myTypeface);
         a.setTypeface(myTypeface);
         k.setTypeface(myTypeface);

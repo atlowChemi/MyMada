@@ -116,7 +116,7 @@ InputLabel.displayName = 'TextInputLabel';
 
 const styles = StyleSheet.create({
     font: {
-        fontFamily: 'opensanshebrew',
+        fontFamily: 'OpenSans',
     },
     labelContainer: {
         zIndex: 3,

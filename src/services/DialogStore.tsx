@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { injectable } from 'inversify';
 import { observer } from 'mobx-react-lite';
 import { StyleSheet, View } from 'react-native';
@@ -53,6 +54,8 @@ export class DialogStore {
 
 export const DialogWrapper = observer(() => {
     const dialogStore = useDependencyInjector(DialogStore);
+
+    useEffect(() => () => dialogStore[kDialogInstances].forEach(dialog => dialog.close(undefined)), [dialogStore]);
 
     if (dialogStore[kDialogInstances].size === 0) {
         return null;

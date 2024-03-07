@@ -181,9 +181,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    font: {
-        fontFamily: 'opensanshebrew',
-    },
     dialogColor: {
         color: colors.colorNice,
     },

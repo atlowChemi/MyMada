@@ -1,4 +1,4 @@
-import Dialog from 'react-native-dialog';
+import Dialog from './@FontWrappers';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -61,21 +61,21 @@ export const TeamMemberDialog = observer<TeamMemberDialogProps>(({ member, close
 
     return (
         <Dialog.Container visible>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t(`dispatch:team:${member ? 'edit' : 'add'}Member`)}</Dialog.Title>
+            <Dialog.Title style={styles.dialogColorDark}>{t(`dispatch:team:${member ? 'edit' : 'add'}Member`)}</Dialog.Title>
             <View style={styles.contentView}>
                 <Dropdown
                     data={localStore.ranks}
                     labelField="label"
                     valueField="value"
-                    fontFamily="opensanshebrew"
+                    fontFamily="OpenSans"
                     style={styles.dropdown}
                     value={localStore.member.rank}
                     onChange={localStore.onRankChange}
                 />
                 <TextInput label={t('dispatch:team:memberName')} value={localStore.member.name} onChangeText={localStore.onNameChange} error={localStore.error} textContentType="name" />
             </View>
-            <Dialog.Button style={[styles.font, styles.negativeColor]} label={t('common:cancel')} onPress={localStore.onCancel} />
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:ok')} onPress={localStore.onApprove} />
+            <Dialog.Button style={styles.negativeColor} label={t('common:cancel')} onPress={localStore.onCancel} />
+            <Dialog.Button style={styles.dialogColor} label={t('common:ok')} onPress={localStore.onApprove} />
         </Dialog.Container>
     );
 });
@@ -84,9 +84,6 @@ TeamMemberDialog.displayName = 'TeamMemberDialog';
 const styles = StyleSheet.create({
     contentView: {
         gap: 10,
-    },
-    font: {
-        fontFamily: 'opensanshebrew',
     },
     dialogColorDark: {
         color: colors.colorPrimaryDark,

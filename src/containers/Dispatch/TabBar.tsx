@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { TabBar, TabBarIndicator } from 'react-native-tab-view';
 import { ParamListBase, Route, TabNavigationState } from '@react-navigation/native';
 import { colors } from '../../consts';
+import { Text } from '../../Components/Text';
 import type { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 
 export function DispatchTabBar({ state, navigation, descriptors, ...rest }: MaterialTopTabBarProps) {
@@ -112,7 +113,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         textAlign: 'center',
         textTransform: 'uppercase',
-        fontFamily: 'opensanshebrew',
         backgroundColor: 'transparent',
     },
 });

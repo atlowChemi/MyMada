@@ -12,6 +12,6 @@ Text.displayName = 'Text';
 const styles = StyleSheet.create({
     text: {
         color: colors.black,
-        fontFamily: 'opensanshebrew',
+        fontFamily: 'OpenSans',
     },
 });

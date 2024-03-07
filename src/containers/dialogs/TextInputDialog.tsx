@@ -1,4 +1,4 @@
-import Dialog from 'react-native-dialog';
+import Dialog from './@FontWrappers';
 import { KeyboardTypeOptions, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -49,12 +49,12 @@ export const TextInputDialog = observer<TextInputDialogProps>(({ closeDialog, is
 
     return (
         <Dialog.Container visible onRequestClose={localStore.onRequestClose} onBackdropPress={localStore.onBackdropPress}>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{title}</Dialog.Title>
+            <Dialog.Title style={styles.dialogColorDark}>{title}</Dialog.Title>
             <Dialog.Input
                 value={localStore.value}
                 autoComplete={autoComplete}
                 cursorColor={colors.colorNice}
-                style={[styles.font, styles.dialogColorDark]}
+                style={styles.dialogColorDark}
                 keyboardType={keyboardType}
                 placeholder={placeholder}
                 placeholderTextColor={localStore.error ? colors.oldPrimaryDark : colors.colorNice}
@@ -62,16 +62,13 @@ export const TextInputDialog = observer<TextInputDialogProps>(({ closeDialog, is
                 onChangeText={localStore.onChange}
             />
             {localStore.error && <Text style={styles.errorHint}>{localStore.error}</Text>}
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:ok')} onPress={localStore.onApprove} />
+            <Dialog.Button style={styles.dialogColor} label={t('common:ok')} onPress={localStore.onApprove} />
         </Dialog.Container>
     );
 });
 TextInputDialog.displayName = 'TextInputDialog';
 
 const styles = StyleSheet.create({
-    font: {
-        fontFamily: 'opensanshebrew',
-    },
     dialogColorDark: {
         color: colors.colorPrimaryDark,
     },

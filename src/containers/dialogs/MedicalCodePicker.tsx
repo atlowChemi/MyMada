@@ -1,5 +1,5 @@
 import Color from 'color';
-import Dialog from 'react-native-dialog';
+import Dialog from './@FontWrappers';
 import { observable } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import { useTranslation } from 'react-i18next';
@@ -83,7 +83,7 @@ export const MedicalCodePicker = observer<MedicalCodePickerProps>(({ selectedCod
 
     return (
         <Dialog.Container visible onRequestClose={localStore.onCancel} contentStyle={styles.container}>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t('dispatch:form:pickMedicalCode')}</Dialog.Title>
+            <Dialog.Title style={styles.dialogColorDark}>{t('dispatch:form:pickMedicalCode')}</Dialog.Title>
             <Dialog.Input
                 autoComplete="off"
                 value={localStore.query}
@@ -92,11 +92,11 @@ export const MedicalCodePicker = observer<MedicalCodePickerProps>(({ selectedCod
                 cursorColor={colors.colorNice}
                 onChangeText={localStore.onSearch}
                 underlineColorAndroid={colors.colorNice}
-                style={[styles.font, styles.dialogColorDark]}
+                style={styles.dialogColorDark}
                 unstableLabelStyle={{ color: colors.colorNice }}
             />
             <FlatList data={localStore.items} renderItem={({ item }) => <MedicalCodeItem item={item} selectedCodes={localStore.selectedCodes} onToggleItem={localStore.onToggleItem} />} />
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:ok')} onPress={localStore.onApprove} />
+            <Dialog.Button style={styles.dialogColor} label={t('common:ok')} onPress={localStore.onApprove} />
         </Dialog.Container>
     );
 });
@@ -107,9 +107,6 @@ const styles = StyleSheet.create({
         margin: 0,
         padding: 0,
         maxHeight: '90%',
-    },
-    font: {
-        fontFamily: 'opensanshebrew',
     },
     dialogColor: {
         color: colors.colorNice,

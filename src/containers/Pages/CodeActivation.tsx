@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
         textAlignVertical: 'top',
-        fontFamily: 'opensanshebrew',
+        fontFamily: 'OpenSans',
     },
     applyBtn: {
         height: 40,
