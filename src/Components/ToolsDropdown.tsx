@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 export const ToolsDropDown = observer(<T extends string | number>({ title, options, value, onChange }: ToolsDropDownProps<T>) => (
     <>
         <Text style={styles.dropdownTitle}>{title}</Text>
-        <Dropdown data={options} labelField="label" valueField="value" fontFamily="opensanshebrew" style={styles.dropdown} value={value as any} onChange={onChange} />
+        <Dropdown data={options} labelField="label" valueField="value" fontFamily="OpenSans" style={styles.dropdown} value={value as any} onChange={onChange} />
     </>
 ));
 ToolsDropDown.displayName = 'ToolsDropDown';

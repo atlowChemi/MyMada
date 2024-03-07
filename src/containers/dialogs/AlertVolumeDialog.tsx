@@ -1,4 +1,4 @@
-import Dialog from 'react-native-dialog';
+import Dialog from './@FontWrappers';
 import Slider from '@react-native-community/slider';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     btn: {
-        fontFamily: 'opensanshebrew',
         color: colors.colorNice,
         marginVertical: 8,
         marginHorizontal: 4,

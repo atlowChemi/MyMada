@@ -120,7 +120,7 @@ DrawerContent.displayName = 'DrawerContent';
 
 const styles = StyleSheet.create({
     label: {
-        fontFamily: 'opensanshebrew',
+        fontFamily: 'OpenSans',
     },
     focusedLabel: {
         fontWeight: 'bold',

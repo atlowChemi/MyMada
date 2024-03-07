@@ -1,4 +1,4 @@
-import Dialog from 'react-native-dialog';
+import Dialog from './@FontWrappers';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -25,7 +25,7 @@ export const RequestCodeApproval = observer<RequestCodeApprovalProps>(({ email, 
 
     return (
         <Dialog.Container visible>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t('activationCode:review')}</Dialog.Title>
+            <Dialog.Title style={styles.dialogColorDark}>{t('activationCode:review')}</Dialog.Title>
             <View style={styles.contentView}>
                 <Text style={styles.warning}>{t('activationCode:reviewAlert')}</Text>
                 <View style={styles.titleWrapper}>
@@ -39,8 +39,8 @@ export const RequestCodeApproval = observer<RequestCodeApprovalProps>(({ email, 
                     <Text>{info}</Text>
                 </View>
             </View>
-            <Dialog.Button style={[styles.font, styles.negativeColor]} label={t('common:cancel')} onPress={localStore.onCancel} />
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:ok')} onPress={localStore.onApprove} />
+            <Dialog.Button style={styles.negativeColor} label={t('common:cancel')} onPress={localStore.onCancel} />
+            <Dialog.Button style={styles.dialogColor} label={t('common:ok')} onPress={localStore.onApprove} />
         </Dialog.Container>
     );
 });
@@ -49,9 +49,6 @@ RequestCodeApproval.displayName = 'RequestCodeApproval';
 const styles = StyleSheet.create({
     contentView: {
         gap: 10,
-    },
-    font: {
-        fontFamily: 'opensanshebrew',
     },
     warning: {
         fontSize: 16,

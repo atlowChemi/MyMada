@@ -1,4 +1,4 @@
-import Dialog from 'react-native-dialog';
+import Dialog from './@FontWrappers';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -26,18 +26,15 @@ export const RadioSelectDialog = observer(<T extends {}>({ title, options, initi
 
     return (
         <Dialog.Container visible onBackdropPress={localStore.onCancel} onRequestClose={localStore.onCancel}>
-            {title && <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{title}</Dialog.Title>}
+            {title && <Dialog.Title style={styles.dialogColorDark}>{title}</Dialog.Title>}
             <RadioButtonGroup direction="vertical" options={options} value={localStore.value} onChange={localStore.setValue} itemStyle={styles.items} />
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:cancel')} onPress={localStore.onCancel} />
+            <Dialog.Button style={styles.dialogColor} label={t('common:cancel')} onPress={localStore.onCancel} />
         </Dialog.Container>
     );
 });
 RadioSelectDialog.displayName = 'RadioSelectDialog';
 
 const styles = StyleSheet.create({
-    font: {
-        fontFamily: 'opensanshebrew',
-    },
     dialogColorDark: {
         color: colors.colorPrimaryDark,
     },

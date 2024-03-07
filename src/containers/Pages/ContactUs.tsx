@@ -300,9 +300,6 @@ export const ContactUs = observer<NavigatableScreenProps>(() => {
 ContactUs.displayName = 'ContactUs';
 
 const styles = StyleSheet.create({
-    font: {
-        fontFamily: 'opensanshebrew',
-    },
     dialogColorDark: {
         color: colors.colorPrimaryDark,
     },

@@ -1,4 +1,4 @@
-import Dialog from 'react-native-dialog';
+import Dialog from './@FontWrappers';
 import { useCallback, memo } from 'react';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -15,20 +15,17 @@ export const RateUsDialog = memo<RateUsDialogProps>(({ closeDialog }) => {
 
     return (
         <Dialog.Container visible>
-            <Dialog.Title style={[styles.font, styles.dialogColorDark]}>{t('rateUs:title', { appName })}</Dialog.Title>
-            <Dialog.Description style={[styles.font, styles.dialogColorDark]}>{t('rateUs:text', { appName })}</Dialog.Description>
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('common:notNow')} onPress={close('later')} />
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('rateUs:never')} onPress={close('never')} />
-            <Dialog.Button style={[styles.font, styles.dialogColor]} label={t('rateUs:rateNow')} onPress={close('rateNow')} />
+            <Dialog.Title style={styles.dialogColorDark}>{t('rateUs:title', { appName })}</Dialog.Title>
+            <Dialog.Description style={styles.dialogColorDark}>{t('rateUs:text', { appName })}</Dialog.Description>
+            <Dialog.Button style={styles.dialogColor} label={t('common:notNow')} onPress={close('later')} />
+            <Dialog.Button style={styles.dialogColor} label={t('rateUs:never')} onPress={close('never')} />
+            <Dialog.Button style={styles.dialogColor} label={t('rateUs:rateNow')} onPress={close('rateNow')} />
         </Dialog.Container>
     );
 });
 RateUsDialog.displayName = 'RateUsDialog';
 
 const styles = StyleSheet.create({
-    font: {
-        fontFamily: 'opensanshebrew',
-    },
     dialogColorDark: {
         color: colors.colorPrimaryDark,
     },

@@ -2,7 +2,7 @@ import { computedFn } from 'mobx-utils';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import Dialog from 'react-native-dialog';
+import Dialog from './@FontWrappers';
 import { colors } from '../../consts';
 import type { DictionaryEntry } from '../Tools/Dictionary';
 import type { IDialogInstance } from '../../services/DialogStore';
@@ -67,7 +67,7 @@ export const DictionaryForm = observer<DictionaryFormProps>(({ item, closeDialog
                 value={localStore.name}
                 autoComplete="off"
                 cursorColor={colors.colorNice}
-                style={[styles.font, styles.dialogColorDark]}
+                style={styles.dialogColorDark}
                 label={t('tools:dictionary:name')}
                 unstableLabelStyle={{ color: localStore.nameHasError ? colors.oldPrimaryDark : colors.colorNice }}
                 underlineColorAndroid={localStore.nameHasError ? colors.oldPrimaryDark : colors.colorNice}
@@ -79,14 +79,14 @@ export const DictionaryForm = observer<DictionaryFormProps>(({ item, closeDialog
                 cursorColor={colors.colorNice}
                 multiline
                 numberOfLines={5}
-                style={[styles.font, styles.dialogColorDark, styles.definition]}
+                style={[styles.dialogColorDark, styles.definition]}
                 label={t('tools:dictionary:definition')}
                 unstableLabelStyle={{ color: localStore.nameHasError ? colors.oldPrimaryDark : colors.colorNice }}
                 underlineColorAndroid={localStore.definitionHasError ? colors.oldPrimaryDark : colors.colorNice}
                 onChangeText={localStore.definitionChanged}
             />
-            <Dialog.Button style={[styles.font, { color: localStore.buttonColor(localStore.isActing) }]} label={t('common:cancel')} onPress={localStore.onClose} disabled={localStore.isActing} />
-            <Dialog.Button style={[styles.font, { color: localStore.buttonColor(localStore.disabled) }]} label={t('common:save')} onPress={localStore.onSave} disabled={localStore.disabled} />
+            <Dialog.Button style={{ color: localStore.buttonColor(localStore.isActing) }} label={t('common:cancel')} onPress={localStore.onClose} disabled={localStore.isActing} />
+            <Dialog.Button style={{ color: localStore.buttonColor(localStore.disabled) }} label={t('common:save')} onPress={localStore.onSave} disabled={localStore.disabled} />
         </Dialog.Container>
     );
 });
@@ -106,9 +106,6 @@ const styles = StyleSheet.create({
     },
     definition: {
         textAlignVertical: 'top',
-    },
-    font: {
-        fontFamily: 'opensanshebrew',
     },
     dialogColorDark: {
         color: colors.colorPrimaryDark,

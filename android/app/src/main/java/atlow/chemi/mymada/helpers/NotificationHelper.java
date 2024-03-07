@@ -146,10 +146,10 @@ public class NotificationHelper {
             return null;
         }
         var notificationIntent = new Intent(context, mainActivityClass);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationIntent.putExtra("source", NOTIFICATION_HELPER_SOURCE);
         notificationIntent.putExtras(notificationConfig);
-        var pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        var pendingIntent = PendingIntent.getActivity(context, 18, notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         var channelId = notificationConfig.getString("channelId");
         if (channelId == null) {
@@ -213,7 +213,7 @@ public class NotificationHelper {
         if (notificationConfig.containsKey("button") && notificationConfig.containsKey("action")) {
             var buttonIntent = new Intent();
             buttonIntent.setAction(notificationConfig.getString("action"));
-            var pendingButtonIntent = PendingIntent.getBroadcast(context, 0, buttonIntent,  PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            var pendingButtonIntent = PendingIntent.getBroadcast(context, 18, buttonIntent,  PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
             notificationBuilder.addAction(0, notificationConfig.getString("button"), pendingButtonIntent);
         }
