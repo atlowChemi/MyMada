@@ -200,7 +200,7 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void startCallRecognitionForegroundService(ReadableMap notificationConfig, Promise promise) {
         try {
-            NotificationHelper.getInstance(reactContext).startForegroundService(new Intent(reactContext, NotificationListenerForegroundService.class), notificationConfig, buttonPressReceiver, NOTIFICATION_LISTENER_NOTIFICATION_BUTTON_PRESSED);
+            NotificationHelper.from(reactContext).startForegroundService(new Intent(reactContext, NotificationListenerForegroundService.class), notificationConfig, buttonPressReceiver, NOTIFICATION_LISTENER_NOTIFICATION_BUTTON_PRESSED);
             promise.resolve(null);
         } catch (Exception e) {
             promise.reject(ERROR_SERVICE_ERROR, e);
