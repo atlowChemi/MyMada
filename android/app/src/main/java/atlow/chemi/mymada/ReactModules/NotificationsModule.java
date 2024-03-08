@@ -25,10 +25,12 @@ import atlow.chemi.mymada.helpers.NotificationHelper;
 public class NotificationsModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
     public static final String NAME = "NotificationsModule";
+    private final NotificationHelper notificationHelper;
 
     public NotificationsModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
+        notificationHelper = NotificationHelper.from(reactContext);
     }
 
     @NonNull
@@ -43,7 +45,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationsModule: Channel group config is invalid");
             return;
         }
-        NotificationHelper.getInstance(reactContext).createNotificationChannelGroup(channelGroupConfig, promise);
+        notificationHelper.createNotificationChannelGroup(channelGroupConfig, promise);
     }
 
     @ReactMethod
@@ -52,7 +54,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationsModule: Channel config is invalid");
             return;
         }
-        NotificationHelper.getInstance(reactContext).createNotificationChannel(channelConfig, promise);
+        notificationHelper.createNotificationChannel(channelConfig, promise);
     }
 
     @ReactMethod
@@ -61,7 +63,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationsModule: notification config is invalid");
             return;
         }
-        var notification = NotificationHelper.getInstance(reactContext).buildNotification(reactContext, Arguments.toBundle(notificationConfig));
+        var notification = notificationHelper.buildNotification(reactContext, Arguments.toBundle(notificationConfig));
         if (notification == null) {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationsModule: failed building notification");
             return;
@@ -81,7 +83,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
             return;
         }
         try {
-            var importance = NotificationHelper.getInstance(reactContext).getChannelImportance(channelId);
+            var importance = notificationHelper.getChannelImportance(channelId);
             promise.resolve(importance);
         } catch (JSException e) {
             promise.reject(e.getErrorType(), e.getMsg());

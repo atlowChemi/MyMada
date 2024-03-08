@@ -4,9 +4,6 @@ package atlow.chemi.mymada.helpers;
 import static androidx.core.content.ContextCompat.RECEIVER_EXPORTED;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,7 +25,10 @@ import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
 import static atlow.chemi.mymada.Constants.NOTIFICATION_CONFIG;
 import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
 
+import androidx.core.app.NotificationChannelCompat;
+import androidx.core.app.NotificationChannelGroupCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import java.util.Objects;
@@ -38,28 +38,20 @@ import atlow.chemi.mymada.classes.JSException;
 
 public class NotificationHelper {
     private final Context context;
-    private static NotificationHelper instance = null;
-    private final NotificationManager mNotificationManager;
+    private final NotificationManagerCompat mNotificationManager;
 
-    public static synchronized NotificationHelper getInstance(Context context) {
-        if (instance == null) {
-            instance = new NotificationHelper(context);
-        }
-        return instance;
+    public static NotificationHelper from(Context context) {
+        return new NotificationHelper(context);
     }
 
     private NotificationHelper(Context context) {
         this.context = context;
-        mNotificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = NotificationManagerCompat.from(context);
     }
 
     public void createNotificationChannelGroup(ReadableMap channelGroupConfig, Promise promise) {
         if (channelGroupConfig == null) {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel group config is invalid");
-            return;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            promise.reject(ERROR_ANDROID_VERSION, "NotificationHelper: Notification channel group can be created on Android O+");
             return;
         }
         if (!channelGroupConfig.hasKey("id")) {
@@ -77,10 +69,7 @@ public class NotificationHelper {
             return;
         }
         var channelGroupDescription = channelGroupConfig.getString("description");
-        var grp = new NotificationChannelGroup(channelGroupId, channelGroupName);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            grp.setDescription(channelGroupDescription);
-        }
+        var grp = new NotificationChannelGroupCompat.Builder(channelGroupId).setName(channelGroupName).setDescription(channelGroupDescription).build();
         mNotificationManager.createNotificationChannelGroup(grp);
         promise.resolve(null);
     }
@@ -88,10 +77,6 @@ public class NotificationHelper {
     public void createNotificationChannel(ReadableMap channelConfig, Promise promise) {
         if (channelConfig == null) {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel config is invalid");
-            return;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            promise.reject(ERROR_ANDROID_VERSION, "NotificationHelper: Notification channel can be created on Android O+");
             return;
         }
         if (!channelConfig.hasKey("id")) {
@@ -106,7 +91,7 @@ public class NotificationHelper {
         var channelName = channelConfig.getString("name");
         var channelDescription = channelConfig.getString("description");
         var channelImportance = channelConfig.hasKey("importance") ?
-                channelConfig.getInt("importance") : NotificationManager.IMPORTANCE_LOW;
+                channelConfig.getInt("importance") : NotificationManagerCompat.IMPORTANCE_LOW;
         var enableVibration = channelConfig.hasKey("enableVibration") && channelConfig.getBoolean("enableVibration");
         var enableLights = channelConfig.hasKey("enableLights") && channelConfig.getBoolean("enableLights");
         var showBadge = channelConfig.hasKey("showBadge") && channelConfig.getBoolean("showBadge");
@@ -114,10 +99,11 @@ public class NotificationHelper {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel id or name is not specified");
             return;
         }
-        var channel = new NotificationChannel(channelId, channelName, channelImportance);
+        var channel = new NotificationChannelCompat.Builder(channelId, channelImportance);
+        channel.setName(channelName);
         channel.setDescription(channelDescription);
-        channel.enableVibration(enableVibration);
-        channel.enableLights(enableLights);
+        channel.setVibrationEnabled(enableVibration);
+        channel.setLightsEnabled(enableLights);
         if (enableLights) {
             var lightsColor = channelConfig.hasKey("lightsColor") ? channelConfig.getInt("lightsColor") : Color.RED;
             channel.setLightColor(lightsColor);
@@ -125,15 +111,15 @@ public class NotificationHelper {
         channel.setShowBadge(showBadge);
         var channelGroup = channelConfig.getString("group");
         channel.setGroup(channelGroup);
-        mNotificationManager.createNotificationChannel(channel);
+        mNotificationManager.createNotificationChannel(channel.build());
         promise.resolve(null);
     }
 
     public int getChannelImportance(String channelId) throws JSException {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        var channel = mNotificationManager.getNotificationChannelCompat(channelId);
+        if (channel == null) {
             throw new JSException(ERROR_ANDROID_VERSION, "NotificationHelper: Notification channel exists Android O+");
         }
-        var channel = mNotificationManager.getNotificationChannel(channelId);
         return channel.getImportance();
     }
 

@@ -103,7 +103,7 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
 
     public void startMetronome(@NonNull Context context, ReadableMap notificationConfig, @Nullable Promise promise) throws JSException {
         try {
-            NotificationHelper.getInstance(context).startForegroundService(new Intent(context, MetronomeForegroundService.class), notificationConfig, buttonPressReceiver, METRONOME_NOTIFICATION_BUTTON_PRESSED);
+            NotificationHelper.from(context).startForegroundService(new Intent(context, MetronomeForegroundService.class), notificationConfig, buttonPressReceiver, METRONOME_NOTIFICATION_BUTTON_PRESSED);
             var startTimeDouble = notificationConfig.getDouble("startTime");
             startTime = String.valueOf((long)startTimeDouble);
             playMetronomeTrack(context);
