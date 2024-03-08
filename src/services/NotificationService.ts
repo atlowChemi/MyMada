@@ -1,7 +1,12 @@
-import { NativeModules, Platform } from 'react-native';
-import type { Page, Tools } from './NavigationStore';
-import { injectable } from 'inversify';
+import i18n from '../localization';
+import { inject, injectable } from 'inversify';
+import { Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
+import { DialogStore } from './DialogStore';
 import { ANDROID_VERSION } from '../consts';
+import { PermissionsStore } from './PermissionsStore';
+import { BaseDialog } from '../containers/dialogs/BaseDialog';
+import type { Page, Tools } from './NavigationStore';
+import { MadaNotificationsStore } from './MadaNotificationsStore';
 
 const { NotificationsModule } = NativeModules;
 
@@ -119,8 +124,38 @@ export const NOTIFICATION_MAP = {
 
 @injectable()
 export class NotificationService {
-    constructor() {
+    constructor(@inject(DialogStore) private readonly dialogStore: DialogStore, @inject(PermissionsStore) private readonly permissionsStore: PermissionsStore) {
         this.setupChannels();
+    }
+
+    public async requestNotificationPermission(appData: Pick<MadaNotificationsStore['appData'], 'APPLICATION_ID' | 'uid'>) {
+        const permissionStatus = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS', {
+            title: i18n.t('permissions:alertTitle'),
+            buttonNegative: i18n.t('permissions:deny'),
+            buttonPositive: i18n.t('permissions:approve'),
+            message: i18n.t('permissions:notificationExplain'),
+        });
+        if (permissionStatus === PermissionsAndroid.RESULTS.GRANTED) {
+            return { status: PermissionsAndroid.RESULTS.GRANTED };
+        }
+        const goToSettings = await this.dialogStore.openDialog(BaseDialog, {
+            title: i18n.t('permissions:alertTitle'),
+            description: i18n.t('permissions:blocked'),
+            cancelText: i18n.t('common:cancel'),
+            okText: i18n.t('common:goToSettings'),
+        });
+        if (goToSettings) {
+            await this.openNotificationSettings(appData);
+        }
+        return { status: PermissionsAndroid.RESULTS.DENIED };
+    }
+
+    private async openNotificationSettings({ APPLICATION_ID, uid }: Pick<MadaNotificationsStore['appData'], 'APPLICATION_ID' | 'uid'>) {
+        await Linking.sendIntent('android.settings.APP_NOTIFICATION_SETTINGS', [
+            { key: 'app_uid', value: uid },
+            { key: 'app_package', value: APPLICATION_ID },
+            { key: 'android.provider.extra.APP_PACKAGE', value: APPLICATION_ID },
+        ]);
     }
 
     public async createNotificationChannelGroup(channelGroupConfig: NotificationChannelGroupConfig) {

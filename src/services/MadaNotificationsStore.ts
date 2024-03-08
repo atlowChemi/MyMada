@@ -1,11 +1,11 @@
 import { inject, injectable } from 'inversify';
-import { Linking, NativeModules, NativeEventEmitter } from 'react-native';
+import { Linking, NativeModules, NativeEventEmitter, PermissionsAndroid } from 'react-native';
 import i18n from '../localization';
 import { colors } from '../consts';
 import { DialogStore } from './DialogStore';
 import { BaseDialog } from '../containers/dialogs/BaseDialog';
 import { PREF_KEYS, SharedPreferencesStore } from './SharedPreferencesStore';
-import { Priority, type NotificationConfig, NOTIFICATION_MAP } from './NotificationService';
+import { Priority, type NotificationConfig, NOTIFICATION_MAP, NotificationService } from './NotificationService';
 
 const { MadaNotificationsModule } = NativeModules;
 type PermissionStatus = 'unknown' | 'authorized' | 'denied';
@@ -20,10 +20,12 @@ export const enum CallType {
 @injectable()
 export class MadaNotificationsStore {
     private readonly eventEmitter = new NativeEventEmitter(MadaNotificationsModule);
-    @inject(DialogStore) private readonly dialogStore!: DialogStore;
-    @inject(SharedPreferencesStore) private readonly sharedPreferencesStore!: SharedPreferencesStore;
 
-    constructor() {
+    constructor(
+        @inject(DialogStore) private readonly dialogStore: DialogStore,
+        @inject(NotificationService) private readonly notificationService: NotificationService,
+        @inject(SharedPreferencesStore) private readonly sharedPreferencesStore: SharedPreferencesStore,
+    ) {
         this.eventEmitter.addListener('CALL_DETECTION_STATE', () => this.sharedPreferencesStore.loadChannel('Settings', true));
     }
 
@@ -84,8 +86,8 @@ export class MadaNotificationsStore {
     };
 
     private async startCallDetection() {
-        const status = await this.getNotificationListenerPermissionStatus();
-        if (status !== 'authorized') {
+        const notificationListenerPermissionStatus = await this.getNotificationListenerPermissionStatus();
+        if (notificationListenerPermissionStatus !== 'authorized') {
             const shouldOpenSettings = await this.dialogStore.openDialog(BaseDialog, {
                 blockBackBtn: true,
                 blockBackdropPress: true,
@@ -122,6 +124,10 @@ export class MadaNotificationsStore {
                 });
                 return;
             }
+        }
+        const { status: notificationPermissionStatus } = await this.notificationService.requestNotificationPermission(this.appData);
+        if (notificationPermissionStatus !== PermissionsAndroid.RESULTS.GRANTED) {
+            return;
         }
         await Promise.all([this.sharedPreferencesStore.setItem(PREF_KEYS.callDetection.isCallRecognitionOn, 'true'), this.startCallRecognitionForegroundService()]);
     }
