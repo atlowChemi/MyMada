@@ -1,13 +1,13 @@
 import analytics from '@react-native-firebase/analytics';
 import i18n from '../localization';
 import { inject, injectable } from 'inversify';
-import { Linking, PermissionsAndroid } from 'react-native';
+import { PermissionsAndroid } from 'react-native';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { makeAutoObservable, observable, reaction, when } from 'mobx';
 import { colors } from '../consts';
 import { AdsStore } from './AdsStore';
 import { DialogStore } from './DialogStore';
-import { PermissionsStore } from './PermissionsStore';
+import { NotificationService } from './NotificationService';
 import { BaseDialog } from '../containers/dialogs/BaseDialog';
 import { SharedPreferencesStore } from './SharedPreferencesStore';
 import { MadaNotificationsStore } from './MadaNotificationsStore';
@@ -61,7 +61,7 @@ export class NavigationStore {
     @inject(AdsStore) private readonly adsStore!: AdsStore;
     @inject(DialogStore) private readonly dialogStore!: DialogStore;
     @inject(MadaNotificationsStore) private readonly madaNotificationsStore!: MadaNotificationsStore;
-    @inject(PermissionsStore) private readonly permissionsStore!: PermissionsStore;
+    @inject(NotificationService) private readonly notificationService!: NotificationService;
     @inject(SharedPreferencesStore) private readonly sharedPreferencesStore!: SharedPreferencesStore;
 
     constructor() {
@@ -175,27 +175,8 @@ export class NavigationStore {
                 return this.goToRequestCode();
             }
         }
-        const permissionStatus = await this.permissionsStore.requestPermission('android.permission.POST_NOTIFICATIONS', {
-            title: i18n.t('permissions:alertTitle'),
-            message: i18n.t('permissions:notificationExplain'),
-            buttonPositive: i18n.t('permissions:approve'),
-            buttonNegative: i18n.t('permissions:deny'),
-        });
-        if (permissionStatus !== PermissionsAndroid.RESULTS.GRANTED) {
-            const goToSettings = await this.dialogStore.openDialog(BaseDialog, {
-                title: i18n.t('permissions:alertTitle'),
-                description: i18n.t('permissions:blocked'),
-                cancelText: i18n.t('common:cancel'),
-                okText: i18n.t('common:goToSettings'),
-            });
-            if (goToSettings) {
-                const { APPLICATION_ID, uid } = this.madaNotificationsStore.appData;
-                await Linking.sendIntent('android.settings.APP_NOTIFICATION_SETTINGS', [
-                    { key: 'app_uid', value: uid },
-                    { key: 'app_package', value: APPLICATION_ID },
-                    { key: 'android.provider.extra.APP_PACKAGE', value: APPLICATION_ID },
-                ]);
-            }
+        const { status } = await this.notificationService.requestNotificationPermission(this.madaNotificationsStore.appData);
+        if (status !== PermissionsAndroid.RESULTS.GRANTED) {
             return;
         }
         await this.adsStore.showInterstitialAd();
