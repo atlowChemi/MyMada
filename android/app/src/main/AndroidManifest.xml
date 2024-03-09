@@ -17,9 +17,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
-    <uses-feature
-        android:name="android.hardware.telephony"
-        android:required="false" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
 
     <application
         android:name=".Applicatio"
@@ -33,9 +31,7 @@
         android:localeConfig="@xml/locale_config"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7600269766434003~4255496174" />
+        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-7600269766434003~4255496174" />
 
         <activity
             android:name=".MainReactActivity"
@@ -62,22 +58,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme.SmsRes" />
 
-        <service
-            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
-            android:enabled="false"
-            android:exported="false">
-            <meta-data
-                android:name="autoStoreLocales"
-                android:value="true" />
+        <service android:name="androidx.appcompat.app.AppLocalesMetadataHolderService" android:enabled="false" android:exported="false">
+            <meta-data android:name="autoStoreLocales" android:value="true" />
         </service>
         <service android:name=".recieversAndServices.HeadlessJsService" android:exported="false" />
+        <service android:name=".recieversAndServices.FloatingWidgetService" android:enabled="true" android:exported="false" />
         <service android:name=".recieversAndServices.NotificationListenerForegroundService" android:foregroundServiceType="mediaPlayback" />
         <service android:name=".recieversAndServices.MetronomeForegroundService" android:foregroundServiceType="mediaPlayback" android:exported="false" />
-
-        <service
-            android:name=".recieversAndServices.FloatingWidgetService"
-            android:enabled="true"
-            android:exported="false" />
         <service
             android:name=".NotificationService"
             android:enabled="true"
@@ -100,11 +87,8 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
 
-            <meta-data
-                android:name="android.service.quicksettings.ACTIVE_TILE"
-                android:value="false" />
-            <meta-data android:name="android.service.quicksettings.TOGGLEABLE_TILE"
-                android:value="true" />
+            <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="false" />
+            <meta-data android:name="android.service.quicksettings.TOGGLEABLE_TILE" android:value="true" />
         </service>
 
         <receiver
@@ -128,10 +112,6 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".recieversAndServices.GrobootRec"
-            android:enabled="true"
-            android:exported="false" />
-        <receiver
             android:name=".recieversAndServices.MetroWidget"
             android:exported="true"
             android:label="@string/metronome">
@@ -139,9 +119,7 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
 
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/metro_widget_info" />
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/metro_widget_info" />
         </receiver>
     </application>
 </manifest>

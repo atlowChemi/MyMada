@@ -5,12 +5,14 @@ import static atlow.chemi.mymada.Constants.CALL_DETECTION_STATE;
 import static atlow.chemi.mymada.Constants.ERROR_ACTIVITY_RESULT_BUSY;
 import static atlow.chemi.mymada.Constants.ERROR_FAILED_TO_SHOW_PICKER;
 import static atlow.chemi.mymada.Constants.ERROR_INVALID_CONFIG;
+import static atlow.chemi.mymada.Constants.ERROR_INVALID_PERMISSION;
 import static atlow.chemi.mymada.Constants.ERROR_PICKER_CANCELLED;
 import static atlow.chemi.mymada.Constants.ERROR_SERVICE_ERROR;
 import static atlow.chemi.mymada.Constants.MADA_APP_PACKAGE;
+import static atlow.chemi.mymada.Constants.NOTIFICATION_HELPER_SOURCE;
 import static atlow.chemi.mymada.Constants.NOTIFICATION_LISTENER_NOTIFICATION_BUTTON_PRESSED;
-import static atlow.chemi.mymada.Constants.TEST_CALL_ACTION;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.PendingIntent;
@@ -33,9 +35,9 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -47,21 +49,27 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import atlow.chemi.mymada.BuildConfig;
+import atlow.chemi.mymada.MadaCallActivity;
+import atlow.chemi.mymada.MainReactActivity;
 import atlow.chemi.mymada.NotificationService;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.helpers.NotificationHelper;
-import atlow.chemi.mymada.recieversAndServices.GrobootRec;
+import atlow.chemi.mymada.recieversAndServices.FloatingWidgetService;
 import atlow.chemi.mymada.recieversAndServices.NotificationListenerForegroundService;
 
 @ReactModule(name = MadaNotificationsModule.NAME)
 public class MadaNotificationsModule extends ReactContextBaseJavaModule implements ActivityEventListener {
-    private final ReactApplicationContext reactContext;
     private Promise resultPromise;
-    private final int REQUEST_CODE_CAN_DRAW_OVERLAYS = 8396;
+    private int notificationCounter = 0;
+    private final int NOTIFICATION_ID = 5000;
+    private final ReactApplicationContext reactContext;
     private final int REQUEST_CODE_RINGTONE_PICKER = 8397;
+    private final int REQUEST_CODE_CAN_DRAW_OVERLAYS = 8396;
     public static final String NAME = "MadaNotificationsModule";
+    private final long[] VIBRATION_PATTERN = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     private final class ButtonPressReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -72,6 +80,7 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
         }
     }
     private final ButtonPressReceiver buttonPressReceiver = new ButtonPressReceiver();
+    private final static Map<UUID, PendingIntent> callIntentMap = new HashMap<>();
 
     public MadaNotificationsModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -98,27 +107,69 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
-    public void triggerTestCall(ReadableMap config, Promise promise) {
-        if (config == null) {
-            promise.reject(ERROR_INVALID_CONFIG, "MadaNotificationsModule: Config is required");
-            return;
-        }
+    public void buildPendingIntentForTestCall(Promise promise) {
         var launchIntent = buildMadaAppLaunchIntent();
-
         PendingIntent testPI = null;
         if (launchIntent != null) {
             testPI = PendingIntent.getActivity(reactContext, 99, launchIntent, PendingIntent.FLAG_IMMUTABLE);
         }
-        var intent = new Intent(TEST_CALL_ACTION);
-        intent.setAction(TEST_CALL_ACTION);
-        intent.putExtra("callT", config.getInt("callType"));
-        intent.putExtra("text", config.getString("callText"));
-        GrobootRec.madasApp(testPI);
-        var manager = LocalBroadcastManager.getInstance(reactContext);
-        var wasScheduled = manager.sendBroadcast(intent);
-        if (!wasScheduled) {
-            promise.reject(ERROR_SERVICE_ERROR, "MadaNotificationsModule: broadcast scheduling failed");
+        var uuid = setCallPendingIntent(testPI);
+        promise.resolve(uuid);
+    }
+
+    @ReactMethod
+    public void broadcastCallData(ReadableMap config, Promise promise) {
+        if (config == null) {
+            promise.reject(ERROR_INVALID_CONFIG, "MadaNotificationsModule: Config is required");
             return;
+        }
+
+        final var hasPopup = config.getBoolean("popup");
+        if (hasPopup) {
+            Intent popup = new Intent(reactContext, MadaCallActivity.class);
+            popup.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+            popup.putExtras(Arguments.toBundle(config));
+            reactContext.startActivity(popup);
+        }
+
+        if (config.hasKey("notification")) {
+            if (reactContext.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                promise.reject(ERROR_INVALID_PERMISSION, "MadaNotificationsModule: Lacking notifications permission");
+                return;
+            }
+            final var notificationSetup = config.getMap("notification");
+            final var builder = NotificationHelper.from(reactContext).getNotificationBuilder(Arguments.toBundle(notificationSetup));
+            final var formDictation = new Intent(reactContext, MainReactActivity.class);
+            formDictation.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            formDictation.putExtra("source", NOTIFICATION_HELPER_SOURCE);
+            formDictation.putExtra("target", "Dispatch");
+            formDictation.putExtra("page", "Form");
+            final var pendingIntent = PendingIntent.getActivity(reactContext, (int) System.currentTimeMillis(), formDictation, PendingIntent.FLAG_IMMUTABLE);
+            final var notificationPendingIntent = getPendingIntentForUUID(config.getString("uuid"));
+
+            builder.setVibrate(VIBRATION_PATTERN)
+                    .setSound(null)
+                    .setGroup("Calls")
+                    .addAction(R.drawable.ic_edit, "הכתבה", pendingIntent);
+
+            if (notificationPendingIntent != null) {
+                builder.addAction(R.drawable.ic_info, "פרטים", notificationPendingIntent);
+            }
+            final var notification = builder.build();
+            final var notificationManager = NotificationManagerCompat.from(reactContext);
+
+            if (config.getBoolean("overridePreviousCalls")) {
+                notificationManager.cancelAll();
+            }
+            notificationManager.notify(NOTIFICATION_ID + notificationCounter++, notification);
+            if (!hasPopup) {
+                if (canDrawOverlays().equals("authorized")) {
+                    //If permission is granted start floating widget service
+                    final var service = new Intent(reactContext , FloatingWidgetService.class);
+                    service.putExtras(Arguments.toBundle(config));
+                    reactContext.startService(service);
+                }
+            }
         }
         promise.resolve(null);
     }
@@ -222,6 +273,16 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
             NotificationListenerService.requestRebind(componentName);
         }
         promise.resolve(null);
+    }
+
+    public static String setCallPendingIntent(PendingIntent pendingIntent) {
+        var uuid = UUID.randomUUID();
+        callIntentMap.put(uuid, pendingIntent);
+        return uuid.toString();
+    }
+
+    public static PendingIntent getPendingIntentForUUID(String uuid) {
+        return callIntentMap.get(UUID.fromString(uuid));
     }
 
     @ReactMethod

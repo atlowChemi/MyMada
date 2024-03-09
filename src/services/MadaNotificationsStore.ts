@@ -1,8 +1,9 @@
 import { inject, injectable } from 'inversify';
 import { Linking, NativeModules, NativeEventEmitter, PermissionsAndroid } from 'react-native';
 import i18n from '../localization';
-import { colors } from '../consts';
 import { DialogStore } from './DialogStore';
+import { NOTIFICATION_LEVEL_VALUES, RingerMode, colors } from '../consts';
+import { audioGenerator } from './AudioGenerator';
 import { BaseDialog } from '../containers/dialogs/BaseDialog';
 import { PREF_KEYS, SharedPreferencesStore } from './SharedPreferencesStore';
 import { Priority, type NotificationConfig, NOTIFICATION_MAP, NotificationService } from './NotificationService';
@@ -15,6 +16,8 @@ export const enum CallType {
     Group = 2,
     Shift = 3,
     Administrative = 4,
+    OldMessageSyntax = 5,
+    Service = 6,
 }
 
 @injectable()
@@ -43,8 +46,12 @@ export class MadaNotificationsStore {
         return MadaNotificationsModule.getConstants();
     }
 
-    public triggerTestCall(config: { callType: CallType; callText: string }): Promise<void> {
-        return MadaNotificationsModule.triggerTestCall(config);
+    public buildPendingIntentForTestCall(): Promise<string> {
+        return MadaNotificationsModule.buildPendingIntentForTestCall();
+    }
+
+    public broadcastCallData(config: NonNullable<Awaited<ReturnType<MadaNotificationsStore['calculateCallData']>>>): Promise<void> {
+        return MadaNotificationsModule.broadcastCallData(config);
     }
 
     public hasOverlayPermission(): Promise<boolean> {
@@ -65,6 +72,64 @@ export class MadaNotificationsStore {
 
     public selectRingtone(title: string, picked: string): Promise<string> {
         return MadaNotificationsModule.selectRingtone(title, picked);
+    }
+
+    public async calculateCallData(callDetection: Awaited<SharedPreferencesStore['applicationSettings']>['callDetection'], { text, title, uuid }: { text: string; title: string; uuid: string }) {
+        const { sendNotificationOnCall, openPopUpOnCall } = callDetection;
+        if (['מגן דוד אדום', 'מערך הכוננים הלאומי'].includes(title) || (!sendNotificationOnCall && !openPopUpOnCall)) {
+            return undefined;
+        }
+
+        // const time = title.replace(/[*](אירוע חדש|New Event|הודעה מנהלתית חדשה)[*]/, '');
+        const callType = this.getCallType(text, title);
+
+        const notificationSettings = this.getNotificationSettingsByCallType(callDetection, callType);
+
+        if (!notificationSettings.shouldNotify) {
+            return undefined;
+        }
+
+        const ringerMode = await audioGenerator.getRingerMode();
+        const silent = ringerMode !== RingerMode.NORMAL;
+        const silentVib = ringerMode !== RingerMode.VIBRATE;
+        const hour = new Date().getHours();
+        const { nightStart, nightEnd, nightNotificationLevel, dayNotificationLevel } = callDetection.dayAndNightSettings;
+        if (hour <= nightEnd || hour >= nightStart) {
+            notificationSettings.sound ||= nightNotificationLevel === NOTIFICATION_LEVEL_VALUES.sound;
+            notificationSettings.vibrate ||= nightNotificationLevel !== NOTIFICATION_LEVEL_VALUES.silent;
+        } else {
+            notificationSettings.sound ||= dayNotificationLevel === NOTIFICATION_LEVEL_VALUES.sound;
+            notificationSettings.vibrate ||= dayNotificationLevel !== NOTIFICATION_LEVEL_VALUES.silent;
+        }
+
+        const isServiceCall = [CallType.Administrative, CallType.Service].includes(callType);
+        const notification: NotificationConfig = {
+            id: 100, // TODO: calculate based on override setting.
+            page: 'Form',
+            bigText: text,
+            icon: 'ic_siren',
+            target: 'Dispatch',
+            isAutoCancelable: true,
+            largeIcon: 'ic_launcher',
+            text: 'יש ללחוץ כדי להכתיב טפסים',
+            channelId: NOTIFICATION_MAP.CHANNELS.CALLS,
+            title: isServiceCall ? 'הודעה חדשה באפליקציה!' : 'אירוע חדש באפליקציה!',
+            ticker: isServiceCall ? 'התקבלה הודעה חדש באפליקציה!' : 'התקבל אירוע חדש באפליקציה!',
+        };
+        return {
+            uuid,
+            text,
+            callType,
+            popup: openPopUpOnCall,
+            uri: notificationSettings.uri,
+            autoStopAlert: callDetection.advancedSettings.autoStopAlert,
+            infiniteAlert: callDetection.advancedSettings.infiniteAlert,
+            notification: sendNotificationOnCall ? notification : undefined,
+            overridePreviousCalls: callDetection.advancedSettings.overridePreviousCalls,
+            autoStopAlertDuration: callDetection.advancedSettings.autoStopAlertDuration,
+            sound: notificationSettings.sound && (!callDetection.notifySoundByDeviceStatus || !silent),
+            vibrate: notificationSettings.vibrate && (!callDetection.notifyVibrationByDeviceStatus || !silentVib),
+        };
     }
 
     public restartAndRebindNotificationListener(): Promise<void> {
@@ -142,6 +207,56 @@ export class MadaNotificationsStore {
 
     private stopCallRecognitionForegroundService(): Promise<boolean> {
         return MadaNotificationsModule.stopCallRecognitionForegroundService();
+    }
+
+    private getCallType(text: string, title: string): CallType {
+        if (text.includes('על מידע זה חל חיסיון רפואי')) {
+            return CallType.OldMessageSyntax;
+        }
+        if (['שירות', 'כלכלה', 'תפילה'].some(v => text.includes(v))) {
+            return CallType.Service;
+        }
+        if (title.includes('*הודעה מנהלתית חדשה*') || ['משמרת בנה', 'מינהלתי', 'מנהלתי'].some(v => text.includes(v))) {
+            return CallType.Administrative;
+        }
+        if (['*New Event*', '*אירוע חדש*'].some(v => title.includes(v))) {
+            if (text.includes('הודעת קבוצת')) {
+                return CallType.Group;
+            }
+            if (text.includes('הודעת צוות')) {
+                return CallType.Shift;
+            }
+        }
+        return CallType.OnCall;
+    }
+
+    private getNotificationSettingsByCallType(callDetection: Awaited<SharedPreferencesStore['applicationSettings']>['callDetection'], callType: CallType) {
+        if ([CallType.Administrative, CallType.Service].includes(callType)) {
+            return {
+                shouldNotify: callType === CallType.Administrative ? callDetection.detectAdministrativeCalls : callDetection.detectServiceCalls,
+                vibrate: callDetection.administrative.vibrate,
+                sound: callDetection.administrative.sound,
+                overrideSound: callDetection.administrative.overrideSound,
+                uri: callDetection.administrative.ringtone,
+            };
+        }
+        if (!callDetection.splitNotificationByCallType) {
+            return {
+                shouldNotify: true,
+                vibrate: callDetection.grouped.vibrate,
+                sound: callDetection.grouped.sound,
+                overrideSound: callDetection.grouped.overrideSound,
+                uri: callDetection.grouped.ringtone,
+            };
+        }
+        const callDetectionKey = callType === CallType.Shift ? 'shift' : CallType.Group ? 'group' : 'onCall';
+        return {
+            shouldNotify: callDetection[callDetectionKey].detectCalls,
+            vibrate: callDetection[callDetectionKey].vibrate,
+            sound: callDetection[callDetectionKey].sound,
+            overrideSound: callDetection[callDetectionKey].overrideSound,
+            uri: callDetection[callDetectionKey].ringtone,
+        };
     }
 
     private get notificationConfig(): NotificationConfig {

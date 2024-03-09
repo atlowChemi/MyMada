@@ -108,6 +108,8 @@ interface NotificationChannelConfig extends NotificationChannelGroupConfig {
     showBadge?: boolean;
     /** Sets the group to which this channel will be related. */
     group?: string;
+    /** Sets whether notifications posted to this channel should have a notification sound. */
+    noSound?: boolean;
 }
 
 export const NOTIFICATION_MAP = {
@@ -202,9 +204,10 @@ export class NotificationService {
                 description: "התראות להודעות פוש שישלחו כגון בקשות קוד וכדו'",
             }),
             this.createNotificationChannel({
+                noSound: true,
                 showBadge: true,
                 name: 'זיהוי הודעות',
-                importance: Importance.LOW,
+                importance: Importance.DEFAULT,
                 group: NOTIFICATION_MAP.GROUPS.CALLS,
                 id: NOTIFICATION_MAP.CHANNELS.CALLS,
                 description: 'התראות עבור הודעות כאשר מוגדר להקפיץ גם חלון',

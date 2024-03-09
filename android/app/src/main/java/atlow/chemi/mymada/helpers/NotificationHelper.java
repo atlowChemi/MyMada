@@ -95,22 +95,25 @@ public class NotificationHelper {
         var enableVibration = channelConfig.hasKey("enableVibration") && channelConfig.getBoolean("enableVibration");
         var enableLights = channelConfig.hasKey("enableLights") && channelConfig.getBoolean("enableLights");
         var showBadge = channelConfig.hasKey("showBadge") && channelConfig.getBoolean("showBadge");
+        var channelGroup = channelConfig.getString("group");
         if (channelId == null || channelName == null) {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationHelper: Channel id or name is not specified");
             return;
         }
         var channel = new NotificationChannelCompat.Builder(channelId, channelImportance);
-        channel.setName(channelName);
-        channel.setDescription(channelDescription);
-        channel.setVibrationEnabled(enableVibration);
-        channel.setLightsEnabled(enableLights);
+        channel.setName(channelName)
+                .setDescription(channelDescription)
+                .setVibrationEnabled(enableVibration)
+                .setLightsEnabled(enableLights)
+                .setShowBadge(showBadge)
+                .setGroup(channelGroup);
         if (enableLights) {
             var lightsColor = channelConfig.hasKey("lightsColor") ? channelConfig.getInt("lightsColor") : Color.RED;
             channel.setLightColor(lightsColor);
         }
-        channel.setShowBadge(showBadge);
-        var channelGroup = channelConfig.getString("group");
-        channel.setGroup(channelGroup);
+        if (channelConfig.hasKey("noSound") && channelConfig.getBoolean("noSound")) {
+            channel.setSound(null, null);
+        }
         mNotificationManager.createNotificationChannel(channel.build());
         promise.resolve(null);
     }
@@ -123,7 +126,7 @@ public class NotificationHelper {
         return channel.getImportance();
     }
 
-    public Notification buildNotification(Context context, Bundle notificationConfig) {
+    public NotificationCompat.Builder getNotificationBuilder(Bundle notificationConfig) {
         if (notificationConfig == null) {
             return null;
         }
@@ -204,7 +207,11 @@ public class NotificationHelper {
             notificationBuilder.addAction(0, notificationConfig.getString("button"), pendingButtonIntent);
         }
 
-        return notificationBuilder.build();
+        return notificationBuilder;
+    }
+
+    public Notification buildNotification(Bundle notificationConfig) {
+        return getNotificationBuilder(notificationConfig).build();
     }
 
     public void startForegroundService(Intent intent, ReadableMap notificationConfig, BroadcastReceiver buttonPressReceiver, String action) throws JSException {

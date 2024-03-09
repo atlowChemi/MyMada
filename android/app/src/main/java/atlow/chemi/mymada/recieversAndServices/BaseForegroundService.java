@@ -41,7 +41,7 @@ public abstract class BaseForegroundService extends Service {
             return START_STICKY;
         }
 
-        var notification = NotificationHelper.from(getApplicationContext()).buildNotification(getApplicationContext(), notificationConfig);
+        var notification = NotificationHelper.from(getApplicationContext()).buildNotification(notificationConfig);
         ServiceCompat.startForeground(this, (int)notificationConfig.getDouble("id"), notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
         return START_STICKY;
 

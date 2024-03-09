@@ -5,26 +5,21 @@ import { makeAutoObservable } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, NativeModules } from 'react-native';
-import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { PageLoader } from '../../Components/Loader';
 import { DialogStore } from '../../services/DialogStore';
 import { BasePageView } from '../../Components/BasePageView';
 import { SettingsItem } from '../../Components/SettingsItem';
+import { NOTIFICATION_LEVEL_VALUES, colors } from '../../consts';
 import { useInnerNavigator } from '../../utils/useInnerNavigator';
 import { useLocalStoreWithInjectedDependencies } from '../../services/container';
 import { RadioSelectDialog, RadioSelectDialogProps } from '../dialogs/RadioSelectDialog';
 import { SharedPreferencesStore, PREF_KEYS } from '../../services/SharedPreferencesStore';
+import type { DeepValueOf } from '../../utils';
 import type { NavigatableSettingsScreenProps } from '../Pages/Settings';
-import { DeepValueOf } from '../../utils';
 
 const dayNotificationLevelKey = PREF_KEYS.callDetection.dayAndNightSettings.dayNotificationLevel;
 const nightNotificationLevelKey = PREF_KEYS.callDetection.dayAndNightSettings.nightNotificationLevel;
-enum NOTIFICATION_LEVEL_VALUES {
-    sound = 0,
-    vibrate = 1,
-    silent = 2,
-}
 
 @injectable()
 class AmPmLocalStore {
@@ -94,16 +89,7 @@ class AmPmLocalStore {
         if (typeof selectedValue !== 'number') {
             return;
         }
-        // TODO: remove `overallNotificationLevel`? seems to be redundant (should be computed when used, not stored in shared prefs)
-        const newTimes = {
-            dayNotificationLevel: time === dayNotificationLevelKey ? selectedValue : settings[dayNotificationLevelKey],
-            nightNotificationLevel: time === nightNotificationLevelKey ? selectedValue : settings[nightNotificationLevelKey],
-        };
-        const overallNotificationLevel = newTimes.dayNotificationLevel * 3 + newTimes.nightNotificationLevel;
-        await this.sharedPreferencesStore.setItems({
-            [time]: selectedValue.toString(),
-            [PREF_KEYS.callDetection.dayAndNightSettings.overallNotificationLevel]: overallNotificationLevel.toString(),
-        });
+        await this.sharedPreferencesStore.setItem(time, selectedValue.toString());
     }
 }
 

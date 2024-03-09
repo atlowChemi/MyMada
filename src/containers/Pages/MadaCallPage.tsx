@@ -1,13 +1,13 @@
 import Color from 'color';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { StatusBar, StyleSheet, View } from 'react-native';
+import { StatusBar, StyleSheet, View, BackHandler } from 'react-native';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { Icon } from '../../Components/Icon';
 import { DependencyInjectionProvider } from '../../services/container';
-import type { FC } from 'react';
 import { PressableRippleWrapper } from '../../Components/PressableRippleWrapper';
+import type { FC } from 'react';
 
 const rippleColor = Color(colors.colorNice).lighten(0.7).alpha(0.6).string();
 
@@ -28,7 +28,7 @@ const MadaCallPageWithDI = observer(() => {
                 <Icon name="mada" size={60} color={colors.oldPrimary} style={styles.logo} />
                 <Text style={styles.appName}>{t('common:appName')}</Text>
                 <View style={styles.buttonsRow}>
-                    <PressableRippleWrapper android_ripple={{ color: rippleColor, borderless: true }} wrapperStyle={styles.buttonRipple} onPress={() => {}}>
+                    <PressableRippleWrapper android_ripple={{ color: rippleColor, borderless: true }} wrapperStyle={styles.buttonRipple} onPress={BackHandler.exitApp}>
                         <Text style={styles.buttonTxt}>{t('callDetection:closeBtn')}</Text>
                     </PressableRippleWrapper>
                     <PressableRippleWrapper android_ripple={{ color: rippleColor, borderless: true }} wrapperStyle={styles.buttonRipple} onPress={() => {}}>

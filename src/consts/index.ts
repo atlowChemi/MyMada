@@ -15,4 +15,15 @@ export const ANDROID_VERSION = {
     UPSIDE_DOWN_CAKE: 34,
 } as const;
 
+export const enum RingerMode {
+    SILENT = 0,
+    VIBRATE = 1,
+    NORMAL = 2,
+}
+export enum NOTIFICATION_LEVEL_VALUES {
+    sound = 0,
+    vibrate = 1,
+    silent = 2,
+}
+
 export const APP_PACKAGE_NAME = 'atlow.chemi.mymada';

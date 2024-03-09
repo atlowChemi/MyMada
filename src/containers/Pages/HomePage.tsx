@@ -15,7 +15,7 @@ import { BasePageView } from '../../Components/BasePageView';
 import { useDependencyInjector } from '../../services/container';
 import { NavigationStore, Page } from '../../services/NavigationStore';
 import { SharedPreferencesStore } from '../../services/SharedPreferencesStore';
-import { MadaNotificationsStore, CallType } from '../../services/MadaNotificationsStore';
+import { MadaNotificationsStore } from '../../services/MadaNotificationsStore';
 import { Importance, NOTIFICATION_MAP, NotificationService } from '../../services/NotificationService';
 import type { NavigatableScreenProps } from '../../App';
 import type { TranslationKeys } from '../../localization';
@@ -77,10 +77,16 @@ export const HomePage = observer<NavigatableScreenProps>(() => {
                 return;
             }
             try {
-                await madaNotificationsStore.triggerTestCall({
-                    callType: isTestingShiftCall ? CallType.Shift : CallType.OnCall,
-                    callText: t(`testCall:${isTestingShiftCall ? 'shift' : 'onCall'}Message`),
+                const [uuid, { callDetection }] = await Promise.all([madaNotificationsStore.buildPendingIntentForTestCall(), sharedPreferencesStore.applicationSettings]);
+                const data = await madaNotificationsStore.calculateCallData(callDetection, {
+                    uuid,
+                    title: `*אירוע חדש* ${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`,
+                    text: t(`testCall:${isTestingShiftCall ? 'shift' : 'onCall'}Message`),
                 });
+                if (!data) {
+                    throw new Error('Failed to calculate call data');
+                }
+                await madaNotificationsStore.broadcastCallData(data);
             } catch (e) {
                 crashlytics().log('Failed to send test call');
                 e instanceof Error && crashlytics().recordError(e);

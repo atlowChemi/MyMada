@@ -171,6 +171,12 @@ public class AudioGeneratorModule extends ReactContextBaseJavaModule {
         promise.resolve(maxVolume);
     }
 
+    @ReactMethod
+    public void getRingerMode(Promise promise) {
+        var ringerMode = audioManager.getRingerMode();
+        promise.resolve(ringerMode);
+    }
+
     private byte[] get16BitPcm(double[] samples) {
         var generatedSound = new byte[2 * samples.length];
         var index = 0;
