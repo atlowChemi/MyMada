@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
+import androidx.core.os.toPersistableBundle
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import atlow.chemi.mymada.recieversAndServices.HeadlessJsService
@@ -36,7 +37,14 @@ class HeadlessJsTaskWorker(appContext: Context, workerParameters: WorkerParamete
         }
         intent.putExtra("type", type)
         intent.putExtra("from", "worker")
-
+        inputData.keyValueMap.forEach {
+            when (it.value) {
+                is Int -> intent.putExtra(it.key, it.value as Int)
+                is String -> intent.putExtra(it.key, it.value as String)
+                is Boolean -> intent.putExtra(it.key, it.value as Boolean)
+                // TODO: else -> Crashlytics
+            }
+        }
 
         Log.i("BackgroundTasksModule", "Will start executing Headless JS BackgroundUploadTaskService service")
         suspendCoroutine { continuation ->

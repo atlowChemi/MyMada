@@ -63,7 +63,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationsModule: notification config is invalid");
             return;
         }
-        var notification = notificationHelper.buildNotification(reactContext, Arguments.toBundle(notificationConfig));
+        var notification = notificationHelper.buildNotification(Arguments.toBundle(notificationConfig));
         if (notification == null) {
             promise.reject(ERROR_INVALID_CONFIG, "NotificationsModule: failed building notification");
             return;

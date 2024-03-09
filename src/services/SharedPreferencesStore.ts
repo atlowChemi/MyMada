@@ -88,7 +88,6 @@ export const PREF_KEYS = {
             nightEnd: 'nightEnd',
             dayNotificationLevel: 'sleepDay',
             nightNotificationLevel: 'sleepNight',
-            overallNotificationLevel: 'sleep',
         },
         advancedSettings: {
             overridePreviousCalls: 'ride',
@@ -228,7 +227,6 @@ export class SharedPreferencesStore {
                     nightEnd: Number.parseInt(settings[PREF_KEYS.callDetection.dayAndNightSettings.nightEnd] || '7', 10),
                     dayNotificationLevel: Number.parseInt(settings[PREF_KEYS.callDetection.dayAndNightSettings.dayNotificationLevel] || '0', 10),
                     nightNotificationLevel: Number.parseInt(settings[PREF_KEYS.callDetection.dayAndNightSettings.nightNotificationLevel] || '0', 10),
-                    overallNotificationLevel: Number.parseInt(settings[PREF_KEYS.callDetection.dayAndNightSettings.overallNotificationLevel] || '0', 10),
                 },
                 advancedSettings: {
                     overridePreviousCalls: this.makePrefBoolean(settings[PREF_KEYS.callDetection.advancedSettings.overridePreviousCalls], false),

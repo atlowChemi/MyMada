@@ -3,7 +3,6 @@ package atlow.chemi.mymada;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -27,11 +26,7 @@ import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 import atlow.chemi.mymada.helpers.FontsHelper;
 import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
 import atlow.chemi.mymada.recieversAndServices.BootCompleteReceiver;
-import atlow.chemi.mymada.recieversAndServices.GrobootRec;
 import atlow.chemi.mymada.recieversAndServices.HeadlessJsService;
-
-import static atlow.chemi.mymada.Constants.CALL_RECEIVER_ACTION;
-import static atlow.chemi.mymada.Constants.TEST_CALL_ACTION;
 
 import java.util.List;
 
@@ -106,19 +101,15 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
             e.printStackTrace();
         }
         FontsHelper.setupFonts(this);
-        setupBroadcastReceivers();
+        setupBroadcastReceiver();
     }
-    private void setupBroadcastReceivers() {
+    private void setupBroadcastReceiver() {
         var broadcastManager = LocalBroadcastManager.getInstance(this);
-        var receiver = new GrobootRec();
-        var filter = new IntentFilter(CALL_RECEIVER_ACTION);
-        filter.addAction(TEST_CALL_ACTION);
-        broadcastManager.registerReceiver(receiver, filter);
-        var filter2 = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
-        filter2.addAction(Intent.ACTION_PACKAGE_RESTARTED);
-        filter2.addAction(Intent.ACTION_PACKAGE_ADDED);
-        filter2.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        var filter = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
+        filter.addAction(Intent.ACTION_PACKAGE_RESTARTED);
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
         var bcr = new BootCompleteReceiver();
-        broadcastManager.registerReceiver(bcr, filter2);
+        broadcastManager.registerReceiver(bcr, filter);
     }
 }

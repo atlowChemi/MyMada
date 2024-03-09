@@ -442,10 +442,6 @@ public class smsRes extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         return false;
     }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
     private class MyTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
