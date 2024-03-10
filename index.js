@@ -2,13 +2,12 @@ import 'reflect-metadata';
 import './src/localization/index';
 import 'react-native-gesture-handler';
 import messaging from '@react-native-firebase/messaging';
+import crashlytics from '@react-native-firebase/crashlytics';
 import { AppRegistry } from 'react-native';
 import { App } from './src/App';
-import { RingerMode } from './src/consts';
 import { container } from './src/services/container';
 import { MessagingStore } from './src/services/MessagingStore';
 import { MetronomeStore } from './src/services/MetronomeStore';
-import { audioGenerator } from './src/services/AudioGenerator';
 import { MadaCallPage } from './src/containers/Pages/MadaCallPage';
 import { SharedPreferencesStore } from './src/services/SharedPreferencesStore';
 import { MadaNotificationsStore } from './src/services/MadaNotificationsStore';
@@ -31,7 +30,7 @@ AppRegistry.registerHeadlessTask('HeadlessTask', () => async (data) => {
     if (data.type === 'madaCallReceived') {
         const calculatedData = await madaNotificationsStore.calculateCallData(callDetection, data);
         if (!calculatedData) {
-            // TODO: crashlytics
+            crashlytics().recordError(new Error('Failed to calculate call data'), 'ERROR_CALCULATING_CALL_DATA');
             return;
         }
         await madaNotificationsStore.broadcastCallData(calculatedData);

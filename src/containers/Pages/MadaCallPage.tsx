@@ -5,21 +5,41 @@ import { StatusBar, StyleSheet, View, BackHandler } from 'react-native';
 import { colors } from '../../consts';
 import { Text } from '../../Components/Text';
 import { Icon } from '../../Components/Icon';
-import { DependencyInjectionProvider } from '../../services/container';
 import { PressableRippleWrapper } from '../../Components/PressableRippleWrapper';
-import type { FC } from 'react';
+import { DependencyInjectionProvider, useDependencyInjector } from '../../services/container';
+import { CallData, CallType, MadaNotificationsStore } from '../../services/MadaNotificationsStore';
+import { useMemo, type FC, useCallback } from 'react';
 
 const rippleColor = Color(colors.colorNice).lighten(0.7).alpha(0.6).string();
+const isAdministrativeCall = (callType: CallType) => [CallType.Administrative, CallType.Service].includes(callType);
 
-const MadaCallPageWithDI = observer(() => {
+const MadaCallPageWithDI = observer<CallData>(({ callType, uuid }) => {
     const { t } = useTranslation();
+    const madaNotificationsStore = useDependencyInjector(MadaNotificationsStore);
+    const msgType = useMemo(() => {
+        let callTypeName = 'onCall';
+        if (CallType.Group === callType) {
+            callTypeName = 'group';
+        }
+        if ([CallType.Shift, CallType.OldMessageSyntax].includes(callType)) {
+            callTypeName = 'team';
+        }
+        if (CallType.Administrative === callType) {
+            callTypeName = 'administrative';
+        }
+        if (CallType.Service === callType) {
+            callTypeName = 'service';
+        }
+        return t(`callDetection:callTypeName:${callTypeName}`);
+    }, [t, callType]);
+    const openInfo = useCallback(() => madaNotificationsStore.openCallPendingIntent(uuid), [madaNotificationsStore, uuid]);
 
     return (
         <>
             <StatusBar barStyle="light-content" backgroundColor={colors.oldPrimary} />
             <View style={styles.page}>
-                <Text style={styles.header}>{t('callDetection:newCallTitle')}</Text>
-                <Text style={styles.msgType}>MSG_TYPE</Text>
+                <Text style={styles.header}>{t(`callDetection:${isAdministrativeCall(callType) ? 'newMsgTitle' : 'newCallTitle'}`)}</Text>
+                <Text style={styles.msgType}>{msgType}</Text>
                 <Text style={styles.address} numberOfLines={3} ellipsizeMode="clip">
                     ADDRESS
                 </Text>
@@ -31,7 +51,7 @@ const MadaCallPageWithDI = observer(() => {
                     <PressableRippleWrapper android_ripple={{ color: rippleColor, borderless: true }} wrapperStyle={styles.buttonRipple} onPress={BackHandler.exitApp}>
                         <Text style={styles.buttonTxt}>{t('callDetection:closeBtn')}</Text>
                     </PressableRippleWrapper>
-                    <PressableRippleWrapper android_ripple={{ color: rippleColor, borderless: true }} wrapperStyle={styles.buttonRipple} onPress={() => {}}>
+                    <PressableRippleWrapper android_ripple={{ color: rippleColor, borderless: true }} wrapperStyle={styles.buttonRipple} onPress={openInfo}>
                         <Text style={styles.buttonTxt}>{t('callDetection:callInfo')}</Text>
                     </PressableRippleWrapper>
                 </View>

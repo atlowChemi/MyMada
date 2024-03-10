@@ -59,6 +59,7 @@ import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.helpers.NotificationHelper;
 import atlow.chemi.mymada.recieversAndServices.FloatingWidgetService;
 import atlow.chemi.mymada.recieversAndServices.NotificationListenerForegroundService;
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
 
 @ReactModule(name = MadaNotificationsModule.NAME)
 public class MadaNotificationsModule extends ReactContextBaseJavaModule implements ActivityEventListener {
@@ -115,6 +116,21 @@ public class MadaNotificationsModule extends ReactContextBaseJavaModule implemen
         }
         var uuid = setCallPendingIntent(testPI);
         promise.resolve(uuid);
+    }
+
+    @ReactMethod
+    public void openCallPendingIntent(String uuid, Promise promise) {
+        var pi = callIntentMap.get(UUID.fromString(uuid));
+        if (pi == null) {
+            promise.reject(ERROR_INVALID_CONFIG, "MadaNotificationsModule: pending intent not found for given uuid");
+            return;
+        }
+        try {
+            pi.send();
+            promise.resolve(null);
+        } catch (PendingIntent.CanceledException e) {
+            ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
+        }
     }
 
     @ReactMethod
