@@ -18,6 +18,7 @@ import java.util.Objects;
 import atlow.chemi.mymada.ReactModules.MadaNotificationsModule;
 import atlow.chemi.mymada.ReactModules.SharedPreferencesModule;
 import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
 
 public class NotificationService extends NotificationListenerService {
     private final String[] pkgNames = new String[] {"mdaemergency", "mda.health", "atlow.mymadaadmin"};
@@ -65,11 +66,11 @@ public class NotificationService extends NotificationListenerService {
 
     @Override
     public void onListenerConnected() {
-            try {
+        ReactNativeFirebaseCrashlyticsNativeHelper.log("getActiveNotification");
+        try {
                 getActiveNotifications();
             } catch (Exception e) {
-                Log.e("getActiveNotification", Objects.requireNonNull(e.getMessage()));
-                // TODO: Crashlytics.logException(e);
+                ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
             }
     }
     @Override
