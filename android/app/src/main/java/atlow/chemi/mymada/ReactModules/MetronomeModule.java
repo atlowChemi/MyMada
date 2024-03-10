@@ -15,7 +15,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import static atlow.chemi.mymada.Constants.METRONOME_TOGGLED;
 import static atlow.chemi.mymada.Constants.METRONOME_TOGGLED_EVENT_NAME;
 
-import atlow.chemi.mymada.MetronomeManager;
+import atlow.chemi.mymada.helpers.MetronomeManager;
 import atlow.chemi.mymada.classes.JSException;
 
 

@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import atlow.chemi.mymada.MetronomeManager;
+import atlow.chemi.mymada.helpers.MetronomeManager;
 import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
 
 @TargetApi(Build.VERSION_CODES.N)
