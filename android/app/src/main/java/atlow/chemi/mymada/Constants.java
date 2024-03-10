@@ -28,6 +28,5 @@ public class Constants {
     public static final String NOTIFICATION_HELPER_SOURCE = "NOTIFICATION_HELPER";
 
     public static final String MADA_APP_PACKAGE = "com.groboot.mdaemergency";
-    public static final String CALL_RECEIVER_ACTION = "MADA_APP";
-    public static final String TEST_CALL_ACTION = "atlow.chemi.MyMada.MADA_APP";
+    public static final long[] VIBRATION_PATTERN =  {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
 }
