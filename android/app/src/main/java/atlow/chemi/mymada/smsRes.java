@@ -1,5 +1,7 @@
 package atlow.chemi.mymada;
 
+import static atlow.chemi.mymada.Constants.VIBRATION_PATTERN;
+
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -99,7 +101,6 @@ public class smsRes extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         Uri url = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.alert);
-        long[] length = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
         boolean cut = map.compute("cut", (key, val) -> String.valueOf(val == null ? "false" : val)).equals("true");
         boolean vib;
@@ -174,9 +175,9 @@ public class smsRes extends AppCompatActivity {
             silentVib = false;
         if (!statVib || silentVib) {
             if (vib && !loop) {
-                vibe.vibrate(length, -1);
+                vibe.vibrate(VIBRATION_PATTERN, -1);
             } else if (vib) {
-                vibe.vibrate(length, 0);
+                vibe.vibrate(VIBRATION_PATTERN, 0);
             }
         }
         if (!stat || !silent) {
