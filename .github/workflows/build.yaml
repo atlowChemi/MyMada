@@ -1,5 +1,9 @@
 name: Build and deploy for dev
 
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 on:
     workflow_dispatch:
     push:
@@ -17,8 +21,6 @@ jobs:
             actions: write
             pull-requests: write
         steps:
-            -   name: Cancel previous runs
-                uses: styfle/cancel-workflow-action@0.12.1
             -   name: Checkout repo
                 uses: actions/checkout@v4
             -   name: Get yarn cache directory path
