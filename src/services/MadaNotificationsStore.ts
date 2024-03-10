@@ -19,6 +19,7 @@ export const enum CallType {
     OldMessageSyntax = 5,
     Service = 6,
 }
+export type CallData = NonNullable<Awaited<ReturnType<MadaNotificationsStore['calculateCallData']>>>;
 
 @injectable()
 export class MadaNotificationsStore {
@@ -50,8 +51,12 @@ export class MadaNotificationsStore {
         return MadaNotificationsModule.buildPendingIntentForTestCall();
     }
 
-    public broadcastCallData(config: NonNullable<Awaited<ReturnType<MadaNotificationsStore['calculateCallData']>>>): Promise<void> {
+    public broadcastCallData(config: CallData): Promise<void> {
         return MadaNotificationsModule.broadcastCallData(config);
+    }
+
+    public openCallPendingIntent(uuid: string): Promise<void> {
+        return MadaNotificationsModule.openCallPendingIntent(uuid);
     }
 
     public hasOverlayPermission(): Promise<boolean> {
@@ -239,7 +244,7 @@ export class MadaNotificationsStore {
                 vibrate: callDetection.administrative.vibrate,
                 sound: callDetection.administrative.sound,
                 overrideSound: callDetection.administrative.overrideSound,
-                uri: callDetection.administrative.ringtone,
+                uri: callDetection.administrative.overrideSound ? callDetection.administrative.ringtone : undefined,
             };
         }
         if (!callDetection.splitNotificationByCallType) {
@@ -248,7 +253,7 @@ export class MadaNotificationsStore {
                 vibrate: callDetection.grouped.vibrate,
                 sound: callDetection.grouped.sound,
                 overrideSound: callDetection.grouped.overrideSound,
-                uri: callDetection.grouped.ringtone,
+                uri: callDetection.grouped.overrideSound ? callDetection.grouped.ringtone : undefined,
             };
         }
         const callDetectionKey = callType === CallType.Shift ? 'shift' : CallType.Group ? 'group' : 'onCall';
@@ -257,7 +262,7 @@ export class MadaNotificationsStore {
             vibrate: callDetection[callDetectionKey].vibrate,
             sound: callDetection[callDetectionKey].sound,
             overrideSound: callDetection[callDetectionKey].overrideSound,
-            uri: callDetection[callDetectionKey].ringtone,
+            uri: callDetection[callDetectionKey].overrideSound ? callDetection[callDetectionKey].ringtone : undefined,
         };
     }
 
