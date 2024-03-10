@@ -9,11 +9,17 @@ import { PressableRippleWrapper } from '../../Components/PressableRippleWrapper'
 import { DependencyInjectionProvider, useDependencyInjector } from '../../services/container';
 import { CallData, CallType, MadaNotificationsStore } from '../../services/MadaNotificationsStore';
 import { useMemo, type FC, useCallback } from 'react';
+import { BasePageView } from '../../Components/BasePageView';
 
 const rippleColor = Color(colors.colorNice).lighten(0.7).alpha(0.6).string();
 const isAdministrativeCall = (callType: CallType) => [CallType.Administrative, CallType.Service].includes(callType);
+const getTextBetweenStrings = (text: string, start: string, end: string) => {
+    let result = text.substring(text.indexOf(start) + start.length);
+    result = result.substring(0, result.indexOf(end));
+    return result;
+};
 
-const MadaCallPageWithDI = observer<CallData>(({ callType, uuid }) => {
+const MadaCallPageWithDI = observer<CallData>(({ callType, uuid, text, title }) => {
     const { t } = useTranslation();
     const madaNotificationsStore = useDependencyInjector(MadaNotificationsStore);
     const msgType = useMemo(() => {
@@ -32,19 +38,57 @@ const MadaCallPageWithDI = observer<CallData>(({ callType, uuid }) => {
         }
         return t(`callDetection:callTypeName:${callTypeName}`);
     }, [t, callType]);
+    const data = useMemo(() => {
+        const fallbackTime =
+            title.replace(/[*](אירוע חדש|New Event|הודעה מנהלתית חדשה)[*]/, '') || `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`;
+        const indexOfAtTime = text.indexOf('בשעה ');
+        if (callType === CallType.OldMessageSyntax) {
+            const indexOfPostfix = text.indexOf('//');
+            const txtWithoutPostfix = indexOfPostfix === -1 ? text : text.substring(0, indexOfPostfix);
+            const time = (indexOfAtTime !== -1 && getTextBetweenStrings(text, 'בשעה ', ' ')) || fallbackTime;
+            return {
+                addressLines: 5,
+                address: txtWithoutPostfix,
+                time: t('callDetection:receivedAt', { time }),
+            };
+        }
+        if (['אירוע חדש', 'הודעת קבוצת התראה צוות', 'הודעת צוות'].every(str => !text.includes(str))) {
+            const indexOfVisa = text.indexOf('מונה:');
+            const time = text.substring(0, indexOfVisa) || getTextBetweenStrings(text, 'בשעה ', ' ') || fallbackTime;
+            return {
+                addressLines: 5,
+                address: text,
+                time: t('callDetection:receivedAt', { time }),
+            };
+        }
+        const useHebrew = text.includes('כתובת:');
+        const address = useHebrew ? getTextBetweenStrings(text, 'כתובת: ', 'קוד ') : getTextBetweenStrings(text, 'Address: ', 'Dispatch Code ');
+        const callCode = useHebrew ? getTextBetweenStrings(text, 'קוד הזנקה: ', 'קוד רפואי') : getTextBetweenStrings(text, 'Dispatch Code: ', 'Medical Code');
+        const medicalCode = useHebrew ? text.substring(text.indexOf('קוד רפואי: ') + 11) : text.substring(text.indexOf('Medical Code: ') + 14);
+        const time = useHebrew ? getTextBetweenStrings(text, '. ', 'מונה:') : getTextBetweenStrings(text, '. ', 'Incident') || fallbackTime;
+        const details = useHebrew ? text.substring(0, text.indexOf('קוד הזנקה:')) : text.substring(0, text.indexOf('Dispatch Code:')) || text;
+        return {
+            addressLines: 3,
+            address: address || details,
+            content: callCode,
+            medicalCode,
+            time: t('callDetection:receivedAt', { time }),
+        };
+    }, [t, callType, text, title]);
     const openInfo = useCallback(() => madaNotificationsStore.openCallPendingIntent(uuid), [madaNotificationsStore, uuid]);
 
     return (
         <>
             <StatusBar barStyle="light-content" backgroundColor={colors.oldPrimary} />
-            <View style={styles.page}>
+            <BasePageView pageStyle={styles.page} scrollType="none">
                 <Text style={styles.header}>{t(`callDetection:${isAdministrativeCall(callType) ? 'newMsgTitle' : 'newCallTitle'}`)}</Text>
                 <Text style={styles.msgType}>{msgType}</Text>
-                <Text style={styles.address} numberOfLines={3} ellipsizeMode="clip">
-                    ADDRESS
+                <Text style={[styles.address, data.addressLines === 5 && styles.scrollable]} numberOfLines={data.addressLines} ellipsizeMode="clip">
+                    {data.address}
                 </Text>
-                <Text style={styles.msgContent}>MSG_CONTENT</Text>
-                <Text style={styles.msgTime}>MSG_TIME</Text>
+                {data.content && <Text style={[styles.msgContent, !data.medicalCode && styles.msgContentFullPage]}>{data.content}</Text>}
+                {data.medicalCode && <Text style={styles.medicalCode}>{data.medicalCode}</Text>}
+                <Text style={styles.msgTime}>{data.time}</Text>
                 <Icon name="mada" size={60} color={colors.oldPrimary} style={styles.logo} />
                 <Text style={styles.appName}>{t('common:appName')}</Text>
                 <View style={styles.buttonsRow}>
@@ -55,7 +99,7 @@ const MadaCallPageWithDI = observer<CallData>(({ callType, uuid }) => {
                         <Text style={styles.buttonTxt}>{t('callDetection:callInfo')}</Text>
                     </PressableRippleWrapper>
                 </View>
-            </View>
+            </BasePageView>
         </>
     );
 });
@@ -96,12 +140,27 @@ const styles = StyleSheet.create({
         color: colors.black,
         paddingVertical: 0,
     },
-    msgContent: {
+    scrollable: {
         flex: 1,
+        overflow: 'scroll',
+    },
+    msgContent: {
         fontSize: 27,
         marginTop: 5,
         textAlign: 'center',
         textAlignVertical: 'center',
+    },
+    msgContentFullPage: {
+        flex: 1,
+    },
+    medicalCode: {
+        flex: 1,
+        fontSize: 27,
+        marginTop: 5,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: colors.colorPrimary,
+        textAlignVertical: 'top',
     },
     msgTime: {
         fontSize: 22,
