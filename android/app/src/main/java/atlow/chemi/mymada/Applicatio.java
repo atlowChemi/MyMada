@@ -27,6 +27,7 @@ import atlow.chemi.mymada.helpers.FontsHelper;
 import atlow.chemi.mymada.helpers.HeadlessJsTaskWorker;
 import atlow.chemi.mymada.recieversAndServices.BootCompleteReceiver;
 import atlow.chemi.mymada.recieversAndServices.HeadlessJsService;
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
 
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
         } catch (IllegalStateException e) {
             var work = OneTimeWorkRequest.from(HeadlessJsTaskWorker.class);
             WorkManager.getInstance(getApplicationContext()).enqueue(work);
-            // TODO: Crashlytics
+            ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
         }
         try {
             SoLoader.init(this, false);
@@ -97,8 +98,7 @@ public class Applicatio extends MultiDexApplication implements ReactApplication 
             }
             ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
         } catch (Exception e) {
-            // TODO: Crashlytics
-            e.printStackTrace();
+            ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
         }
         FontsHelper.setupFonts(this);
         setupBroadcastReceiver();

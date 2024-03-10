@@ -25,6 +25,7 @@ import atlow.chemi.mymada.classes.JSException;
 import atlow.chemi.mymada.helpers.EventListener;
 import atlow.chemi.mymada.helpers.NotificationHelper;
 import atlow.chemi.mymada.recieversAndServices.MetronomeForegroundService;
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
 import java9.util.concurrent.CompletableFuture;
 
 public class MetronomeManager extends EventListener<HashMap<String, Object>> {
@@ -80,7 +81,7 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
                         audioGenerator.writeSound(sound);
                         audioGenerator.writeSound(emptyWave);
                     } catch (Exception e) {
-                        // Crashlytics
+                        ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
                     }
                     if (++currentBeat > beat) {
                         currentBeat = 0;
@@ -89,7 +90,7 @@ public class MetronomeManager extends EventListener<HashMap<String, Object>> {
             }).thenRun(cleanup);
         } catch (Exception e) {
             cleanup.run();
-            // Crashlytics
+            ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
         }
     }
 
