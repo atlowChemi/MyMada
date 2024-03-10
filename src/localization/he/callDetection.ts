@@ -7,6 +7,7 @@ export default {
     newCallTitle: 'אירוע חדש',
     closeBtn: 'סגור',
     callInfo: 'פרטי מקרה',
+    receivedAt: 'התקבל בשעה: {{ time }}',
 
     callTypeName: {
         group: 'קבוצה',

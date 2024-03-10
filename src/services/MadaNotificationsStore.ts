@@ -124,6 +124,7 @@ export class MadaNotificationsStore {
         return {
             uuid,
             text,
+            title,
             callType,
             popup: openPopUpOnCall,
             uri: notificationSettings.uri,

@@ -7,6 +7,7 @@ export default {
     newCallTitle: 'New Call',
     closeBtn: 'Return',
     callInfo: 'Call info',
+    receivedAt: 'Received at: {{ time }}',
 
     callTypeName: {
         group: 'Group Call',
