@@ -1,10 +1,9 @@
-package atlow.chemi.mymada;
+package atlow.chemi.mymada.recieversAndServices;
 
 import android.content.ComponentName;
 import android.os.Build;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -13,7 +12,6 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import atlow.chemi.mymada.ReactModules.MadaNotificationsModule;
 import atlow.chemi.mymada.ReactModules.SharedPreferencesModule;
@@ -46,7 +44,6 @@ public class NotificationService extends NotificationListenerService {
                 .putString("text", text)
                 .putString("title", title)
                 .putString("type", "madaCallReceived")
-                // .putString("ticker", notification.tickerText == null ? "" : notification.tickerText.toString())
                 .build();
         var work = new OneTimeWorkRequest.Builder(HeadlessJsTaskWorker.class).setInputData(data).build();
         WorkManager.getInstance(getApplicationContext()).enqueue(work);

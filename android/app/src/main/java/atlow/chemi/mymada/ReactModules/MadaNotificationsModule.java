@@ -54,7 +54,7 @@ import java.util.UUID;
 import atlow.chemi.mymada.BuildConfig;
 import atlow.chemi.mymada.MadaCallActivity;
 import atlow.chemi.mymada.MainReactActivity;
-import atlow.chemi.mymada.NotificationService;
+import atlow.chemi.mymada.recieversAndServices.NotificationService;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.helpers.NotificationHelper;
 import atlow.chemi.mymada.recieversAndServices.FloatingWidgetService;
