@@ -8,7 +8,7 @@
     "android": "react-native run-android",
     "test": "echo \"Error: no test yet\"",
     "start": "react-native start",
-    "np": "np --no-publish",
+    "np": "np --no-publish --no-cleanup",
     "postversion": "react-native-version --target android"
   },
   "repository": {
