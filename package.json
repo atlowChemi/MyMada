@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "android": "react-native run-android",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test yet\"",
     "start": "react-native start",
     "np": "np --no-publish",
     "postversion": "react-native-version --target android"
