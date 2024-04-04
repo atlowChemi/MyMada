@@ -25,7 +25,7 @@ import atlow.chemi.mymada.classes.ActivityWithPropsDelegate;
 import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
 
 public class MadaCallActivity extends ReactActivity implements DefaultHardwareBackBtnHandler {
-    private final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    private Vibrator vibrator;
     private final MediaPlayer mediaPlayer = new MediaPlayer();
     private int currentVolume;
     private AudioManager audioManager;
@@ -37,6 +37,7 @@ public class MadaCallActivity extends ReactActivity implements DefaultHardwareBa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
