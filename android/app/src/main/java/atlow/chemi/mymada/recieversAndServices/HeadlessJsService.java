@@ -8,7 +8,10 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
+
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
 
 public class HeadlessJsService extends HeadlessJsTaskService {
     private Runnable onFinish;
@@ -28,7 +31,15 @@ public class HeadlessJsService extends HeadlessJsTaskService {
     protected @Nullable HeadlessJsTaskConfig getTaskConfig(Intent intent) {
         var extras = intent.getExtras();
         if (extras != null) {
-            return new HeadlessJsTaskConfig("HeadlessTask", Arguments.fromBundle(extras), 15000, true);
+            WritableMap args;
+            try {
+                args = Arguments.fromBundle(extras);
+            } catch (IllegalStateException e) {
+                ReactNativeFirebaseCrashlyticsNativeHelper.log("Failed parsing args");
+                ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
+                return null;
+            }
+            return new HeadlessJsTaskConfig("HeadlessTask", args, 15000, true);
         }
         return null;
     }

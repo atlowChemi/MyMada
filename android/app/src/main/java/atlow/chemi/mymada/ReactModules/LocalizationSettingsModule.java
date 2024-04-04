@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 
@@ -20,6 +19,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
 
 @ReactModule(name = LocalizationSettingsModule.NAME)
 public class LocalizationSettingsModule extends ReactContextBaseJavaModule {
@@ -51,7 +52,7 @@ public class LocalizationSettingsModule extends ReactContextBaseJavaModule {
     private String getLanguageTag(String language) {
         var locale = Locale.forLanguageTag(language);
 
-        if (!locale.getCountry().equals("")) return locale.toLanguageTag();
+        if (!locale.getCountry().isEmpty()) return locale.toLanguageTag();
         return new Locale(locale.getLanguage(), Locale.getDefault().getCountry()).toLanguageTag();
     }
 
@@ -78,7 +79,7 @@ public class LocalizationSettingsModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getLanguage(Promise promise) {
-        promise.resolve(getCurrentLanguage());
+        UiThreadUtil.runOnUiThread(() -> promise.resolve(getCurrentLanguage()));
     }
 
     @ReactMethod
@@ -89,7 +90,14 @@ public class LocalizationSettingsModule extends ReactContextBaseJavaModule {
     @Override
     public Map<String, Object> getConstants() {
         var constants = new HashMap<String, Object>();
-        constants.put("language", getCurrentLanguage());
+        String lng = "";
+        try {
+            lng = getCurrentLanguage();
+        } catch (Exception e) {
+            ReactNativeFirebaseCrashlyticsNativeHelper.log("Failed getting language");
+            ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
+        }
+        constants.put("language", lng);
         return constants;
     }
 }
