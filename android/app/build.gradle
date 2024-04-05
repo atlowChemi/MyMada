@@ -28,8 +28,8 @@ android {
         applicationId "atlow.chemi.mymada"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12826
-        versionName '4.0.0-3'
+        versionCode 12827
+        versionName '4.0.0-4'
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
 //        signingConfig signingConfigs.release
