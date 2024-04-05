@@ -30,15 +30,17 @@ public class HeadlessJsService extends HeadlessJsTaskService {
     @Override
     protected @Nullable HeadlessJsTaskConfig getTaskConfig(Intent intent) {
         var extras = intent.getExtras();
+        ReactNativeFirebaseCrashlyticsNativeHelper.log("Parsing task config");
         if (extras != null) {
             WritableMap args;
             try {
                 args = Arguments.fromBundle(extras);
-            } catch (IllegalStateException e) {
+            } catch (IllegalStateException | IllegalArgumentException e) {
                 ReactNativeFirebaseCrashlyticsNativeHelper.log("Failed parsing args");
                 ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
                 return null;
             }
+            ReactNativeFirebaseCrashlyticsNativeHelper.log("Parsed task successfully");
             return new HeadlessJsTaskConfig("HeadlessTask", args, 15000, true);
         }
         return null;
