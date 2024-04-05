@@ -38,6 +38,7 @@ public class MadaCallActivity extends ReactActivity implements DefaultHardwareBa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
