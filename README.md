@@ -157,6 +157,17 @@ the original dispatch gate, test-call branches, contact/about ads and destinatio
 Tools still opens `UtillitiesAndTools`, preserving its selected-tool preferences.
 Banner/interstitial IDs and Firebase configuration are unchanged.
 
+Pending Home banner/interstitial loads use application context; interstitials also use a weak bridge callback.
+The callback is created in a static scope so Java cannot implicitly capture the old
+bridge/Activity across recreation. Offline requests otherwise retain destroyed Home
+view trees and both locales' artwork until the 48-MiB API-24 heap is exhausted.
+Run the full `HomeScreenTest` suite in one process on the stock heap; an isolated
+About launch does not exercise the preceding onboarding/locale/recreation sequence.
+`HomeMemoryTest` runs onboarding/locale return, then Hebrew and English recreation → Tools → Settings → About
+with actual back navigation, and supports native master for matched comparisons.
+Optional `dumpHeap=true` writes pre-About HPROFs for diagnosis; omit it for pass/fail
+runs because dumping forces GC. Both tests require the disposable-device firewall.
+
 Open `HomePreview` for English, Hebrew/RTL large text and landscape. With the
 disposable-device firewall above applied **before launch**, run:
 

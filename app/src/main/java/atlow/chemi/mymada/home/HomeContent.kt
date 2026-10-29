@@ -80,7 +80,8 @@ object HomeContent {
         activity.setContent {
             var detecting by remember { mutableStateOf(detection.isChecked) }
             val banner = remember {
-                AdView(activity).apply {
+                // Pending banner requests can outlive destroy(), just like interstitial loads.
+                AdView(activity.applicationContext).apply {
                     setAdSize(AdSize.SMART_BANNER)
                     adUnitId = activity.getString(R.string.banner_ad_unit_id)
                     loadAd(AdRequest.Builder().build())
