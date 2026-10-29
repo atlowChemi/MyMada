@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
@@ -6,10 +7,11 @@ android {
         viewBinding true
         buildConfig true
     }
-    compileSdkVersion 33
+    compileSdk 36
     defaultConfig {
         applicationId "atlow.chemi.mymada"
         minSdkVersion 21
+        // Target changes require notification/service and edge-to-edge work in #24/#25.
         targetSdkVersion 33
         // Development version only; verify Play's highest versionCode before release (#11).
         versionCode 12828
@@ -19,6 +21,10 @@ android {
     }
     buildTypes {
         release {
+            firebaseCrashlytics {
+                // Local unsigned verification must not upload mapping files.
+                mappingFileUploadEnabled false
+            }
             minifyEnabled true
             shrinkResources true
             multiDexEnabled = true
@@ -53,31 +59,32 @@ android {
     namespace 'atlow.chemi.mymada'
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+    }
+}
+
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.firebase:firebase-core:17.2.1'
-    implementation 'com.google.firebase:firebase-analytics:17.2.1'
-    implementation 'com.google.firebase:firebase-messaging:20.1.0'
-    implementation 'com.google.firebase:firebase-database:19.2.0'
-    implementation 'com.google.firebase:firebase-firestore:21.3.1'
-    implementation 'com.google.firebase:firebase-ads:18.3.0'
-    implementation 'com.google.firebase:firebase-inappmessaging-display:19.0.2'
-    implementation 'com.google.firebase:firebase-functions:19.0.1'
-    implementation 'com.google.android.play:core:1.6.4'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'androidx.preference:preference:1.1.0'
+    // Last Firebase/Ads release lines retaining API 21; see docs/android-toolchain.md.
+    implementation platform('com.google.firebase:firebase-bom:33.16.0')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-inappmessaging-display'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.android.gms:play-services-ads:23.6.0'
+    implementation 'com.google.android.play:feature-delivery:2.1.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.preference:preference:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.1'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
-    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
 }
 
 apply plugin: 'com.google.gms.google-services'
-apply plugin: 'kotlin-android'
