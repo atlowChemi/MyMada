@@ -83,9 +83,10 @@ Restoration already removed the RN application/toolchain. None is reintroduced:
   from August 31, 2026 (extension through November 1 where granted). Target 33
   **cannot be presented as submission-ready**. #9 handles listing diagnosis;
   #24/#25 handle behavior remediation/testing. Compile 36 alone is insufficient.
-- Native notifications still have PendingIntent/notification-permission defects;
-  no lint baseline or suppression is added to conceal them. Metronome-start
-  acceptance remains blocked by #25, not attributed to this tooling upgrade.
+- All 11 app-created PendingIntents are now immutable, using AndroidX's API-21
+  compatibility handling. Notification runtime permission flow is still missing;
+  no lint baseline or suppression is added to conceal compatibility problems.
+  Broader service/audio acceptance remains in #24/#25.
 - Minimum 21 remains a compatibility promise requiring oldest-device testing;
   successful manifest merging is not an API-21 runtime test.
 - Java/Kotlin app code is page-size independent, but Firebase's transitive
@@ -114,29 +115,31 @@ python3 scripts/check-native-alignment.py app/build/outputs/apk/debug/app-debug.
 "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 4 app/build/outputs/apk/release/app-release-unsigned.apk
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb shell am start -W -n atlow.chemi.mymada.debug/atlow.chemi.mymada.HomePage
+ANDROID_SERIAL=emulator-5556 python3 scripts/smoke-metronome.py
 ```
 
 Run lint independently and record its failures. Do not disable release lint to
-make `assembleRelease` green. Any explicitly excluded lint task in an exploratory
-packaging command must be reported as **packaging-only**, not a passing release
-build. Offline navigation smoke: home → info → privacy; home → contact (no-ad
-fallback); settings/locales; tools → oxygen calculator; metronome start (known
-#25 failure). Use a disposable emulator with Wi-Fi/mobile data disabled.
+make `assembleRelease` green. Offline navigation smoke: home → info → privacy;
+home → contact (no-ad fallback); settings/locales; tools → oxygen calculator;
+metronome start/stop. Use a disposable emulator with Wi-Fi/mobile data disabled.
+The metronome script uses existing adb/UIAutomator and Python's standard library;
+it requires API 33, the debug APK installed, and adb on PATH. It grants notification
+permission as explicit test setup, exercises the actual notification PendingIntents,
+and checks foreground state/crash logs. It does not measure audible tempo.
 
 ## Executed validation (2026-10-29)
 
 | Check | Result |
 | --- | --- |
-| Clean build: `clean :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug :app:testDebugUnitTest --continue --no-daemon` | Debug APK built successfully. Overall command **FAILED**: release lint and debug lint reject 8 missing PendingIntent mutability flags |
+| Clean build: `clean :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug :app:testDebugUnitTest --continue --no-daemon` | **PASS**, 119 actionable tasks (116 executed, 3 up-to-date), 1m 6s. Normal debug and unsigned release APK/AAB builds; no lint exclusions |
 | `:app:testDebugUnitTest` | **NO-SOURCE**, not passing unit-test coverage |
-| `:app:lintDebug` | **8 errors, 421 warnings, 1 hint**; no baseline, severity downgrade or disabled checks |
-| `:app:assembleRelease :app:bundleRelease -x :app:lintVitalRelease --no-daemon` | **Packaging-only PASS**, unsigned APK/AAB generated with release-mode R8/resource shrinking; explicitly **not** a passing normal release build |
+| `:app:lintDebug` / release vital lint | **PASS: 0 errors, 421 warnings, 1 hint** for debug; no baseline, severity downgrade or disabled checks |
 | `scripts/check-native-alignment.py` on debug APK, release APK and AAB | PASS: each has 2 64-bit `libdatastore_shared_counter.so` binaries (arm64-v8a / x86_64); every ELF LOAD segment aligned to 16384 bytes |
 | SDK 35 `zipalign -c -P 16 4` on both APKs | PASS |
 | API 33 arm64 emulator, offline, install and cold home launch | PASS (`am start -W`: Status ok, 1427 ms) |
 | Home → info → privacy | PASS; view binding renders version text, no-ad fallback reaches PrivacyActivity |
 | Home → contact | PASS; no-ad fallback retains volunteer gate and reaches contact name dialog; no message sent |
-| Tools/metronome screen | Opens; **start reproduces baseline crash** in `MetroService.java:47` (missing PendingIntent flags), #25 remains open |
+| `scripts/smoke-metronome.py`, API 33, normal animation scales | **PASS**: UI start/stop, foreground state while backgrounded, notification content navigation, notification stop broadcast, no app crash. Permission pre-granted by test; real audio/tempo unverified |
 
 The new Material lint identified eight ImageView tint issues; these now use
 `app:tint`. Suspicious indentation was corrected without changing control flow.
@@ -144,10 +147,30 @@ Private hint reflection and vulnerable monolithic Play Core were removed.
 Firebase's merged manifest now supplies `POST_NOTIFICATIONS`, which removes the
 old missing-declaration lint findings, **but does not implement runtime permission
 requests**. #24/#25 must still implement/test notification permission behavior.
-The eight fatal findings span GrobootRec (2), MetroService, MetroWidget,
-MyFirebaseMessagingService, SMSMonitorService, and homeBAdapter (2). Audit all
-11 PendingIntent creation sites, including the three with UPDATE_CURRENT that
-lint does not flag; there is no inline-reply/RemoteInput usage in this source.
+The original eight fatal findings were fixed along with three UPDATE_CURRENT
+sites that lint did not flag. Original crash/packaging-only results are superseded
+by the normal passing build above, following approval to bring these narrow
+compatibility prerequisites into #14.
+
+### PendingIntent semantic audit
+
+| Sites | Semantics preserved |
+| --- | --- |
+| GrobootRec (2), homeBAdapter (2) | Fixed form/third-party launcher activity intents, existing request codes and extras unchanged |
+| Messaging code approval | Fixed `codeC` destination/code/key extras; ONE_SHOT retained |
+| Messaging chat | Fixed chat destination; UPDATE_CURRENT retained (creator can still update extras on immutable tokens) |
+| MetroService content/action | Fixed tools activity (`running=true`) and ActionReceiver (`action=stopM`); action UPDATE_CURRENT retained |
+| SMSMonitorService content/action | Fixed home activity and ActionReceiver (`action=runInBG`); action UPDATE_CURRENT retained |
+| MetroWidget | Fixed ActionReceiver (`action=widget`), ordinary RemoteViews click, not a collection fill-in template |
+
+All factories use `PendingIntentCompat` with `isMutable=false`, which adds the
+immutable flag where supported without raising minSdk. No RemoteInput, fill-in
+intent, pending-intent template, or sender mutation is used. Incoming third-party
+notification PendingIntents are passed through unchanged and `smsRes` calls
+`send()` without fill-in arguments. No service logic was rewritten. Existing
+`ActionReceiver` behavior (including declining metronome stop while its UI is
+bound, and the monitoring action targeting MetroService) remains for #24/#25;
+the regression exercises metronome notification stop while backgrounded.
 
 Warning triage: 150 nonconstant resource-ID switch warnings (the existing
 `android.nonFinalResIds=false` is retained), 111 unused resources, 26 obsolete
@@ -157,11 +180,11 @@ Do not delete resources or change user-facing behavior solely to reduce the
 count. #21/#23 cover UI/accessibility; #24/#25 platform/service behavior;
 #27 covers device/integration parity. Lint's lower count is not runtime parity.
 
-**Open acceptance gates:** normal clean release build; metronome start/stop;
-API 21 and current-Android runtime matrix; real 16 KB device/emulator smoke;
+**Open acceptance gates:** API 21 and current-Android runtime matrix;
+real 16 KB device/emulator smoke;
 online Firebase/Ads and language-split delivery; release signing/upgrade proof.
 No current-target, loaded-ad dismissal/failure, or Play-delivered split test is
-claimed. Keep #14 open until its build gates are resolved; downstream feature
+claimed. Keep #14 open until its remaining platform gates are resolved; downstream feature
 and release gates remain tracked in their owning issues.
 
 ## Official references
