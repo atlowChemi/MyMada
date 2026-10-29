@@ -32,14 +32,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import atlow.chemi.mymada.helpers.LocalHelper;
-import okhttp3.OkHttpClient;
 
 public class codeC extends AppCompatActivity {
     private Button send;
     private DatabaseReference mFirebaseDatabase;
     private ProgressDialog pdialog;
     private static final String BASE_URL = "http://atlowapps.tzevethatzolah.org/codeC.php";
-    private OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

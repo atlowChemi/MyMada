@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.PendingIntentCompat;
 
 import android.provider.Settings;
 import android.util.Log;
@@ -74,8 +75,8 @@ public class GrobootRec extends BroadcastReceiver {
         if (launchIntent != null) {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         }
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), hachtava, 0);
-        PendingIntent testPI = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), launchIntent, 0);
+        PendingIntent pendingIntent = PendingIntentCompat.getActivity(context, (int) System.currentTimeMillis(), hachtava, 0, false);
+        PendingIntent testPI = PendingIntentCompat.getActivity(context, (int) System.currentTimeMillis(), launchIntent, 0, false);
         if (intent != null) {
             try {
                 text = intent.getCharSequenceExtra("text").toString();

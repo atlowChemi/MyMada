@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.PendingIntentCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import atlow.chemi.mymada.HomePage;
@@ -32,10 +33,10 @@ public class SMSMonitorService extends Service {
         super.onCreate();
         Intent callSNI = new Intent(this, HomePage.class);
         callSNI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, callSNI, 0);
+        PendingIntent pendingIntent = PendingIntentCompat.getActivity(this, 1, callSNI, 0, false);
         Intent btn = new Intent(this, ActionReceiver.class);
         btn.putExtra("action", "runInBG");
-        PendingIntent pBtn = PendingIntent.getBroadcast(SMSMonitorService.this, 13, btn, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pBtn = PendingIntentCompat.getBroadcast(SMSMonitorService.this, 13, btn, PendingIntent.FLAG_UPDATE_CURRENT, false);
 //        Crashlytics.log("sending SmsMonitor notif");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             setNotifChannels();

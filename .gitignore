@@ -2,6 +2,7 @@
 .idea/
 *.iml
 .gradle/
+.kotlin/
 build/
 local.properties
 .cxx/
