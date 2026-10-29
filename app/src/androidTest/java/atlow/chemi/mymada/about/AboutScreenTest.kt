@@ -2,6 +2,8 @@ package atlow.chemi.mymada.about
 
 import android.view.KeyEvent
 import android.view.View
+import android.graphics.Color
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
@@ -9,6 +11,7 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.Lifecycle
@@ -55,6 +58,10 @@ class AboutScreenTest {
             }
             compose.onNodeWithText(title).assertIsDisplayed()
             compose.onNodeWithText(body).assertIsDisplayed()
+            val toolbarBounds = compose.onNodeWithTag("information-toolbar").fetchSemanticsNode().boundsInRoot
+            scenario.onActivity {
+                assertEquals(56 * it.resources.displayMetrics.density, toolbarBounds.height, 1f)
+            }
             compose.onNodeWithContentDescription(detection).assertIsOn().performClick().assertIsOff()
             assertFalse(preferences.getBoolean("Mapp", true))
             val backBounds = compose.onNodeWithContentDescription(back).assertHasClickAction()
@@ -69,16 +76,23 @@ class AboutScreenTest {
                 assertTrue("Settings touch target: $settingsBounds, minimum $minimum",
                     settingsBounds.width >= minimum && settingsBounds.height >= minimum)
             }
-            compose.onNodeWithText(privacy).performScrollTo().assertIsDisplayed().assertHasClickAction()
+            val tile = compose.onNodeWithContentDescription(privacy).performScrollTo().assertIsDisplayed().assertHasClickAction()
+            val tileBounds = tile.fetchSemanticsNode().boundsInRoot
+            scenario.onActivity {
+                val density = it.resources.displayMetrics.density
+                assertEquals(85 * density, tileBounds.height, 1f)
+                assertEquals(minOf(340 * density, toolbarBounds.width - 32 * density), tileBounds.width, 1f)
+            }
+            verifyArtwork(scenario, tileBounds)
             scenario.recreate()
             // rememberScrollState must retain the reachable privacy action after recreation.
-            compose.onNodeWithText(privacy).assertIsDisplayed()
+            compose.onNodeWithContentDescription(privacy).assertIsDisplayed()
             compose.onNodeWithContentDescription(detection).assertIsOff()
             compose.onNodeWithText(body).assertExists()
 
             val privacyMonitor = instrumentation.addMonitor(PrivacyActivity::class.java.name, null, false)
             try {
-                compose.onNodeWithText(privacy).performClick()
+                compose.onNodeWithContentDescription(privacy).performClick()
                 val activity = instrumentation.waitForMonitorWithTimeout(privacyMonitor, 5_000)
                 assertNotNull(activity)
                 compose.onNodeWithText(privacy).assertIsDisplayed()
@@ -129,5 +143,31 @@ class AboutScreenTest {
                 compose.waitUntil(10_000) { home.state == Lifecycle.State.RESUMED }
             }
         } finally { instrumentation.removeMonitor(monitor) }
+    }
+
+    private fun verifyArtwork(scenario: ActivityScenario<InfoActivityKt>, tile: Rect) {
+        val origin = IntArray(2)
+        scenario.onActivity { it.findViewById<View>(android.R.id.content).getLocationOnScreen(origin) }
+        // Semantics can settle before SurfaceFlinger presents a navigation/scroll frame.
+        compose.waitUntil(5_000) {
+            val bitmap = instrumentation.uiAutomation.takeScreenshot()
+            try {
+                // The original red mask must render, not just a correctly sized generic Material button.
+                var redPixels = 0
+                for (y in (tile.top.toInt() + origin[1]) until (tile.bottom.toInt() + origin[1])) {
+                    for (x in tile.left.toInt() until tile.right.toInt()) {
+                        val color = bitmap.getPixel(x, y)
+                        if (Color.red(color) > 100 && Color.red(color) > 2 * Color.green(color)
+                            && Color.red(color) > 2 * Color.blue(color)) redPixels++
+                    }
+                }
+                // Sample the empty left margin: the published window is gray and radially shaded.
+                val upper = bitmap.getPixel(2, bitmap.height / 4)
+                val middle = bitmap.getPixel(2, bitmap.height / 2)
+                redPixels > tile.width * tile.height * 0.01 && Color.red(upper) < 240 &&
+                    kotlin.math.abs(Color.red(upper) - Color.blue(upper)) < 8 &&
+                    kotlin.math.abs(Color.red(upper) - Color.red(middle)) > 5
+            } finally { bitmap.recycle() }
+        }
     }
 }
