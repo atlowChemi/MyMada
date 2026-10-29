@@ -43,8 +43,10 @@ development value above the previous source version, not a verified Play upgrade
 version. Confirm the published maximum before release.
 
 The checked-in `app/google-services.json` retains the existing Firebase project
-configuration. For offline smoke tests, disable emulator Wi-Fi/mobile data before
-launch; integration tests require appropriate backend configuration.
+configuration. Disabling emulator Wi-Fi/mobile data alone did not reliably block
+SDK traffic during validation. For offline smoke tests, use the disposable-emulator
+firewall setup below before launching the app; integration tests require appropriate
+backend configuration.
 
 ### Validation and known limitations
 
@@ -93,6 +95,20 @@ development baseline, not a release-ready rollback. The RN build/deployment
 workflow is removed; native CI follows working local modernization in #13.
 
 Documentation will expand alongside implementation in #28.
+
+### Contributing during modernization
+
+Follow the [project's Execution order](https://github.com/users/atlowChemi/projects/1)
+and the selected issue's prerequisites. Keep each PR focused on a complete,
+reviewable change; include its local check results and distinguish build success
+from runtime or integration verification. Use `Refs #N` for partial progress and
+`Fixes #N` when all acceptance criteria for that issue are met. Merging requires
+maintainer approval. Agent-specific workflow constraints are in [AGENTS.md](AGENTS.md).
+
+Phone installation through a browser/file manager may be blocked by Play Protect
+because this app declares notification-listener/accessibility capabilities. Passing
+emulator tests does not establish browser-install compatibility. This distribution
+limitation is tracked in #24; Play account/listing recovery is tracked in #9.
 
 אפליקציה למתנדבי מדא, המסייעת בזיהוי אירועי חירום.
 
