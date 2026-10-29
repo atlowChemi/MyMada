@@ -176,10 +176,9 @@ overlay, privacy) is retained pending a decision versus RN's privacy-first order
 Dialog/process restoration, full settings/tools migration and current-target
 permission/service behavior remain #21/#24/#27 work.
 
-Validated locally: debug/optimized unsigned release assemble and lint (0 errors,
-418 warnings); Home instrumentation passes 3/3 on API 24 and 3/3 on API 37
-with 16-KB pages. Local release validation used `-Dorg.gradle.jvmargs=-Xmx4g`
-and skipped only `:app:uploadCrashlyticsMappingFileRelease`.
+Production-matched screenshots and current validation results are in #34/#35;
+visual approval remains required. Local release validation uses
+`-Dorg.gradle.jvmargs=-Xmx4g` and skips only `:app:uploadCrashlyticsMappingFileRelease`.
 
 ### About Compose slice (#21)
 
