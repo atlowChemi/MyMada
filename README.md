@@ -53,17 +53,23 @@ launch; integration tests require appropriate backend configuration.
 sh ./gradlew clean :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug \
   -x :app:uploadCrashlyticsMappingFileRelease --no-daemon
 
-# Dedicated API 33+ emulator; avoid production backend traffic during smoke tests.
+# Disposable, rootable API 24+ emulator only; block production SDK egress.
+adb root
+adb wait-for-device
+adb shell 'iptables -I OUTPUT ! -o lo -j REJECT; ip6tables -I OUTPUT ! -o lo -j REJECT'
 adb shell svc wifi disable
 adb shell svc data disable
 sh ./gradlew :app:connectedDebugAndroidTest --no-daemon
 ```
 
 Actual releases retain Crashlytics mapping uploads; omit the local `-x` flag for
-the release workflow. The Kotlin instrumentation test exercises metronome UI
-start/stop and real notification content/stop PendingIntents. It pre-grants
-notification permission, so it does not validate permission-request UX or audio
-tempo. There are no JVM unit tests yet (`testDebugUnitTest` is `NO-SOURCE`).
+the release workflow. Kotlin instrumentation covers home/settings/navigation,
+oxygen calculation, metronome UI/notification controls and a DataStore native
+shared-counter round trip. On API 33+, it pre-grants notification permission;
+to check denied-permission UI start/stop separately, revoke POST_NOTIFICATIONS
+on the disposable test install and run `MetronomeNotificationTest` with runner
+argument `grantNotifications=false`. Neither mode verifies permission-request UX
+or audio tempo. There are no JVM unit tests yet (`testDebugUnitTest` is `NO-SOURCE`).
 
 For native packaging, follow Android's
 [official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment):
@@ -76,8 +82,11 @@ unzip app/build/outputs/bundle/release/app-release.aab 'base/lib/*' -d /path/to/
 "$ANDROID_HOME/ndk/28.2.13676358/toolchains/llvm/prebuilt/<host>/bin/llvm-objdump" -p /path/to/library.so | grep LOAD
 ```
 
-Also inspect libraries extracted from both APKs (`lib/*`). Actual 16 KB runtime
-testing is separate. No NDK is required to compile app-owned code.
+Also inspect libraries extracted from both APKs (`lib/*`). For actual runtime
+coverage, verify `adb shell getprop ro.build.version.sdk` and
+`adb shell getconf PAGE_SIZE` (must be `16384` for the 16 KB run), then run the
+instrumentation suite. Executed device results are in #14. No NDK is required
+to compile app-owned code.
 
 RN string preferences can crash startup (#22). This is a
 development baseline, not a release-ready rollback. The RN build/deployment
