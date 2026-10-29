@@ -120,19 +120,9 @@ class HomeScreenTest {
                 assertTrue(menu.findItem(R.id.metronome).isChecked)
             }
             visit(SettingsPage::class.java, { settings.performClick() })
-            val openAbout = {
+            visit(InfoActivityKt::class.java, {
                 compose.onNodeWithText(labels.getValue(R.string.title_activity_info)).performScrollTo().performClick()
-                Unit
-            }
-            if (InstrumentationRegistry.getArguments().getString("isolateAbout", "false").toBoolean()) {
-                // Optional Home-only check for the stock 48-MB emulator while About's bitmap OOM is investigated.
-                val monitor = instrumentation.addMonitor(InfoActivityKt::class.java.name,
-                    android.app.Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null), true)
-                try {
-                    openAbout()
-                    assertEquals(1, monitor.hits)
-                } finally { instrumentation.removeMonitor(monitor) }
-            } else visit(InfoActivityKt::class.java, openAbout)
+            })
             compose.onNodeWithText(labels.getValue(R.string.title_activity_moked_page)).performScrollTo().performClick()
             visit(lockPage::class.java, { onView(withText("עמוד חסימה")).perform(click()) })
             assertFalse(preferences.getBoolean("realM", true))
