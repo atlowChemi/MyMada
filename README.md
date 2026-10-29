@@ -8,11 +8,22 @@ and [baseline assessment](https://github.com/atlowChemi/MyMada/issues/19).
 
 ### Build and run locally
 
-Requires JDK 17, Android SDK platform 36, build-tools 35.0.0 and platform-tools.
-Use the checked-in Gradle wrapper (Gradle 8.13 / Android Gradle Plugin 8.13.2,
-Kotlin 2.3.21). Minimum Android remains API 21; target 33 is a temporary
-development hold, not Play-submission compatible. See the
-[toolchain inventory, version holds and validation](docs/android-toolchain.md).
+Requires JDK 17, Android SDK platform 37 (`platforms;android-37.0`), build-tools
+37.0.0 and platform-tools. Use the checked-in Gradle 9.6.0 wrapper with AGP 9.5.0
+and built-in Kotlin (compiler 2.4.21). Minimum Android is **API 24**, approved by
+the maintainer; target 33 remains a temporary development hold for #21/#24/#25,
+not Play-submission compatibility. Device/behavior verification is tracked in #27.
+Java bytecode targets 17; built-in Kotlin inherits that target, so no separate
+`jvmTarget` override is needed. JDK/bytecode versions do not set Android minSdk.
+AGP's [compatibility table](https://developer.android.com/build/releases/agp-9-5-0-release-notes)
+selects Gradle 9.6.0 and JDK 17; [built-in Kotlin](https://developer.android.com/build/migrate-to-built-in-kotlin)
+replaces the old Kotlin Android plugin. Dependency versions live in the Gradle
+files; [#14](https://github.com/atlowChemi/MyMada/issues/14) holds the historical
+inventory and executed validation results.
+Legacy Java resource-ID switches require `nonFinalResIds=false` and
+`enableAppCompileTimeRClass=false`, with legacy resource shrinking
+(`android.r8.optimizedResourceShrinking=false`). Migrate those handlers before
+AGP 10 removes the final-ID compatibility option.
 Set `JAVA_HOME` to JDK 17 and `ANDROID_HOME` to your SDK, or set `sdk.dir` in
 an untracked `local.properties`. Install/accept SDK packages with Android Studio
 or `sdkmanager` before building.
@@ -38,17 +49,37 @@ launch; integration tests require appropriate backend configuration.
 ### Validation and known limitations
 
 ```sh
-sh ./gradlew :app:testDebugUnitTest :app:lintDebug --no-daemon
+# Unsigned LOCAL validation only: skip network upload, never lint.
+sh ./gradlew clean :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug \
+  -x :app:uploadCrashlyticsMappingFileRelease --no-daemon
+
+# Dedicated API 33+ emulator; avoid production backend traffic during smoke tests.
+adb shell svc wifi disable
+adb shell svc data disable
+sh ./gradlew :app:connectedDebugAndroidTest --no-daemon
 ```
 
-The restored baseline has no executable unit tests (`NO-SOURCE`). After dependency
-modernization and the narrow PendingIntent compatibility fix, lint passes with
-0 errors, 421 warnings and 1 hint; its report is under `app/build/reports/`.
-Clean debug and unsigned release APK/AAB builds pass without lint exclusions.
-API 33 baseline smoke covers home/settings/tools navigation and the oxygen
-calculator. The API 33 metronome regression check now verifies start/stop and
-notification navigation/stop actions (`scripts/smoke-metronome.py`); broader
-audio/device validation remains #25. RN string preferences can crash startup (#22). This is a
+Actual releases retain Crashlytics mapping uploads; omit the local `-x` flag for
+the release workflow. The Kotlin instrumentation test exercises metronome UI
+start/stop and real notification content/stop PendingIntents. It pre-grants
+notification permission, so it does not validate permission-request UX or audio
+tempo. There are no JVM unit tests yet (`testDebugUnitTest` is `NO-SOURCE`).
+
+For native packaging, follow Android's
+[official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment):
+
+```sh
+"$ANDROID_HOME/build-tools/37.0.0/zipalign" -c -P 16 4 app/build/outputs/apk/debug/app-debug.apk
+"$ANDROID_HOME/build-tools/37.0.0/zipalign" -c -P 16 4 app/build/outputs/apk/release/app-release-unsigned.apk
+unzip app/build/outputs/bundle/release/app-release.aab 'base/lib/*' -d /path/to/empty-inspection-directory
+# Repeat for each extracted arm64-v8a/x86_64 .so; every LOAD alignment must be >= 2**14.
+"$ANDROID_HOME/ndk/28.2.13676358/toolchains/llvm/prebuilt/<host>/bin/llvm-objdump" -p /path/to/library.so | grep LOAD
+```
+
+Also inspect libraries extracted from both APKs (`lib/*`). Actual 16 KB runtime
+testing is separate. No NDK is required to compile app-owned code.
+
+RN string preferences can crash startup (#22). This is a
 development baseline, not a release-ready rollback. The RN build/deployment
 workflow is removed; native CI follows working local modernization in #13.
 
