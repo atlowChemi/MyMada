@@ -1,22 +1,24 @@
 package atlow.chemi.mymada
 
-import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Typeface
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
+import androidx.activity.compose.setContent
+import androidx.appcompat.widget.PopupMenu
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import atlow.chemi.mymada.about.AboutScreen
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import atlow.chemi.mymada.helpers.LocalHelper
@@ -28,33 +30,33 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.MobileAds
-import atlow.chemi.mymada.databinding.ActivityInfoBinding
 
-class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
-    private var oldX1 = 0f
-    private var oldY1 = 0f
-    private var isMove1 = false
+class InfoActivityKt : AppCompatActivity() {
     private val _requestPermissionSetting = 101
     private lateinit var detect:MenuItem
     private var goToPriv: InterstitialAd? = null
-    private lateinit var privBtn: Button
-    @SuppressLint("ClickableViewAccessibility")
+    private var detecting by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         resetTitle()
-        val binding = ActivityInfoBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        val toolbar = binding.toolbar
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         MobileAds.initialize(this) {}
         loadPrivacyAd()
-        val myTypeface = Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")
-        binding.textView10.typeface = myTypeface
-        binding.textView10.movementMethod = ScrollingMovementMethod()
-        binding.textView10.text = resources.getString(R.string.TversionNumber, BuildConfig.VERSION_NAME)
-        privBtn = binding.privB
-        privBtn.setOnTouchListener(this)
+        // Keep detection/service behavior in its existing handler until #24.
+        val menu = PopupMenu(this, View(this)).menu
+        onCreateOptionsMenu(menu)
+        setContent {
+            LifecycleResumeEffect(Unit) {
+                detecting = getSharedPreferences("Settings", 0).getBoolean("Mapp", false)
+                detect.isChecked = detecting
+                onPauseOrDispose {}
+            }
+            MaterialTheme {
+                AboutScreen(detecting, ::finish, {
+                    onOptionsItemSelected(detect)
+                    detecting = detect.isChecked
+                }, { onOptionsItemSelected(menu.findItem(R.id.action_settings)) }, ::privacy)
+            }
+        }
     }
 
     override fun attachBaseContext(base: Context) {
@@ -71,8 +73,7 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
         }
 
     }
-    @Suppress("UNUSED_PARAMETER")
-    fun privacy(_view: View) {
+    private fun privacy() {
         val ad = goToPriv
         goToPriv = null
         if (ad == null) {
@@ -102,16 +103,6 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
         val intent = Intent(applicationContext, PrivacyActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
-    }
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        val windowWidth = window.decorView.measuredWidth
-        if (windowWidth > privBtn.height * 4.5) {
-            Log.e("window width", "do change")
-            val params = privBtn.layoutParams
-            params.width = privBtn.height * 4
-            privBtn.layoutParams = params
-        }
     }
     override fun onResume() {
         super.onResume()
@@ -243,32 +234,5 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
 //            Crashlytics.logException(e)
             false
         }
-    }
-    override fun onTouch(p0: View?, event: MotionEvent?): Boolean {
-        when (event?.action) {
-            MotionEvent.ACTION_MOVE -> {
-                val x = oldX1 - event.x > 140 || event.x - oldX1 > 140
-                val y = oldY1 - event.y > 50 || event.y - oldY1 > 50
-                if (x || y) {
-                    isMove1 = true
-                    privBtn.alpha = 1f
-                }
-                return true
-            }
-            MotionEvent.ACTION_DOWN -> {
-                oldY1 = event.y
-                oldX1 = event.x
-                isMove1 = false
-                privBtn.alpha = 0.4f
-                return true
-            }
-            MotionEvent.ACTION_UP -> {
-                privBtn.alpha = 1f
-                if (!isMove1)
-                    privBtn.performClick()
-                return true
-            }
-        }
-        return false
     }
 }

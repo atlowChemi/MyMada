@@ -178,6 +178,24 @@ Validated locally: debug/optimized unsigned release assemble and lint (0 errors,
 with 16-KB pages. Local release validation used `-Dorg.gradle.jvmargs=-Xmx4g`
 and skipped only `:app:uploadCrashlyticsMappingFileRelease`.
 
+### About Compose slice (#21)
+
+`about/AboutScreen.kt` owns the scrollable About UI; `InfoActivityKt` retains
+the manifest component, app-selected locale, privacy interstitial/navigation
+and existing detection handler until #24. The original localized version,
+credits and disclaimer text is retained. The privacy action is now a labeled,
+font-scalable button. `AboutPreview` provides English and Hebrew/RTL large-text
+previews; scroll position survives activity recreation.
+
+After applying the disposable-emulator firewall above, run
+`AboutScreenTest` with the same instrumentation command and class
+`atlow.chemi.mymada.about.AboutScreenTest`. It covers both locales, content,
+home entry, privacy/settings round trips, detection-off/resume state, toolbar
+and system back, recreation, RTL order and accessible toolbar touch targets.
+Also run with the emulator font scale set to 1.5 to check scrolling/recreation.
+Executed results belong in the slice PR and #21; live ads and detection-enable
+service/permission behavior remain integration work.
+
 ### Contributing during modernization
 
 Follow the [project's Execution order](https://github.com/users/atlowChemi/projects/1)
