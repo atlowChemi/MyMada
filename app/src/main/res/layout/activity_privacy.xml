@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/mokedP"
+    tools:context="atlow.chemi.mymada.MokedPage">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/ColorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    </com.google.android.material.appbar.AppBarLayout>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:id="@+id/infP"
+    tools:context=".PrivacyActivity">
+    <!--android:background="@drawable/rbg"-->
+        <WebView  xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/webview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            />
+        <ProgressBar
+            android:id="@+id/progressBar1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

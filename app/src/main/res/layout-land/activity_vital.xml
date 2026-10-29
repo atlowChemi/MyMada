@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:scrollbarStyle="outsideOverlay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/VtlGuideline"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <RadioGroup
+                android:id="@+id/radioAge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checkedButton="@+id/old"
+                android:layoutDirection="rtl"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/old"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/radio_old" />
+
+                <RadioButton
+                    android:id="@+id/kid"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/radio_kid" />
+
+                <RadioButton
+                    android:id="@+id/baby"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/radio_baby" />
+            </RadioGroup>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pulsaTIL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <atlow.chemi.mymada.helpers.FixedTextInputEditText
+                    android:id="@+id/pulsa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/fullPulse"
+                    android:inputType="number"
+                    android:maxLength="3" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/breathingTIL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <atlow.chemi.mymada.helpers.FixedTextInputEditText
+                    android:id="@+id/breathing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/breathing"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:nextFocusRight="@+id/systolic"
+                    android:nextFocusDown="@+id/systolic" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layoutDirection="ltr">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/systolicTIL"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.95">
+
+                    <atlow.chemi.mymada.helpers.FixedTextInputEditText
+                        android:id="@+id/systolic"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/systolic"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        android:nextFocusRight="@+id/diastolic"
+                        android:nextFocusDown="@+id/diastolic" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.1"
+                    android:text="/"
+                    android:textSize="40sp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/diastolicTIL"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.95">
+
+                    <atlow.chemi.mymada.helpers.FixedTextInputEditText
+                        android:id="@+id/diastolic"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/diastolic"
+                        android:imeOptions="actionDone"
+                        android:inputType="number"
+                        android:maxLength="3" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/vitalsResult"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="19sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/VtlConvinient"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/VtlGuideline"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/VitalInfBG"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/btns_new"
+            android:drawablePadding="16dp"
+            android:gravity="center_horizontal|top"
+            android:padding="14dp"
+            android:paddingStart="7dp"
+            app:layout_constraintBottom_toTopOf="@+id/VtlGuideline2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:tint="@color/Black"
+                app:srcCompat="@drawable/ic_info" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="10dp"
+                android:background="@color/Black" />
+
+            <TextView
+                android:id="@+id/VitalInf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/VitalMsgBG"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/btns_new"
+            android:drawablePadding="16dp"
+            android:gravity="center_horizontal|top"
+            android:padding="14dp"
+            android:paddingStart="7dp"
+            android:paddingEnd="14dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/VtlGuideline2">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:contentDescription="@string/app_name"
+                android:tint="@color/Black"
+                app:srcCompat="@drawable/ic_info" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="10dp"
+                android:background="@color/Black" />
+
+            <TextView
+                android:id="@+id/VitalMsg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:scrollbarSize="4dp"
+                android:scrollbars="vertical"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/VtlGuideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/VtlGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.64" />
+</androidx.constraintlayout.widget.ConstraintLayout>
