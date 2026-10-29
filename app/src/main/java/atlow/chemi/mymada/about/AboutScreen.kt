@@ -1,6 +1,7 @@
 package atlow.chemi.mymada.about
 
 import android.graphics.Typeface
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,9 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
@@ -45,8 +48,16 @@ internal fun AboutScreen(
     onSettings: () -> Unit,
     onPrivacy: () -> Unit,
 ) {
-    val assets = LocalContext.current.assets
+    val context = LocalContext.current
+    val assets = context.assets
+    val configuration = LocalConfiguration.current
+    val resources = LocalResources.current
     val font = remember(assets) { FontFamily(Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")) }
+    // Compose scales to the tile bounds; density-upscaling first wastes ~7x bitmap memory at 420dpi.
+    val artwork = remember(resources, configuration) {
+        BitmapFactory.decodeResource(resources, R.drawable.privacy,
+            BitmapFactory.Options().apply { inScaled = false }).asImageBitmap()
+    }
     // Let the existing window's ic_bgg artwork show through, as in the published native layout.
     Scaffold(containerColor = Color.Transparent, topBar = {
         ScreenToolbar(stringResource(R.string.title_activity_info), detecting, onBack, onDetection, onSettings)
@@ -62,7 +73,7 @@ internal fun AboutScreen(
             Spacer(Modifier.height(22.dp))
             Surface(onClick = onPrivacy, modifier = Modifier.widthIn(max = 340.dp).fillMaxWidth().height(85.dp),
                 shape = RoundedCornerShape(23.dp), color = Color.White, shadowElevation = 5.dp) {
-                Image(painterResource(R.drawable.privacy), stringResource(R.string.title_activity_privacy),
+                Image(artwork, stringResource(R.string.title_activity_privacy),
                     modifier = Modifier.fillMaxSize(), contentScale = ContentScale.FillBounds)
             }
             Spacer(Modifier.height(14.dp))
