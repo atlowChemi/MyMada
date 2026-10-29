@@ -52,6 +52,8 @@ class HomeScreenTest {
 
     private fun prepare(language: String, scale: Float = 1f) {
         shell("settings put system font_scale $scale")
+        // API 24 restarts its launcher on font changes; let that transition finish before launching Home.
+        instrumentation.uiAutomation.waitForIdle(500, 5_000)
         shell("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow")
         preferences.edit().putString("lng", language).putBoolean("oldU", true)
             .putBoolean("privacy", true).putBoolean("Mapp", false)
@@ -120,6 +122,9 @@ class HomeScreenTest {
                 assertTrue(menu.findItem(R.id.metronome).isChecked)
             }
             visit(SettingsPage::class.java, { settings.performClick() })
+            if (InstrumentationRegistry.getArguments().getString("dumpHeap") == "true") {
+                android.os.Debug.dumpHprofData(java.io.File(context.filesDir, "home-$language-before-about.hprof").path)
+            }
             visit(InfoActivityKt::class.java, {
                 compose.onNodeWithText(labels.getValue(R.string.title_activity_info)).performScrollTo().performClick()
             })

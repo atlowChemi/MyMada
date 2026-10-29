@@ -26,6 +26,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.MobileAds;
 
 import java.util.List;
+import java.lang.ref.WeakReference;
 
 import atlow.chemi.mymada.InfoActivityKt;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
@@ -47,7 +48,7 @@ public class HomeActions {
     public HomeActions(Activity mContext) {
         this.mContext = mContext;
         myTypeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/opensanshebrew.ttf");
-        MobileAds.initialize(mContext, status -> {});
+        MobileAds.initialize(mContext.getApplicationContext(), status -> {});
         loadAd();
     }
 
@@ -297,11 +298,17 @@ public class HomeActions {
             }
     }
     private void loadAd() {
-        InterstitialAd.load(mContext, "ca-app-pub-7600269766434003/4483563620",
+        loadAd(this);
+    }
+    // Static scope prevents the pending callback from implicitly capturing this bridge/Activity.
+    private static void loadAd(HomeActions owner) {
+        WeakReference<HomeActions> reference = new WeakReference<>(owner);
+        InterstitialAd.load(owner.mContext.getApplicationContext(), "ca-app-pub-7600269766434003/4483563620",
                 new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull InterstitialAd ad) {
-                        openUp = ad;
+                        HomeActions actions = reference.get();
+                        if (actions != null && !actions.mContext.isDestroyed()) actions.openUp = ad;
                     }
                 });
     }
