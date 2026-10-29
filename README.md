@@ -145,6 +145,39 @@ Validated 2026-10-29: debug and optimized unsigned release assemble pass;
 with emulator IPv4/IPv6 egress rejected. This slice does not claim optimized
 release runtime, live hosted-policy availability, or target-37 compatibility.
 
+### Home Compose slice (#21)
+
+`home/HomeContent.kt` owns the adaptive, scrollable Home tiles and inset-aware
+toolbar. `HomePage` keeps its installed launcher identity and native onboarding,
+locale-return and detection behavior; `home/HomeActions.java` temporarily retains
+the original dispatch gate, test-call branches, contact/about ads and destinations.
+Tools still opens `UtillitiesAndTools`, preserving its selected-tool preferences.
+Banner/interstitial IDs and Firebase configuration are unchanged.
+
+Open `HomePreview` for English, Hebrew/RTL large text and landscape. With the
+disposable-device firewall above applied **before launch**, run:
+
+```sh
+sh ./gradlew :app:connectedDebugAndroidTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=atlow.chemi.mymada.home.HomeScreenTest \
+  --no-daemon
+```
+
+Tests seed native preferences and grant overlay access on the disposable device;
+they exercise navigation/back, recreation, detection-off/resume, tool filtering,
+onboarding routes, locale return, RTL, 1.5× text and system-bar bounds. They do not
+validate live ads/backend delivery or enable the legacy detection service.
+RN string preferences can still fail before Home starts, and RN application-locale
+storage can supersede `lng`; both remain #22. Native onboarding order (settings,
+overlay, privacy) is retained pending a decision versus RN's privacy-first order.
+Dialog/process restoration, full settings/tools migration and current-target
+permission/service behavior remain #21/#24/#27 work.
+
+Validated locally: debug/optimized unsigned release assemble and lint (0 errors,
+418 warnings); Home instrumentation passes 3/3 on API 24 and 3/3 on API 37
+with 16-KB pages. Local release validation used `-Dorg.gradle.jvmargs=-Xmx4g`
+and skipped only `:app:uploadCrashlyticsMappingFileRelease`.
+
 ### Contributing during modernization
 
 Follow the [project's Execution order](https://github.com/users/atlowChemi/projects/1)

@@ -30,7 +30,10 @@ class PlatformSmokeTest {
     @Test
     fun homeSettingsNavigationAndCalculator() {
         ActivityScenario.launch(HomePage::class.java).use { screen ->
-            screen.onActivity { assertNotNull(it.findViewById<android.view.View>(R.id.rv)) }
+            screen.onActivity {
+                assertTrue(it.findViewById<android.view.ViewGroup>(android.R.id.content).getChildAt(0)
+                    is androidx.compose.ui.platform.ComposeView)
+            }
         }
         ActivityScenario.launch(SettingsPage::class.java).use { screen ->
             screen.onActivity {

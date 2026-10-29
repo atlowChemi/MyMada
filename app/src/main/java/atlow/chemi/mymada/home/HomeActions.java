@@ -1,6 +1,5 @@
-package atlow.chemi.mymada.adapters;
+package atlow.chemi.mymada.home;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,16 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.PendingIntentCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,12 +25,10 @@ import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.MobileAds;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import atlow.chemi.mymada.InfoActivityKt;
 import atlow.chemi.mymada.recieversAndServices.GrobootRec;
-import atlow.chemi.mymada.classes.HomeB;
 import atlow.chemi.mymada.MokedPage;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.UtillitiesAndTools;
@@ -48,87 +36,23 @@ import atlow.chemi.mymada.codeRequest;
 import atlow.chemi.mymada.contactChatActivity;
 import atlow.chemi.mymada.lockPage;
 
-public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder> {
+/** Temporary native navigation/ad bridge; detection and backend modernization follow in #24/#26. */
+public class HomeActions {
 
     private Activity mContext;
     private Typeface myTypeface;
-    private boolean isMADA, realM, isMove1 = false;
-    private List<HomeB> albumList;
-    private ArrayList<Button> btns;
-    private float oldX1, oldY1;
+    private boolean isMADA, realM;
     private InterstitialAd openUp;
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
-        private Button homeB;
-
-        private MyViewHolder(View view) {
-            super(view);
-            homeB = view.findViewById(R.id.buttonChange);
-        }
-    }
-
-
-    public homeBAdapter(Activity mContext, List<HomeB> albumList) {
+    public HomeActions(Activity mContext) {
         this.mContext = mContext;
-        this.albumList = albumList;
-        btns = new ArrayList<>();
+        myTypeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/opensanshebrew.ttf");
         MobileAds.initialize(mContext, status -> {});
         loadAd();
     }
 
-    @NonNull
-    @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.button_change, parent, false);
-        return new MyViewHolder(itemView);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
-        final HomeB album = albumList.get(holder.getAdapterPosition());
+    public void open(String in) {
         final SharedPreferences sharedPreferences = mContext.getSharedPreferences("Settings", 0);
-        myTypeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/opensanshebrew.ttf");
-        try {
-            btns.add(holder.homeB);
-        }catch (NullPointerException e) {
-            Log.e("not Added btn", e.getMessage());
-        }
-
-        Display display = mContext.getWindowManager().getDefaultDisplay();
-        int width = display.getWidth()/2;
-        int heightAll = (int) (width * 0.8);
-        int heightTol = (int) ((width*2) * 0.409);
-        holder.homeB.setLayoutParams(new FrameLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightAll));
-        if (album.getIntent().equals("tol"))
-            holder.homeB.setLayoutParams(new FrameLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightTol));
-        holder.homeB.setBackgroundResource(album.getBg());
-        holder.homeB.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_MOVE:
-                    boolean x = oldX1 - event.getX() > 50 || event.getX() - oldX1 > 50;
-                    boolean y = oldY1 - event.getY() > 50 || event.getY() - oldY1 > 50;
-                    if (x || y) {
-                        isMove1 = true;
-                        holder.homeB.setAlpha(1f);
-                    }
-                    return true;
-                case MotionEvent.ACTION_DOWN:
-                    oldY1 = event.getY();
-                    oldX1 = event.getX();
-                    isMove1 = false;
-                    holder.homeB.setAlpha(0.4f);
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    holder.homeB.setAlpha(1f);
-                    if (!isMove1)
-                        holder.homeB.performClick();
-                    return true;
-            }
-            return false;
-        });
-        holder.homeB.setOnClickListener(view -> {
-            String in = album.getIntent();
             Intent intent;
             switch (in) {
                 case "mok":
@@ -371,11 +295,6 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                     }
                     break;
             }
-        });
-    }
-    @Override
-    public int getItemCount() {
-        return albumList.size();
     }
     private void loadAd() {
         InterstitialAd.load(mContext, "ca-app-pub-7600269766434003/4483563620",
@@ -386,11 +305,6 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                     }
                 });
     }
-    public void setBtnsAlpha() {
-        for(Button b : btns)
-            b.setAlpha(1f);
-    }
-
     private static boolean isPI(Context context) {
         final PackageManager packageManager = context.getPackageManager();
         Intent intent = packageManager.getLaunchIntentForPackage("com.groboot.mdaemergency");
