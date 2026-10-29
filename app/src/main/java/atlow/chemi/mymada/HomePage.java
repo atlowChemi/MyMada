@@ -10,41 +10,25 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import atlow.chemi.mymada.adapters.homeBAdapter;
-import atlow.chemi.mymada.classes.HomeB;
+import atlow.chemi.mymada.home.HomeContent;
 import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
 import atlow.chemi.mymada.helpers.rateUs;
@@ -52,9 +36,9 @@ import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 
+/** Installed launcher identity and temporary native onboarding/detection bridge for the Compose home. */
 public class HomePage extends AppCompatActivity {
     private Typeface myTypeface;
-    private homeBAdapter adapter;
     public NotificationManager manager;
     private final int OVERLAY_PER_REQ = 345;
     public final String Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
@@ -63,7 +47,6 @@ public class HomePage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         resetTitle();
-        setContentView(R.layout.activity_home_page);
         setNotifChannels();
         rateUs.app_launched(HomePage.this);
         Context context = HomePage.this;
@@ -73,7 +56,6 @@ public class HomePage extends AppCompatActivity {
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
         boolean Mapp = sharedPreferences.getBoolean("Mapp", false);
-        AdView mAdView;
         try {
             Log.e("FCM token: ", token);
         }
@@ -82,64 +64,7 @@ public class HomePage extends AppCompatActivity {
         }
         FirebaseMessaging.getInstance().subscribeToTopic("news");
         FirebaseAnalytics.getInstance(getApplicationContext());
-        try {
-            MobileAds.initialize(getApplicationContext(), status -> {});
-            mAdView = findViewById(R.id.adView);
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mAdView.loadAd(adRequest);
-//            Crashlytics.log("Ads Loaded");
-        }
-        catch (Exception e) {
-//            Crashlytics.log("Ads Not Loaded");
-//            Crashlytics.logException(e);
-        }
-
-        RecyclerView rv = findViewById(R.id.rv);
-        GridLayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 2);
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                return i == 0 ? 2 : 1;
-            }
-        });
-        List<HomeB> albumList = new ArrayList<>();
-        adapter = new homeBAdapter(HomePage.this, albumList);
-        rv.setLayoutManager(layoutManager);
-        rv.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(), true));
-        rv.setItemAnimator(new DefaultItemAnimator());
-        rv.setAdapter(adapter);
-
-        try {
-            HomeB Tool = new HomeB("tol", R.drawable.new_tol);
-            albumList.add(Tool);
-            HomeB Moked = new HomeB("mok", R.drawable.new_mok);
-            albumList.add(Moked);
-            HomeB Test = new HomeB("tes", R.drawable.new_tes);
-            albumList.add(Test);
-            HomeB Contact = new HomeB("con", R.drawable.new_con);
-            albumList.add(Contact);
-            HomeB Info = new HomeB("inf", R.drawable.new_inf);
-            albumList.add(Info);
-//            Crashlytics.log("HomeBtns Loaded properly!");
-        }
-        catch (Exception e) {
-//            Crashlytics.log("HomeBtns caused crash!");
-//            Crashlytics.logException(e);
-        }
-
-        adapter.notifyDataSetChanged();
-        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_SETTLING)
-                    adapter.setBtnsAlpha();
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-        });
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        HomeContent.install(this);
         boolean Privacy = sharedPreferences.getBoolean("privacy", false);
         boolean oldU = sharedPreferences.getBoolean("oldU", false);
         //If the user wasn't in settings ever, ask him to go there
@@ -190,42 +115,6 @@ public class HomePage extends AppCompatActivity {
         catch (PackageManager.NameNotFoundException e) {
 //            Crashlytics.log(e.getMessage());
         }
-    }
-    private class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
-        private int spanCount;
-        private int spacing;
-        private boolean includeEdge;
-        GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
-            this.spanCount = spanCount;
-            this.spacing = spacing;
-            this.includeEdge = includeEdge;
-        }
-        @Override
-        public void getItemOffsets(@NonNull Rect outRect,@NonNull View view,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
-            int position = parent.getChildAdapterPosition(view); // item position
-            int column = position % spanCount; // item column
-            if (includeEdge) {
-                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
-                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
-                if (position == 0)  // top edge
-                    outRect.top = spacing;
-                outRect.bottom = spacing; // item bottom
-            }
-            else {
-                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
-                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
-                if (position >= 1)
-                    outRect.top = spacing; // item top
-
-            }
-        }
-    }
-    /**
-     * Converting dp to pixel
-     */
-    private int dpToPx() {
-        Resources r = getResources();
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7, r.getDisplayMetrics()));
     }
     @Override
     protected void onResume() {

@@ -145,6 +145,52 @@ Validated 2026-10-29: debug and optimized unsigned release assemble pass;
 with emulator IPv4/IPv6 egress rejected. This slice does not claim optimized
 release runtime, live hosted-policy availability, or target-37 compatibility.
 
+### Home Compose slice (#21)
+
+`home/HomeContent.kt` owns the scrollable two-column Home grid and inset-aware
+toolbar. It reuses the original localized bitmap buttons, native rounded/shadowed
+cards and background drawables; the 50-dp navy banner area remains visible offline,
+matching the supplied production 12822 reference. At larger font settings, readable
+text labels supplement the bitmap text. `HomePage` keeps its installed launcher identity and native onboarding,
+locale-return and detection behavior; `home/HomeActions.java` temporarily retains
+the original dispatch gate, test-call branches, contact/about ads and destinations.
+Tools still opens `UtillitiesAndTools`, preserving its selected-tool preferences.
+Banner/interstitial IDs and Firebase configuration are unchanged.
+
+Pending Home banner/interstitial loads use application context; interstitials also use a weak bridge callback.
+The callback is created in a static scope so Java cannot implicitly capture the old
+bridge/Activity across recreation. Offline requests otherwise retain destroyed Home
+view trees and both locales' artwork until the 48-MiB API-24 heap is exhausted.
+Run the full `HomeScreenTest` suite in one process on the stock heap; an isolated
+About launch does not exercise the preceding onboarding/locale/recreation sequence.
+`HomeMemoryTest` runs onboarding/locale return, then Hebrew and English recreation → Tools → Settings → About
+with actual back navigation, and supports native master for matched comparisons.
+Optional `dumpHeap=true` writes pre-About HPROFs for diagnosis; omit it for pass/fail
+runs because dumping forces GC. Both tests require the disposable-device firewall.
+
+Open `HomePreview` for English, Hebrew/RTL large text and landscape. With the
+disposable-device firewall above applied **before launch**, run:
+
+```sh
+sh ./gradlew :app:connectedDebugAndroidTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=atlow.chemi.mymada.home.HomeScreenTest \
+  --no-daemon
+```
+
+Tests seed native preferences and grant overlay access on the disposable device;
+they exercise navigation/back, recreation, detection-off/resume, tool filtering,
+onboarding routes, locale return, RTL, 1.5× text and system-bar bounds. They do not
+validate live ads/backend delivery or enable the legacy detection service.
+RN string preferences can still fail before Home starts, and RN application-locale
+storage can supersede `lng`; both remain #22. Native onboarding order (settings,
+overlay, privacy) is retained pending a decision versus RN's privacy-first order.
+Dialog/process restoration, full settings/tools migration and current-target
+permission/service behavior remain #21/#24/#27 work.
+
+Production-matched screenshots and current validation results are in #34/#35;
+visual approval remains required. Local release validation uses
+`-Dorg.gradle.jvmargs=-Xmx4g` and skips only `:app:uploadCrashlyticsMappingFileRelease`.
+
 ### About Compose slice (#21)
 
 `about/AboutScreen.kt` owns the scrollable About UI; `InfoActivityKt` retains

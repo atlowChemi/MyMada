@@ -15,7 +15,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.Lifecycle
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.BuildConfig
@@ -130,13 +129,7 @@ class AboutScreenTest {
         val monitor = instrumentation.addMonitor(InfoActivityKt::class.java.name, null, false)
         try {
             ActivityScenario.launch(HomePage::class.java).use { home ->
-                home.onActivity { it.findViewById<RecyclerView>(R.id.rv).scrollToPosition(4) }
-                instrumentation.waitForIdleSync()
-                home.onActivity {
-                    val holder = it.findViewById<RecyclerView>(R.id.rv).findViewHolderForAdapterPosition(4)
-                    assertNotNull(holder)
-                    holder!!.itemView.findViewById<View>(R.id.buttonChange).performClick()
-                }
+                compose.onNodeWithText(title).performScrollTo().performClick()
                 assertNotNull(instrumentation.waitForMonitorWithTimeout(monitor, 5_000))
                 compose.onNodeWithText(title).assertIsDisplayed()
                 instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
