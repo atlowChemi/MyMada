@@ -26,7 +26,7 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
-import kotlinx.android.synthetic.main.activity_info.*
+import atlow.chemi.mymada.databinding.ActivityInfoBinding
 
 class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
     private var oldX1 = 0f
@@ -40,8 +40,9 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         resetTitle()
-        setContentView(R.layout.activity_info)
-        val toolbar = toolbar
+        val binding = ActivityInfoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         MobileAds.initialize(this) {}
@@ -57,10 +58,10 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
             }
         }
         val myTypeface = Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")
-        textView10.typeface = myTypeface
-        textView10.movementMethod = ScrollingMovementMethod()
-        textView10.text = resources.getString(R.string.TversionNumber, BuildConfig.VERSION_NAME)
-        privBtn = privB
+        binding.textView10.typeface = myTypeface
+        binding.textView10.movementMethod = ScrollingMovementMethod()
+        binding.textView10.text = resources.getString(R.string.TversionNumber, BuildConfig.VERSION_NAME)
+        privBtn = binding.privB
         privBtn.setOnTouchListener(this)
     }
 

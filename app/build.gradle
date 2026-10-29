@@ -2,6 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
     compileSdkVersion 33
     defaultConfig {
         applicationId "atlow.chemi.mymada"
@@ -77,4 +81,3 @@ dependencies {
 
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
