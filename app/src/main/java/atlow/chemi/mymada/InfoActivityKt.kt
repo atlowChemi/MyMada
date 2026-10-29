@@ -22,9 +22,11 @@ import androidx.core.content.ContextCompat
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
-import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.MobileAds
 import atlow.chemi.mymada.databinding.ActivityInfoBinding
 
@@ -34,7 +36,7 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
     private var isMove1 = false
     private val _requestPermissionSetting = 101
     private lateinit var detect:MenuItem
-    private lateinit var goToPriv:InterstitialAd
+    private var goToPriv: InterstitialAd? = null
     private lateinit var privBtn: Button
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,17 +48,7 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         MobileAds.initialize(this) {}
-        goToPriv = InterstitialAd(this)
-        goToPriv.adUnitId = "ca-app-pub-7600269766434003/4483563620"
-        goToPriv.loadAd(AdRequest.Builder().build())
-        goToPriv.adListener = object : AdListener() {
-            override fun onAdClosed() {
-                goToPriv.loadAd(AdRequest.Builder().build())
-                val intent = Intent(applicationContext, PrivacyActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
-            }
-        }
+        loadPrivacyAd()
         val myTypeface = Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")
         binding.textView10.typeface = myTypeface
         binding.textView10.movementMethod = ScrollingMovementMethod()
@@ -81,13 +73,35 @@ class InfoActivityKt : AppCompatActivity(), View.OnTouchListener {
     }
     @Suppress("UNUSED_PARAMETER")
     fun privacy(_view: View) {
-        if (goToPriv.isLoaded)
-            goToPriv.show()
-        else {
-            val intent = Intent(applicationContext, PrivacyActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
+        val ad = goToPriv
+        goToPriv = null
+        if (ad == null) {
+            openPrivacy()
+            return
         }
+        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                loadPrivacyAd()
+                openPrivacy()
+            }
+            override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                onAdDismissedFullScreenContent()
+            }
+        }
+        ad.show(this)
+    }
+    private fun loadPrivacyAd() {
+        InterstitialAd.load(this, "ca-app-pub-7600269766434003/4483563620",
+            AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    goToPriv = ad
+                }
+            })
+    }
+    private fun openPrivacy() {
+        val intent = Intent(applicationContext, PrivacyActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)

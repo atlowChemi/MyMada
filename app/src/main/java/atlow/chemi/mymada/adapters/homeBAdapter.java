@@ -27,9 +27,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
@@ -69,6 +71,8 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
         this.mContext = mContext;
         this.albumList = albumList;
         btns = new ArrayList<>();
+        MobileAds.initialize(mContext, status -> {});
+        loadAd();
     }
 
     @NonNull
@@ -89,10 +93,6 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
         }catch (NullPointerException e) {
             Log.e("not Added btn", e.getMessage());
         }
-        MobileAds.initialize(mContext, "ca-app-pub-7600269766434003~4255496174");
-        openUp = new InterstitialAd(mContext);
-        openUp.setAdUnitId("ca-app-pub-7600269766434003/4483563620");
-        openUp.loadAd(new AdRequest.Builder().build());
 
         Display display = mContext.getWindowManager().getDefaultDisplay();
         int width = display.getWidth()/2;
@@ -261,15 +261,17 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                     if (!realM) {
                         isMADA = isPI(mContext);
                     }
-                    if (openUp != null && openUp.isLoaded()) {
-                        openUp.setAdListener(new AdListener() {
+                    if (openUp != null) {
+                        InterstitialAd ad = openUp;
+                        openUp = null;
+                        ad.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
-                            public void onAdLeftApplication() {
-                                //TODO: close ad
+                            public void onAdFailedToShowFullScreenContent(@NonNull AdError error) {
+                                onAdDismissedFullScreenContent();
                             }
                             @Override
-                            public void onAdClosed() {
-                                openUp.loadAd(new AdRequest.Builder().build());
+                            public void onAdDismissedFullScreenContent() {
+                                loadAd();
                                 if (realM || isMADA) {
                                     Intent intent = new Intent(mContext, contactChatActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -305,7 +307,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                                 }
                             }
                         });
-                        openUp.show();
+                        ad.show(mContext);
                     } else {
                         if (realM || isMADA) {
                             intent = new Intent(mContext, contactChatActivity.class);
@@ -343,17 +345,23 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                     }
                     break;
                 case "inf":
-                    if (openUp != null && openUp.isLoaded()) {
-                        openUp.setAdListener(new AdListener() {
+                    if (openUp != null) {
+                        InterstitialAd ad = openUp;
+                        openUp = null;
+                        ad.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
-                            public void onAdClosed() {
-                                openUp.loadAd(new AdRequest.Builder().build());
+                            public void onAdFailedToShowFullScreenContent(@NonNull AdError error) {
+                                onAdDismissedFullScreenContent();
+                            }
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                loadAd();
                                 Intent intent = new Intent(mContext, InfoActivityKt.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 mContext.startActivity(intent);
                             }
                         });
-                        openUp.show();
+                        ad.show(mContext);
                     }
                     else {
                         intent = new Intent(mContext, InfoActivityKt.class);
@@ -367,6 +375,15 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
     @Override
     public int getItemCount() {
         return albumList.size();
+    }
+    private void loadAd() {
+        InterstitialAd.load(mContext, "ca-app-pub-7600269766434003/4483563620",
+                new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd ad) {
+                        openUp = ad;
+                    }
+                });
     }
     public void setBtnsAlpha() {
         for(Button b : btns)
