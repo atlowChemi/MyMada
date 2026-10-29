@@ -8,8 +8,11 @@ and [baseline assessment](https://github.com/atlowChemi/MyMada/issues/19).
 
 ### Build and run locally
 
-Requires JDK 17, Android SDK platform 33, build-tools 30.0.3 and platform-tools.
-Use the checked-in Gradle wrapper (Gradle 8.0 / Android Gradle Plugin 8.0.2).
+Requires JDK 17, Android SDK platform 36, build-tools 35.0.0 and platform-tools.
+Use the checked-in Gradle wrapper (Gradle 8.13 / Android Gradle Plugin 8.13.2,
+Kotlin 2.3.21). Minimum Android remains API 21; target 33 is a temporary
+development hold, not Play-submission compatible. See the
+[toolchain inventory, version holds and validation](docs/android-toolchain.md).
 Set `JAVA_HOME` to JDK 17 and `ANDROID_HOME` to your SDK, or set `sdk.dir` in
 an untracked `local.properties`. Install/accept SDK packages with Android Studio
 or `sdkmanager` before building.
@@ -38,8 +41,10 @@ launch; integration tests require appropriate backend configuration.
 sh ./gradlew :app:testDebugUnitTest :app:lintDebug --no-daemon
 ```
 
-The restored baseline has no executable unit tests (`NO-SOURCE`). Lint currently
-fails with 17 errors and 445 warnings; its report is under `app/build/reports/`.
+The restored baseline has no executable unit tests (`NO-SOURCE`). After dependency
+modernization, lint fails with 8 errors, 421 warnings and 1 hint; its report is
+under `app/build/reports/`. Normal unsigned release builds also fail on those
+8 PendingIntent errors; release packaging-only checks are documented separately.
 API 33 baseline smoke covers home/settings/tools navigation and the oxygen
 calculator. Starting the metronome currently crashes on a missing PendingIntent
 mutability flag (#25); RN string preferences can crash startup (#22). This is a
