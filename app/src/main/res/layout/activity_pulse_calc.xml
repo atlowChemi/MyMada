@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:id="@+id/shortPulseATIL">
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:id="@+id/fifteenPulseA"
+            android:imeOptions="actionDone"
+            android:maxLength="2"
+            android:hint="@string/pulse"/>
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:id="@+id/fullPulseATIL"
+        android:layout_below="@+id/shortPulseATIL">
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/fullPulseA"
+            android:enabled="false"
+            android:hint="@string/fullPulse"/>
+    </com.google.android.material.textfield.TextInputLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/buttonMaterialDark"
+        android:id="@+id/clickableTimer">
+        <TextView
+            android:id="@+id/txtTimerSecond"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="15"
+            android:paddingTop="15dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="50sp"
+            android:textColor="#fff" />
+        <TextView
+            android:id="@+id/txt_TimerSecond"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtTimerSecond"
+            android:gravity="center_horizontal"
+            android:text="@string/seconds"
+            android:textSize="25sp"
+            android:textColor="#fff" />
+        <TextView
+            android:id="@+id/txt_nothing"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_TimerSecond"
+            android:gravity="center_horizontal"
+            android:text="@string/pulseClickHint"
+            android:textSize="15sp"
+            android:layout_marginBottom="10dp"
+            android:textColor="#cfcfcf" />
+    </RelativeLayout>
+</RelativeLayout>

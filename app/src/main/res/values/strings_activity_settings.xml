@@ -1,0 +1,119 @@
+<resources>
+    <string name="title_activity_settings">הגדרות</string>
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_sending">הגדרות הכתבה</string>
+    <string name="pref_header_general">סוג התראה</string>
+    <string name="pref_header_language">הגדרות שפה</string>
+    <string name="pref_header_more">הגדרות נוספות</string>
+    <string name="pref_header_notifications">הגדרות התראות</string>
+    <string name="pref_header_notifictzia">הגדרות התראה</string>
+    <string name="pref_header_ampm">הגדרות יום ולילה</string>
+    <string name="pref_header_moked">הגדרות הכתבה</string>
+    <string name="pref_header_advanced">הגדרות מתקדמות</string>
+    <string name="pref_header_tools">הגדרות כלי עזר</string>
+    <string name="pref_header_sound_and_vib">הגדרות צליל ורטט</string>
+    <string name="pref_notifictions_explain">הסבר על הגדרות התראות</string>
+    <string name="pref_notifictions_explain_content">בעמוד "הגדרות צליל ורטט", תוכל להגדיר את הצורה הבסיסית בה האפליקציה תגיב למקרים.\nמעל הגדרות בסיסיות אלו, ניתן "להלביש" תגובות מתוחכמות יותר, בהתאם לשעה, סטטוס המכשיר ועוד.\nכל ההגדרות הנוספות, הן ההגדרות המשמעותיות. כלומר, אם תגדירו לרטוט לפי סטטוס המכשיר, והמכשיר על מצב שקט - לא יופעל רטט, למרות שהגדרתם רטט להתראות כונן.\nדוגמא נוספת, אם הגדרתם ב"הגדרות יום ולילה" שבלילה אתם רוצים רטט בלבד, על אף שסימנתם התראה עם צליל, ההתראה תרטוט בלבד, בשעות שהגדרתם כלילה.</string>
+
+    <string name="pref_title_enable">התראה על מקרים</string>
+    <string name="pref_description_enable_off">זיהוי מקרים כבוי.</string>
+
+    <string name="pref_title_region">בחירת מרחב ברירת מחדל</string>
+
+    <string name="pref_title_lang">בחירת שפה</string>
+    <string name="pref_description_lang">בחר באיזו שפה תוצג האפליקציה</string>
+
+    <string name="pref_title_Maenable">אפשר זיהוי מקרים באפליקצייה</string>
+    <string name="pref_description_Maenable_on">זיהוי מקרים באפליקצייה פועל</string>
+    <string name="pref_description_Maenable_off">זיהוי מקרים באפליקצייה כבוי</string>
+
+    <string name="pref_title_not">יצירת התראה במקרה חדש</string>
+    <string name="pref_description_not_on">כשיגיע מקרה חדש, תיווצר התראה.</string>
+    <string name="pref_description_not_off">כשיגיע מקרה חדש, לא תיווצר התראה.</string>
+
+    <string name="pref_title_loop">מצב נודניק (לילה)</string>
+    <string name="pref_description_loop_on">באירוע חדש צלצול ימשך עד שיופסק.</string>
+    <string name="pref_description_loop_off">באירוע חדש הצלצול יתנגן פעם אחת בלבד.</string>
+
+    <string name="pref_description_sleep_on">החל מ23:00 ועד 7:00 לא יושמעו התראות על מקרים.\\n</string>
+
+    <string name="pref_title_shabat">כיבוי עצמי</string>
+    <string name="pref_description_shabat_on">התראה תיסגר בעצמה לאחר פרק הזמן שיוגדר</string>
+    <string name="pref_description_shabat_off">התראה תיסגר רק לאחר אישור קבלה</string>
+
+    <string name="pref_title_newWin">יצירת חלון קופץ במקרה חדש</string>
+    <string name="pref_description_newWin_on">כשיגיע מקרה חדש, יוקפץ חלון עם ההודעה.</string>
+    <string name="pref_description_newWin_off">כשיגיע מקרה חדש, לא יוקפץ חלון עם ההודעה.</string>
+
+    <string name="pref_title_ride">דרוס התראות קודמות</string>
+    <string name="pref_description_ride_on">מקרה חדש ימחק התראות ישנות.</string>
+    <string name="pref_description_ride_off">מקרה חדש יתווסף להתראות קיימות.</string>
+
+    <string name="pref_title_vibrate">רטט</string>
+    <string name="pref_description_vibrate_off">רטט בעת קבלת מקרים כבוי.</string>
+
+    <string name="pref_title_ringtone">צליל</string>
+    <string name="pref_description_ringtone_on">צליל בעת קבלת מקרים פועל.</string>
+    <string name="pref_description_ringtone_off">צליל בעת קבלת מקרים כבוי.</string>
+
+    <string name="pref_title_app">בחר צליל התראה מותאם אישית</string>
+    <string name="pref_description_app_on">הצליל שיושמע בקבלת מקרה הינו הצליל שתגדיר.</string>
+    <string name="pref_description_app_off">הצליל שיושמע בקבלת מקרה הינו הצליל שהוגדר ביישום.</string>
+
+    <string name="pref_title_apr">אישור הודעה לפני שליחה</string>
+    <string name="pref_description_apr_on">לפני שליחת ההודעה יוצג נוסח ההודעה לאישורך.</string>
+    <string name="pref_description_apr_off">כאשר תלחץ לשלוח את ההודעה, היא תישלח מיידית בלא אפשרות לאישור.</string>
+
+    <string name="pref_title_cutA">הפרדת הגדרות התראה</string>
+    <string name="pref_description_cutA_on">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בנפרד</string>
+    <string name="pref_description_cutA_off">ההתראות עבור מקרי כונן, קבוצה ומשמרת יוגדרו בלי הבדלים</string>
+
+    <string name="pref_title_shabatT">פרק הזמן עד סגירת התראה (בשניות)</string>
+    <string name="pref_default_shabatT">6</string>
+
+    <string name="pref_title_volume">עוצמת ווליום בהתראה</string>
+    <string name="pref_title_volume_pick">בחר עוצמת התראה</string>
+    <string name="pref_title_volume_app">שנה ווליום בהתראה</string>
+    <string name="pref_description_volume_app_on">הווליום יותאם לפי מה שתגדיר באפליקציה</string>
+    <string name="pref_description_volume_app_off">הווליום ישאר כמו שהוא במכשיר</string>
+
+    <string name="findT6">זהה הודעות שירות</string>
+    <string name="findT6_on">זיהוי הודעות שירות פועל</string>
+    <string name="findT6_off">זיהוי הודעות שירות כבוי</string>
+
+    <string name="callT1">אירועי כונן</string>
+    <string name="findT1">זהה מקרי כונן</string>
+    <string name="findT1_on">זיהוי מקרי כונן פועל</string>
+    <string name="findT1_off">זיהוי מקרי כונן כבוי</string>
+
+    <string name="callT2">אירועי קבוצה</string>
+    <string name="findT2">זהה אירועים של קבוצת צוות</string>
+    <string name="findT2_on">זיהוי מקרים קבוצתיים פועל</string>
+    <string name="findT2_off">זיהוי מקרים קבוצתיים כבוי</string>
+
+    <string name="callT3">אירועי משמרת</string>
+    <string name="findT3">זהה אירועים של משמרת</string>
+    <string name="findT3_on">זיהוי מקרי משמרת פועל</string>
+    <string name="findT3_off">זיהוי מקרי משמרת כבוי</string>
+
+    <string name="callT4">הודעות מנהלתיות</string>
+    <string name="findT4">זהה הודעות מנהלתיות</string>
+    <string name="findT4_on">זיהוי הודעות מנהלתיות פועל</string>
+    <string name="findT4_off">זיהוי הודעות מנהלתיות כבוי</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+    <string name="pref_ringtone_silent">שקט</string>
+
+
+    <string name="pref_head_description_notifications">בחירת אופן ההתראה בעת קבלת מקרה - צליל רטט וכד\'</string>
+    <string name="pref_head_description_ampm">בחירת אופן ההתראה האפשרי בעת קבלת מקרה - בחלוקה ליום ולילה</string>
+    <string name="pref_head_description_moked">בחירת מוקד אליו ישלחו ההודעות</string>
+    <string name="pref_head_description_advanced">בחירת אופן ההתראה בעת קבלת מקרה - משך פעולה ואופן פעולה</string>
+    <string name="pref_head_description_lang">בחירת שפה להצגת האפליקציה</string>
+
+    <string name="pref_title_tools">בחירת כלי עזר</string>
+    <string name="pref_description_tools">בחר איזה כלים יוצגו בכלי עזר</string>
+</resources>

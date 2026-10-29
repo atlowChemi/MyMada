@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/homeDrawer"
+            android:icon="@drawable/ic_back"
+            android:title="@string/back" />
+        <item
+            android:id="@+id/contractionCalc"
+            android:icon="@drawable/ic_contractions"
+            android:title="@string/button_f"/>
+        <item
+            android:id="@+id/pulseCalc"
+            android:icon="@drawable/ic_pulse"
+            android:title="@string/button_c"/>
+        <item
+            android:id="@+id/metronome"
+            android:icon="@drawable/ic_metronome"
+            android:title="@string/button_d"/>
+        <item
+            android:id="@+id/vitalCalc"
+            android:icon="@drawable/ic_vital"
+            android:title="@string/button_e"/>
+        <item
+            android:id="@+id/oxygenCalc"
+            android:icon="@drawable/ic_oxygen"
+        android:title="@string/button_g"/>
+        <item
+            android:id="@+id/apgarCalc"
+            android:icon="@drawable/ic_apgar"
+            android:title="@string/button_ag"/>
+        <item
+            android:id="@+id/glazgowCalc"
+            android:icon="@drawable/ic_glazgo"
+            android:title="@string/button_gl"/>
+        <item
+            android:id="@+id/dictionary"
+            android:icon="@drawable/ic_dictionary"
+            android:title="@string/button_dict" />
+        <item
+            android:id="@+id/protocoles"
+            android:title="@string/button_p"
+            android:orderInCategory="0">
+            <menu>
+                <group
+                    android:menuCategory="secondary"
+                    android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/bls"
+                        android:title="@string/protocolesBls"
+                        android:icon="@drawable/ic_bls"
+                        android:orderInCategory="2"/>
+                    <item
+                        android:id="@+id/als"
+                        android:title="@string/protocolesAls"
+                        android:icon="@drawable/ic_als"
+                        android:orderInCategory="2" />
+                    <item
+                        android:id="@+id/death"
+                        android:title="@string/protocolesDeath"
+                        android:icon="@drawable/ic_dead"
+                        android:orderInCategory="2" />
+                </group>
+            </menu>
+        </item>
+    </group>
+
+</menu>

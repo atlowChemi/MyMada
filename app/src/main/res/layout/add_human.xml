@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr"
+    android:baselineAligned="false"
+    android:paddingTop="10dp"
+    android:paddingBottom="15dp">
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/addManTIL">
+        <atlow.chemi.mymada.helpers.FixedTextInputEditText
+            android:id="@+id/addManName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:gravity="start"
+            android:inputType="textAutoComplete"
+            android:hint="@string/teamN" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:id="@+id/addManSpinner"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_gravity="left"
+            android:spinnerMode="dropdown" />
+    </com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>
