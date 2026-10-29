@@ -10,12 +10,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.multidex.MultiDex;
-import androidx.multidex.MultiDexApplication;
+import android.app.Application;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
 import atlow.chemi.mymada.helpers.FontsOverride;
 import atlow.chemi.mymada.helpers.LocalHelper;
@@ -25,19 +23,16 @@ import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 import static android.service.notification.NotificationListenerService.requestRebind;
 
-public class Applicatio extends MultiDexApplication {
+public class Applicatio extends Application {
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(LocalHelper.onAttach(base));
-        MultiDex.install(this);
     }
     @Override
     public void onCreate() {
-        if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits())
-            return;
         super.onCreate();
         FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");

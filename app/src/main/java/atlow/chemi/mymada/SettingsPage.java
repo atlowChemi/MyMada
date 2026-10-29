@@ -420,7 +420,7 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
         if (requestCode == OVERLAY_PER_REQ)
             if (resultCode != RESULT_OK)
                 CreateOverlayPermissionDialog();
-            super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
     private boolean isCallable(Intent intent) {
         try {

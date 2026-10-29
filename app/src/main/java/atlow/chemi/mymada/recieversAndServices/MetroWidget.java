@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
+import androidx.core.app.PendingIntentCompat;
 
 import atlow.chemi.mymada.R;
 
@@ -18,7 +19,7 @@ public class MetroWidget extends AppWidgetProvider {
         // Create an Intent to launch MainActivity when clicked
         Intent btn = new Intent(context, ActionReceiver.class);
         btn.putExtra("action", "widget");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, btn, 0);
+        PendingIntent pendingIntent = PendingIntentCompat.getBroadcast(context, 0, btn, 0, false);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.metro_widget);
         // Widgets allow click handlers to only launch pending intents

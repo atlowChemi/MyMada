@@ -83,7 +83,7 @@ public class HomePage extends AppCompatActivity {
         FirebaseMessaging.getInstance().subscribeToTopic("news");
         FirebaseAnalytics.getInstance(getApplicationContext());
         try {
-            MobileAds.initialize(getApplicationContext(), "ca-app-pub-7600269766434003/5732229370");
+            MobileAds.initialize(getApplicationContext(), status -> {});
             mAdView = findViewById(R.id.adView);
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
