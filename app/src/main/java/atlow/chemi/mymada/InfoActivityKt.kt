@@ -30,6 +30,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.MobileAds
+import java.lang.ref.WeakReference
 
 class InfoActivityKt : AppCompatActivity() {
     private val _requestPermissionSetting = 101
@@ -39,7 +40,7 @@ class InfoActivityKt : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         resetTitle()
-        MobileAds.initialize(this) {}
+        MobileAds.initialize(applicationContext) {}
         loadPrivacyAd()
         // Keep detection/service behavior in its existing handler until #24.
         val menu = PopupMenu(this, View(this)).menu
@@ -92,10 +93,12 @@ class InfoActivityKt : AppCompatActivity() {
         ad.show(this)
     }
     private fun loadPrivacyAd() {
-        InterstitialAd.load(this, "ca-app-pub-7600269766434003/4483563620",
+        // An offline ad request can outlive recreation; do not retain the old Activity/view tree.
+        val activity = WeakReference(this)
+        InterstitialAd.load(applicationContext, "ca-app-pub-7600269766434003/4483563620",
             AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
-                    goToPriv = ad
+                    activity.get()?.let { if (!it.isDestroyed) it.goToPriv = ad }
                 }
             })
     }

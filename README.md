@@ -172,6 +172,20 @@ rendered mask/gradient pixels and the offline document's viewport/vertical posit
 Compare actual English/Hebrew captures with the verified production reference in #35
 at matching density and font scale; interaction tests alone do not establish visual parity.
 
+The About tile is decoded at source resolution: Compose scales it to its bounds.
+Density-decoding the 792×200 image at 420dpi creates a 2079×525 bitmap (4.37 MB
+instead of 0.63 MB) per composition. Pending interstitial requests use application
+context and a weak Activity callback so offline requests cannot retain destroyed
+About view trees.
+
+Run `atlow.chemi.mymada.about.AboutMemoryTest` on a firewalled API-24 emulator
+with the stock `dalvik.vm.heapgrowthlimit=48m`. It exercises recreation,
+Privacy/Settings returns and Home→About after repeated About creation. Optional
+runner argument `dumpHeap=true` writes `files/before-home.hprof` for diagnosis;
+omit it for regression runs because heap dumping forces GC. Verify the AVD name
+and installed APK hash when comparing builds; use distinct emulator ports for
+concurrent work.
+
 ### Contributing during modernization
 
 Follow the [project's Execution order](https://github.com/users/atlowChemi/projects/1)
