@@ -9,7 +9,6 @@ import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.Lifecycle
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.HomePage
@@ -74,16 +73,14 @@ class AboutMemoryTest {
             memory("after heap dump GC")
         }
         ActivityScenario.launch(HomePage::class.java).use { home ->
-            home.onActivity { it.findViewById<RecyclerView>(R.id.rv).scrollToPosition(4) }
+            var aboutLabel = ""
+            home.onActivity { aboutLabel = it.getString(R.string.title_activity_info) }
+            compose.onNode(hasText(aboutLabel)).performScrollTo()
             compose.waitForIdle()
             memory("home")
             val monitor = instrumentation.addMonitor(InfoActivityKt::class.java.name, null, false)
             try {
-                home.onActivity {
-                    val holder = it.findViewById<RecyclerView>(R.id.rv).findViewHolderForAdapterPosition(4)
-                    assertNotNull(holder)
-                    holder!!.itemView.findViewById<android.view.View>(R.id.buttonChange).performClick()
-                }
+                compose.onNode(hasText(aboutLabel)).performClick()
                 val about = instrumentation.waitForMonitorWithTimeout(monitor, 5_000)
                 assertNotNull(about)
                 compose.waitForIdle()
