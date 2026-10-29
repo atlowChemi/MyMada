@@ -75,7 +75,7 @@ class HomeScreenTest {
                 assertEquals(if (language == "he") View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR,
                     activity.resources.configuration.layoutDirection)
                 assertEquals(scale, activity.resources.configuration.fontScale, 0.01f)
-                listOf(R.string.title_activity_home_page, R.string.title_activity_utills_and_tools,
+                listOf(R.string.app_name, R.string.title_activity_utills_and_tools,
                     R.string.title_activity_moked_page, R.string.test_beep, R.string.title_activity_contact,
                     R.string.title_activity_info, R.string.action_settings, R.string.pref_title_enable,
                     R.string.TestCallMsg, R.string.plsNoteCon).forEach { labels[it] = activity.getString(it) }
@@ -128,7 +128,7 @@ class HomeScreenTest {
             compose.onNodeWithText(labels.getValue(R.string.title_activity_contact)).performScrollTo().performClick()
             onView(withText(labels.getValue(R.string.plsNoteCon))).check(matches(isDisplayed()))
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-            compose.onNodeWithText(labels.getValue(R.string.title_activity_home_page)).assertIsDisplayed()
+            compose.onNodeWithText(labels.getValue(R.string.app_name)).assertIsDisplayed()
             assertEquals(setOf("metro", "oxy"), preferences.getStringSet("Tools", emptySet()))
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.waitUntil(5_000) { scenario.state != Lifecycle.State.RESUMED }
@@ -164,7 +164,7 @@ class HomeScreenTest {
             scenario.moveToState(Lifecycle.State.CREATED)
             preferences.edit().putString("lng", "he").putBoolean("WasLangChanged", true).commit()
             scenario.moveToState(Lifecycle.State.RESUMED)
-            compose.onNodeWithText("מסך כניסה").assertIsDisplayed()
+            compose.onNodeWithText("ניסוי דיווחי מד\"א").assertIsDisplayed()
             assertFalse(preferences.getBoolean("WasLangChanged", true))
         }
         prepare("en")

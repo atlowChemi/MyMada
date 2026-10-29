@@ -5,26 +5,28 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.SystemBarStyle
 import androidx.appcompat.widget.PopupMenu
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -35,17 +37,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.cardview.widget.CardView
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import atlow.chemi.mymada.HomePage
@@ -91,7 +101,6 @@ object HomeContent {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeScreen(
     detecting: Boolean,
@@ -100,68 +109,87 @@ internal fun HomeScreen(
     onDestination: (String) -> Unit,
     banner: @Composable () -> Unit = {},
 ) {
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(stringResource(R.string.title_activity_home_page)) },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = colorResource(R.color.ColorPrimary),
-                titleContentColor = Color.White,
-                actionIconContentColor = Color.White,
-            ),
-            actions = {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val fontScale = LocalDensity.current.fontScale
+    Box(Modifier.fillMaxSize()) {
+        AndroidView(factory = { View(it).apply { setBackgroundResource(R.drawable.ic_bgg) } },
+            modifier = Modifier.fillMaxSize())
+    Scaffold(containerColor = Color.Transparent, topBar = {
+        Row(Modifier.fillMaxWidth().background(colorResource(R.color.ColorPrimary))
+            .windowInsetsPadding(WindowInsets.statusBars).heightIn(min = 56.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.app_name), color = Color.White, fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium, letterSpacing = 0.sp,
+                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = true)),
+                    modifier = Modifier.weight(1f).padding(start = 16.dp))
                 IconButton(onClick = onDetection, modifier = Modifier.semantics {
                     toggleableState = if (detecting) ToggleableState.On else ToggleableState.Off
                 }) {
                     Icon(painterResource(if (detecting) R.drawable.ic_detect_on else R.drawable.ic_detect_off),
-                        stringResource(R.string.pref_title_enable))
+                        stringResource(R.string.pref_title_enable), tint = Color.White)
                 }
                 IconButton(onClick = onSettings) {
-                    Icon(painterResource(R.drawable.ic_settings), stringResource(R.string.action_settings))
+                    Icon(painterResource(R.drawable.ic_settings), stringResource(R.string.action_settings), tint = Color.White)
                 }
-            },
-        )
+        }
     }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
+            Box(Modifier.weight(1f)) {
+            AndroidView(factory = { View(it).apply { setBackgroundResource(R.drawable.curve_toolbar_bg) } },
+                modifier = Modifier.fillMaxWidth().height(130.dp))
             LazyVerticalGrid(
-                // Scaled minimum width keeps long translated labels readable at large font sizes.
-                columns = GridCells.Adaptive((144 * LocalDensity.current.fontScale).dp),
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize().padding(start = 11.dp, end = 11.dp, top = 22.dp, bottom = 10.dp),
             ) {
                 item(key = "tol", span = { GridItemSpan(maxLineSpan) }) {
-                    HomeTile(R.string.title_activity_utills_and_tools, R.drawable.ic_advanced) { onDestination("tol") }
+                    HomeTile(R.string.title_activity_utills_and_tools, R.drawable.new_tol, 0, screenWidth.value * .409f, fontScale) { onDestination("tol") }
                 }
                 item(key = "mok") {
-                    HomeTile(R.string.title_activity_moked_page, R.drawable.ic_send) { onDestination("mok") }
+                    HomeTile(R.string.title_activity_moked_page, R.drawable.new_mok, 1, screenWidth.value * .4f, fontScale) { onDestination("mok") }
                 }
                 item(key = "tes") {
-                    HomeTile(R.string.test_beep, R.drawable.ic_notifications) { onDestination("tes") }
+                    HomeTile(R.string.test_beep, R.drawable.new_tes, 2, screenWidth.value * .4f, fontScale) { onDestination("tes") }
                 }
                 item(key = "con") {
-                    HomeTile(R.string.title_activity_contact, R.drawable.ic_pref_send) { onDestination("con") }
+                    HomeTile(R.string.title_activity_contact, R.drawable.new_con, 3, screenWidth.value * .4f, fontScale) { onDestination("con") }
                 }
                 item(key = "inf") {
-                    HomeTile(R.string.title_activity_info, R.drawable.ic_info) { onDestination("inf") }
+                    HomeTile(R.string.title_activity_info, R.drawable.new_inf, 4, screenWidth.value * .4f, fontScale) { onDestination("inf") }
                 }
+            }
             }
             banner()
         }
     }
+    }
 }
 
 @Composable
-private fun HomeTile(label: Int, icon: Int, onClick: () -> Unit) {
-    Card(onClick = onClick, modifier = Modifier.fillMaxWidth().semantics { role = Role.Button }) {
-        Column(
-            Modifier.fillMaxWidth().heightIn(min = 112.dp).padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-        ) {
-            Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(32.dp))
-            Text(stringResource(label), textAlign = TextAlign.Center, style = MaterialTheme.typography.titleMedium)
+private fun HomeTile(label: Int, image: Int, position: Int, height: Float, fontScale: Float, onClick: () -> Unit) {
+    val title = stringResource(label)
+    val density = LocalDensity.current.density
+    // Match the original RecyclerView's physical offsets, including its full-span first item.
+    Column(Modifier.absolutePadding(left = if (position % 2 == 0) 7.dp else 3.5.dp,
+        right = if (position % 2 == 0) 3.5.dp else 7.dp,
+        top = if (position == 0) 7.dp else 0.dp, bottom = 7.dp)) {
+        Box(Modifier.fillMaxWidth().height(height.dp).semantics {
+            role = Role.Button
+            text = AnnotatedString(title)
+        }.clickable(onClick = onClick)) {
+            AndroidView(factory = { context ->
+                CardView(context).apply {
+                    radius = 27 * density
+                    cardElevation = 5 * density
+                    setCardBackgroundColor(android.graphics.Color.WHITE)
+                    addView(View(context).apply { setBackgroundResource(image) },
+                        android.widget.FrameLayout.LayoutParams(-1, -1))
+                    importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                }
+            }, modifier = Modifier.fillMaxSize())
         }
+        // Original artwork contains raster text. Supply scalable text when the user requests larger fonts.
+        if (fontScale > 1f) Text(title, modifier = Modifier.fillMaxWidth().background(Color.White).padding(8.dp).clearAndSetSemantics {},
+            color = Color.Black, style = MaterialTheme.typography.titleMedium)
     }
 }
 
