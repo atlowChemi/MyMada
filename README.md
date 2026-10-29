@@ -96,6 +96,55 @@ workflow is removed; native CI follows working local modernization in #13.
 
 Documentation will expand alongside implementation in #28.
 
+### Privacy Compose slice (#21)
+
+The privacy feature lives in `app/src/main/java/atlow/chemi/mymada/privacy`.
+Compose compiler **2.4.21** matches AGP's built-in Kotlin; stable Compose BOM
+**2026.09.00** (UI/runtime **1.12.1**, Material 3 **1.4.0**), Activity **1.13.0**,
+and Lifecycle **2.11.0** provide the UI, previews, and lifecycle integration.
+Instrumentation pins stable Espresso **3.7.0** for current-platform input
+injection compatibility. No Kotlin Android plugin is applied.
+
+The installed `atlow.chemi.mymada.PrivacyActivity` component remains a Java
+compatibility wrapper, so home, about and existing explicit intents still work.
+The Compose toolbar delegates detection/service/permission actions to the
+unchanged Java handler in `PrivacyDetectionActivity`; migrate this bridge with
+the shared detection work in #24. Settings navigation and both back actions
+remain available. The hosted Hebrew/English policy documents and their links
+remain in a WebView, with the existing local offline error document. Policy
+language now follows the app's selected locale, including on API 24+.
+
+The native acknowledgment contract is deliberately retained: `Settings.privacy`
+becomes boolean `true` on page completion, **including the offline error page**;
+there is no new consent button. RN used string `"true"`; persisted-type migration
+remains #22. Changing whether an error counts as acknowledgment requires a
+separate behavior decision. WebView navigation state is saved across activity
+recreation; this is not a persistent cache of remote policy content.
+
+Open `PrivacyPreview` (English and Hebrew/RTL at 1.5× font scale) and
+`PrivacyLoadingPreview` in Android Studio. After applying the disposable-device
+egress rules above, run the focused Kotlin/Compose instrumentation:
+
+```sh
+sh ./gradlew :app:connectedDebugAndroidTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=atlow.chemi.mymada.privacy.PrivacyScreenTest \
+  --no-daemon
+```
+
+Both locales check the rendered title, RTL control order, offline HTML content,
+local fixture/link rendering, acknowledgment, detection-off persistence,
+recreation, settings navigation, toolbar back and system back. Tests use the
+real manifest component and a local in-memory HTML fixture; no backend fixture
+writes are needed. Detection enable/permission/service coverage, full process
+restoration, screenshot baselines and app-wide accessibility remain follow-up
+work in #15/#21/#24/#27.
+
+Validated 2026-10-29: debug and optimized unsigned release assemble pass;
+`lintDebug` reports 0 errors / 418 warnings. Focused instrumentation passes
+2/2 tests on API 24 (4.829s) and 2/2 on API 37 with 16-KB pages (10.739s),
+with emulator IPv4/IPv6 egress rejected. This slice does not claim optimized
+release runtime, live hosted-policy availability, or target-37 compatibility.
+
 ### Contributing during modernization
 
 Follow the [project's Execution order](https://github.com/users/atlowChemi/projects/1)
