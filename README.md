@@ -42,12 +42,13 @@ sh ./gradlew :app:testDebugUnitTest :app:lintDebug --no-daemon
 ```
 
 The restored baseline has no executable unit tests (`NO-SOURCE`). After dependency
-modernization, lint fails with 8 errors, 421 warnings and 1 hint; its report is
-under `app/build/reports/`. Normal unsigned release builds also fail on those
-8 PendingIntent errors; release packaging-only checks are documented separately.
+modernization and the narrow PendingIntent compatibility fix, lint passes with
+0 errors, 421 warnings and 1 hint; its report is under `app/build/reports/`.
+Clean debug and unsigned release APK/AAB builds pass without lint exclusions.
 API 33 baseline smoke covers home/settings/tools navigation and the oxygen
-calculator. Starting the metronome currently crashes on a missing PendingIntent
-mutability flag (#25); RN string preferences can crash startup (#22). This is a
+calculator. The API 33 metronome regression check now verifies start/stop and
+notification navigation/stop actions (`scripts/smoke-metronome.py`); broader
+audio/device validation remains #25. RN string preferences can crash startup (#22). This is a
 development baseline, not a release-ready rollback. The RN build/deployment
 workflow is removed; native CI follows working local modernization in #13.
 

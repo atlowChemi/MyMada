@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.PendingIntentCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import javax.annotation.Nullable;
@@ -44,10 +45,10 @@ public class MetroService extends Service {
         Intent callSNI = new Intent(MetroService.this, UtillitiesAndTools.class);
         callSNI.putExtra("running", true);
         callSNI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 7, callSNI, 0);
+        PendingIntent pendingIntent = PendingIntentCompat.getActivity(this, 7, callSNI, 0, false);
         Intent btn = new Intent(this, ActionReceiver.class);
         btn.putExtra("action", "stopM");
-        PendingIntent pBtn = PendingIntent.getBroadcast(MetroService.this, 9, btn, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pBtn = PendingIntentCompat.getBroadcast(MetroService.this, 9, btn, PendingIntent.FLAG_UPDATE_CURRENT, false);
         String action = MetroService.this.getResources().getString(R.string.MetroStop);
 
 //        Crashlytics.log("Starting Metro Notification");

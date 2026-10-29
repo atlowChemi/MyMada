@@ -12,6 +12,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.PendingIntentCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -198,7 +199,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                                         PendingIntent testPI;
                                         if (launchIntent != null) {
                                             launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                                            testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0);
+                                            testPI = PendingIntentCompat.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0, false);
                                         } else {
                                             testPI = null;
                                         }
@@ -223,7 +224,7 @@ public class homeBAdapter extends RecyclerView.Adapter<homeBAdapter.MyViewHolder
                                         PendingIntent testPI;
                                         if (launchIntent != null) {
                                             launchIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                                            testPI = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0);
+                                            testPI = PendingIntentCompat.getActivity(mContext, (int) System.currentTimeMillis(), launchIntent, 0, false);
                                         } else {
                                             testPI = null;
                                         }
