@@ -203,7 +203,7 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
                 android:contentDescription="@string/app_name"
-                android:tint="@color/Black"
+                app:tint="@color/Black"
                 app:srcCompat="@drawable/ic_info" />
             <View
                 android:layout_width="1dp"
