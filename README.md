@@ -147,8 +147,11 @@ release runtime, live hosted-policy availability, or target-37 compatibility.
 
 ### Home Compose slice (#21)
 
-`home/HomeContent.kt` owns the adaptive, scrollable Home tiles and inset-aware
-toolbar. `HomePage` keeps its installed launcher identity and native onboarding,
+`home/HomeContent.kt` owns the scrollable two-column Home grid and inset-aware
+toolbar. It reuses the original localized bitmap buttons, native rounded/shadowed
+cards and background drawables; the 50-dp navy banner area remains visible offline,
+matching the supplied production 12822 reference. At larger font settings, readable
+text labels supplement the bitmap text. `HomePage` keeps its installed launcher identity and native onboarding,
 locale-return and detection behavior; `home/HomeActions.java` temporarily retains
 the original dispatch gate, test-call branches, contact/about ads and destinations.
 Tools still opens `UtillitiesAndTools`, preserving its selected-tool preferences.

@@ -4,11 +4,14 @@ import android.app.Activity
 import android.view.KeyEvent
 import android.view.View
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.core.view.ViewCompat
@@ -86,6 +89,7 @@ class HomeScreenTest {
             }
             val settings = compose.onNodeWithContentDescription(labels.getValue(R.string.action_settings))
             val detection = compose.onNodeWithContentDescription(labels.getValue(R.string.pref_title_enable))
+            compose.onNodeWithTag("homeBanner").assertIsDisplayed().assertHeightIsEqualTo(50.dp)
             detection.assertIsOff()
             assertEquals(language == "en", detection.fetchSemanticsNode().boundsInRoot.center.x <
                 settings.fetchSemanticsNode().boundsInRoot.center.x)
@@ -130,6 +134,11 @@ class HomeScreenTest {
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.onNodeWithText(labels.getValue(R.string.app_name)).assertIsDisplayed()
             assertEquals(setOf("metro", "oxy"), preferences.getStringSet("Tools", emptySet()))
+            compose.waitUntil(5_000) {
+                var focused = false
+                scenario.onActivity { focused = it.hasWindowFocus() }
+                focused
+            }
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.waitUntil(5_000) { scenario.state != Lifecycle.State.RESUMED }
         }
