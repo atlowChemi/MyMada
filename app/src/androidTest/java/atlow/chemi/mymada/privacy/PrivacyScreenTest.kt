@@ -9,6 +9,7 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
@@ -20,6 +21,7 @@ import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
+import org.json.JSONArray
 
 /** Disposable emulator with IPv4/IPv6 egress blocked; never run against a user's installation. */
 class PrivacyScreenTest {
@@ -47,10 +49,13 @@ class PrivacyScreenTest {
                 detection = it.getString(R.string.pref_title_enable)
             }
             compose.onNodeWithText(title).assertIsDisplayed()
+            val toolbar = compose.onNodeWithTag("information-toolbar").fetchSemanticsNode().boundsInRoot
+            scenario.onActivity { assertEquals(56 * it.resources.displayMetrics.density, toolbar.height, 1f) }
             compose.onNodeWithContentDescription(detection).assertIsOn().performClick().assertIsOff()
             assertFalse(preferences.getBoolean("Mapp", true))
             compose.waitUntil(30_000) { preferences.getBoolean("privacy", false) }
             waitForBody(scenario, error)
+            verifyViewport(scenario)
             val backX = compose.onNodeWithContentDescription(back).fetchSemanticsNode().boundsInRoot.center.x
             val settingsX = compose.onNodeWithContentDescription(settings).fetchSemanticsNode().boundsInRoot.center.x
             assertEquals(language == "en", backX < settingsX)
@@ -102,6 +107,23 @@ class PrivacyScreenTest {
                     "document.body ? document.body.innerText : ''", result::set)
             }
             result.get().contains(text)
+        }
+    }
+
+    private fun verifyViewport(scenario: ActivityScenario<PrivacyActivity>) {
+        val geometry = AtomicReference("")
+        scenario.onActivity { activity ->
+            webView(activity.window.decorView)!!.evaluateJavascript(
+                "[innerHeight, devicePixelRatio, document.getElementById('main').getBoundingClientRect().top]",
+                geometry::set)
+        }
+        compose.waitUntil(5_000) { geometry.get().isNotEmpty() }
+        val values = JSONArray(geometry.get())
+        scenario.onActivity { activity ->
+            val view = webView(activity.window.decorView)!!
+            // WRAP_CONTENT silently shrinks WebView's HTML viewport even when Compose fills the screen.
+            assertEquals(view.height.toDouble(), values.getDouble(0) * values.getDouble(1), 3.0)
+            assertEquals(values.getDouble(0) * 0.25, values.getDouble(2), 1.0)
         }
     }
 
