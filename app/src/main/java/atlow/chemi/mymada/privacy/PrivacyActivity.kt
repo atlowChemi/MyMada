@@ -3,6 +3,7 @@ package atlow.chemi.mymada.privacy
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -13,14 +14,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,16 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.toggleableState
-import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import atlow.chemi.mymada.R
+import atlow.chemi.mymada.ui.ScreenToolbar
 
 internal fun policyUrl(language: String): String {
     val document = if (language == "en")
@@ -83,6 +75,8 @@ open class PrivacyActivity : PrivacyDetectionActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     private fun createWebView(savedState: Bundle?): WebView = WebView(this).also { view ->
         webView = view
+        // WebView uses its LayoutParams to decide whether its HTML viewport may shrink to content.
+        view.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         val language = resources.configuration.locales[0].language
         val errorUrl = "file:///android_asset/err.html" + if (language == "en") "?lng=en" else ""
         view.settings.javaScriptEnabled = true
@@ -115,7 +109,6 @@ open class PrivacyActivity : PrivacyDetectionActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PrivacyScreen(
     loading: Boolean,
@@ -125,32 +118,8 @@ internal fun PrivacyScreen(
     onSettings: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(stringResource(R.string.title_activity_privacy)) },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = colorResource(R.color.ColorPrimary),
-                titleContentColor = Color.White,
-                navigationIconContentColor = Color.White,
-                actionIconContentColor = Color.White,
-            ),
-            navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(painterResource(R.drawable.privacy_back), stringResource(androidx.appcompat.R.string.abc_action_bar_up_description))
-                }
-            },
-            actions = {
-                IconButton(onClick = onDetection, modifier = Modifier.semantics {
-                    toggleableState = if (detecting) ToggleableState.On else ToggleableState.Off
-                }) {
-                    Icon(painterResource(if (detecting) R.drawable.ic_detect_on else R.drawable.ic_detect_off),
-                        stringResource(R.string.pref_title_enable))
-                }
-                IconButton(onClick = onSettings) {
-                    Icon(painterResource(R.drawable.ic_settings), stringResource(R.string.action_settings))
-                }
-            },
-        )
+    Scaffold(containerColor = Color.Transparent, topBar = {
+        ScreenToolbar(stringResource(R.string.title_activity_privacy), detecting, onBack, onDetection, onSettings)
     }) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             content()

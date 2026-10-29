@@ -150,8 +150,8 @@ release runtime, live hosted-policy availability, or target-37 compatibility.
 `about/AboutScreen.kt` owns the scrollable About UI; `InfoActivityKt` retains
 the manifest component, app-selected locale, privacy interstitial/navigation
 and existing detection handler until #24. The original localized version,
-credits and disclaimer text is retained. The privacy action is now a labeled,
-font-scalable button. `AboutPreview` provides English and Hebrew/RTL large-text
+credits and disclaimer text is retained. The privacy action uses the original
+localized image tile with an accessibility label. `AboutPreview` provides English and Hebrew/RTL large-text
 previews; scroll position survives activity recreation.
 
 After applying the disposable-emulator firewall above, run
@@ -162,6 +162,15 @@ and system back, recreation, RTL order and accessible toolbar touch targets.
 Also run with the emulator font scale set to 1.5 to check scrolling/recreation.
 Executed results belong in the slice PR and #21; live ads and detection-enable
 service/permission behavior remain integration work.
+
+About/Privacy retain the published 56dp toolbar, artwork and native text metrics;
+`ui/ScreenToolbar.kt` is shared by these two screens. Keep their Scaffold backgrounds
+transparent to expose the existing window artwork. WebViews hosted by Compose must
+set `MATCH_PARENT` layout parameters: otherwise their HTML viewport can shrink even
+when the Compose view fills the screen. The focused tests check toolbar/tile geometry,
+rendered mask/gradient pixels and the offline document's viewport/vertical positioning.
+Compare actual English/Hebrew captures with the verified production reference in #35
+at matching density and font scale; interaction tests alone do not establish visual parity.
 
 ### Contributing during modernization
 
