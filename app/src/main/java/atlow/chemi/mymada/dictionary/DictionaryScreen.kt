@@ -33,7 +33,6 @@ import androidx.core.widget.doAfterTextChanged
 import atlow.chemi.mymada.R
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
-import java.util.UUID
 
 @Composable
 internal fun DictionaryScreen(model: DictionaryModel, query: String, addRequest: Int) {
@@ -50,7 +49,7 @@ internal fun DictionaryScreen(model: DictionaryModel, query: String, addRequest:
         if (handledAdd != addRequest) {
             handledAdd = addRequest
             model.clearWriteError()
-            key = UUID.randomUUID().toString()
+            key = model.newKey()
             name = ""; definition = ""; mode = "add"
         }
     }

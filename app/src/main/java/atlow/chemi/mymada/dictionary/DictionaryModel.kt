@@ -9,12 +9,14 @@ import com.google.firebase.firestore.MetadataChanges
 
 /** A fixture source exercises the same lifecycle and submission callbacks without live writes. */
 internal interface DictionarySource {
+    fun newKey(): String
     fun listen(result: (List<DictionaryEntry>?, Boolean, Exception?) -> Unit): () -> Unit
     fun submit(key: String, edit: Boolean, fields: Map<String, Any>, result: (Exception?) -> Unit)
 }
 
 internal class FirestoreDictionarySource : DictionarySource {
     private val collection get() = FirebaseFirestore.getInstance().collection("dictionary")
+    override fun newKey(): String = collection.document().id
     override fun listen(result: (List<DictionaryEntry>?, Boolean, Exception?) -> Unit): () -> Unit {
         val registration = collection.whereEqualTo("approved", true)
             .addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, error ->
@@ -41,6 +43,8 @@ internal class DictionaryModel(private val source: DictionarySource = FirestoreD
     var submittedEdit = false; private set
     private var removeListener: (() -> Unit)? = null
     private var generation = 0
+
+    fun newKey(): String = source.newKey()
 
     fun start() {
         if (removeListener != null) return
