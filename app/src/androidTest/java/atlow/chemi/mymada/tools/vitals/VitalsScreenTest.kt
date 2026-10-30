@@ -8,6 +8,9 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.UtillitiesAndTools
@@ -69,6 +72,11 @@ class VitalsScreenTest {
             onView(withId(R.id.pulsa)).perform(clearText(), closeSoftKeyboard())
             compose.waitForIdle()
             scenario.onActivity { assertEquals(Color.rgb(50,167,195), it.findViewById<EditText>(R.id.pulsa).currentTextColor) }
+            if (instrumentation.targetContext.resources.configuration.fontScale > 1.2f) {
+                onView(withId(R.id.vitalsResult)).perform(swipeUp())
+                onView(withText(R.string.vitalsAlert)).check(matches(isCompletelyDisplayed()))
+                capture("candidate-$language-bottom")
+            }
         }
     }
     private fun capture(name: String) {
