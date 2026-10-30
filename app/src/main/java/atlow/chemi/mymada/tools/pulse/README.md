@@ -19,22 +19,28 @@ Previews cover EN, HE, large Hebrew text and landscape.
 - RN `be72a163` differs: initial zero, unrestricted digits, clears invalid output,
   ceil-seconds display and no landscape layout. Native is this slice's reference.
 
-## Lifecycle decisions requiring acceptance
+## Lifecycle
 
-Inputs/error/output and monotonic timer deadline survive saved Fragment state and
-Activity recreation. Backgrounding the Activity does not pause the countdown.
-An already-expired restored deadline displays zero without replaying an old beep.
-Removing the Fragment (another tool, Back, Activity finish) cancels its timer:
-the old retained Fragment could continue referencing destroyed views/Activity.
-This deliberate ownership correction needs maintainer acceptance; it is not a
-claim of exact parity with the legacy detached-timer bug. No service/alarm or
-reboot persistence is introduced. Shared host navigation is unchanged.
+The user confirmed that counting and the completion beep must continue when
+switching tools or backgrounding the app. `PulseTimer` owns one process-wide
+monotonic deadline and uses only application context for audio. Removing a
+Fragment, finishing an Activity or rotating does not cancel or restart it.
+Returning attaches to the same running/completed measurement; stale saved state
+cannot replay its beep. Only tapping a running timer cancels/resets it.
+
+Inputs/error/output use saved Fragment state. A fresh process can restore an
+unexpired saved deadline from the same boot; an expired snapshot displays zero
+without replaying an old beep. Process termination/reboot delivery is not promised
+by this in-process timer (no service/alarm added). Shared host/audio code is unchanged.
 
 ## Verification
 
 `PulseStateTest`: every 0–99 count, leading zero, invalid values, native countdown
 rounding and expiration. `PulseScreenTest`: EN/HE fields/error, retained result,
-Activity recreation during countdown, real completion/reset, drawer/system Back.
+Activity recreation during countdown, real completion/reset, drawer/system Back;
+start → another tool → actual rotation → return before completion → another tool
+and background → original-deadline completion. Tests check exactly one successful
+AudioTrack write sequence, alarm-volume restoration and no stale-snapshot replay.
 Run the Pulse package with the existing AndroidJUnitRunner. Pure state test also
 runs directly with cached Kotlin/JUnit, without a shared build dependency change.
 
