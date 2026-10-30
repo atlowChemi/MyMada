@@ -1,83 +1,153 @@
 package atlow.chemi.mymada.settings
 
 import android.graphics.Bitmap
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
-import androidx.test.espresso.matcher.RootMatchers.isDialog
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.UtillitiesAndTools
+import atlow.chemi.mymada.contractions.ContractionEntry
+import atlow.chemi.mymada.contractions.ContractionSession
 import atlow.chemi.mymada.helpers.LocalHelper
 import org.junit.Assert.*
+import org.junit.Rule
 import org.junit.Test
 import java.io.File
 
 class ContractionRecoveryTest {
-    @Test fun activeOnlyRecoveryCanCancelThenConfirmDeleteAndStayDeletedOnReopen() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val context = instrumentation.targetContext
-        val preferences = context.getSharedPreferences("Settings", 0)
-        instrumentation.runOnMainSync { LocalHelper.setLocale(context, "en") }
-        val now = System.currentTimeMillis()
-        val raw = """[{"number":1,"start":${now - 10000}}]"""
+    @get:Rule val compose = createEmptyComposeRule()
+    private val instrumentation = InstrumentationRegistry.getInstrumentation()
+    private val context = instrumentation.targetContext
+    private val preferences = context.getSharedPreferences("Settings", 0)
+    private var labels = mapOf<Int, String>()
+    private fun prepare(raw: String = "", language: String = "en") {
+        instrumentation.uiAutomation.setRotation(android.app.UiAutomation.ROTATION_FREEZE_0)
+        instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
         preferences.edit().putBoolean("Mapp", false).putStringSet("Tools", setOf("contrac"))
-            .putString("contractList", raw).putLong("contractLong", now).remove("contarctNum")
-            .remove("migration.original.contractList").commit()
+            .putString("contractList", raw).putLong("contractLong", System.currentTimeMillis())
+            .remove("contarctNum").remove("migration.original.contractList").commit()
+    }
+    private fun labels(scenario: ActivityScenario<UtillitiesAndTools>) {
+        scenario.onActivity { activity ->
+            val actualScale = activity.resources.configuration.fontScale
+            File(context.filesDir, "contractions-environment.txt").appendText("locale=${activity.resources.configuration.locales} fontScale=$actualScale density=${activity.resources.displayMetrics.density}\n")
+            InstrumentationRegistry.getArguments().getString("expectedFontScale")?.toFloat()?.let {
+                assertEquals("Actual activity font scale", it, actualScale, .01f)
+            }
+            labels = listOf(R.string.ok, R.string.dialog_no,
+            R.string.ContracRecover, R.string.ContracDelete, R.string.startContract, R.string.endContract)
+            .associateWith { activity.getString(it) } }
+    }
+    private fun choose(id: Int) = compose.onNodeWithText(labels.getValue(id), ignoreCase = true).performClick()
+    private fun toggle() = compose.onNodeWithTag("contraction-toggle")
+    private fun expect(id: Int) {
+        toggle().assertTextContains(labels.getValue(id))
+        val layouts = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+        toggle().performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.GetTextLayoutResult) { it(layouts) }
+        val density = layouts.single().layoutInput.density
+        File(context.filesDir, "contractions-environment.txt").appendText("Compose fontScale=${density.fontScale} text=${layouts.single().layoutInput.style.fontSize}\n")
+        InstrumentationRegistry.getArguments().getString("expectedFontScale")?.toFloat()?.let {
+            assertEquals("Actual Compose font scale", it, density.fontScale, .01f)
+        }
+    }
+    private fun delete(scenario: ActivityScenario<UtillitiesAndTools>) {
+        // A dismissed dialog can still own input focus when the underlying tree is visible.
+        compose.waitUntil(5_000) {
+            var focused = false
+            scenario.onActivity { focused = it.hasWindowFocus() }
+            focused
+        }
+        instrumentation.uiAutomation.waitForIdle(500, 5_000)
+        onView(withId(R.id.action_delete)).perform(click())
+        instrumentation.uiAutomation.waitForIdle(500, 5_000)
+        try {
+            compose.onNodeWithText(labels.getValue(R.string.ContracDelete)).assertIsDisplayed()
+        } catch (failure: AssertionError) {
+            capture("delete-failure")
+            throw failure
+        }
+    }
+    private fun rotate(scenario: ActivityScenario<UtillitiesAndTools>, landscape: Boolean) {
+        scenario.onActivity { it.requestedOrientation = if (landscape)
+            android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE else android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+        // Wait for the replacement window, rather than awaiting a frame on the destroyed one.
+        compose.waitUntil(10_000) {
+            var ready = false
+            scenario.onActivity { ready = it.hasWindowFocus() &&
+                (it.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) == landscape }
+            ready
+        }
+        instrumentation.waitForIdleSync()
+    }
+
+    @Test fun activeOnlyRecoveryCanCancelThenConfirmDeleteAndStayDeletedOnReopen() {
+        val raw = """[{"number":1,"start":${System.currentTimeMillis() - 10000}}]"""
+        prepare(raw)
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
-            onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
-            onView(withId(R.id.contra_btn)).check(matches(withText(R.string.endContract)))
-            onView(withId(R.id.action_delete)).perform(click())
-            onView(withText(R.string.ContracDelete)).inRoot(isDialog()).check(matches(isDisplayed()))
-            onView(withId(android.R.id.button2)).inRoot(isDialog()).perform(click())
-            onView(withId(R.id.contra_btn)).check(matches(withText(R.string.endContract)))
+            labels(scenario)
+            scenario.recreate() // The unanswered recovery dialog survives recreation.
+            choose(R.string.ok)
+            expect(R.string.endContract)
+            delete(scenario)
+            choose(R.string.dialog_no)
+            expect(R.string.endContract)
             assertEquals(raw, preferences.getString("contractList", null))
-            onView(withId(R.id.action_delete)).perform(click())
-            onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
-            onView(withId(R.id.contra_btn)).check(matches(withText(R.string.startContract)))
+            delete(scenario)
+            scenario.recreate() // The unanswered delete dialog survives recreation.
+            choose(R.string.ok)
+            expect(R.string.startContract)
+        }
+        ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            labels(scenario)
+            compose.onNodeWithText(labels.getValue(R.string.ContracRecover)).assertDoesNotExist()
+            expect(R.string.startContract)
+            toggle().performClick()
             scenario.recreate()
-            onView(withText(R.string.ContracRecover)).check(doesNotExist())
-            onView(withId(R.id.contra_btn)).check(matches(withText(R.string.startContract)))
+            expect(R.string.endContract)
+            toggle().performClick()
+            scenario.recreate()
+            expect(R.string.startContract)
+            val fresh = ContractionHistory(preferences)
+            assertEquals(1, fresh.read()!!.completed.single().number)
+            assertFalse(fresh.reactNative)
+            delete(scenario)
+            choose(R.string.ok)
         }
         assertEquals("", preferences.getString("contractList", null))
         assertEquals(raw, preferences.getString("migration.original.contractList", null))
     }
 
     @Test fun recentRnActiveTailCompletesWithOriginalNumberAndStartInBothLocales() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val context = instrumentation.targetContext
-        val preferences = context.getSharedPreferences("Settings", 0)
         for (language in listOf("en", "he")) {
-            instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
             val now = System.currentTimeMillis()
             val raw = """[{"number":1,"start":${now - 180000},"end":${now - 150000}},
                 {"number":2,"start":${now - 100000},"end":${now - 70000}},
                 {"number":3,"start":${now - 10000}}]"""
-            preferences.edit().putBoolean("Mapp", false).putStringSet("Tools", setOf("contrac"))
-                .putString("contractList", raw).putLong("contractLong", now).remove("contarctNum")
-                .remove("migration.original.contractList").commit()
+            prepare(raw, language)
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
-                onView(withText(R.string.ContracRecover)).check(matches(isDisplayed()))
-                onView(withId(android.R.id.button1)).perform(click())
-                onView(withId(R.id.contra_btn)).check(matches(withText(R.string.endContract)))
-                if (InstrumentationRegistry.getArguments().getString("capture") == "true") {
-                    // The ring animates continuously; wait for the main queue rather than UIAutomator idle.
-                    instrumentation.waitForIdleSync()
-                    val bitmap = instrumentation.uiAutomation.takeScreenshot()
-                    File(context.filesDir, "contractions-recovered-$language.png").outputStream().use {
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
-                    }
-                    bitmap.recycle()
-                }
-                onView(withId(R.id.contra_btn)).perform(click())
-                onView(withId(R.id.contra_btn)).check(matches(withText(R.string.startContract)))
+                labels(scenario)
+                choose(R.string.ok)
+                expect(R.string.endContract)
+                scenario.moveToState(Lifecycle.State.CREATED)
+                scenario.moveToState(Lifecycle.State.RESUMED)
                 scenario.recreate()
-                onView(withText(R.string.ContracRecover)).check(matches(isDisplayed()))
-                onView(withId(android.R.id.button1)).perform(click())
-                onView(withId(R.id.contra_btn)).check(matches(withText(R.string.startContract)))
+                expect(R.string.endContract)
+                capture("active-$language")
+                toggle().performClick()
+                expect(R.string.startContract)
+                scenario.recreate()
+                expect(R.string.startContract)
+                capture("completed-$language")
+            }
+            ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                labels(scenario)
+                choose(R.string.ok)
+                expect(R.string.startContract)
             }
             val saved = ContractionHistory(preferences).read()!!
             assertNull(saved.active)
@@ -86,5 +156,78 @@ class ContractionRecoveryTest {
             assertEquals(now - 100000, saved.completed.last().oldEnd.time)
             assertEquals(raw, preferences.getString("migration.original.contractList", null))
         }
+    }
+
+    @Test fun nativeIncompleteSurvivesBackgroundAndRecreationAndRecoveryCanBeDeclined() {
+        prepare()
+        ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            labels(scenario)
+            capture("default-en")
+            toggle().performClick()
+            scenario.moveToState(Lifecycle.State.CREATED)
+            scenario.moveToState(Lifecycle.State.RESUMED)
+            scenario.recreate()
+            expect(R.string.endContract)
+            capture("native-active-en")
+            toggle().performClick()
+            expect(R.string.startContract)
+        }
+        ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            labels(scenario)
+            choose(R.string.dialog_no)
+            expect(R.string.startContract)
+        }
+        assertEquals("", preferences.getString("contractList", null))
+    }
+
+    @Test fun timekeepingPreservesProvenanceNumberingAndClockRollbackBoundaries() {
+        for (rn in listOf(false, true)) {
+            val session = ContractionSession(rn, listOf(ContractionEntry(7, 1000, 2000, null)))
+            session.toggle(3000)
+            assertEquals(8, session.active!!.number)
+            assertEquals(if (rn) 1000L else 2000L, session.active!!.previous)
+            session.toggle(2999)
+            assertEquals(3000L, session.entries.last().end)
+            session.clear()
+            session.toggle(5000)
+            assertEquals(1, session.active!!.number)
+        }
+    }
+
+    @Test fun nativeCompletedHistoryPreservesEndToStartIntervalsInBothLocalesAndLandscape() {
+        for (language in listOf("en", "he")) {
+            val now = System.currentTimeMillis()
+            val records = listOf(
+                atlow.chemi.mymada.classes.Contraction(1, java.util.Date(now - 180000), java.util.Date(now - 150000), null),
+                atlow.chemi.mymada.classes.Contraction(2, java.util.Date(now - 100000), java.util.Date(now - 70000), java.util.Date(now - 150000)))
+            prepare(com.google.gson.Gson().toJson(records), language)
+            preferences.edit().putLong("contractLong", now - 70000).commit()
+            ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                labels(scenario)
+                capture("native-recover-$language")
+                choose(R.string.ok)
+                expect(R.string.startContract)
+                capture("native-history-$language")
+                rotate(scenario, landscape = true)
+                expect(R.string.startContract)
+                capture("native-landscape-$language")
+                rotate(scenario, landscape = false)
+            }
+            val saved = ContractionHistory(preferences).read()!!
+            assertFalse(ContractionHistory(preferences).apply { read() }.reactNative)
+            assertEquals(50_000, saved.completed.last().start.time - saved.completed.last().oldEnd.time)
+        }
+    }
+
+    private fun capture(name: String) {
+        if (InstrumentationRegistry.getArguments().getString("capture") != "true") return
+        compose.waitForIdle()
+        instrumentation.waitForIdleSync()
+        instrumentation.uiAutomation.waitForIdle(500, 5_000)
+        val bitmap = instrumentation.uiAutomation.takeScreenshot()
+        File(context.filesDir, "contractions-$name.png").outputStream().use {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
+        bitmap.recycle()
     }
 }
