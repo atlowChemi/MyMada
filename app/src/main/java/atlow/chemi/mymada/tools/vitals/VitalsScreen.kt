@@ -84,8 +84,8 @@ internal fun VitalsScreen(ranges: List<VitalRanges> = nativeVitals) {
     }
     if (landscape) {
         Row(Modifier.fillMaxSize().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) { fields() }
-            Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) { cards() }
+            Column(Modifier.weight(.64f).padding(start = 8.dp, top = 8.dp).verticalScroll(rememberScrollState())) { fields() }
+            Column(Modifier.weight(.36f).verticalScroll(rememberScrollState())) { cards() }
         }
     } else {
         Column(Modifier.fillMaxSize().then(if (large) Modifier.verticalScroll(rememberScrollState()) else Modifier).padding(16.dp)) {
