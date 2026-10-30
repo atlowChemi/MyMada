@@ -56,18 +56,25 @@ class ApgarScreenTest {
                     }
                 }
                 capture("score10-$language")
+                val restoredChoices = intArrayOf(2, 1, 0, 2, 1)
+                for (field in 0..4) {
+                    compose.onNodeWithTag("apgar-choice-$field").performScrollTo()
+                    onView(withTagValue(`is`("apgar-choice-$field"))).perform(click())
+                    onData(equalTo(labels[field][restoredChoices[field]])).perform(click())
+                }
+                assertScore(format, 6)
                 scenario.recreate()
-                assertScore(format, 10)
+                assertScore(format, 6)
                 onView(allOf(withText(title), isDescendantOfA(withId(R.id.toolbar)))).check(matches(isDisplayed()))
                 for (field in 0..4) onView(withTagValue(`is`("apgar-choice-$field"))).check { view, error ->
                     if (error != null) throw error
-                    assertEquals(2, (view as Spinner).selectedItemPosition)
+                    assertEquals(restoredChoices[field], (view as Spinner).selectedItemPosition)
                 }
                 // Toolbar drawer back dismisses only the drawer, preserving all choices.
                 scenario.onActivity { it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
                     .openDrawer(androidx.core.view.GravityCompat.START) }
                 pressBack()
-                assertScore(format, 10)
+                assertScore(format, 6)
                 pressBackUnconditionally()
                 assertEquals(androidx.lifecycle.Lifecycle.State.DESTROYED, scenario.state)
             }
