@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
@@ -201,6 +202,58 @@ class DocumentsTest {
                 val label = "Page 1 of ${counts[index]}"
                 compose.waitUntil(30_000) { compose.onAllNodesWithContentDescription(label).fetchSemanticsNodes().isNotEmpty() }
                 screenshot("actual-${DocumentKind.entries[index]}-offline")
+            }
+        }
+    }
+
+    @Test fun actualSmallTextZoomRerendersWithoutCoveringControls() {
+        prepare()
+        for ((kind, page) in listOf(DocumentKind.BLS to 68, DocumentKind.ALS to 145, DocumentKind.KUNTRES to 15)) {
+            val file = File(context.getExternalFilesDir("live-documents"), kind.objectName)
+            assertTrue("Actual document required", file.isFile)
+            val count = pageCount(file)
+            ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                scenario.onActivity { activity ->
+                    activity.setContent { DocumentsScreen(kind) { StoredDocument(file, count, true) } }
+                }
+                compose.onNodeWithTag("documentPages").performScrollToIndex(page)
+                val label = "Page ${page + 1} of $count"
+                fun rendered(percent: String) = compose.onAllNodes(
+                    hasContentDescription(label) and SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, percent)
+                ).fetchSemanticsNodes().isNotEmpty()
+                compose.waitUntil(30_000) { rendered("100%") }
+                screenshot("$kind-small-text-1x")
+                fun headerImage(): android.graphics.Bitmap {
+                    compose.waitForIdle()
+                    // Activity window transitions also move pixels, outside Compose's idling clock.
+                    instrumentation.uiAutomation.waitForIdle(500, 5_000)
+                    val bounds = compose.onNodeWithText(label).fetchSemanticsNode().boundsInWindow
+                    val screen = instrumentation.uiAutomation.takeScreenshot()!!
+                    return try {
+                        android.graphics.Bitmap.createBitmap(screen, bounds.left.toInt(), bounds.top.toInt(),
+                            bounds.width.toInt(), bounds.height.toInt())
+                    } finally { screen.recycle() }
+                }
+                val header = headerImage()
+                repeat(6) { compose.onAllNodesWithContentDescription("Zoom in")[0].performClick() }
+                compose.waitUntil(30_000) { rendered("400%") }
+                val zoomedHeader = headerImage()
+                screenshot("$kind-small-text-4x")
+                assertTrue("Zoom must not draw over its own controls", header.sameAs(zoomedHeader))
+                header.recycle()
+                zoomedHeader.recycle()
+                compose.onNodeWithContentDescription(label).performTouchInput { swipeRight() }
+                compose.waitForIdle()
+                screenshot("$kind-small-text-4x-panned")
+                repeat(6) { compose.onAllNodesWithContentDescription("Zoom out")[0].performClick() }
+                compose.waitUntil(30_000) { rendered("100%") }
+                // Raster allocation must not grow with zoom, and the crop must contain newly rendered detail.
+                val normal = renderPage(file, page, 720)
+                val zoomed = renderPage(file, page, 720, 4f)
+                try {
+                    assertEquals(normal.allocationByteCount, zoomed.allocationByteCount)
+                    assertFalse(normal.sameAs(zoomed))
+                } finally { normal.recycle(); zoomed.recycle() }
             }
         }
     }

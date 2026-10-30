@@ -2,6 +2,7 @@ package atlow.chemi.mymada.documents
 
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import com.google.firebase.storage.FirebaseStorage
@@ -59,16 +60,23 @@ internal fun pageCount(file: File): Int = withPdf(file) { renderer ->
     renderer.pageCount
 }
 
-internal fun renderPage(file: File, index: Int, width: Int): Bitmap = withPdf(file) { renderer ->
+internal fun renderPage(file: File, index: Int, width: Int, zoom: Float = 1f,
+    panX: Float = 0f, panY: Float = 0f): Bitmap = withPdf(file) { renderer ->
+    require(zoom.isFinite() && zoom in 1f..4f && panX.isFinite() && panY.isFinite())
     renderer.openPage(index).use { page ->
-        // ponytail: bound visible + prefetched rasters on 48-MiB heaps; tile rendering for high-resolution zoom.
+        // Render the zoomed region, not an enlarged low-resolution bitmap; memory stays bounded at every zoom.
         val smallHeap = Runtime.getRuntime().maxMemory() <= 64L * 1024 * 1024
         val scale = minOf(width.coerceIn(1, if (smallHeap) 720 else 1440).toFloat() / page.width,
             (if (smallHeap) 1024f else 2048f) / page.height)
         Bitmap.createBitmap((page.width * scale).toInt().coerceAtLeast(1),
             (page.height * scale).toInt().coerceAtLeast(1), Bitmap.Config.ARGB_8888).also {
             it.eraseColor(Color.WHITE)
-            page.render(it, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+            val transform = Matrix().apply {
+                setScale(scale * zoom, scale * zoom)
+                postTranslate((it.width - page.width * scale * zoom) / 2 + panX * it.width,
+                    (it.height - page.height * scale * zoom) / 2 + panY * it.height)
+            }
+            page.render(it, null, transform, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
         }
     }
 }
