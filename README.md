@@ -90,7 +90,8 @@ coverage, verify `adb shell getprop ro.build.version.sdk` and
 instrumentation suite. Executed device results are in #14. No NDK is required
 to compile app-owned code.
 
-RN string preferences can crash startup (#22). This is a
+RN scalar/string-set preferences are normalized before Application locale attachment
+and startup reads (`settings/PreferenceMigration`). This is a
 development baseline, not a release-ready rollback. The RN build/deployment
 workflow is removed; native CI follows working local modernization in #13.
 
@@ -181,8 +182,8 @@ Tests seed native preferences and grant overlay access on the disposable device;
 they exercise navigation/back, recreation, detection-off/resume, tool filtering,
 onboarding routes, locale return, RTL, 1.5× text and system-bar bounds. They do not
 validate live ads/backend delivery or enable the legacy detection service.
-RN string preferences can still fail before Home starts, and RN application-locale
-storage can supersede `lng`; both remain #22. Native onboarding order (settings,
+RN application-locale storage is imported before Home starts, preserving its priority
+over stale `lng`. Native onboarding order (settings,
 overlay, privacy) is retained pending a decision versus RN's privacy-first order.
 Dialog/process restoration, full settings/tools migration and current-target
 permission/service behavior remain #21/#24/#27 work.

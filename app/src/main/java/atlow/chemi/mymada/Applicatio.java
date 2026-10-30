@@ -29,6 +29,7 @@ public class Applicatio extends Application {
     }
     @Override
     protected void attachBaseContext(Context base) {
+        atlow.chemi.mymada.settings.PreferenceMigration.migrate(base);
         super.attachBaseContext(LocalHelper.onAttach(base));
     }
     @Override
