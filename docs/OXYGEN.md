@@ -36,3 +36,28 @@ both tanks, clearing, linked edits and Activity recreation. Process-death and
 production comparisons must be recorded separately; recreation is not process death.
 
 Evidence root: `~/.local/share/opencode/evidence/oxygen`.
+
+## Verified code `6919c5ee`
+
+- Debug/test APKs, optimized release and lint pass; lint0 errors/335 warnings.
+  Build uses JDK17, SDK37, `-Dorg.gradle.jvmargs=-Xmx4g --max-workers=1` and
+  `-x :app:uploadCrashlyticsMappingFileRelease`. No shared build edits.
+- API24 and API37 (actual16384-byte pages):2/2 focused tests for each EN/HE ×
+  font1.0/1.5. API24 landscape:2/2 in each language. Exact APK SHA256s/logs are
+  in `artifact-sha256.txt`, `artifact-commit.txt` and `test*.log` in the evidence root.
+- Actual API24 background process death: PID11809 killed after Home, restored
+  PID12174 retains200 ATM/3000 PSI/48 min. `process-{before,after}.{png,xml}` and
+  `process-{kill,restart}-actual.txt`. Ordinary `am kill` did not kill this process;
+  the verified run explicitly killed that owned app PID, not an emulator/global service.
+- Locally signed optimized release opens Oxygen/default24 on both APIs; screenshots
+  opened. API24 install-r over the locally signed12822 reference succeeds. This is
+  not production-signature upgrade verification.
+- All four published/candidate normal/large-system-font comparison pairs opened;
+  native suppresses font scaling, candidate honors it. Normal geometry/content and
+  RTL retained; initial focus/caret/toolbar focus highlight differ. Landscape pairs
+  opened, including mirrored64%/36% layout. Maintainer visual approval remains open.
+
+Constraint deviation: the **first** release command accidentally invoked the existing
+Crashlytics mapping-upload task. It executed; server-side storage was not verified.
+That host run cannot be claimed backend-write-free. Subsequent builds exclude the
+task. Owned emulator application traffic was blocked before startup throughout.
