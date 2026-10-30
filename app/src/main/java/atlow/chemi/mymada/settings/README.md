@@ -164,7 +164,9 @@ remain acceptance work. Native result request codes preserve destination routing
 through recreation; broader service/permission modernization remains #24.
 
 `SettingsPage` saves the selected destination while FragmentManager restores its
-content/dialogs; it no longer caches separate stale Fragment instances. Drawer Back
+content/dialogs. The shared drawer explicitly disables Material's active-item bold
+default to retain published typography (checked by `SettingsNavigationTest`). It
+no longer caches separate stale Fragment instances. Drawer Back
 closes the drawer before leaving, using OnBackPressedDispatcher. Home exits without
 an extra replacement transaction. `SettingsNavigationTest` covers every destination,
 both locales, recreation, drawer/system Back, and stale detection-menu state. The

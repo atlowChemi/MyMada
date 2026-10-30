@@ -31,6 +31,11 @@ class SettingsNavigationTest {
                     scenario.onActivity { activity ->
                         assertEquals(destination, activity.findViewById<NavigationView>(R.id.navigation).checkedItem!!.itemId)
                         assertEquals("settings:$destination", activity.supportFragmentManager.findFragmentById(R.id.frame)!!.tag)
+                        val navigation = activity.findViewById<NavigationView>(R.id.navigation)
+                        val labels = arrayListOf<android.view.View>()
+                        navigation.findViewsWithText(labels, navigation.checkedItem!!.title, android.view.View.FIND_VIEWS_WITH_TEXT)
+                        assertTrue(labels.isNotEmpty())
+                        labels.filterIsInstance<android.widget.TextView>().forEach { assertFalse(it.typeface.isBold) }
                         activity.findViewById<MyDrawerLayout>(R.id.activity_Utils).openDrawer(GravityCompat.START, false)
                     }
                     pressBack()
