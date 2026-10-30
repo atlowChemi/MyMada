@@ -1,0 +1,6 @@
+<resources>
+    <item name="compose_glasgow" type="id" />
+    <style name="GlasgowSpinnerTheme" parent="AppTheme">
+        <item name="spinnerStyle">@style/Widget.AppCompat.Spinner.Underlined</item>
+    </style>
+</resources>
