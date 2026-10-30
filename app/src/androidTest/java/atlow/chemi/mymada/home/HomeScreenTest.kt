@@ -73,6 +73,27 @@ class HomeScreenTest {
     @Test fun englishNavigationBackAndRecreation() = verifyHome("en", 1f)
     @Test fun hebrewRtlLargeTextNavigationBackAndRecreation() = verifyHome("he", 1.5f)
 
+    @Test fun testAndContactPromptsRestoreTheirActionsAcrossRecreation() {
+        for (language in listOf("en", "he")) {
+            prepare(language)
+            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+                val labels = mutableMapOf<Int, String>()
+                scenario.onActivity { activity ->
+                    listOf(R.string.test_beep, R.string.TestCallMsg, R.string.title_activity_contact,
+                        R.string.plsNoteCon).forEach { labels[it] = activity.getString(it) }
+                }
+                for ((action, message) in listOf(R.string.test_beep to R.string.TestCallMsg,
+                    R.string.title_activity_contact to R.string.plsNoteCon)) {
+                    compose.onNodeWithText(labels.getValue(action)).performScrollTo().performClick()
+                    scenario.recreate()
+                    onView(withText(labels.getValue(message))).inRoot(isDialog()).check(matches(isDisplayed()))
+                    instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                    waitForHomeFocus(scenario)
+                }
+            }
+        }
+    }
+
     @Test fun repeatedTestCallThenContactDialogTargetsFocusedWindow() {
         for (language in listOf("en", "he")) {
             prepare(language)

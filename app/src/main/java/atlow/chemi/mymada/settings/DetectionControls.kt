@@ -26,7 +26,7 @@ object DetectionControls {
         item.setIcon(if (enabled) R.drawable.ic_detect_on else R.drawable.ic_detect_off)
     }
 
-    fun toggle(activity: FragmentActivity, item: MenuItem) {
+    fun toggle(activity: FragmentActivity, item: MenuItem, style: String = "settings") {
         val preferences = activity.getSharedPreferences("Settings", 0)
         val enabled = !preferences.getBoolean("Mapp", false)
         val monitor = Intent(activity, SMSMonitorService::class.java)
@@ -35,12 +35,12 @@ object DetectionControls {
             val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
             if (intent.resolveActivity(activity.packageManager) != null) {
                 if (activity.packageName !in NotificationManagerCompat.getEnabledListenerPackages(activity))
-                    Prompt.show(activity, R.string.dialog_help, intent)
+                    Prompt.show(activity, R.string.dialog_help, intent, style = style)
             } else {
                 activity.stopService(Intent(activity, NotificationService::class.java))
                 activity.startService(Intent(activity, NotificationServiceOld::class.java))
                 if (!NotificationServiceOld.isAccessibilitySettingsOn(activity.applicationContext))
-                    Prompt.show(activity, R.string.dialog_help, Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), request = 101)
+                    Prompt.show(activity, R.string.dialog_help, Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), request = 101, style = style)
             }
         } else activity.stopService(monitor)
         preferences.edit().putBoolean("Mapp", enabled).apply()
@@ -67,11 +67,14 @@ object DetectionControls {
             super.onStart()
             val dialog = requireDialog() as AlertDialog
             val font = Typeface.createFromAsset(requireContext().assets, "fonts/opensanshebrew.ttf")
-            dialog.findViewById<TextView>(android.R.id.message)?.typeface = font
-            dialog.findViewById<TextView>(android.R.id.title)?.typeface = font
+            val style = requireArguments().getString("style", "settings")
+            if (style != "privacy") {
+                dialog.findViewById<TextView>(android.R.id.message)?.typeface = font
+                dialog.findViewById<TextView>(android.R.id.title)?.typeface = font
+            }
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                if (requireArguments().getInt("request") == 345) R.color.OldPrimary else R.color.ColorPrimary))
-            if (requireArguments().getInt("request") == 345) {
+                if (style == "home" || requireArguments().getInt("request") == 345) R.color.OldPrimary else R.color.ColorPrimary))
+            if (style == "home" || requireArguments().getInt("request") == 345) {
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).typeface = font
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).typeface = font
             }
@@ -79,12 +82,13 @@ object DetectionControls {
         }
         companion object {
             fun show(activity: FragmentActivity, message: Int, intent: Intent, title: Int = 0,
-                     positive: Int = R.string.dialog_yes, request: Int = 0) {
+                     positive: Int = R.string.dialog_yes, request: Int = 0, style: String = "settings") {
                 val tag = "detection-prompt:$message"
                 if (activity.supportFragmentManager.findFragmentByTag(tag) != null) return
                 Prompt().apply { arguments = Bundle().apply {
                     putInt("message", message); putInt("title", title); putInt("positive", positive)
                     putInt("request", request); putParcelable("intent", intent)
+                    putString("style", style)
                 } }.show(activity.supportFragmentManager, tag)
             }
         }
