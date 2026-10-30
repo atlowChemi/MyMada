@@ -34,7 +34,7 @@ internal fun OxygenScreen() {
     var psi by rememberSaveable { mutableStateOf("1500") }
     var large by rememberSaveable { mutableStateOf(false) }
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        Column(Modifier.heightIn(min = maxHeight).verticalScroll(rememberScrollState())) {
+        Column(Modifier.verticalScroll(rememberScrollState()).heightIn(min = maxHeight)) {
             AndroidView(factory = { context ->
                 Spinner(context, null, androidx.appcompat.R.attr.spinnerStyle).apply {
                     id = R.id.OxyTypeS
@@ -80,6 +80,7 @@ private fun PressureInput(value: String, viewId: Int, label: Int, digits: Int, m
             typeface = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
             addView(FixedTextInputEditText(context).apply {
                 id = viewId
+                isSaveEnabled = false
                 layoutParams = ViewGroup.LayoutParams(-1, -2)
                 inputType = InputType.TYPE_CLASS_NUMBER
                 filters = arrayOf(InputFilter.LengthFilter(digits))
