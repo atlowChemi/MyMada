@@ -1,0 +1,10 @@
+<resources>
+    <string name="document_loading">מוריד מסמך…</string>
+    <string name="document_error">לא ניתן לפתוח את המסמך. בדוק את החיבור ונסה שנית.</string>
+    <string name="document_retry">נסה שוב</string>
+    <string name="document_refresh">רענון</string>
+    <string name="document_cached">עותק שמור · זמין ללא חיבור</string>
+    <string name="document_page">עמוד %1$d מתוך %2$d</string>
+    <string name="document_zoom_in">הגדלה</string>
+    <string name="document_zoom_out">הקטנה</string>
+</resources>
