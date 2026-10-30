@@ -59,6 +59,12 @@ class ContractionHistory(private val preferences: SharedPreferences) {
                 previousNumber = number
                 previousEnd = end?.time ?: start.time
             }
+            if (!reactNative && completed.isNotEmpty()) {
+                // Native Gson dates lose milliseconds; contractLong retains the last completion.
+                val end = completed.last().end
+                val preciseEnd = preferences.getLong("contractLong", 0)
+                if (end.time % 1000 == 0L && preciseEnd / 1000 == end.time / 1000) end.time = preciseEnd
+            }
             Saved(completed, active)
         } catch (_: RuntimeException) {
             // Invalid/ambiguous records stay verbatim; a new explicit session may replace the live key.
