@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
 import androidx.core.app.LocaleManagerCompat
-import com.google.android.play.core.splitcompat.SplitCompat
 import java.util.Locale
 
 /** Keep the installed native locale API while importing RN application locales at startup. */
@@ -14,7 +13,6 @@ object LocalHelper {
     @JvmStatic fun onAttach(context: Context): Context = onAttach(context, Locale.getDefault().language)
 
     @JvmStatic fun onAttach(context: Context, defaultLanguage: String): Context {
-        SplitCompat.install(context)
         return localized(context, language(context, defaultLanguage))
     }
 
