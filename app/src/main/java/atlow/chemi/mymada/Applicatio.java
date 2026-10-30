@@ -35,6 +35,7 @@ public class Applicatio extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        registerActivityLifecycleCallbacks(atlow.chemi.mymada.settings.LocaleRefresh.INSTANCE);
         FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SERIF", "fonts/opensanshebrew.ttf");

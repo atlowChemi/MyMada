@@ -52,7 +52,8 @@ android {
             enableSplit true
         }
         language {
-            enableSplit true
+            // Both supported locales must remain available for offline in-app selection.
+            enableSplit false
         }
     }
     namespace 'atlow.chemi.mymada'
@@ -78,7 +79,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-inappmessaging-display'
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.android.gms:play-services-ads:25.5.0'
-    implementation 'com.google.android.play:feature-delivery:2.1.0'
     implementation 'androidx.appcompat:appcompat:1.8.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation 'com.google.android.material:material:1.14.0'

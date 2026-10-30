@@ -32,6 +32,15 @@ precedence rule or rewrite the combined sleep value (#24). Contract JSON/unfinis
 session recovery and settings UI remain #22 work; this scalar bridge alone is not
 complete RN upgrade compatibility. Real production-signed upgrades remain #11/#27.
 
+Language and region choice dialogs now live in Kotlin `SettingsChoiceDialog`, using
+the published native AlertDialog style and restoring via FragmentManager. Both
+languages are bundled (language splits disabled), so changing language works offline
+without a Play download or an Activity-retaining split listener. `LocaleRefresh`
+refreshes existing back-stack Activities when they resume in an outdated locale;
+it retains no Activity reference. The remaining Settings sections still use native
+Java/XML and are migrated separately. `SettingsChoiceTest` changes both languages,
+checks Home return, restores region selection and supports `capture=true` screenshots.
+
 `PreferenceMigrationTest` covers typed/RN/malformed/missing values, overflow, empty
 tool selection, preservation and repeated/interrupted-between-file migration.
 `StartupUpgradeTest` is opt-in: run with `startupFixture=seed`, force-stop the app,
