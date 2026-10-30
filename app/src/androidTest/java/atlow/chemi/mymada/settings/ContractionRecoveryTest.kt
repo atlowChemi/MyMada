@@ -68,7 +68,7 @@ class ContractionRecoveryTest {
         try {
             compose.onNodeWithText(labels.getValue(R.string.ContracDelete)).assertIsDisplayed()
         } catch (failure: AssertionError) {
-            capture("delete-failure")
+            capture("delete-failure", scenario)
             throw failure
         }
     }
@@ -137,12 +137,12 @@ class ContractionRecoveryTest {
                 scenario.moveToState(Lifecycle.State.RESUMED)
                 scenario.recreate()
                 expect(R.string.endContract)
-                capture("active-$language")
+                capture("active-$language", scenario)
                 toggle().performClick()
                 expect(R.string.startContract)
                 scenario.recreate()
                 expect(R.string.startContract)
-                capture("completed-$language")
+                capture("completed-$language", scenario)
             }
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
                 labels(scenario)
@@ -162,13 +162,13 @@ class ContractionRecoveryTest {
         prepare()
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
             labels(scenario)
-            capture("default-en")
+            capture("default-en", scenario)
             toggle().performClick()
             scenario.moveToState(Lifecycle.State.CREATED)
             scenario.moveToState(Lifecycle.State.RESUMED)
             scenario.recreate()
             expect(R.string.endContract)
-            capture("native-active-en")
+            capture("native-active-en", scenario)
             toggle().performClick()
             expect(R.string.startContract)
         }
@@ -204,26 +204,45 @@ class ContractionRecoveryTest {
             preferences.edit().putLong("contractLong", now - 70000).commit()
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
                 labels(scenario)
-                capture("native-recover-$language")
+                capture("native-recover-$language", scenario)
                 choose(R.string.ok)
                 expect(R.string.startContract)
-                capture("native-history-$language")
+                capture("native-history-$language", scenario)
                 rotate(scenario, landscape = true)
                 expect(R.string.startContract)
-                capture("native-landscape-$language")
+                capture("native-landscape-$language", scenario)
                 rotate(scenario, landscape = false)
+                toggle().performClick()
+                expect(R.string.endContract)
+                capture("native-history-active-$language", scenario)
+                toggle().performClick()
+                expect(R.string.startContract)
+                capture("native-history-completed-$language", scenario)
             }
             val saved = ContractionHistory(preferences).read()!!
             assertFalse(ContractionHistory(preferences).apply { read() }.reactNative)
-            assertEquals(50_000, saved.completed.last().start.time - saved.completed.last().oldEnd.time)
+            assertEquals(50_000, saved.completed[1].start.time - saved.completed[1].oldEnd.time)
         }
     }
 
-    private fun capture(name: String) {
+    private fun capture(name: String, scenario: ActivityScenario<UtillitiesAndTools>) {
         if (InstrumentationRegistry.getArguments().getString("capture") != "true") return
+        compose.waitUntil(10_000) {
+            var ready = false
+            scenario.onActivity { ready = it.hasWindowFocus() }
+            // Recovery dialogs own focus instead of the Activity.
+            ready || name.startsWith("native-recover") || name == "delete-failure"
+        }
         compose.waitForIdle()
         instrumentation.waitForIdleSync()
         instrumentation.uiAutomation.waitForIdle(500, 5_000)
+        val drawn = java.util.concurrent.CountDownLatch(1)
+        scenario.onActivity { activity ->
+            activity.window.decorView.postOnAnimation {
+                activity.window.decorView.postOnAnimation { drawn.countDown() }
+            }
+        }
+        assertTrue("Current Activity rendered before $name", drawn.await(5, java.util.concurrent.TimeUnit.SECONDS))
         val bitmap = instrumentation.uiAutomation.takeScreenshot()
         File(context.filesDir, "contractions-$name.png").outputStream().use {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)

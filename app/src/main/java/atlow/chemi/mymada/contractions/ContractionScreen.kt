@@ -125,9 +125,20 @@ fun ContractionScreen(entries: List<ContractionEntry>, showActiveRow: Boolean, d
 @Composable
 private fun HistoryText(text: String, size: Int, title: Boolean = false, centered: Boolean = false) {
     AndroidView(factory = { context ->
-        AppCompatTextView(context).apply {
-            // 12822 targets API29; API33+ otherwise adds fallback-font line spacing.
-            if (android.os.Build.VERSION.SDK_INT >= 28) setFallbackLineSpacing(false)
+        object : AppCompatTextView(context) {
+            override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+                // Target29 uses fallback spacing for StaticLayout, not BoringLayout.
+                // Target33+ enables it for both; preserve the published distinction.
+                if (android.os.Build.VERSION.SDK_INT >= 28) {
+                    val direction = if (layoutDirection == android.view.View.LAYOUT_DIRECTION_RTL)
+                        android.text.TextDirectionHeuristics.FIRSTSTRONG_RTL else android.text.TextDirectionHeuristics.FIRSTSTRONG_LTR
+                    val boring = android.text.BoringLayout.isBoring(text, paint)
+                    setFallbackLineSpacing(direction.isRtl(text, 0, text.length) || boring == null ||
+                        boring.width > MeasureSpec.getSize(widthMeasureSpec) - compoundPaddingLeft - compoundPaddingRight)
+                }
+                super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+            }
+        }.apply {
             typeface = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
             setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, size.toFloat(), resources.displayMetrics).roundToInt().toFloat())
