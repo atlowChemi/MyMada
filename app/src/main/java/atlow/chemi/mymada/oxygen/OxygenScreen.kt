@@ -1,6 +1,7 @@
 package atlow.chemi.mymada.oxygen
 
 import android.graphics.Typeface
+import android.content.res.Configuration
 import android.text.InputFilter
 import android.text.InputType
 import android.view.Gravity
@@ -19,6 +20,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,8 +38,10 @@ internal fun OxygenScreen() {
     var atm by rememberSaveable { mutableStateOf("100") }
     var psi by rememberSaveable { mutableStateOf("1500") }
     var large by rememberSaveable { mutableStateOf(false) }
+    val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val margin = if (landscape) 8.dp else 16.dp
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        Column(Modifier.verticalScroll(rememberScrollState()).heightIn(min = maxHeight)) {
+        val inputs: @Composable ColumnScope.() -> Unit = {
             AndroidView(factory = { context ->
                 (LayoutInflater.from(context).inflate(R.layout.oxygen_tank_selector, null) as Spinner).apply {
                     id = R.id.OxyTypeS
@@ -52,22 +57,37 @@ internal fun OxygenScreen() {
                     }
                 }
             }, update = { it.setSelection(if (large) 1 else 0) },
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp).fillMaxWidth().height(54.dp))
-            PressureInput(atm, R.id.ATM, R.string.atm, 3, Modifier.padding(horizontal = 16.dp)) {
+                modifier = Modifier.padding(start = margin, end = margin, top = if (landscape) 8.dp else 10.dp).fillMaxWidth().height(54.dp))
+            PressureInput(atm, R.id.ATM, R.string.atm, 3,
+                Modifier.padding(start = margin, end = margin, top = if (landscape) 8.dp else 0.dp)) {
                 atm = it
                 OxygenCalculation.psiFromAtm(it)?.let { converted -> psi = converted }
             }
             PressureInput(psi, R.id.PSI, R.string.psi, 5,
-                Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp)) {
+                Modifier.padding(start = margin, end = margin, top = 10.dp)) {
                 psi = it
                 OxygenCalculation.atmFromPsi(it)?.let { converted -> atm = converted }
             }
-            Spacer(Modifier.weight(1f))
-            Column(Modifier.fillMaxWidth().background(colorResource(R.color.buttonMaterialDark))) {
+        }
+        val result: @Composable () -> Unit = {
                 OxygenLabel(OxygenCalculation.minutes(atm, large).toString(), 50f, android.graphics.Color.WHITE,
                     Modifier.padding(top = 15.dp), R.id.txtOxyMin)
                 OxygenLabel(stringResource(R.string.oxyLeft), 25f, android.graphics.Color.WHITE, Modifier)
                 OxygenLabel(stringResource(R.string.lpmExp), 15f, 0xffd6d6d6.toInt(), Modifier.padding(bottom = 10.dp))
+        }
+        if (landscape) {
+            Row(Modifier.fillMaxSize()) {
+                Column(Modifier.weight(.64f).verticalScroll(rememberScrollState()), content = inputs)
+                Box(Modifier.weight(.36f).fillMaxHeight().background(colorResource(R.color.buttonMaterialDark)),
+                    contentAlignment = Alignment.Center) {
+                    Column(Modifier.verticalScroll(rememberScrollState())) { result() }
+                }
+            }
+        } else {
+            Column(Modifier.verticalScroll(rememberScrollState()).heightIn(min = maxHeight)) {
+                inputs()
+                Spacer(Modifier.weight(1f))
+                Column(Modifier.fillMaxWidth().background(colorResource(R.color.buttonMaterialDark))) { result() }
             }
         }
     }
@@ -115,5 +135,6 @@ private fun OxygenLabel(value: String, size: Float, color: Int, modifier: Modifi
 
 @Preview(name = "English", locale = "en", widthDp = 411, heightDp = 650, showBackground = true)
 @Preview(name = "Hebrew large", locale = "he", fontScale = 1.5f, widthDp = 411, heightDp = 650, showBackground = true)
+@Preview(name = "Landscape", locale = "en", widthDp = 720, heightDp = 330, showBackground = true)
 @Composable
 private fun OxygenPreview() = OxygenScreen()

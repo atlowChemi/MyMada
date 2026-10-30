@@ -78,7 +78,26 @@ class OxygenTest {
                 it.findViewById<EditText>(R.id.ATM).apply { requestFocus(); setText("") }
             }
             compose.waitForIdle()
-            scenario.onActivity { assertEquals("0", it.findViewById<TextView>(R.id.txtOxyMin).text.toString()) }
+            scenario.onActivity {
+                assertEquals("0", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
+                it.findViewById<EditText>(R.id.ATM).setText("999")
+            }
+            compose.waitForIdle()
+            scenario.onActivity {
+                assertEquals("14985", it.findViewById<EditText>(R.id.PSI).text.toString())
+                assertEquals("1998", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
+                it.findViewById<EditText>(R.id.PSI).apply { requestFocus(); setText("99999") }
+            }
+            compose.waitForIdle()
+            scenario.onActivity {
+                assertEquals("666", it.findViewById<EditText>(R.id.ATM).text.toString())
+                assertEquals("1332", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
+                it.findViewById<EditText>(R.id.PSI).setText("")
+            }
+            compose.waitForIdle()
+            scenario.onActivity {
+                assertEquals("1332", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
+            }
         }
     }
 }
