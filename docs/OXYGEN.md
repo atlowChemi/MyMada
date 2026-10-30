@@ -14,6 +14,9 @@ not validation of clinical assumptions. #19 explicitly leaves rounding unresolve
    ATM updates. Neither is an approved pressure validation policy.
 3. Clearing native PSI leaves ATM/result intact; clearing ATM shows zero but keeps
    PSI. RN clears both linked values and renders zero as blank. Which is intended?
+4. Native landscape limits PSI to four characters versus portrait five. Should the
+   limit be orientation-independent? Draft currently uses five in both; landscape
+   visual acceptance is pending (native has a 64%/36% side-by-side layout).
 
 The draft explicitly retains native behavior for all three, pending approval;
 it does not silently introduce RN rounding or infer a medical limit from maxLength.
