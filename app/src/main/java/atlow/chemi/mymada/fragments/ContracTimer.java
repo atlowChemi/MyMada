@@ -246,7 +246,7 @@ public class ContracTimer extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_delete) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
-            if (albumList != null && !albumList.isEmpty()) {
+            if (running || albumList != null && !albumList.isEmpty()) {
                 dialog.setMessage(getActivity().getResources().getString(R.string.ContracDelete)).setCancelable(false)
                         .setPositiveButton(getActivity().getResources().getString(R.string.ok), (dialogInterface, i) -> {
                             history.clear();

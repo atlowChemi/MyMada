@@ -83,6 +83,9 @@ still use native behavior. Full timer Kotlin/UI/lifecycle migration remains #23.
 `ContractionHistoryTest` covers recent RN active + multiple-completed records, absent
 and stale counters, complete/reopen without renumbering, native dates, exact expiry
 boundary, malformed data and original-backup retention.
+`ContractionRecoveryTest` also covers an active-only RN session: cancel deletion
+keeps the running state, confirmed deletion clears it across recreation while
+retaining the original raw backup.
 
 `PreferenceMigrationTest` covers typed/RN/malformed/missing values, overflow, empty
 tool selection, preservation and repeated/interrupted-between-file migration.
