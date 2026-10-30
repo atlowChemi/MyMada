@@ -17,12 +17,12 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import atlow.chemi.mymada.R
@@ -30,6 +30,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+
+// A cancelled gesture render finishes before the newest one starts, bounding transient bitmap memory too.
+private val rasterDispatcher = Dispatchers.IO.limitedParallelism(1)
 
 @Composable
 internal fun DocumentsScreen(kind: DocumentKind,
@@ -103,6 +106,7 @@ internal fun DocumentsScreen(kind: DocumentKind,
 @Composable
 private fun DocumentPage(document: StoredDocument, index: Int) {
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var renderedZoom by remember { mutableFloatStateOf(1f) }
     var failed by remember { mutableStateOf(false) }
     var retry by remember { mutableIntStateOf(0) }
     var zoom by rememberSaveable { mutableFloatStateOf(1f) }
@@ -110,10 +114,14 @@ private fun DocumentPage(document: StoredDocument, index: Int) {
     val label = stringResource(R.string.document_page, index + 1, document.pageCount)
     BoxWithConstraints(Modifier.fillMaxWidth().clipToBounds()) {
         val width = constraints.maxWidth
-        LaunchedEffect(document, index, width, retry) {
+        LaunchedEffect(document, index, width, retry, zoom, offset) {
             failed = false
             try {
-                bitmap = withContext(Dispatchers.IO) { renderPage(document.file, index, width) }
+                val height = bitmap?.let { width.toFloat() * it.height / it.width } ?: 1f
+                bitmap = withContext(rasterDispatcher) {
+                    renderPage(document.file, index, width, zoom, offset.x / width, offset.y / height)
+                }
+                renderedZoom = zoom
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) { failed = true }
         }
@@ -141,7 +149,7 @@ private fun DocumentPage(document: StoredDocument, index: Int) {
                 Image(image.asImageBitmap(), label, Modifier.fillMaxWidth()
                     .aspectRatio(image.width.toFloat() / image.height)
                     .transformable(transform, canPan = { zoom > 1f })
-                    .graphicsLayer { scaleX = zoom; scaleY = zoom; translationX = offset.x; translationY = offset.y })
+                    .semantics { stateDescription = "${(renderedZoom * 100).toInt()}%" })
             } ?: Box(Modifier.fillMaxWidth().height(300.dp), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }

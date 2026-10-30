@@ -35,13 +35,16 @@ public bearer tokens in source. The shared local error HTML remains a WebView;
 it is not used for PDFs.
 
 Pages are rendered off-main-thread into bounded raster images, with only visible
-lazy-list pages retained. Zoom is bounded at 4×; high-resolution tiled zoom and
-searchable/selectable PDF text are not implemented. These were not app-level
+lazy-list pages retained. Zoom is bounded at 4× and rerenders the visible PDF
+region into the same bounded buffer instead of enlarging the original bitmap.
+Rendering is serialized so superseded gesture requests cannot multiply bitmap
+allocations. Searchable/selectable PDF text is not implemented. These were not app-level
 controls in either compared source, but full text accessibility remains a review
 limitation of raster rendering. Page/zoom controls have accessible labels.
 On heaps of 64 MiB or less the raster ceiling is 720×1024; larger heaps use
 1440×2048. This avoids retaining several full-resolution page buffers alongside
-Compose/WebView on API 24's stock 48-MiB heap; it does limit zoom sharpness.
+Compose/WebView on API 24's stock 48-MiB heap. The crop gains detail as the user
+zooms; the raster ceiling still limits pixels across each displayed viewport.
 
 ## Persistence and failures
 
@@ -58,6 +61,9 @@ not a claim that RN had a persistent-cache guarantee.
 
 Build debug/test, optimized unsigned release, bundle and lint using README commands.
 Run `atlow.chemi.mymada.documents.DocumentsTest` on a firewalled disposable emulator.
+Disable window/transition/animator animations on that emulator for pixel comparisons;
+activity transitions are outside Compose's idling clock. The small-text regression
+checks actual pages at 1×/4×, unchanged header pixels, pan, and bounded allocation.
 The actual-document test requires read-only downloaded Storage objects in
 `/sdcard/Android/data/atlow.chemi.mymada.debug/files/live-documents/`; absence fails
 explicitly. Do not commit PDFs, bearer tokens, or authenticated responses.
