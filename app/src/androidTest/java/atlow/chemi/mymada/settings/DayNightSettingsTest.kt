@@ -65,6 +65,9 @@ class DayNightSettingsTest {
                 onView(withText(choices[1])).inRoot(isDialog()).perform(click())
                 onView(withId(R.id.sleepDay_Desc)).check(matches(withText(choices[1])))
                 assertEquals(3, preferences.getInt("sleep", -1))
+                // API37's disappearing system Dim Layer can drop this injected tap as
+                // "untrusted". Run instrumentation with --no-window-animation; keep
+                // click→recreate adjacent so this still checks dialog restoration.
                 onView(withId(R.id.sleepNight_pref)).perform(scrollTo(), click())
                 scenario.recreate()
                 onView(withText(choices[2])).inRoot(isDialog()).perform(click())
