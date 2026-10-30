@@ -150,6 +150,7 @@ class DictionaryScreenTest {
 
     private fun capture(name: String) {
         if (InstrumentationRegistry.getArguments().getString("capture") != "true") return
+        compose.waitForIdle()
         instrumentation.uiAutomation.waitForIdle(400, 5_000)
         val image = instrumentation.uiAutomation.takeScreenshot()
         File(context.filesDir, "dictionary-$name.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
