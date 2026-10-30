@@ -234,7 +234,8 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
     }
     private void CreateLangDialog() {
-        final int langToPick = LocalHelper.getLanguage(SettingsPage.this).equals("iw") ? 0 : 1;
+        String selectedLanguage = Locale.forLanguageTag(LocalHelper.getLanguage(SettingsPage.this)).getLanguage();
+        final int langToPick = selectedLanguage.equals("iw") || selectedLanguage.equals("he") ? 0 : 1;
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsPage.this, R.style.AlertDialogStyle);
         builder.setTitle(getString(R.string.pref_title_lang));
         builder.setNegativeButton(getString(R.string.ret), (dialog, which) -> dialog.dismiss());
