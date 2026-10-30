@@ -21,6 +21,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -166,6 +167,29 @@ class HomeScreenTest {
             compose.waitUntil(5_000) { activity!!.isDestroyed }
             compose.waitForIdle()
         } finally { instrumentation.removeMonitor(monitor) }
+    }
+
+    @Test fun onboardingPromptRestoresOnceAndStaysDismissedAcrossRecreation() {
+        for (language in listOf("en", "he")) {
+            prepare(language)
+            preferences.edit().putBoolean("oldU", false).commit()
+            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+                var message = ""
+                var cancel = ""
+                scenario.onActivity {
+                    message = it.getString(R.string.newSettings)
+                    cancel = it.getString(R.string.dialog_no)
+                }
+                scenario.recreate()
+                onView(withText(message)).check(matches(isDisplayed()))
+                scenario.onActivity {
+                    assertEquals(1, it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>().size)
+                }
+                onView(withText(cancel)).perform(click())
+                scenario.recreate()
+                onView(withText(message)).check(doesNotExist())
+            }
+        }
     }
 
     @Test fun onboardingDestinationsAndLocaleReturn() {

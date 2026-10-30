@@ -6,6 +6,9 @@
 - Work in small, coherent PRs and ask the maintainer before merging. Update issue
   checklists from verified evidence; use `Fixes #N` only when that issue's scope
   is complete. Partial slices use `Refs #N`.
+- Push and open dependent PRs when authorized; merge approval is separate.
+  Verify published-production parity per migrated screen (#35), not as a global
+  implementation pause. Unresolved parity blocks the affected slice's acceptance.
 - Preserve every existing feature family. When native and RN behavior disagree,
   use the assessment in #19 and ask about unresolved product behavior rather than
   treating a missing feature or an implementation bug as the specification.
