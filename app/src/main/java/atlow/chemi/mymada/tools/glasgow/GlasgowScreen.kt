@@ -2,6 +2,7 @@ package atlow.chemi.mymada.tools.glasgow
 
 import android.content.res.Configuration
 import android.graphics.Typeface
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.AdapterView
@@ -34,6 +35,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.classes.AnimatedColor
 import kotlin.math.cos
+import kotlin.math.roundToInt
 
 internal val glasgowFields = listOf(
     R.string.eyeOpening to R.array.eyes, R.string.verbal to R.array.verb, R.string.motor to R.array.moto,
@@ -145,7 +147,9 @@ private fun GlasgowText(text: String, size: Float, modifier: Modifier, bold: Boo
     centered: Boolean = false, color: Int = android.R.color.black, announce: Boolean = false) {
     AndroidView(factory = { context ->
         AppCompatTextView(context).apply {
-            textSize = size
+            // XML TextView textSize uses getDimensionPixelSize (whole pixels), not float SP.
+            setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, size, resources.displayMetrics).roundToInt().toFloat())
             setTypeface(Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf"),
                 if (bold) Typeface.BOLD else Typeface.NORMAL)
             gravity = if (centered) Gravity.CENTER else Gravity.START or Gravity.TOP
