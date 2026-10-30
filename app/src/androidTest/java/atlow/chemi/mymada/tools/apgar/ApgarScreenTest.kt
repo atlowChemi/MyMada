@@ -76,7 +76,7 @@ class ApgarScreenTest {
                 pressBack()
                 assertScore(format, 6)
                 pressBackUnconditionally()
-                assertEquals(androidx.lifecycle.Lifecycle.State.DESTROYED, scenario.state)
+                compose.waitUntil(5_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
             }
         }
     }
