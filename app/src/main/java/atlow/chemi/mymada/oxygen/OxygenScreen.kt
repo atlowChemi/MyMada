@@ -4,8 +4,10 @@ import android.graphics.Typeface
 import android.text.InputFilter
 import android.text.InputType
 import android.view.Gravity
+import android.view.LayoutInflater
+import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
@@ -36,7 +38,7 @@ internal fun OxygenScreen() {
     BoxWithConstraints(Modifier.fillMaxSize()) {
         Column(Modifier.verticalScroll(rememberScrollState()).heightIn(min = maxHeight)) {
             AndroidView(factory = { context ->
-                Spinner(context, null, androidx.appcompat.R.attr.spinnerStyle).apply {
+                (LayoutInflater.from(context).inflate(R.layout.oxygen_tank_selector, null) as Spinner).apply {
                     id = R.id.OxyTypeS
                     adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item,
                         resources.getStringArray(R.array.oxySizes)).apply {
@@ -81,7 +83,7 @@ private fun PressureInput(value: String, viewId: Int, label: Int, digits: Int, m
             addView(FixedTextInputEditText(context).apply {
                 id = viewId
                 isSaveEnabled = false
-                layoutParams = ViewGroup.LayoutParams(-1, -2)
+                layoutParams = LinearLayout.LayoutParams(-1, -2)
                 inputType = InputType.TYPE_CLASS_NUMBER
                 filters = arrayOf(InputFilter.LengthFilter(digits))
                 hint = context.getString(label)
@@ -105,7 +107,7 @@ private fun OxygenLabel(value: String, size: Float, color: Int, modifier: Modifi
     AndroidView(factory = { context -> TextView(context).apply {
         id = viewId
         gravity = Gravity.CENTER
-        textSize = size
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, (size * resources.displayMetrics.scaledDensity + 0.5f).toInt().toFloat())
         setTextColor(color)
         typeface = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
     } }, update = { it.text = value }, modifier = modifier.fillMaxWidth())
