@@ -162,7 +162,7 @@ class HomeScreenTest {
                 compose.onNodeWithText(labels.getValue(R.string.title_activity_info)).performScrollTo().performClick()
             })
             compose.onNodeWithText(labels.getValue(R.string.title_activity_moked_page)).performScrollTo().performClick()
-            visit(lockPage::class.java, { onView(withText("עמוד חסימה")).perform(click()) })
+            visit(lockPage::class.java, { onView(withText("עמוד חסימה")).inRoot(isDialog()).perform(click()) })
             assertFalse(preferences.getBoolean("realM", true))
             compose.onNodeWithText(labels.getValue(R.string.test_beep)).performScrollTo().performClick()
             onView(withText(labels.getValue(R.string.TestCallMsg))).inRoot(isDialog()).check(matches(isDisplayed()))
@@ -226,11 +226,11 @@ class HomeScreenTest {
                     }
                     focused
                 }
-                onView(withText(message)).check(matches(isDisplayed()))
+                onView(withText(message)).inRoot(isDialog()).check(matches(isDisplayed()))
                 scenario.onActivity {
                     assertEquals(1, it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>().size)
                 }
-                onView(withText(cancel)).perform(click())
+                onView(withText(cancel)).inRoot(isDialog()).perform(click())
                 scenario.recreate()
                 onView(withText(message)).check(doesNotExist())
             }
@@ -271,10 +271,10 @@ class HomeScreenTest {
                 }
                 focused
             }
-            onView(withText(importance)).check(matches(isDisplayed()))
-            onView(withText(cancel)).perform(click())
-            onView(withText(onboarding)).check(matches(isDisplayed()))
-            onView(withText(cancel)).perform(click())
+            onView(withText(importance)).inRoot(isDialog()).check(matches(isDisplayed()))
+            onView(withText(cancel)).inRoot(isDialog()).perform(click())
+            onView(withText(onboarding)).inRoot(isDialog()).check(matches(isDisplayed()))
+            onView(withText(cancel)).inRoot(isDialog()).perform(click())
         }
     }
 
@@ -282,10 +282,11 @@ class HomeScreenTest {
         prepare("en")
         preferences.edit().putBoolean("oldU", false).commit()
         ActivityScenario.launch(HomePage::class.java).use { scenario ->
-            onView(withText(R.string.newSettings)).check(matches(isDisplayed()))
-            visit(SettingsPage::class.java, { onView(withText(R.string.title_activity_settings)).perform(click()) })
+            onView(withText(R.string.newSettings)).inRoot(isDialog()).check(matches(isDisplayed()))
+            visit(SettingsPage::class.java, { onView(withText(R.string.title_activity_settings)).inRoot(isDialog()).perform(click()) })
             // Settings' locale contract: Home recreates on return using the persisted selection.
             scenario.moveToState(Lifecycle.State.CREATED)
+            instrumentation.runOnMainSync { atlow.chemi.mymada.helpers.LocalHelper.setLocale(context, "he") }
             preferences.edit().putString("lng", "he").putBoolean("WasLangChanged", true).commit()
             scenario.moveToState(Lifecycle.State.RESUMED)
             compose.onNodeWithText("ניסוי דיווחי מד\"א").assertIsDisplayed()
@@ -294,8 +295,8 @@ class HomeScreenTest {
         prepare("en")
         preferences.edit().putBoolean("privacy", false).commit()
         ActivityScenario.launch(HomePage::class.java).use {
-            onView(withText(R.string.privacyMsg)).check(matches(isDisplayed()))
-            visit(PrivacyActivity::class.java, { onView(withText(R.string.title_activity_privacy)).perform(click()) })
+            onView(withText(R.string.privacyMsg)).inRoot(isDialog()).check(matches(isDisplayed()))
+            visit(PrivacyActivity::class.java, { onView(withText(R.string.title_activity_privacy)).inRoot(isDialog()).perform(click()) })
         }
     }
 }
