@@ -53,15 +53,16 @@ class SettingsChoiceTest {
                     // A fresh themed dialog must work without a per-screen button-direction patch.
                     // Dictionary and other Tools dialogs use this same AppCompat button panel.
                     withSettings {
-                        androidx.appcompat.app.AlertDialog.Builder(it, R.style.AlertDialogStyle)
-                            .setMessage("Locale regression").setPositiveButton(android.R.string.ok, null).show()
+                        LocaleProbeDialog().show(it.supportFragmentManager, "locale-probe")
                     }
-                    onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1)).check { button, error ->
+                    onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1))
+                        .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).check { button, error ->
                         if (error != null) throw error
                         assertEquals(button.resources.configuration.layoutDirection,
                             (button.parent as android.view.View).layoutDirection)
                     }
-                    onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1)).perform(click())
+                    onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1))
+                        .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).perform(click())
                     context.getSharedPreferences("Settings", 0).edit().putInt("merhav", 0).commit()
                     open(R.id.mokedPick)
                     awaitDialog()
@@ -101,6 +102,12 @@ class SettingsChoiceTest {
                 }
         }
         return found
+    }
+
+    class LocaleProbeDialog : androidx.fragment.app.DialogFragment() {
+        override fun onCreateDialog(state: android.os.Bundle?): android.app.Dialog =
+            androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
+                .setMessage("Locale regression").setPositiveButton(android.R.string.ok, null).create()
     }
 
     private fun open(item: Int) {
