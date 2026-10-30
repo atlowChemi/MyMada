@@ -57,6 +57,9 @@ class HomeScreenTest {
         // API 24 restarts its launcher on font changes; let that transition finish before launching Home.
         instrumentation.uiAutomation.waitForIdle(500, 5_000)
         shell("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow")
+        instrumentation.runOnMainSync {
+            atlow.chemi.mymada.helpers.LocalHelper.setLocale(context, language)
+        }
         preferences.edit().putString("lng", language).putBoolean("oldU", true)
             .putBoolean("privacy", true).putBoolean("Mapp", false)
             .putBoolean("WasLangChanged", false).putBoolean("realM", false)
