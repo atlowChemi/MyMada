@@ -24,6 +24,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.HomePage
 import atlow.chemi.mymada.InfoActivityKt
@@ -68,6 +69,34 @@ class HomeScreenTest {
 
     @Test fun englishNavigationBackAndRecreation() = verifyHome("en", 1f)
     @Test fun hebrewRtlLargeTextNavigationBackAndRecreation() = verifyHome("he", 1.5f)
+
+    @Test fun repeatedTestCallThenContactDialogTargetsFocusedWindow() {
+        for (language in listOf("en", "he")) {
+            prepare(language)
+            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+                val labels = mutableMapOf<Int, String>()
+                scenario.onActivity { activity ->
+                    listOf(R.string.test_beep, R.string.TestCallMsg, R.string.title_activity_contact,
+                        R.string.plsNoteCon).forEach { labels[it] = activity.getString(it) }
+                }
+                repeat(20) { round ->
+                    for ((action, message) in listOf(R.string.test_beep to R.string.TestCallMsg,
+                        R.string.title_activity_contact to R.string.plsNoteCon)) {
+                        compose.onNodeWithText(labels.getValue(action)).performScrollTo().performClick()
+                        onView(withText(labels.getValue(message))).inRoot(isDialog()).check { view, failure ->
+                            if (failure != null) throw failure
+                            val params = view.rootView.layoutParams as android.view.WindowManager.LayoutParams
+                            assertTrue(view.hasWindowFocus())
+                            assertEquals(android.view.WindowManager.LayoutParams.TYPE_APPLICATION, params.type)
+                        }
+                        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                        waitForHomeFocus(scenario)
+                    }
+                    if (round % 5 == 4) scenario.recreate()
+                }
+            }
+        }
+    }
 
     private fun verifyHome(language: String, scale: Float) {
         prepare(language, scale)
@@ -133,20 +162,25 @@ class HomeScreenTest {
             visit(lockPage::class.java, { onView(withText("עמוד חסימה")).perform(click()) })
             assertFalse(preferences.getBoolean("realM", true))
             compose.onNodeWithText(labels.getValue(R.string.test_beep)).performScrollTo().performClick()
-            onView(withText(labels.getValue(R.string.TestCallMsg))).check(matches(isDisplayed()))
+            onView(withText(labels.getValue(R.string.TestCallMsg))).inRoot(isDialog()).check(matches(isDisplayed()))
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            waitForHomeFocus(scenario)
             compose.onNodeWithText(labels.getValue(R.string.title_activity_contact)).performScrollTo().performClick()
-            onView(withText(labels.getValue(R.string.plsNoteCon))).check(matches(isDisplayed()))
+            onView(withText(labels.getValue(R.string.plsNoteCon))).inRoot(isDialog()).check(matches(isDisplayed()))
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.onNodeWithText(labels.getValue(R.string.app_name)).assertIsDisplayed()
             assertEquals(setOf("metro", "oxy"), preferences.getStringSet("Tools", emptySet()))
-            compose.waitUntil(5_000) {
-                var focused = false
-                scenario.onActivity { focused = it.hasWindowFocus() }
-                focused
-            }
+            waitForHomeFocus(scenario)
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.waitUntil(5_000) { scenario.state != Lifecycle.State.RESUMED }
+        }
+    }
+
+    private fun waitForHomeFocus(scenario: ActivityScenario<HomePage>) {
+        compose.waitUntil(5_000) {
+            var focused = false
+            scenario.onActivity { focused = it.hasWindowFocus() }
+            focused
         }
     }
 
