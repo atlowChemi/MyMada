@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -46,14 +47,17 @@ import java.util.TimeZone;
 import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.calls.CallAlerts;
 import atlow.chemi.mymada.calls.AlertDecision;
+import atlow.chemi.mymada.calls.CallEvent;
 
 public class smsRes extends AppCompatActivity {
     private MediaPlayer mMediaPlayer;
     int currentVolume;
+    private boolean volumeChanged;
     private String string;
-    private static PendingIntent pi;
+    private PendingIntent pi;
     private Vibrator vibe;
-    private static String Stxt = "מקרה חדש";
+    private String Stxt = "מקרה חדש";
+    private final Handler autoStopHandler = new Handler(android.os.Looper.getMainLooper());
     public Context context;
     private AudioManager am;
     public static float vo = 0;
@@ -81,8 +85,10 @@ public class smsRes extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_res);
 //        Crashlytics.log("SmsRes Has Been Opened!");
-        Bundle extras = getIntent().getExtras();
-        int callT = extras != null ? extras.getInt("callT") : 1;
+        CallEvent event = CallEvent.from(getIntent());
+        int callT = event.getType();
+        Stxt = event.getText();
+        pi = event.getSource();
         string = CallAlerts.suffix(callT);
         mMediaPlayer = new MediaPlayer();
         SharedPreferences SP = getSharedPreferences("Settings",0);
@@ -117,18 +123,10 @@ public class smsRes extends AppCompatActivity {
         }
         if(ShabbatM)    {
             int finishTime = Integer.parseInt(SP.getString("timeK", "6")); //6 secs
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
+            autoStopHandler.postDelayed(() -> {
                 vibe.cancel();
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                try {
-                    if (sou && mMediaPlayer.isPlaying()) {
-                        mMediaPlayer.setVolume(vo, vo);
-                        mMediaPlayer.release();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                releaseSound();
                 smsRes.this.finish();
             }, finishTime * 1000);
         }
@@ -320,6 +318,7 @@ public class smsRes extends AppCompatActivity {
             if (volumeApp) {
                 int volumeAppNum = SP.getInt("volumeAppNum", vol);
                 am.setStreamVolume(AudioManager.STREAM_ALARM, volumeAppNum, 0);
+                volumeChanged = true;
                 mMediaPlayer.setVolume(volumeAppNum, volumeAppNum);
             }
             mMediaPlayer.setDataSource(context, alert);
@@ -338,32 +337,32 @@ public class smsRes extends AppCompatActivity {
 //            Crashlytics.logException(e);
         }
     }
-    public static void newC(String C)  {
-        Stxt = C;
-    }
-    public static void alerT(PendingIntent pendingIntent)  {
-            pi = pendingIntent;
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        recreate();
     }
     @Override
     public void onDestroy() {
-        SharedPreferences SP = getSharedPreferences("settings",0);
-        final boolean sou = SP.getBoolean("Nsou" + string, true);
+        autoStopHandler.removeCallbacksAndMessages(null);
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
         if (vibe != null) {
             vibe.cancel();
         }
         getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        try {
-            boolean isp = mMediaPlayer.isPlaying();
-            if (sou && isp) {
-                am.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
-                mMediaPlayer.setVolume(vo, vo);
-                mMediaPlayer.release();
-            }
-        }catch (IllegalStateException e)    {
-            e.printStackTrace();
-        }
+        releaseSound();
         super.onDestroy();
+    }
+    private void releaseSound() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+        if (volumeChanged) {
+            am.setStreamVolume(AudioManager.STREAM_ALARM, currentVolume, 0);
+            volumeChanged = false;
+        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
