@@ -44,7 +44,9 @@ class DayNightSettingsTest {
         instrumentation.uiAutomation.executeShellCommand("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow").use {
             android.os.ParcelFileDescriptor.AutoCloseInputStream(it).readBytes()
         }
-        for (language in listOf("en", "he")) {
+        val rounds = InstrumentationRegistry.getArguments().getString("rounds")?.toInt() ?: 1
+        for (round in 1..rounds) for (language in listOf("en", "he")) {
+            android.util.Log.i("DayNightDiagnosis", "round=$round language=$language")
             instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
             preferences.edit().putInt("sleepDay", 0).putInt("sleepNight", 0).putInt("sleep", 0)
                 .putInt("nightStart", 23).putInt("nightEnd", 7).putBoolean("Mapp", false).commit()
@@ -64,6 +66,13 @@ class DayNightSettingsTest {
                 onView(withId(R.id.sleepDay_Desc)).check(matches(withText(choices[1])))
                 assertEquals(3, preferences.getInt("sleep", -1))
                 onView(withId(R.id.sleepNight_pref)).perform(scrollTo(), click())
+                scenario.onActivity {
+                    val parent = it.supportFragmentManager.findFragmentById(R.id.frame) as SettingsAmpm
+                    val row = parent.requireView().findViewById<android.view.View>(R.id.sleepNight_pref)
+                    val rect = android.graphics.Rect()
+                    row.getGlobalVisibleRect(rect)
+                    android.util.Log.i("DayNightDiagnosis", "after night tap: bounds=$rect focus=${row.hasWindowFocus()} children=${parent.childFragmentManager.fragments}")
+                }
                 onView(withText(choices[2])).inRoot(isDialog()).check(matches(isDisplayed()))
                 scenario.recreate()
                 onView(withText(choices[2])).inRoot(isDialog()).perform(click())
