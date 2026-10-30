@@ -90,6 +90,13 @@ boundary, malformed data and original-backup retention.
 keeps the running state, confirmed deletion clears it across recreation while
 retaining the original raw backup.
 
+Day/night controls use Kotlin with the published XML and hour-only dial. Choice
+dialogs are child DialogFragments; restored time pickers rebind their callback and
+use stable `nightStart`/`nightEnd` tags rather than a transient boolean destination.
+The receiver's existing nine-state `sleep` code is `sleepDay * 3 + sleepNight`,
+persisted atomically with the changed selection. `DayNightSettingsTest` checks all
+nine combinations in both edit orders and bilingual mode/hour dialog recreation.
+
 `PreferenceMigrationTest` covers typed/RN/malformed/missing values, overflow, empty
 tool selection, preservation and repeated/interrupted-between-file migration.
 `StartupUpgradeTest` is opt-in: run with `startupFixture=seed`, force-stop the app,
