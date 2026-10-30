@@ -64,6 +64,26 @@ without writing them; user changes persist the existing `cut`, `stat`, `statVib`
 `callT6` and `callT4` keys. `NotificationSettingsTest` exercises both locales, defaults,
 all toggles/descriptions, recreation, and the Sound/Vibration navigation route.
 
+## Saved contraction compatibility
+
+`ContractionHistory` backs up the original list/counter/timestamp before parsing or
+expiration. Malformed lists remain verbatim. Native Gson Date strings and RN epoch
+milliseconds are read separately; mixed/ambiguous records are not guessed. Numbering
+comes from entries, never stale `contarctNum`. An RN active tail restores the End
+button and its start time; completed entries supply the actual previous timestamp.
+
+The compatibility bridge retains each known writer's behavior: native interval
+end→start and `contractLong` = last completion; RN interval start→start and
+`contractLong` = disposal time. Both retain their existing 20-minute eligibility
+comparison. RN writes remain numeric (including an unfinished tail), native writes
+remain Gson Date strings. This is provenance compatibility, **not** resolution of
+#23's choice of one future interval/expiration policy. Newly created native sessions
+still use native behavior. Full timer Kotlin/UI/lifecycle migration remains #23.
+
+`ContractionHistoryTest` covers recent RN active + multiple-completed records, absent
+and stale counters, complete/reopen without renumbering, native dates, exact expiry
+boundary, malformed data and original-backup retention.
+
 `PreferenceMigrationTest` covers typed/RN/malformed/missing values, overflow, empty
 tool selection, preservation and repeated/interrupted-between-file migration.
 `StartupUpgradeTest` is opt-in: run with `startupFixture=seed`, force-stop the app,
