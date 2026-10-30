@@ -9,6 +9,27 @@ This keeps AppCompat's locale-directed button panels aligned after warm language
 changes. `SettingsChoiceTest` checks the actual language-choice path, application
 and default locales, and a fresh themed dialog without per-dialog direction fixes.
 
+## API37 day/night instrumentation
+
+The API37/16KB image can reject a tap immediately after a dialog closes:
+InputDispatcher logs `Dropping untrusted touch event due to /1000`, identifying
+an alpha=0 system `Dim Layer for - Task` as the obscurer. The failing night tap
+never creates a ModeDialog; this is not lost FragmentManager saved state.
+Keep the click→recreate regression unchanged and use the runner's standard
+window-animation control (no app delays, retries or synchronization):
+
+```sh
+adb -s emulator-5580 shell am instrument --no-window-animation -w -r \
+  -e rounds 20 -e class atlow.chemi.mymada.settings.DayNightSettingsTest \
+  atlow.chemi.mymada.debug.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+2026-10-30: original animated run reproduced in round5/English; controlled
+font1.5 run passed all20 bilingual rounds plus Advanced/Sound/navigation (6 tests,
+207.999s). Raw input/lifecycle traces are in owned evidence `api37-owned-final/`.
+This diagnoses the emulator input failure; it does not fix the system image's
+animation bug or claim every animated device is unaffected.
+
 Keep SharedPreferences for the existing installed data and Java consumers. Migration
 runs in Application.attachBaseContext, before locale attachment, providers and services.
 No separate database or global completed marker is needed: each file is independently
