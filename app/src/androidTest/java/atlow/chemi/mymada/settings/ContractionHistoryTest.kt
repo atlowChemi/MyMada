@@ -61,6 +61,22 @@ class ContractionHistoryTest {
         assertFalse(history.eligible(now - 70000 + 20 * 60000 + 1))
     }
 
+    @Test fun nativeJsonSecondPrecisionDoesNotTruncateCompletionMillisecondsOnReopen() {
+        val preciseEnd = now - 70_000 + 67
+        val raw = Gson().toJson(listOf(Contraction(1, Date(now - 100_000), Date(preciseEnd), null)))
+        preferences.edit().clear().putString("contractList", raw).putLong("contractLong", preciseEnd).commit()
+        val history = ContractionHistory(preferences)
+        val saved = history.read()!!
+        assertEquals(preciseEnd, saved.completed.last().end.time)
+        history.save(saved.completed, null, saved.number, now)
+        assertEquals(preciseEnd, preferences.getLong("contractLong", 0))
+        assertEquals(raw, preferences.getString("contractList", null))
+        assertEquals(preciseEnd, ContractionHistory(preferences).read()!!.completed.last().end.time)
+        // A stale/mismatched timestamp must not rewrite a different record's end.
+        preferences.edit().putLong("contractLong", preciseEnd + 10_000).commit()
+        assertEquals(preciseEnd / 1000 * 1000, ContractionHistory(preferences).read()!!.completed.last().end.time)
+    }
+
     @Test fun expirationAndMalformedDataKeepOriginalBeforeAnyReplacement() {
         val raw = """[{"number":1,"start":${now - 2000000},"end":${now - 1900000}}]"""
         preferences.edit().clear().putString("contractList", raw).putLong("contractLong", now - 1800000).commit()

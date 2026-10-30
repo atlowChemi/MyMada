@@ -73,7 +73,10 @@ comes from entries, never stale `contarctNum`. An RN active tail restores the En
 button and its start time; completed entries supply the actual previous timestamp.
 
 The compatibility bridge retains each known writer's behavior: native interval
-end→start and `contractLong` = last completion; RN interval start→start and
+end→start and `contractLong` = last completion. Native JSON dates lose milliseconds;
+the matching last completion second is restored from `contractLong` before saving
+or using it as the next interval anchor. A different-second timestamp is not used
+to alter history. RN interval start→start and
 `contractLong` = disposal time. Both retain their existing 20-minute eligibility
 comparison. RN writes remain numeric (including an unfinished tail), native writes
 remain Gson Date strings. This is provenance compatibility, **not** resolution of
