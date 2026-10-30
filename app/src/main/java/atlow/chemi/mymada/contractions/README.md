@@ -5,9 +5,10 @@ Based on PR #53 `b42820cc`, including #45's saved-history bridge. The installed
 timekeeping and Compose owns the timer/history; the shared Java `Contraction`
 record remains the #45 Gson interoperability model.
 History labels use standard `AppCompatTextView` interop inside Compose rows:
-disabling API33 fallback-font line spacing matches published API29-targeted
-12822 English row geometry. Hebrew row height/baselines still differ and block
-visual acceptance; this is not a pixel-exact parity claim.
+preserving API29's layout-dependent fallback spacing matches 12822: enabled for
+RTL/wrapped (`StaticLayout`) text, disabled for single-line Latin (`BoringLayout`)
+text. API33+ otherwise enables both. The bundled font is byte-identical to 12822;
+no locale-specific padding or font substitution is used.
 
 ## Preserved contracts
 
@@ -46,12 +47,20 @@ unchanged `ContractionHistoryTest` (native/RN parsing, precision, expiry/backups
 
 ## Verified candidate
 
-Debug, AndroidTest, optimized release and lint builds passed. The final
+At initial migration commit `6e131bcc`, debug, AndroidTest, optimized release and
+lint builds passed. The
 `test-{24,37}-settled-{normal,large}.log` runs each passed 9 tests (36 total),
 including asserted Activity/Compose font scales of 1.0 and 1.5. API37 uses actual
 16384-byte pages. Optimized release install/recovery/completion/reopen and RN
 active-only cancel/delete/reopen passed on both owned emulators, with exact raw
 backup checks. Release is locally debug-key signed, not production-key proof.
-Some API24 large-font screenshots captured transitional/non-app frames despite
-passing assertions; those captures do not establish visual parity. Hebrew
-geometry and replacement captures remain acceptance work under #35.
+The typography follow-up builds debug/AndroidTest and lint, and runs just the two
+affected bilingual visual/lifecycle methods on both APIs at both font scales
+(`test-visual{24,37}-{normal,large}.log`, 8 passing checks). Captures wait for the
+current Activity's focus and rendered frames; owned emulators disable transitions.
+`captures-visual*` replaces the earlier transitional API24 captures. Both native
+and RN active/completed states, native history, and landscape are retained.
+Production comparisons and APK/screenshot hashes are under `visual-final/`.
+The earlier 36-test/release evidence is not a claim of rerunning it after this
+UI-only change. Product decisions and integration after the shared locale fix
+remain separate acceptance gates.
