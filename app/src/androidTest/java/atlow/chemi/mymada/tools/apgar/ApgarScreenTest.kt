@@ -72,8 +72,14 @@ class ApgarScreenTest {
                 }
                 // Toolbar drawer back dismisses only the drawer, preserving all choices.
                 scenario.onActivity { it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
-                    .openDrawer(androidx.core.view.GravityCompat.START) }
+                    .openDrawer(androidx.core.view.GravityCompat.START, false) }
                 pressBack()
+                compose.waitUntil(5_000) {
+                    var closed = false
+                    scenario.onActivity { closed = !it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
+                        .isDrawerVisible(androidx.core.view.GravityCompat.START) }
+                    closed
+                }
                 assertScore(format, 6)
                 pressBackUnconditionally()
                 compose.waitUntil(5_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
