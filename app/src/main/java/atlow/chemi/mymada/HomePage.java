@@ -63,21 +63,21 @@ public class HomePage extends AppCompatActivity {
         boolean oldU = sharedPreferences.getBoolean("oldU", false);
         //If the user wasn't in settings ever, ask him to go there
         if (savedInstanceState == null && !oldU)
-            ShowDialog(getString(R.string.newSettings),
-                    getString(R.string.title_activity_settings),
+            ShowDialog(R.string.newSettings,
+                    R.string.title_activity_settings,
                     new Intent(getApplicationContext(), SettingsPage.class));
 
         //If the user is android M or above, make sure he permitted app overlay.
         else if (savedInstanceState == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this))
-            ShowDialog(getString(R.string.permDesOverlay),
-                    getString(R.string.permTitle),
-                    getString(R.string.permYes),
+            ShowDialog(R.string.permDesOverlay,
+                    R.string.permTitle,
+                    R.string.permYes,
                     new Intent(getApplicationContext(), SettingsPage.class),
                     true, OVERLAY_PER_REQ);
         //If user was never in privacy page, ask him to visit there.
         else if (savedInstanceState == null && !Privacy)
-            ShowDialog(getString(R.string.privacyMsg),
-                    getString(R.string.title_activity_privacy),
+            ShowDialog(R.string.privacyMsg,
+                    R.string.title_activity_privacy,
                     new Intent(HomePage.this, PrivacyActivity.class));
 
         if(savedInstanceState == null && Mapp && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -92,7 +92,7 @@ public class HomePage extends AppCompatActivity {
                 Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
                 intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
                 intent.putExtra(Settings.EXTRA_CHANNEL_ID, CnlBg);
-                ShowDialog(getString(R.string.importanceMsg), getString(R.string.importance), intent);
+                ShowDialog(R.string.importanceMsg, R.string.importance, intent);
             }
         }
     }
@@ -222,8 +222,8 @@ public class HomePage extends AppCompatActivity {
                 if (activityExists) {
                     try {
                         if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                            ShowDialog(getString(R.string.dialog_help),
-                                    getString(R.string.dialog_yes),
+                            ShowDialog(R.string.dialog_help,
+                                    R.string.dialog_yes,
                                     new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
                         }
                         s.putBoolean("Mapp", true);
@@ -234,9 +234,9 @@ public class HomePage extends AppCompatActivity {
                         stopService(intent);
                         startService(old);
                         if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                            ShowDialog(getString(R.string.dialog_help),
-                                    null,
-                                    getString(R.string.dialog_yes),
+                            ShowDialog(R.string.dialog_help,
+                                    0,
+                                    R.string.dialog_yes,
                                     new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
                                     true, REQUEST_PERMISSION_SETTING);
                         }
@@ -249,9 +249,9 @@ public class HomePage extends AppCompatActivity {
                     stopService(intent);
                     startService(old);
                     if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                        ShowDialog(getString(R.string.dialog_help),
-                                null,
-                                getString(R.string.dialog_yes),
+                        ShowDialog(R.string.dialog_help,
+                                0,
+                                R.string.dialog_yes,
                                 new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
                                 true, REQUEST_PERMISSION_SETTING);
                     }
@@ -278,9 +278,9 @@ public class HomePage extends AppCompatActivity {
                 resultCode != RESULT_OK &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 !Settings.canDrawOverlays(this))
-                ShowDialog(getString(R.string.permDesOverlay),
-                        getString(R.string.permTitle),
-                        getString(R.string.permYes),
+                ShowDialog(R.string.permDesOverlay,
+                        R.string.permTitle,
+                        R.string.permYes,
                         new Intent(getApplicationContext(), SettingsPage.class),
                         true, OVERLAY_PER_REQ);
     }
@@ -291,8 +291,8 @@ public class HomePage extends AppCompatActivity {
      * @param btnPos string for positive button.
      * @param intent Intent to open up when positive button clicked.
      */
-    private void ShowDialog(String msg, String btnPos, Intent intent) {
-        ShowDialog(msg, null , btnPos, intent, false, 0);
+    private void ShowDialog(int msg, int btnPos, Intent intent) {
+        ShowDialog(msg, 0, btnPos, intent, false, 0);
     }
 
     /***
@@ -304,7 +304,7 @@ public class HomePage extends AppCompatActivity {
      * @param resultActivity is the activity a result activity or not
      * @param result result of intent
      */
-    private void ShowDialog(String msg, String title, String btnPos, Intent intent, boolean resultActivity, int result) {
+    private void ShowDialog(int msg, int title, int btnPos, Intent intent, boolean resultActivity, int result) {
         HomePrompt.show(this, msg, title, btnPos, intent, resultActivity, result);
     }
 }

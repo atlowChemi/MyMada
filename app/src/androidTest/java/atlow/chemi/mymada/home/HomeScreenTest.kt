@@ -200,6 +200,47 @@ class HomeScreenTest {
         }
     }
 
+    @Test fun multiplePromptsRestoreInOrderUsingTheNewLocale() {
+        prepare("en")
+        preferences.edit().putBoolean("oldU", false).commit()
+        ActivityScenario.launch(HomePage::class.java).use { scenario ->
+            // Home can show onboarding and channel-importance prompts in one creation.
+            // Exercise both saved dialogs without enabling a detection service or modifying OS channels.
+            scenario.onActivity {
+                HomePrompt.show(it, R.string.importanceMsg, 0, R.string.importance,
+                    android.content.Intent(it, SettingsPage::class.java), false, 0)
+                it.supportFragmentManager.executePendingTransactions()
+            }
+            preferences.edit().putString("lng", "he").commit()
+            scenario.recreate()
+            var importance = ""
+            var onboarding = ""
+            var cancel = ""
+            scenario.onActivity {
+                importance = it.getString(R.string.importanceMsg)
+                onboarding = it.getString(R.string.newSettings)
+                cancel = it.getString(R.string.dialog_no)
+                val prompts = it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>()
+                assertEquals(2, prompts.size)
+                assertEquals(listOf(onboarding, importance), prompts.map { prompt ->
+                    prompt.requireDialog().findViewById<android.widget.TextView>(android.R.id.message).text.toString()
+                })
+            }
+            compose.waitUntil(5_000) {
+                var focused = false
+                scenario.onActivity {
+                    focused = it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>().last()
+                        .requireDialog().window!!.decorView.hasWindowFocus()
+                }
+                focused
+            }
+            onView(withText(importance)).check(matches(isDisplayed()))
+            onView(withText(cancel)).perform(click())
+            onView(withText(onboarding)).check(matches(isDisplayed()))
+            onView(withText(cancel)).perform(click())
+        }
+    }
+
     @Test fun onboardingDestinationsAndLocaleReturn() {
         prepare("en")
         preferences.edit().putBoolean("oldU", false).commit()

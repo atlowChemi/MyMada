@@ -22,9 +22,9 @@ class HomePrompt : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val args = requireArguments()
         return AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
-            .setMessage(args.getString("message"))
-            .setTitle(args.getString("title"))
-            .setPositiveButton(args.getString("positive")) { _, _ ->
+            .setMessage(args.getInt("message"))
+            .setTitle(args.getInt("title").takeIf { it != 0 }?.let(::getString))
+            .setPositiveButton(args.getInt("positive")) { _, _ ->
                 val intent = requireNotNull(BundleCompat.getParcelable(args, "intent", Intent::class.java))
                 if (args.getBoolean("forResult")) {
                     // Keep the installed Home activity's overlay return contract during migration.
@@ -49,13 +49,13 @@ class HomePrompt : DialogFragment() {
     }
 
     companion object {
-        @JvmStatic fun show(activity: FragmentActivity, message: String, title: String?, positive: String,
+        @JvmStatic fun show(activity: FragmentActivity, message: Int, title: Int, positive: Int,
                             intent: Intent, forResult: Boolean, request: Int) {
             HomePrompt().apply {
                 arguments = Bundle().apply {
-                    putString("message", message)
-                    putString("title", title)
-                    putString("positive", positive)
+                    putInt("message", message)
+                    putInt("title", title)
+                    putInt("positive", positive)
                     putParcelable("intent", intent)
                     putBoolean("forResult", forResult)
                     putInt("request", request)
