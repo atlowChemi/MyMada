@@ -10,6 +10,9 @@ import atlow.chemi.mymada.UtillitiesAndTools
 import com.google.android.material.navigation.NavigationView
 import org.junit.Assert.*
 import org.junit.Test
+import java.io.File
+import android.graphics.Bitmap
+import atlow.chemi.mymada.helpers.LocalHelper
 
 /** Offline emulator only: the application initializes production SDKs. */
 class OxygenTest {
@@ -35,6 +38,9 @@ class OxygenTest {
     @Test fun editsTankAndRecreation() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
+        val arguments = InstrumentationRegistry.getArguments()
+        val language = arguments.getString("language") ?: "en"
+        instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
         context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
             .putBoolean("WasLangChanged", false).putStringSet("Tools", setOf("metro", "oxy")).commit()
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
@@ -44,6 +50,12 @@ class OxygenTest {
                 it.supportFragmentManager.executePendingTransactions()
             }
             instrumentation.waitForIdleSync()
+            instrumentation.uiAutomation.takeScreenshot().let { bitmap ->
+                File(context.getExternalFilesDir(null), "oxygen-${language}-default.png").outputStream().use {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+                }
+                bitmap.recycle()
+            }
             scenario.onActivity {
                 assertEquals("24", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
                 it.findViewById<Spinner>(R.id.OxyTypeS).setSelection(1)
