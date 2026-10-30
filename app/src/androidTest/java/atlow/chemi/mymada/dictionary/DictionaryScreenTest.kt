@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
+import androidx.test.espresso.Espresso.pressBackUnconditionally
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -110,6 +112,20 @@ class DictionaryScreenTest {
                 scenario.onActivity { model.retry(); source.emit(listOf(beta)) }
                 assertFalse(model.readError)
                 assertTrue(source.removals > 0)
+                scenario.onActivity {
+                    it.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).menu.findItem(R.id.app_bar_search).collapseActionView()
+                    it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
+                        .openDrawer(androidx.core.view.GravityCompat.START, false)
+                }
+                pressBack()
+                compose.waitUntil(5_000) {
+                    var closed = false
+                    scenario.onActivity { closed = !it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
+                        .isDrawerVisible(androidx.core.view.GravityCompat.START) }
+                    closed
+                }
+                pressBackUnconditionally()
+                compose.waitUntil(5_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
             }
             assertTrue(source.removals > 0)
         }
@@ -142,6 +158,8 @@ class DictionaryScreenTest {
 
     private data class Write(val key: String, val edit: Boolean, val fields: Map<String, Any>)
     private class FixtureSource : DictionarySource {
+        private var nextKey = 0
+        override fun newKey(): String = "fixture-${nextKey++}"
         var listener: ((List<DictionaryEntry>?, Boolean, Exception?) -> Unit)? = null
         var completion: ((Exception?) -> Unit)? = null
         var removals = 0
