@@ -1,0 +1,8 @@
+<resources>
+    <item name="pulse_compose" type="id" />
+    <item name="fifteenPulseA" type="id" />
+    <item name="fullPulseA" type="id" />
+    <item name="shortPulseATIL" type="id" />
+    <item name="fullPulseATIL" type="id" />
+    <item name="txtTimerSecond" type="id" />
+</resources>
