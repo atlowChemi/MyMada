@@ -96,6 +96,11 @@ class PrivacyScreenTest {
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
         ActivityScenario.launch(PrivacyActivity::class.java).use { scenario ->
+            compose.waitUntil(5_000) {
+                var focused = false
+                scenario.onActivity { focused = it.window.decorView.hasWindowFocus() }
+                focused
+            }
             instrumentation.sendKeyDownUpSync(android.view.KeyEvent.KEYCODE_BACK)
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
