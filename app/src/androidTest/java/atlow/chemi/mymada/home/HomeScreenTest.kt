@@ -181,6 +181,14 @@ class HomeScreenTest {
                     cancel = it.getString(R.string.dialog_no)
                 }
                 scenario.recreate()
+                compose.waitUntil(5_000) {
+                    var focused = false
+                    scenario.onActivity {
+                        focused = it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>()
+                            .singleOrNull()?.dialog?.window?.decorView?.hasWindowFocus() == true
+                    }
+                    focused
+                }
                 onView(withText(message)).check(matches(isDisplayed()))
                 scenario.onActivity {
                     assertEquals(1, it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>().size)
