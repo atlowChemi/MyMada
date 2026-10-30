@@ -9,6 +9,13 @@ This keeps AppCompat's locale-directed button panels aligned after warm language
 changes. `SettingsChoiceTest` checks the actual language-choice path, application
 and default locales, and a fresh themed dialog without per-dialog direction fixes.
 
+External audio acceptance: select a >1s external MediaStore file in combined-event
+Sound settings after granting the actual OS permission, then run instrumentation
+with `-e externalAudio true -e class atlow.chemi.mymada.settings.ExternalAudioDispatchTest`.
+It checks external read access, decoding, advancing playback and (API26+) an active
+audio configuration using the legacy consumers' alarm-stream MediaPlayer sequence.
+This verifies dispatch, not speaker audibility or end-to-end incoming-alert routing.
+
 ## API37 day/night instrumentation
 
 The API37/16KB image can reject a tap immediately after a dialog closes:
