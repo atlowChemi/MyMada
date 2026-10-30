@@ -64,6 +64,7 @@ class DayNightSettingsTest {
                 onView(withId(R.id.sleepDay_Desc)).check(matches(withText(choices[1])))
                 assertEquals(3, preferences.getInt("sleep", -1))
                 onView(withId(R.id.sleepNight_pref)).perform(scrollTo(), click())
+                onView(withText(choices[2])).inRoot(isDialog()).check(matches(isDisplayed()))
                 scenario.recreate()
                 onView(withText(choices[2])).inRoot(isDialog()).perform(click())
                 onView(withId(R.id.sleepNight_Desc)).check(matches(withText(choices[2])))
