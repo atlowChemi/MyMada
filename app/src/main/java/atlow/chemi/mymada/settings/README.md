@@ -50,6 +50,14 @@ it retains no Activity reference. The remaining Settings sections still use nati
 Java/XML and are migrated separately. `SettingsChoiceTest` changes both languages,
 checks Home return, restores region selection and supports `capture=true` screenshots.
 
+The Tools settings section is now Kotlin/Compose. Its saved Fragment identity remains
+`fragments.SettingsTools`; Compose owns scroll/toggle state and switch accessibility.
+Native text metrics and SwitchCompat artwork preserve the published list appearance.
+Rows grow for larger text rather than clipping fixed-height labels. The last visible
+tool cannot be disabled, matching native behavior; unknown saved tool keys are retained.
+`ToolSettingsTest` covers both languages, all selections, the last-tool guard, stored
+unknown keys and recreation/scroll state. Set `capture=true` for comparison PNGs.
+
 `PreferenceMigrationTest` covers typed/RN/malformed/missing values, overflow, empty
 tool selection, preservation and repeated/interrupted-between-file migration.
 `StartupUpgradeTest` is opt-in: run with `startupFixture=seed`, force-stop the app,
