@@ -71,7 +71,9 @@ shared-counter round trip. On API 33+, it pre-grants notification permission;
 to check denied-permission UI start/stop separately, revoke POST_NOTIFICATIONS
 on the disposable test install and run `MetronomeNotificationTest` with runner
 argument `grantNotifications=false`. Neither mode verifies permission-request UX
-or audio tempo. There are no JVM unit tests yet (`testDebugUnitTest` is `NO-SOURCE`).
+or audio tempo. `:app:testDebugUnitTest` runs the call parser/alert-decision tests;
+the [calls slice](app/src/main/java/atlow/chemi/mymada/calls/README.md) documents
+its offline integrated route checks and remaining lifecycle/permission gates.
 
 For native packaging, follow Android's
 [official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment):

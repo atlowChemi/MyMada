@@ -27,6 +27,8 @@ import java.util.TimeZone;
 import atlow.chemi.mymada.MokedPage;
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.smsRes;
+import atlow.chemi.mymada.calls.CallAlerts;
+import atlow.chemi.mymada.calls.AlertDecision;
 
 
 public class GrobootRec extends BroadcastReceiver {
@@ -51,20 +53,11 @@ public class GrobootRec extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         final SharedPreferences sp = context.getSharedPreferences("Settings", 0);
-        SharedPreferences notSP = context.getSharedPreferences("notifications", 0);
         boolean win = sp.getBoolean("win", true);
         boolean not = sp.getBoolean("not", true);
         boolean ShabbatM = sp.getBoolean("killS", false);
-        boolean stat = sp.getBoolean("stat", false);
-        boolean statVib = sp.getBoolean("statVib", false);
-        boolean silent = true;
-        boolean silentVib = true;
         Uri url = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.alert);
         AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        if (am != null && am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
-            silent = false;
-        if (am != null && am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
-            silentVib = false;
         Intent hachtava = new Intent(context, MokedPage.class);
         hachtava.putExtra("msg", true);
         hachtava.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
@@ -86,97 +79,20 @@ public class GrobootRec extends BroadcastReceiver {
             }
             callT = intent.getIntExtra("callT", 1);
             Log.d("callT", "" + callT);
-            switch (callT) {
-                case 1:
-                    callType = sp.getBoolean("callT1", true);
-                    string = "T1";
-                    break;
-                case 2:
-                    callType = sp.getBoolean("callT2", true);
-                    string = "T2";
-                    break;
-                case 3:
-                    callType = sp.getBoolean("callT3", true);
-                    string = "T3";
-                    break;
-                case 4:
-                    callType = sp.getBoolean("callT4", true);
-                    string = "T4";
-                    break;
-                case 5:
-                    callType = sp.getBoolean("callT3", true);
-                    string = "T3";
-                    break;
-                case 6:
-                    callType = sp.getBoolean("callT6", true);
-                    string = "T6";
-                    break;
-                default:
-                    callType = sp.getBoolean("callT1", true);
-                    string = "T1";
-                    break;
-            }
+            string = CallAlerts.suffix(callT);
+            if (intent.hasExtra("sourceIntent")) madasApp = intent.getParcelableExtra("sourceIntent");
             Log.d("callT", "t6 is: " + callType);
             smsRes.newC(text);
             smsRes.alerT(madasApp);
         }
-        cut = sp.getBoolean("cut", false);
-        if (testAp) {
-            callType = true;
-        }
-        Log.d("callT", "t6 is now: " + callType);
-        Uri uri;
-        if (string.equals("T6") || string.equals("T4")) {
-            vib = sp.getBoolean("NvibT4", true);
-            sou = sp.getBoolean("NsouT4", true);
-            app = sp.getBoolean("NappT4", false);
-            uri = Uri.parse(sp.getString("NuRiT4", ""));
-        } else if (cut) {
-            vib = sp.getBoolean("Nvib" + string, true);
-            sou = sp.getBoolean("Nsou" + string, true);
-            app = sp.getBoolean("Napp" + string, false);
-            uri = Uri.parse(sp.getString("NuRi" + string, ""));
-        } else {
-            callType = true;
-            vib = sp.getBoolean("Nvib", true);
-            sou = sp.getBoolean("Nsou", true);
-            app = sp.getBoolean("Napp", false);
-            uri = Uri.parse(sp.getString("NuRi", ""));
-        }
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
         int hour = now.get(Calendar.HOUR_OF_DAY);
-        int sleep = sp.getInt("sleep", 0);
-        int nightStart = sp.getInt("nightStart", 23);
-        int nightEnd = sp.getInt("nightEnd", 7);
-        if (hour <= nightEnd || hour >= nightStart) {
-            switch (sleep) {
-                case 1:
-                case 4:
-                case 7:
-                    sou = false;
-                    break;
-                case 2:
-                case 5:
-                case 8:
-                    sou = false;
-                    vib = false;
-                    break;
-            }
-        } else {
-            switch (sleep) {
-                case 3:
-                case 4:
-                case 5:
-                    sou = false;
-                    break;
-                case 6:
-                case 7:
-                case 8:
-                    sou = false;
-                    vib = false;
-                    break;
-            }
-        }
+        AlertDecision decision = CallAlerts.decide(sp.getAll(), callT, hour, am == null ? -1 : am.getRingerMode(), testAp);
+        callType = decision.getEnabled();
+        vib = decision.getOverlayVibrate();
+        sou = decision.getSound();
+        app = decision.getCustomSound();
+        Uri uri = Uri.parse(decision.getRingtone());
         if (not && callType) {
             String tick = string.equals("T4") || string.equals("T6") ? "התקבלה הודעה חדש באפליקציה!" : "התקבל אירוע חדש באפליקציה!";
             String titl = string.equals("T4") || string.equals("T6") ? "הודעה חדשה באפליקציה!" : "אירוע חדש באפליקציה!";
@@ -212,8 +128,8 @@ public class GrobootRec extends BroadcastReceiver {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(context)) {
                     //If permission is granted start floating widget service
                     Intent service = new Intent(context , FloatingWidgetService.class);
-                    service.putExtra("vib", vib && (!statVib || !silentVib));
-                    service.putExtra("sou", sou && (!stat || !silent));
+                    service.putExtra("vib", vib);
+                    service.putExtra("sou", sou);
                     service.putExtra("loop", sp.getBoolean("loop", false));
                     service.putExtra("uri", app ? uri.toString() : url.toString());
                     service.putExtra("timeK", sp.getString("timeK", "6"));

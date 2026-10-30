@@ -44,6 +44,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import atlow.chemi.mymada.helpers.LocalHelper;
+import atlow.chemi.mymada.calls.CallAlerts;
+import atlow.chemi.mymada.calls.AlertDecision;
 
 public class smsRes extends AppCompatActivity {
     private MediaPlayer mMediaPlayer;
@@ -81,25 +83,7 @@ public class smsRes extends AppCompatActivity {
 //        Crashlytics.log("SmsRes Has Been Opened!");
         Bundle extras = getIntent().getExtras();
         int callT = extras != null ? extras.getInt("callT") : 1;
-        switch (callT)  {
-            case 2:
-                string = "T2";
-                break;
-            case 3:
-            case 5:
-                string = "T3";
-                break;
-            case 4:
-                string = "T4";
-                break;
-            case 6:
-                string = "T6";
-                break;
-            case 1:
-            default:
-                string = "T1";
-                break;
-        }
+        string = CallAlerts.suffix(callT);
         mMediaPlayer = new MediaPlayer();
         SharedPreferences SP = getSharedPreferences("Settings",0);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
@@ -109,91 +93,26 @@ public class smsRes extends AppCompatActivity {
         Uri url = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.alert);
         long[] length = {0, 900L, 200, 900, 200, 900, 200, 900L, 200, 900, 200};
         vibe = (Vibrator) smsRes.this.getSystemService(Context.VIBRATOR_SERVICE);
-        boolean cut = SP.getBoolean("cut", false);
-        boolean vib;
-        boolean soun;
-        boolean app;
-        Uri uri;
-        if (string.equals("T6") || string.equals("T4"))    {
-            vib = SP.getBoolean("NvibT4", true);
-            soun = SP.getBoolean("NsouT4", true);
-            app = SP.getBoolean("NappT4",false);
-            uri = Uri.parse(SP.getString("NuRiT4", ""));
-        }
-        else if (cut) {
-            vib = SP.getBoolean("Nvib" + string, true);
-            soun = SP.getBoolean("Nsou" + string, true);
-            app = SP.getBoolean("Napp" + string,false);
-            uri = Uri.parse(SP.getString("NuRi" + string, ""));
-        }
-        else {
-            vib = SP.getBoolean("Nvib", true);
-            soun = SP.getBoolean("Nsou", true);
-            app = SP.getBoolean("Napp", false);
-            uri = Uri.parse(SP.getString("NuRi", ""));
-        }
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
         int hour = now.get(Calendar.HOUR_OF_DAY);
-        int sleep = SP.getInt("sleep", 0);
-        int nightStart = SP.getInt("nightStart", 23);
-        int nightEnd = SP.getInt("nightEnd", 7);
-        if (hour <= nightEnd || hour >= nightStart) {
-            switch (sleep)  {
-                case 1:
-                case 4:
-                case 7:
-                    soun = false;
-                    break;
-                case 2:
-                case 5:
-                case 8:
-                    soun = false;
-                    vib = false;
-                    break;
-            }
-        }
-        else {
-            //Toast.makeText(getApplicationContext(), "day!!", Toast.LENGTH_SHORT).show();
-            switch (sleep)  {
-                case 3:
-                case 4:
-                case 5:
-                    soun = false;
-                    break;
-                case 6:
-                case 7:
-                case 8:
-                    soun = false;
-                    vib = false;
-                    break;
-            }
-        }
-        final boolean sou = soun;
+        am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        AlertDecision decision = CallAlerts.decide(SP.getAll(), callT, hour, am == null ? -1 : am.getRingerMode(), false);
+        boolean vib = decision.getPopupVibrate();
+        final boolean sou = decision.getSound();
+        boolean app = decision.getCustomSound();
+        Uri uri = Uri.parse(decision.getRingtone());
         boolean loop = SP.getBoolean("loop",false);
         boolean ShabbatM = SP.getBoolean("killS",false);
-        boolean stat = SP.getBoolean("stat",false);
-        boolean statVib = SP.getBoolean("statVib",false);
-        boolean silent = true;
-        boolean silentVib = true;
-        am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        if(am != null && am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
-            silent = false;
-        if(am != null && am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
-            silentVib = false;
-        if (!statVib || silentVib) {
-            if (vib && !loop) {
-                vibe.vibrate(length, -1);
-            } else if (vib) {
-                vibe.vibrate(length, 0);
-            }
+        if (vib && !loop) {
+            vibe.vibrate(length, -1);
+        } else if (vib) {
+            vibe.vibrate(length, 0);
         }
-        if (!stat || !silent) {
-            if (sou) {
-                if (app) {
-                    playSound(getApplicationContext(), uri, loop);
-                } else {
-                    playSound(getApplicationContext(), url, loop);
-                }
+        if (sou) {
+            if (app) {
+                playSound(getApplicationContext(), uri, loop);
+            } else {
+                playSound(getApplicationContext(), url, loop);
             }
         }
         if(ShabbatM)    {
