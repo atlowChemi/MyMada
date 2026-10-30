@@ -35,7 +35,8 @@ Unresolved clinical/product decisions (native behavior retained provisionally):
 
 Inputs remain three ASCII digits maximum, nonnegative integers, empty neutral.
 Malformed pasted text is rejected, not silently converted (`-1` or `1.5` must not
-become `1` or `15`). Native numeric keyboard/length constraints and RN digit-stripping
+become `1` or `15`; overlength paste must not turn `1000` into `100`). Rejected edits
+retain the previous value. Native numeric keyboard/length constraints and RN digit-stripping
 did not robustly validate arbitrary pasted input. Leading zeros remain accepted.
 Systolic advances focus at three digits or two digits not starting with `1`.
 
