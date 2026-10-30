@@ -31,7 +31,10 @@ class PulseScreenTest {
 
     @Test fun calculationTimerRecreationAndNavigationInBothLanguages() {
         for (language in listOf("en", "he")) {
-            instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
+            instrumentation.runOnMainSync {
+                LocalHelper.setLocale(context, language)
+                resetTimer()
+            }
             context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
                 .putStringSet("Tools", setOf("pulse")).commit()
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
@@ -59,6 +62,7 @@ class PulseScreenTest {
                 val alarmVolume = audio.getStreamVolume(android.media.AudioManager.STREAM_ALARM)
                 compose.onNodeWithTag("pulse-timer").performClick()
                 val start = SystemClock.elapsedRealtime()
+                val deadline = timerDeadline()
                 compose.waitUntil(5_000) { seconds(scenario) in 11..13 }
                 scenario.recreate()
                 assertTrue(seconds(scenario) in 1..13)
@@ -66,9 +70,11 @@ class PulseScreenTest {
                 scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
                 SystemClock.sleep(1500)
                 scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
-                compose.waitUntil(17_000) { seconds(scenario) == 0 }
+                compose.waitUntil(17_000) { timerDeadline() == 0L }
+                onView(withId(R.id.txtTimerSecond)).check(matches(withText("0")))
                 assertTrue("Timer must not restart on recreation", SystemClock.elapsedRealtime() - start < 17_000)
                 assertEquals(alarmVolume, audio.getStreamVolume(android.media.AudioManager.STREAM_ALARM))
+                assertSingleBeep(deadline)
                 compose.onNodeWithTag("pulse-timer").performClick()
                 compose.waitUntil(3_000) { seconds(scenario) in 13..15 }
                 compose.onNodeWithTag("pulse-timer").performClick()
@@ -87,6 +93,83 @@ class PulseScreenTest {
                 compose.waitUntil(5_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
             }
         }
+    }
+
+    @Test fun timerAndSingleBeepSurviveSwitchingToolsAndRecreatingTheOtherTool() {
+        instrumentation.runOnMainSync {
+            LocalHelper.setLocale(context, "en")
+            resetTimer()
+        }
+        context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
+            .putStringSet("Tools", setOf("pulse", "apgar")).commit()
+        val audio = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
+        val alarmVolume = audio.getStreamVolume(android.media.AudioManager.STREAM_ALARM)
+        try {
+            ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                compose.onNodeWithTag("pulse-timer").performClick()
+                val deadline = timerDeadline()
+                val runningSnapshot = android.os.Bundle()
+                scenario.onActivity { PulseTimer.save(it, runningSnapshot) }
+                switchTool(scenario, R.id.apgarCalc)
+                scenario.onActivity { it.requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
+                compose.waitUntil(5_000) {
+                    var landscape = false
+                    scenario.onActivity { landscape = it.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE }
+                    landscape
+                } // Host now owns a fresh cached Pulse Fragment, not the removed one.
+                assertEquals(deadline, timerDeadline())
+                compose.waitUntil(5_000) { SystemClock.elapsedRealtime() >= deadline - 12_000 }
+                switchTool(scenario, R.id.pulseCalc)
+                assertEquals("Returning must attach to the original measurement", deadline, timerDeadline())
+                assertTrue(seconds(scenario) in 1..12)
+                switchTool(scenario, R.id.apgarCalc)
+                scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
+                compose.waitUntil(17_000) { timerDeadline() == 0L }
+                assertTrue("Completion must use the original deadline", SystemClock.elapsedRealtime() < deadline + 2_000)
+                assertEquals(alarmVolume, audio.getStreamVolume(android.media.AudioManager.STREAM_ALARM))
+                assertSingleBeep(deadline)
+                scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
+                switchTool(scenario, R.id.pulseCalc)
+                onView(withId(R.id.txtTimerSecond)).check(matches(withText("0")))
+                scenario.recreate()
+                // A saved live snapshot cannot replay a completion already delivered by this process.
+                scenario.onActivity { PulseTimer.restore(it, runningSnapshot) }
+                assertEquals(0L, timerDeadline())
+                SystemClock.sleep(1500)
+                assertSingleBeep(deadline)
+            }
+        } finally {
+            instrumentation.runOnMainSync { resetTimer() }
+        }
+    }
+
+    private fun switchTool(scenario: ActivityScenario<UtillitiesAndTools>, id: Int) {
+        scenario.onActivity {
+            val menu = it.findViewById<com.google.android.material.navigation.NavigationView>(R.id.navigation).menu
+            it.onNavigationItemSelected(menu.findItem(id))
+            it.supportFragmentManager.executePendingTransactions()
+            assertEquals(id == R.id.pulseCalc, it.supportFragmentManager.findFragmentById(R.id.frame) is PulseCalc)
+        }
+        compose.waitForIdle()
+    }
+
+    private fun timerDeadline(): Long {
+        var end = -1L
+        instrumentation.runOnMainSync { end = PulseTimer.deadline }
+        return end
+    }
+
+    private fun assertSingleBeep(deadline: Long) {
+        val log = android.os.ParcelFileDescriptor.AutoCloseInputStream(
+            instrumentation.uiAutomation.executeShellCommand("logcat -d -s PulseTimer:I"))
+            .bufferedReader().use { it.readText() }
+        assertEquals("Exactly one successful AudioTrack write sequence for $deadline", 1,
+            log.lineSequence().count { it.contains("Completion audio written for deadline $deadline") })
+    }
+
+    private fun resetTimer() {
+        if (PulseTimer.deadline == 0L && PulseTimer.seconds != 15) PulseTimer.toggle(context)
+        if (PulseTimer.deadline != 0L) PulseTimer.toggle(context)
     }
 
     private fun seconds(scenario: ActivityScenario<UtillitiesAndTools>): Int {
