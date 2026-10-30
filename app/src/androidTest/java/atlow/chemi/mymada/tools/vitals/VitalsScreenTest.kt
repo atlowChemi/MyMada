@@ -72,6 +72,10 @@ class VitalsScreenTest {
             onView(withId(R.id.pulsa)).perform(clearText(), closeSoftKeyboard())
             compose.waitForIdle()
             scenario.onActivity { assertEquals(Color.rgb(50,167,195), it.findViewById<EditText>(R.id.pulsa).currentTextColor) }
+            for (invalid in listOf("1.5", "-1", "1000")) {
+                onView(withId(R.id.pulsa)).perform(replaceText(invalid), closeSoftKeyboard())
+                scenario.onActivity { assertEquals("", it.findViewById<EditText>(R.id.pulsa).text.toString()) }
+            }
             if (instrumentation.targetContext.resources.configuration.fontScale > 1.2f) {
                 onView(withId(R.id.vitalsResult)).perform(swipeUp())
                 onView(withText(R.string.vitalsAlert)).check(matches(isCompletelyDisplayed()))

@@ -108,9 +108,9 @@ private fun VitalInput(value: String, onChange: (String) -> Unit, label: Int, vi
                 inputType = InputType.TYPE_CLASS_NUMBER
                 imeOptions = if (nextId == null) EditorInfo.IME_ACTION_DONE else EditorInfo.IME_ACTION_NEXT
                 nextId?.let { nextFocusForwardId = it; nextFocusDownId = it }
-                filters = arrayOf(InputFilter.LengthFilter(3), InputFilter { source, start, end, dest, dstart, dend ->
+                filters = arrayOf(InputFilter { source, start, end, dest, dstart, dend ->
                     val candidate = dest.substring(0, dstart) + source.subSequence(start, end) + dest.substring(dend)
-                    if (validVitalInput(candidate)) null else ""
+                    if (validVitalInput(candidate)) null else dest.subSequence(dstart, dend)
                 })
                 doAfterTextChanged {
                     val text = it.toString()
