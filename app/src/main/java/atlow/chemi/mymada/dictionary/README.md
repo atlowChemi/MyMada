@@ -51,7 +51,8 @@ ViewModel and UI. It checks delayed loading, empty/full/removal snapshots,
 cached/error/retry states, add/edit validation, exact payloads, delayed success,
 failure/retry with stable ID, pending-task/editor/search restoration and stale
 listener cancellation in English and Hebrew. No fixture submission reaches
-Firestore. Activity recreation is not OS process death.
+Firestore. Drawer and system Back retain the Tools behavior. Activity recreation
+is not OS process death.
 
 On an owned offline emulator, after installing debug and androidTest APKs:
 
