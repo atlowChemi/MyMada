@@ -10,12 +10,15 @@ import atlow.chemi.mymada.UtillitiesAndTools
 import com.google.android.material.navigation.NavigationView
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.Rule
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import java.io.File
 import android.graphics.Bitmap
 import atlow.chemi.mymada.helpers.LocalHelper
 
 /** Offline emulator only: the application initializes production SDKs. */
 class OxygenTest {
+    @get:Rule val compose = createEmptyComposeRule()
     @Test fun conversionBoundariesAndInvalidInput() {
         assertEquals(24, OxygenCalculation.minutes("100", false))
         assertEquals(200, OxygenCalculation.minutes("100", true))
@@ -49,7 +52,7 @@ class OxygenTest {
                 it.onNavigationItemSelected(menu.findItem(R.id.oxygenCalc))
                 it.supportFragmentManager.executePendingTransactions()
             }
-            instrumentation.waitForIdleSync()
+            compose.waitForIdle()
             instrumentation.uiAutomation.takeScreenshot().let { bitmap ->
                 File(context.getExternalFilesDir(null), "oxygen-${language}-default.png").outputStream().use {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
@@ -61,20 +64,20 @@ class OxygenTest {
                 it.findViewById<Spinner>(R.id.OxyTypeS).setSelection(1)
                 it.findViewById<EditText>(R.id.PSI).apply { requestFocus(); setText("1499") }
             }
-            instrumentation.waitForIdleSync()
+            compose.waitForIdle()
             scenario.onActivity {
                 assertEquals("198", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
                 assertEquals("99", it.findViewById<EditText>(R.id.ATM).text.toString())
             }
             scenario.recreate()
-            instrumentation.waitForIdleSync()
+            compose.waitForIdle()
             scenario.onActivity {
                 assertEquals("1499", it.findViewById<EditText>(R.id.PSI).text.toString())
                 assertEquals("198", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
                 assertEquals(1, it.findViewById<Spinner>(R.id.OxyTypeS).selectedItemPosition)
                 it.findViewById<EditText>(R.id.ATM).apply { requestFocus(); setText("") }
             }
-            instrumentation.waitForIdleSync()
+            compose.waitForIdle()
             scenario.onActivity { assertEquals("0", it.findViewById<TextView>(R.id.txtOxyMin).text.toString()) }
         }
     }
