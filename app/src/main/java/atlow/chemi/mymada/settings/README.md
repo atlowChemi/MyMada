@@ -1,5 +1,14 @@
 # Persisted-state bridge (#22)
 
+Application locale lifetime: API33+ must attach the unwrapped application context
+so LocaleManager can update application resources/default locale. A configuration
+override there pins startup language even when new Activities use the selection.
+Before API33, `LocalHelper.setLocale` updates application resources and process
+default alongside saved `lng`; Activity contexts still attach independently.
+This keeps AppCompat's locale-directed button panels aligned after warm language
+changes. `SettingsChoiceTest` checks the actual language-choice path, application
+and default locales, and a fresh themed dialog without per-dialog direction fixes.
+
 Keep SharedPreferences for the existing installed data and Java consumers. Migration
 runs in Application.attachBaseContext, before locale attachment, providers and services.
 No separate database or global completed marker is needed: each file is independently

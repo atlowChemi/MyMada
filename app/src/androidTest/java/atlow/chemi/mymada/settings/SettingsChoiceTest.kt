@@ -47,6 +47,21 @@ class SettingsChoiceTest {
                         language == target || target == "he" && language == "iw"
                     }
                     assertEquals(target, context.getSharedPreferences("Settings", 0).getString("lng", null))
+                    assertEquals(java.util.Locale.forLanguageTag(target).language,
+                        context.applicationContext.resources.configuration.locales[0].language)
+                    assertEquals(java.util.Locale.forLanguageTag(target).language, java.util.Locale.getDefault().language)
+                    // A fresh themed dialog must work without a per-screen button-direction patch.
+                    // Dictionary and other Tools dialogs use this same AppCompat button panel.
+                    withSettings {
+                        androidx.appcompat.app.AlertDialog.Builder(it, R.style.AlertDialogStyle)
+                            .setMessage("Locale regression").setPositiveButton(android.R.string.ok, null).show()
+                    }
+                    onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1)).check { button, error ->
+                        if (error != null) throw error
+                        assertEquals(button.resources.configuration.layoutDirection,
+                            (button.parent as android.view.View).layoutDirection)
+                    }
+                    onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1)).perform(click())
                     context.getSharedPreferences("Settings", 0).edit().putInt("merhav", 0).commit()
                     open(R.id.mokedPick)
                     awaitDialog()
