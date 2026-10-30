@@ -62,13 +62,17 @@ class VitalsScreenTest {
             compose.waitForIdle()
             scenario.onActivity {
                 assertTrue(it.findViewById<RadioButton>(R.id.baby).isChecked)
+                assertEquals(it.getString(R.string.button_e), it.title.toString())
                 assertEquals("125", it.findViewById<EditText>(R.id.pulsa).text.toString())
                 assertEquals("91", it.findViewById<EditText>(R.id.diastolic).text.toString())
             }
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
             compose.waitForIdle()
-            scenario.onActivity { assertEquals("125", it.findViewById<EditText>(R.id.pulsa).text.toString()) }
+            scenario.onActivity {
+                assertEquals("125", it.findViewById<EditText>(R.id.pulsa).text.toString())
+                assertEquals(it.getString(R.string.button_e), it.title.toString())
+            }
             onView(withId(R.id.pulsa)).perform(clearText(), closeSoftKeyboard())
             compose.waitForIdle()
             scenario.onActivity { assertEquals(Color.rgb(50,167,195), it.findViewById<EditText>(R.id.pulsa).currentTextColor) }

@@ -13,8 +13,9 @@ import atlow.chemi.mymada.tools.vitals.*
 import com.google.firebase.database.*
 
 class VitalsChecker : Fragment() {
-    override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
+    override fun onResume() {
+        super.onResume()
+        // The host resets its title after restoring Fragments in super.onCreate().
         requireActivity().setTitle(R.string.button_e)
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View =
