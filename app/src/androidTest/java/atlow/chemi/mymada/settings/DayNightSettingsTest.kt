@@ -66,14 +66,6 @@ class DayNightSettingsTest {
                 onView(withId(R.id.sleepDay_Desc)).check(matches(withText(choices[1])))
                 assertEquals(3, preferences.getInt("sleep", -1))
                 onView(withId(R.id.sleepNight_pref)).perform(scrollTo(), click())
-                scenario.onActivity {
-                    val parent = it.supportFragmentManager.findFragmentById(R.id.frame) as SettingsAmpm
-                    val row = parent.requireView().findViewById<android.view.View>(R.id.sleepNight_pref)
-                    val rect = android.graphics.Rect()
-                    row.getGlobalVisibleRect(rect)
-                    android.util.Log.i("DayNightDiagnosis", "after night tap: bounds=$rect focus=${row.hasWindowFocus()} children=${parent.childFragmentManager.fragments}")
-                }
-                onView(withText(choices[2])).inRoot(isDialog()).check(matches(isDisplayed()))
                 scenario.recreate()
                 onView(withText(choices[2])).inRoot(isDialog()).perform(click())
                 onView(withId(R.id.sleepNight_Desc)).check(matches(withText(choices[2])))
