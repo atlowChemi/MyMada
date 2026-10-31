@@ -42,6 +42,11 @@ class MonitorLifecycleTest {
                 scenario.onActivity { DetectionStatus.refresh(it); DetectionStatus.refresh(it) }
                 await { manager.activeNotifications.count { it.id == 78 } == 1 }
                 assertEquals(0, manager.activeNotifications.single { it.id == 78 }.notification.flags and android.app.Notification.FLAG_FOREGROUND_SERVICE)
+                manager.cancel(78)
+                await { manager.activeNotifications.none { it.id == 78 } }
+                scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
+                scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
+                await { manager.activeNotifications.any { it.id == 78 } }
                 val stopped = mutableListOf<String?>()
                 val forwarding = object : ContextWrapper(context) {
                     override fun stopService(service: Intent): Boolean {

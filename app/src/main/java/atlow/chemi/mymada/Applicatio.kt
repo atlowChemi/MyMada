@@ -26,6 +26,7 @@ class Applicatio : Application() {
     override fun onCreate() {
         super.onCreate()
         registerActivityLifecycleCallbacks(LocaleRefresh)
+        registerActivityLifecycleCallbacks(DetectionStatus)
         contentResolver.registerContentObserver(Settings.Secure.getUriFor("enabled_notification_listeners"), false,
             object : ContentObserver(Handler(Looper.getMainLooper())) {
                 override fun onChange(selfChange: Boolean) { ListenerAccess.stopIfRevoked(this@Applicatio) }

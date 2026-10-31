@@ -4,7 +4,9 @@ Android binds the existing native/RN NotificationListenerService identities. The
 idle SMSMonitorService no longer starts a foreground service, schedules work, or
 keeps the app foreground. Its manifest identity remains as a non-sticky retiring
 shim for installed explicit intents; boot, update, Application and enable paths
-refresh ordinary notification78 instead. Listener connection also refreshes it.
+refresh ordinary notification78 instead. Listener connection, accepted source
+callbacks and activity resume also refresh it, restoring Stop after notification
+permission regrant without toggling detection off/on.
 Channel runInBg, Home tap and runInBG Stop PendingIntent identities are preserved.
 
 Stop clears Mapp and cancels only status78. OS listener grants remain intact; source

@@ -25,6 +25,7 @@ open class NotificationService : NotificationListenerService() {
         val title = extras?.getCharSequence(Notification.EXTRA_TITLE)
         val call = CallParser.parse(getSharedPreferences("Settings", 0).getBoolean("Mapp", false),
             posted.packageName, title, extras?.getCharSequence(Notification.EXTRA_TEXT)) ?: return
+        DetectionStatus.refresh(this)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(Intent("MADA_APP")
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             .putExtra("pack", posted.packageName)

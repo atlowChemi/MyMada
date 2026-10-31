@@ -1,6 +1,8 @@
 package atlow.chemi.mymada.calls
 
 import android.app.NotificationChannel
+import android.app.Activity
+import android.app.Application
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -8,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.PendingIntentCompat
 import atlow.chemi.mymada.HomePage
@@ -17,7 +20,15 @@ import atlow.chemi.mymada.recieversAndServices.ActionReceiver
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
 
 /** Ordinary controls only; Android owns listener binding and process lifetime. */
-object DetectionStatus {
+object DetectionStatus : Application.ActivityLifecycleCallbacks {
+    override fun onActivityResumed(activity: Activity) { refresh(activity) }
+    override fun onActivityCreated(activity: Activity, state: Bundle?) = Unit
+    override fun onActivityStarted(activity: Activity) = Unit
+    override fun onActivityPaused(activity: Activity) = Unit
+    override fun onActivityStopped(activity: Activity) = Unit
+    override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) = Unit
+    override fun onActivityDestroyed(activity: Activity) = Unit
+
     @JvmStatic fun refresh(context: Context) = with(context) {
         if (!getSharedPreferences("Settings", 0).getBoolean("Mapp", false) ||
             !NotificationPermission.granted(this) || ListenerAccess.selected(this) == null) {
