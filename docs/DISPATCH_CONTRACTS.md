@@ -141,6 +141,18 @@ SavedStateHandle rehydration and Activity recreation pass; an actual killed-proc
 restore is not established by those checks. Calls publication/restack and final
 combined artifact verification remain pending; this team layer stays private.
 
+### Team final append verification above #93
+
+The preceding private results are superseded for publication by exact team-only
+source `e9791abf` above Calls `02368337`. Full build2m11s passes. API24 EN/HE2/2
+(3.095s/3.065s); API37 EN/HE2/2 (4.266s/4.269s). Raw artifacts/screenshots in
+`team-restacked/`, build log `team-restacked-build.log` under the same evidence root.
+Optimized release SHA256
+`04fcf9560225eadee5f0a6ef52dc44f26d3b0e6b2fe8b4d21303954b43eee544`
+matches pulled installed bytes on both APIs; exact optimized Add dialog launches
+captured both APIs. No ongoing build/test remains. This documentation-only commit
+does not alter APK inputs. Full-modal parity/Compose acceptance remains open.
+
 ## Compose accounting
 
 #26 owns its feature-screen Compose conversions as confirmed by the integrator;
