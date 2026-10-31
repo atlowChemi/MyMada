@@ -203,6 +203,33 @@ blocked-approval fixture now drives Compose semantics, including restored draft
 after confirmation recreation. This is one feature-content conversion, not the
 remaining team/form/activation/chat/Moked host conversion or full UI acceptance.
 
+Custom Compose exact source `1d7ea59c`: full build1m46s passes, including debug,
+optimized release, unit tests and debug lint. Final combined runtime fixtures
+under `custom-compose-final/`: API24 EN/HE6/6 (9.355s/9.314s); API37 EN/HE6/6
+(13.796s/14.834s). All12 recipient mappings and literal multiline/whitespace body
+remain tested; positive approval is intercepted by a blocking Activity monitor.
+The initial API37 fixture raced pending confirmation dismissal/show transactions;
+explicit transaction execution fixes the harness, with raw failure retained in
+`custom-compose-36fd20b5/`. Initial IME-obscured capture also remains there.
+
+Actual background-process kill (after Home saves state) restores the custom draft
+on API24 and API37, with before/after strings and distinct PIDs recorded in
+`process-verified-*.txt` and screenshots. Initial `am kill` did not kill API24's
+process; initial input setup dropped its first character before saving. Those
+failed setup records remain; the corrected check compares the actual pre-kill
+editable value with the post-kill value and kills only the verified app PID.
+This establishes custom-draft process restoration, not other screens' restoration.
+
+Optimized signed release SHA256
+`fc10e4bbcee3d966fadb2743c76b588641c21136238335c5e604b9b5360069bd`
+matches both pulled installed artifacts. Exact release custom-screen launches,
+hierarchies, screenshots and per-PID logs retained; no fatal exception in either.
+Opened production12822 EN and final candidate EN/HE: field underline/action
+placement aligned with the reference; typography/focus are not pixel-identical.
+The historical production HE capture is keyboard-obscured/empty and cannot prove
+HE parity. That acceptance gate remains open; XML confirmation and the other
+feature/host conversions remain explicitly unfinished.
+
 #26 owns its feature-screen Compose conversions as confirmed by the integrator;
 #21 establishes the shared Compose/lifecycle/latest-target foundation. The present
 chat, activation and dispatch behavior layers retain native XML. They do not count
