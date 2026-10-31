@@ -25,3 +25,8 @@ metronome and screen/insets checks belong to the common candidate owner.
 Evidence and immutable handoff artifacts:
 `~/.local/share/opencode/evidence/m2-integration/common-target37/`.
 No merge or reduced-reliability acceptance follows from a passing build/test.
+
+The first target37 build exposed GestureBackNavigation lint: Tools still overrode
+Activity.onBackPressed, which modern back gestures bypass. Its Kotlin dispatcher
+bridge closes an unlocked drawer, otherwise delegates normal back navigation.
+The focused regression covers recreation, closed drawer and locked-open drawer.

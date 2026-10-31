@@ -74,6 +74,7 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
         myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
 
         drawerLayout = findViewById(R.id.activity_Utils);
+        atlow.chemi.mymada.tools.ToolsBackNavigation.install(this, drawerLayout);
         if (isDeviceTablet()) {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
             drawerLayout.setScrimColor(Color.TRANSPARENT);
@@ -237,13 +238,6 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
         }
         transaction.replace(R.id.frame, fragment);
         transaction.commit();
-    }
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START) && !isDrawerLocked)
-            drawerLayout.closeDrawer(GravityCompat.START);
-        else
-            super.onBackPressed();
     }
     @Override
     protected void onResume() {
