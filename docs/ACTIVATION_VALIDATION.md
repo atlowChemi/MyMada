@@ -40,6 +40,20 @@ Task-based fixture acknowledgements are not live SDK/server delivery evidence.
   lifecycle with a bounded latch, verifies retained model and one backend call,
   then acknowledges the fixture. No app logic changed to make the test pass.
 - Additional Hebrew capture test **1/1 PASS**,3.903s (`api24-capture-he.log`).
+- API37 actual16KiB-page fixture suite **6/6 PASS**,14.134s (`api37-tests.log`).
+  Candidate English captures saved in `candidate-api37/`; full request content
+  clears navigation controls. Status-area color differs from API24 and remains
+  part of target37 visual acceptance. API24 animation scales were disabled during
+  harness diagnosis; these runs do not establish animation parity.
+- API37 optimized-release smoke: real gate click opens activation; empty submit
+  captured in `release-api37-invalid.{xml,png}`. Installed release bytes match
+  the same SHA256 below. Owned API24/API37 emulators stopped after checks.
+- API37 AVD startup initially failed: current avdmanager emitted
+  `target=android-0` for the37.x image. Verbose emulator log reported APIlevel3,
+  disabled HVF and fell back to unusable emulation. Correcting the **owned** AVD
+  ini target to android37 restored startup and actual16384-byte pages. The earlier
+  VM-count hypothesis was disproved; no global emulator/ADB changes were made.
+  Failed startup logs/config are retained alongside `emulator-api37-target-fixed.log`.
 - Locally debug-signed optimized release installed on API24; actual gate click
   reaches request screen and disclaimer renders. Installed bytes match artifact
   SHA256 `eb40258acd871dbcc5e1fe5324cef02dbe8c5bf3aef8499dab6eb79040f37b2e`.
