@@ -3,6 +3,8 @@ package atlow.chemi.mymada.oxygen
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
@@ -96,7 +98,72 @@ class OxygenTest {
             }
             compose.waitForIdle()
             scenario.onActivity {
-                assertEquals("1332", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
+                assertEquals("0", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
+                assertEquals("", it.findViewById<EditText>(R.id.ATM).text.toString())
+                assertEquals("", it.findViewById<EditText>(R.id.PSI).text.toString())
+            }
+        }
+    }
+
+    @Test fun clearingBothDirectionsAndRotationKeepTheSameInputContract() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        instrumentation.runOnMainSync { LocalHelper.setLocale(context, "en") }
+        context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
+            .putBoolean("WasLangChanged", false).putStringSet("Tools", setOf("metro", "oxy")).commit()
+        ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            scenario.onActivity {
+                it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.oxygenCalc))
+                it.supportFragmentManager.executePendingTransactions()
+            }
+            compose.waitForIdle()
+            fun check(atm: String, psi: String, minutes: String) {
+                scenario.onActivity {
+                    assertEquals(atm, it.findViewById<EditText>(R.id.ATM).text.toString())
+                    assertEquals(psi, it.findViewById<EditText>(R.id.PSI).text.toString())
+                    assertEquals(minutes, it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
+                    assertEquals(1, it.findViewById<Spinner>(R.id.OxyTypeS).selectedItemPosition)
+                }
+            }
+            fun edit(id: Int, value: String) {
+                scenario.onActivity { it.findViewById<EditText>(id).apply { requestFocus(); setText(value) } }
+                compose.waitForIdle()
+            }
+            fun rotate(landscape: Boolean) {
+                val expected = if (landscape) Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
+                scenario.onActivity { it.requestedOrientation = if (landscape) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+                compose.waitUntil(5_000) {
+                    var ready = false
+                    scenario.onActivity { ready = it.resources.configuration.orientation == expected }
+                    ready
+                }
+                compose.waitForIdle()
+            }
+            scenario.onActivity { it.findViewById<Spinner>(R.id.OxyTypeS).setSelection(1) }
+            compose.waitForIdle()
+            for (landscape in listOf(false, true)) {
+                rotate(landscape)
+                edit(R.id.ATM, "100")
+                check("100", "1500", "200")
+                edit(R.id.ATM, "")
+                check("", "", "0")
+                rotate(!landscape)
+                check("", "", "0")
+                rotate(landscape)
+                edit(R.id.PSI, "1499")
+                check("99", "1499", "198")
+                rotate(!landscape)
+                check("99", "1499", "198")
+                rotate(landscape)
+                edit(R.id.PSI, "")
+                check("", "", "0")
+                // Existing character limits are identical in both layouts, not new medical bounds.
+                edit(R.id.ATM, "1234")
+                check("123", "1845", "246")
+                edit(R.id.PSI, "123456")
+                check("823", "12345", "1646")
+                rotate(!landscape)
+                check("823", "12345", "1646")
             }
         }
     }
