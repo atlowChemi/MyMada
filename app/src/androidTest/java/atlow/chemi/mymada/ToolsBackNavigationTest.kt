@@ -2,6 +2,7 @@ package atlow.chemi.mymada
 
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.*
@@ -22,7 +23,6 @@ class ToolsBackNavigationTest {
                     if (!locked) {
                         assertFalse(activity.isFinishing)
                     }
-                    else assertTrue(activity.isFinishing)
                 }
                 if (!locked) {
                     var visible = true
@@ -35,9 +35,14 @@ class ToolsBackNavigationTest {
                     assertFalse("Back closed the drawer", visible)
                     scenario.onActivity {
                         it.onBackPressedDispatcher.onBackPressed()
-                        assertTrue(it.isFinishing)
                     }
                 }
+                // Modern Android sends a root task to the background instead of finishing it.
+                val deadline = android.os.SystemClock.uptimeMillis() + 5000
+                while (scenario.state == Lifecycle.State.RESUMED && android.os.SystemClock.uptimeMillis() < deadline)
+                    Thread.sleep(25)
+                assertTrue("Back leaves Tools", scenario.state == Lifecycle.State.CREATED ||
+                    scenario.state == Lifecycle.State.DESTROYED)
             }
         }
     }
