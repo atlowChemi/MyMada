@@ -194,6 +194,8 @@ class ChatIntegrationTest {
         val dir = File(context.getExternalFilesDir(null), "chat").apply { mkdirs() }
         val language = context.getSharedPreferences("Settings", 0).getString("lng", "en")
         instrumentation.uiAutomation.takeScreenshot().let { bitmap ->
+            if (name == "empty" && android.os.Build.VERSION.SDK_INT >= 35)
+                assertEquals(context.getColor(R.color.ColorPrimary), bitmap.getPixel(bitmap.width / 2, 2))
             File(dir, "$name-$language.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
             bitmap.recycle()
         }
