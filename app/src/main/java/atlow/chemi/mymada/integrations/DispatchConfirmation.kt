@@ -42,6 +42,7 @@ class DispatchConfirmation : DialogFragment() {
         val font = Typeface.createFromAsset(requireContext().assets, "fonts/opensanshebrew.ttf")
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).typeface = font
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply { typeface = font; setTextColor(requireContext().getColor(R.color.OldPrimary)) }
+        (dialog.getButton(AlertDialog.BUTTON_POSITIVE).parent as android.view.View).layoutDirection = android.view.View.LAYOUT_DIRECTION_LTR
     }
     companion object {
         fun intent(region: Int, body: String): Intent {

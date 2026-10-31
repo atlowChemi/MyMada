@@ -68,6 +68,8 @@ class DispatchIntegrationTest {
                     assertEquals(body, fragment.requireArguments().getString("body"))
                     val text = (fragment.requireDialog() as AlertDialog).findViewById<TextView>(android.R.id.message)!!.text.toString()
                     assertTrue(text.contains("מוקד 4")); assertTrue(text.contains(body))
+                    val dialog = fragment.requireDialog() as AlertDialog
+                    assertTrue(dialog.getButton(AlertDialog.BUTTON_POSITIVE).left > dialog.getButton(AlertDialog.BUTTON_NEGATIVE).left)
                 }
                 capture("confirmation", language)
                 onView(withText(R.string.ret)).perform(click())
