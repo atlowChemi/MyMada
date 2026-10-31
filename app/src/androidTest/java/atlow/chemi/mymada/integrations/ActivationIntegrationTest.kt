@@ -185,17 +185,32 @@ class ActivationIntegrationTest {
 
     @Test fun requestValidationAndConfirmationSurviveRecreationWithoutSending() {
         prepare()
+        val language = InstrumentationRegistry.getArguments().getString("captureLanguage", "en")
+        main { LocalHelper.setLocale(context, language) }
         ActivityScenario.launch(codeRequest::class.java).use { scenario ->
             onView(withText(R.string.ok)).perform(click())
             onView(withId(R.id.sendCR)).perform(click())
             scenario.onActivity {
                 assertNotNull(it.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.codeATIL).error)
                 it.findViewById<EditText>(R.id.codeA).setText("fixture@example.org")
-                it.findViewById<EditText>(R.id.codeN).setText("Fixture")
+                it.findViewById<EditText>(R.id.codeN).setText("Fixture Name")
                 it.findViewById<EditText>(R.id.codeT).setText("A&B#\nשלום")
             }
             onView(withId(R.id.sendCR)).perform(click())
             scenario.recreate()
+            scenario.onActivity {
+                val dialog = (it.supportFragmentManager.findFragmentByTag("confirm-request") as codeRequest.RequestDialog).requireDialog() as androidx.appcompat.app.AlertDialog
+                assertEquals(it.getColor(R.color.OldPrimary), dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).currentTextColor)
+                val text = dialog.findViewById<android.widget.TextView>(android.R.id.message)!!.text as android.text.Spanned
+                val label = text.toString().indexOf(it.getString(R.string.msg))
+                assertTrue(text.getSpans(label, label + it.getString(R.string.msg).length,
+                    android.text.style.ForegroundColorSpan::class.java).any { span -> span.foregroundColor == android.graphics.Color.rgb(35, 139, 173) })
+            }
+            instrumentation.uiAutomation.waitForIdle(500, 5000)
+            val image = instrumentation.uiAutomation.takeScreenshot()
+            val directory = File(context.getExternalFilesDir(null), "integrations").apply { mkdirs() }
+            File(directory, "confirmation-$language.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            image.recycle()
             onView(withText(R.string.ret)).check(matches(isDisplayed())).perform(click())
             scenario.onActivity {
                 assertEquals("A&B#\nשלום", it.findViewById<EditText>(R.id.codeT).text.toString())

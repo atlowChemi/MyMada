@@ -112,11 +112,24 @@ class codeRequest : AppCompatActivity() {
             val subject = SpannableString(sender + "\n" + getString(R.string.msg) + "\n" + args.getString("reason"))
             subject.setSpan(ForegroundColorSpan(Color.RED), 0, alert.length, 0)
             subject.setSpan(ForegroundColorSpan(Color.rgb(35, 139, 173)), alert.length, alert.length + getString(R.string.sender).length, 0)
+            subject.setSpan(ForegroundColorSpan(Color.rgb(35, 139, 173)), sender.length + 1,
+                sender.length + 1 + getString(R.string.msg).length, 0)
             return builder.setTitle(R.string.suc).setMessage(subject)
                 .setNegativeButton(R.string.ret, null).setPositiveButton(R.string.ok) { _, _ ->
                     ViewModelProvider(requireActivity())[ActivationModel::class.java].request(
                         args.getString("email").orEmpty(), args.getString("name").orEmpty(), args.getString("reason").orEmpty())
                 }.create()
+        }
+        override fun onStart() {
+            super.onStart()
+            if (arguments == null) return
+            val dialog = requireDialog() as AlertDialog
+            val font = Typeface.createFromAsset(requireContext().assets, "fonts/opensanshebrew.ttf")
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).typeface = font
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
+                typeface = font
+                setTextColor(requireContext().getColor(R.color.OldPrimary))
+            }
         }
     }
 }
