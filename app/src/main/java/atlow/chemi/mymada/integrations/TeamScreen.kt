@@ -42,23 +42,23 @@ internal fun TeamScreen(members: List<Volunteer>, onEdit: (Int) -> Unit, onDelet
     val hint = stringResource(R.string.ambN)
     val error = stringResource(R.string.err_amb)
     Column(Modifier.fillMaxSize().padding(16.dp)) {
-        Text(hint, color = if (invalid) Color.Red else accent, fontFamily = font, fontSize = 12.sp,
-            modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start)
+        Text(hint, color = if (invalid) Color.Red else accent, fontFamily = font, fontSize = 12.sp, lineHeight = 16.sp,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), textAlign = TextAlign.Start)
         BasicTextField(ambulance, onValueChange = { if (it.length <= 4) { ambulance = it; invalid = false } },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 28.dp).testTag("team-ambulance")
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp).heightIn(min = 28.dp).testTag("team-ambulance")
                 .semantics { contentDescription = hint; if (invalid) error(error) },
             singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             textStyle = TextStyle(fontFamily = font, fontSize = 18.sp), cursorBrush = SolidColor(accent))
-        Spacer(Modifier.fillMaxWidth().height(2.dp).background(if (invalid) Color.Red else accent))
+        Spacer(Modifier.fillMaxWidth().padding(horizontal = 4.dp).height(2.dp).background(if (invalid) Color.Red else accent))
         if (invalid) Text(error, color = Color.Red, fontSize = 12.sp)
-        if (members.isEmpty()) Text(stringResource(R.string.explain), fontFamily = font, fontSize = 16.sp,
+        if (members.isEmpty()) Text(stringResource(R.string.explain), fontFamily = font, fontSize = 16.sp, lineHeight = 20.sp,
             color = colorResource(R.color.DarkGrey), modifier = Modifier.testTag("team-empty"))
         // Published grid begins on the right in both app locales; each card's Hebrew role stays right-aligned.
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(20.dp),
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 34.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)) {
                 members.indices.chunked(2).forEach { row ->
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(28.dp)) {
                     row.forEach { index ->
                     val member = members[index]
                     var menu by remember(member) { mutableStateOf(false) }
@@ -69,8 +69,8 @@ internal fun TeamScreen(members: List<Volunteer>, onEdit: (Int) -> Unit, onDelet
                                 modifier = Modifier.size(100.dp))
                             Box(Modifier.fillMaxWidth()) {
                                 Column(Modifier.fillMaxWidth().padding(start = 10.dp, end = 28.dp, top = 8.dp, bottom = 6.dp)) {
-                                    Text(member.name, fontFamily = font, fontSize = 14.sp, color = colorResource(R.color.album_title))
-                                    Text(TeamContract.roles[member.job], fontFamily = font, fontSize = 12.sp, color = Color.Black)
+                                    Text(member.name, fontFamily = font, fontSize = 15.sp, lineHeight = 18.sp, color = colorResource(R.color.album_title))
+                                    Text(TeamContract.roles[member.job], fontFamily = font, fontSize = 12.sp, lineHeight = 16.sp, color = Color.Black)
                                 }
                                 Box(Modifier.align(Alignment.CenterEnd)) {
                                     IconButton(onClick = { menu = true }, modifier = Modifier.size(48.dp).testTag("team-menu-$index")) {
@@ -90,7 +90,7 @@ internal fun TeamScreen(members: List<Volunteer>, onEdit: (Int) -> Unit, onDelet
                 }
             }
         }
-        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 20.dp), horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 23.dp), horizontalArrangement = Arrangement.spacedBy(18.dp)) {
             if (members.size < TeamContract.LIMIT) Surface(onClick = { onEdit(-1) }, color = Color.White,
                 shape = RoundedCornerShape(15.dp), shadowElevation = 4.dp,
                 modifier = Modifier.weight(.6f).heightIn(min = 60.dp).testTag("team-add")) {

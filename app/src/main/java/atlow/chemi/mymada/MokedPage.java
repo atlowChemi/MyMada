@@ -62,6 +62,10 @@ public class MokedPage extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ViewPager viewPager = findViewById(R.id.viewpager);
+        // CoordinatorLayout already handles system bars. Legacy ViewPager redispatches
+        // conflicting insets to Compose fragment roots on pre-R, causing a traversal loop.
+        if (Build.VERSION.SDK_INT < 30)
+            viewPager.setOnApplyWindowInsetsListener((v, insets) -> insets.consumeSystemWindowInsets().consumeStableInsets());
         setupViewPager(viewPager);
         if (SettingsPage.isRTL())
             viewPager.setRotationY(180);
