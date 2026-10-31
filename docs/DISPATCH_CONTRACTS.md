@@ -153,8 +153,6 @@ matches pulled installed bytes on both APIs; exact optimized Add dialog launches
 captured both APIs. No ongoing build/test remains. This documentation-only commit
 does not alter APK inputs. Full-modal parity/Compose acceptance remains open.
 
-## Compose accounting
-
 ### Owning form/picker follow-up
 
 MedicalPickerDialog now owns search and selection in saved dialog state. Its
@@ -166,6 +164,22 @@ recreates again, then checks both billed and cleared-billing confirmation bodies
 The stale `yishuv` mode now derives from the current two billing fields on every
 submission; clearing both returns to the native unbilled body. No payload policy
 change is implied. All previews are cancelled without approving SMS.
+
+Application source `8682e810`, final fixture `f35c467e`: full debug/release/unit/lint
+retry passed1m53s. Initial command hit the tool's120s timeout during R8; its raw
+log remains `form-dialog-build.log`, completed retry `form-dialog-build-retry.log`.
+API37 initially selected the Activity root before the asynchronous dialog
+transaction ran; the fixture now executes its pending child transaction before
+Espresso root selection. Raw focus failure retained in `form-dialog-8682e810/`.
+Combined picker/form+team tests in `form-dialog-final/`: API24 EN/HE4/4
+(5.759s/5.575s), API37 EN/HE4/4 (8.629s/8.866s).
+Optimized signed SHA256
+`980480eda35500f98368c7e6dd0a069a7e8994c8f72e7a01990939868ff907ba`
+matches both pulled installed artifacts; real release picker screenshots opened
+on both APIs. API24 release is Hebrew, API37 English. Initial coordinate-based
+navigation selected Custom in RTL; corrected navigation finds the localized tab
+in the hierarchy. Initial hierarchy remains for provenance. Full-modal production
+parity, killed-process restoration and Compose conversion remain acceptance gates.
 
 ## Remaining Compose accounting
 
