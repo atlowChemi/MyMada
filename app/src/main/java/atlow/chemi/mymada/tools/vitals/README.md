@@ -21,17 +21,21 @@ Native `fragments/VitalsChecker.java`; RN `src/containers/Tools/Vitals.tsx`
 Neither source assigns numeric age cutoffs. Labels say beats per minute / breaths
 per minute; pressure labels do not explicitly state units. No conversion occurs.
 
-Unresolved clinical/product decisions (native behavior retained provisionally):
+Maintainer-approved application behavior (source differences are retained here for context):
 
 - Native bounds inclusive; RN helper is **lower-exclusive, upper-inclusive**.
-  Adult pulse 60 is green native, abnormal RN. Baby 126 also fails RN's lower test.
+  Inclusive bounds are approved: adult pulse 60 is normal. Baby 126 also fails RN's lower test.
 - Native paired BP requires both ranges **and systolic−diastolic 30–60 inclusive**;
   RN evaluates each independently. Adult 90/90 is red native, independently green RN
-  except RN's lower-exclusive systolic boundary. Adult 100/90 isolates the paired rule.
+  except RN's lower-exclusive systolic boundary. Retaining the paired 30–60 rule is approved.
 - Native diastolic-only stays neutral; RN evaluates it. Clearing systolic resets
   the pair to neutral. Clearing diastolic now resets its tint rather than retaining
-  the previous paired color (stale UI defect, not a new threshold).
-- Baby fallback 125 versus 126 still requires explicit confirmation.
+  the previous paired color (stale UI defect, not a new threshold). Retaining the
+  simpler neutral diastolic-only behavior is approved; no implementation change needed.
+- Baby fallback lower bound 125 is approved, including absent/malformed remote data.
+
+These decisions resolve the listed app-policy questions, not independent clinical
+validation or approval of arbitrary remote values.
 
 Inputs remain three ASCII digits maximum, nonnegative integers, empty neutral.
 Malformed pasted text is rejected, not silently converted (`-1` or `1.5` must not
