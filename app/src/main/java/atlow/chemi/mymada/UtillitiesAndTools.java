@@ -123,7 +123,8 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
         if (!toolsToShow.contains("metro"))
             navMenu.removeItem(R.id.metronome);
 
-        if (!toolsToShow.contains("metro")) {
+        if (!toolsToShow.contains("metro") && !getIntent().getBooleanExtra("running", false)
+                && !getIntent().getBooleanExtra("start", false)) {
             navigationView.setCheckedItem(navMenu.getItem(1));
             switch (navMenu.getItem(1).getItemId()) {
                 case R.id.dictionary:

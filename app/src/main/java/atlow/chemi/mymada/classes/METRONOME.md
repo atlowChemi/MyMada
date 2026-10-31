@@ -36,3 +36,25 @@ permission integration and production screenshots require their own evidence.
 
 Physical audio/tempo verification requires explicitly authorized user-device
 access and remains an acceptance gate. Do not close #25 from emulator checks.
+
+## Service/control layer
+
+The service now owns one worker, uses elapsedRealtime for the UI origin, retains
+that origin and pre-playback volume across same-boot sticky process recreation,
+and ignores duplicate starts. Stop is an explicit command that releases audio
+even while the screen is bound. Worker failure stops the foreground service;
+cleanup is idempotent and does not overwrite a different later stream volume.
+Overlapping Pulse/call volume leases are still a cross-feature integration gate.
+
+The existing layout, font, circle/progress/clock and animation timings are kept.
+The Kotlin Fragment has no static views or handlers, removes named service
+listeners and scheduled renders on stop, and announces the toggle as a focusable
+Start/Stop button. Notification navigation reaches metronome even when that tool
+was deselected. Native widget and native/RN tile component names are preserved;
+external controls use service state, not a cached tile boolean.
+
+Only metronome mediaPlayback permission/type and RN tile compatibility declaration
+are changed in the manifest. #24 owns POST_NOTIFICATIONS/shared permission UX,
+listener/boot/background work, runInBG and the eventual target bump. Until that
+dependency is integrated, denied notifications do not block playback and Stop
+remains on the screen, widget and tiles; this is not permission-UX acceptance.

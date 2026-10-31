@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <uses-feature
@@ -134,6 +135,7 @@
             android:exported="false" />
         <service
             android:name=".recieversAndServices.MetroService"
+            android:foregroundServiceType="mediaPlayback"
             android:label="@string/metroMoni" />
         <service
             android:name=".NotificationService"
@@ -181,6 +183,19 @@
             <meta-data
                 android:name="android.service.quicksettings.ACTIVE_TILE"
                 android:value="false" />
+        </service>
+
+        <service
+            android:name=".recieversAndServices.MetronomeTileService"
+            android:enabled="@bool/tile"
+            android:icon="@drawable/ic_metronome_tile"
+            android:label="@string/button_d"
+            android:exported="true"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="false" />
         </service>
 
         <receiver
