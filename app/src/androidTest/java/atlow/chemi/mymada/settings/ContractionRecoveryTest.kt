@@ -13,6 +13,8 @@ import atlow.chemi.mymada.R
 import atlow.chemi.mymada.UtillitiesAndTools
 import atlow.chemi.mymada.contractions.ContractionEntry
 import atlow.chemi.mymada.contractions.ContractionSession
+import atlow.chemi.mymada.contractions.ContractionStore
+import atlow.chemi.mymada.contractions.ContractionAway
 import atlow.chemi.mymada.helpers.LocalHelper
 import org.junit.Assert.*
 import org.junit.Rule
@@ -30,7 +32,7 @@ class ContractionRecoveryTest {
         instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
         preferences.edit().putBoolean("Mapp", false).putStringSet("Tools", setOf("contrac"))
             .putString("contractList", raw).putLong("contractLong", System.currentTimeMillis())
-            .remove("contarctNum").remove("migration.original.contractList").commit()
+            .remove("contarctNum").remove("migration.original.contractList").remove(ContractionStore.KEY).commit()
     }
     private fun labels(scenario: ActivityScenario<UtillitiesAndTools>) {
         scenario.onActivity { activity ->
@@ -112,13 +114,14 @@ class ContractionRecoveryTest {
             toggle().performClick()
             scenario.recreate()
             expect(R.string.startContract)
-            val fresh = ContractionHistory(preferences)
-            assertEquals(1, fresh.read()!!.completed.single().number)
+            val fresh = ContractionStore(preferences).read()
+            assertEquals(1, fresh.entries.single().number)
             assertFalse(fresh.reactNative)
             delete(scenario)
             choose(R.string.ok)
         }
-        assertEquals("", preferences.getString("contractList", null))
+        assertTrue(ContractionStore(preferences).read().entries.isEmpty())
+        assertEquals(raw, preferences.getString("contractList", null))
         assertEquals(raw, preferences.getString("migration.original.contractList", null))
     }
 
@@ -149,11 +152,11 @@ class ContractionRecoveryTest {
                 choose(R.string.ok)
                 expect(R.string.startContract)
             }
-            val saved = ContractionHistory(preferences).read()!!
-            assertNull(saved.active)
-            assertEquals(listOf(1, 2, 3), saved.completed.map { it.number })
-            assertEquals(now - 10000, saved.completed.last().start.time)
-            assertEquals(now - 100000, saved.completed.last().oldEnd.time)
+            val saved = ContractionStore(preferences).read()
+            assertNotNull(saved.entries.last().end)
+            assertEquals(listOf(1, 2, 3), saved.entries.map { it.number })
+            assertEquals(now - 10000, saved.entries.last().start)
+            assertEquals(now - 100000, saved.entries.last().previous)
             assertEquals(raw, preferences.getString("migration.original.contractList", null))
         }
     }
@@ -177,7 +180,7 @@ class ContractionRecoveryTest {
             choose(R.string.dialog_no)
             expect(R.string.startContract)
         }
-        assertEquals("", preferences.getString("contractList", null))
+        assertTrue(ContractionStore(preferences).read().entries.isEmpty())
     }
 
     @Test fun timekeepingPreservesProvenanceNumberingAndClockRollbackBoundaries() {
@@ -185,12 +188,53 @@ class ContractionRecoveryTest {
             val session = ContractionSession(rn, listOf(ContractionEntry(7, 1000, 2000, null)))
             session.toggle(3000)
             assertEquals(8, session.active!!.number)
-            assertEquals(if (rn) 1000L else 2000L, session.active!!.previous)
+            assertEquals(1000L, session.active!!.previous)
             session.toggle(2999)
             assertEquals(3000L, session.entries.last().end)
             session.clear()
             session.toggle(5000)
             assertEquals(1, session.active!!.number)
+        }
+    }
+
+    @Test fun activeOnlyColdReopenAndObservedAwayExpiryArchiveBeforeNewSession() {
+        prepare()
+        val store = ContractionStore(preferences)
+        ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            labels(scenario)
+            toggle().performClick()
+            scenario.recreate()
+            expect(R.string.endContract)
+            assertNull(store.read().away) // Rotation/resume does not leave an expiry anchor.
+        }
+        val active = store.read().entries.single()
+        assertNull(active.end)
+        ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            labels(scenario)
+            choose(R.string.ok)
+            expect(R.string.endContract)
+            assertEquals(active, store.read().entries.single())
+            for (minutes in listOf(15L, 21L)) {
+                scenario.moveToState(Lifecycle.State.CREATED)
+                val saved = store.read()
+                val away = saved.away!!
+                store.write(saved.copy(away = ContractionAway(away.wall - minutes * 60000,
+                    away.elapsed - minutes * 60000, away.boot)))
+                val retiredPayload = preferences.getString(ContractionStore.KEY, null)
+                scenario.moveToState(Lifecycle.State.RESUMED)
+                if (minutes == 15L) {
+                    expect(R.string.endContract)
+                    assertEquals(active, store.read().entries.single())
+                } else {
+                    expect(R.string.startContract)
+                    assertTrue(store.read().entries.isEmpty())
+                    val count = preferences.getLong("${ContractionStore.KEY}.archive.count", 0)
+                    assertEquals(retiredPayload, preferences.getString("${ContractionStore.KEY}.archive.$count", null))
+                    toggle().performClick()
+                    assertEquals(1, store.read().entries.single().number)
+                    assertNull(store.read().entries.single().previous)
+                }
+            }
         }
     }
 
@@ -219,9 +263,10 @@ class ContractionRecoveryTest {
                 expect(R.string.startContract)
                 capture("native-history-completed-$language", scenario)
             }
-            val saved = ContractionHistory(preferences).read()!!
-            assertFalse(ContractionHistory(preferences).apply { read() }.reactNative)
-            assertEquals(50_000, saved.completed[1].start.time - saved.completed[1].oldEnd.time)
+            val saved = ContractionStore(preferences).read()
+            assertFalse(saved.reactNative)
+            assertEquals(50_000, saved.entries[1].start - saved.entries[1].previous!!)
+            assertEquals(saved.entries[1].start, saved.entries.last().previous)
         }
     }
 

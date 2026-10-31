@@ -52,7 +52,8 @@ class ContractionNavigationTest {
                         {"number":2,"start":${now - 100000},"end":${now - 70000}},{"number":3,"start":${now - 10000}}]"""
                     else Gson().toJson(listOf(Contraction(1, Date(now - 180000), Date(now - 150000), null),
                         Contraction(2, Date(now - 100000), Date(now - 70000), Date(now - 150000))))
-                    preferences.edit().putString("contractList", raw).putLong("contractLong", now - 70000)
+                    preferences.edit().remove(atlow.chemi.mymada.contractions.ContractionStore.KEY)
+                        .putString("contractList", raw).putLong("contractLong", now - 70000)
                         .remove("migration.original.contractList").commit()
                     var settings = ""
                     await<HomePage>()
@@ -114,12 +115,11 @@ class ContractionNavigationTest {
                     await<UtillitiesAndTools>(language)
                     Espresso.pressBack()
                     await<HomePage>(language)
-                    val history = ContractionHistory(preferences)
-                    val saved = history.read()!!
-                    assertEquals(rn, history.reactNative)
-                    assertEquals(listOf(1, 2, 3), saved.completed.map { it.number })
+                    val saved = atlow.chemi.mymada.contractions.ContractionStore(preferences).read()
+                    assertEquals(rn, saved.reactNative)
+                    assertEquals(listOf(1, 2, 3), saved.entries.map { it.number })
                     // Native Gson date strings have second precision; RN epochs retain milliseconds.
-                    assertEquals(if (rn) now - 100000 else (now - 70000) / 1000 * 1000, saved.completed.last().oldEnd.time)
+                    assertEquals(if (rn) now - 100000 else (now - 100000) / 1000 * 1000, saved.entries.last().previous)
                     assertEquals(raw, preferences.getString("migration.original.contractList", null))
                 }
             }
