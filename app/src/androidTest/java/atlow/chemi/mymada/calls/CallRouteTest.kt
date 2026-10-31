@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.BroadcastReceiver
 import android.content.IntentFilter
@@ -30,6 +31,8 @@ import atlow.chemi.mymada.NotificationService
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.smsRes
 import atlow.chemi.mymada.home.HomeActions
+import atlow.chemi.mymada.recieversAndServices.GrobootRec
+import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import org.junit.After
@@ -55,8 +58,10 @@ class CallRouteTest {
         settings.edit().clear().putBoolean("Mapp", true).putBoolean("not", true)
             .putBoolean("win", false).putBoolean("Nsou", false).putBoolean("Nvib", false)
             .putBoolean("cut", true).commit()
+        context.stopService(Intent(context, SMSMonitorService::class.java))
         manager.cancelAll()
         if (Build.VERSION.SDK_INT >= 26) manager.deleteNotificationChannel("notWithWin")
+        notifications(0)
         listener.attach(context)
     }
 
@@ -123,6 +128,38 @@ class CallRouteTest {
         settings.edit().putBoolean("Mapp", false).commit()
         instrumentation.runOnMainSync { post("הודעת צוות בדיקה", pending(4)) }
         notifications(1)
+    }
+
+    @Test fun blockedPopupLeavesPerCallTapFallbackUntilPopupActuallyOpens() {
+        settings.edit().putBoolean("win", true).putBoolean("NsouT1", false).putBoolean("NvibT1", false).commit()
+        var attempts = 0
+        val blocked = object : ContextWrapper(context) {
+            override fun startActivity(intent: Intent) { attempts++ } // Android BAL returns without launching or throwing.
+        }
+        val source = pending(85)
+        instrumentation.runOnMainSync {
+            GrobootRec().onReceive(blocked, Intent("MADA_APP").putExtra("callT", 1)
+                .putExtra("text", "בדיקת רקע").putExtra("sourceIntent", source))
+        }
+        assertEquals(1, attempts)
+        val fallback = notifications(1).single()
+        ActivityScenario.launch<smsRes>(CallEvent(1, "בדיקת פתיחה", null).popupIntent(context, -1, false)).use { scenario ->
+            fallback.contentIntent.send()
+            val deadline = SystemClock.uptimeMillis() + 3000
+            var opened = false
+            while (!opened && SystemClock.uptimeMillis() < deadline) {
+                scenario.onActivity {
+                    opened = CallEvent.from(it.intent).text == "בדיקת רקע"
+                    if (opened) assertEquals(source, CallEvent.from(it.intent).source)
+                }
+                if (!opened) SystemClock.sleep(20)
+            }
+            assertTrue(opened)
+            notifications(0)
+        }
+        settings.edit().putBoolean("not", false).commit()
+        instrumentation.runOnMainSync { GrobootRec().onReceive(blocked, Intent("MADA_APP").putExtra("text", "מושבת")) }
+        notifications(0) // Explicit notification opt-out is still respected.
     }
 
     @Test fun popupColdWarmRecreationAndDetailsUsePerCallState() {
