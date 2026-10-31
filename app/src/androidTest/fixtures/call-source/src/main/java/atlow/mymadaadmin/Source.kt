@@ -37,7 +37,7 @@ class Source : BroadcastReceiver() {
         if (kind == "title-only-summary") builder.setContentTitle("*אירוע חדש*")
         else if (kind == "expanded-summary") builder.setStyle(Notification.BigTextStyle().bigText("הודעת צוות מורחבת"))
         else if (kind != "empty-summary" && kind != "malformed") {
-            builder.setContentTitle("*אירוע חדש*").setContentText("הודעת צוות בדיקה $id")
+            builder.setContentTitle("*אירוע חדש*").setContentText(intent.getStringExtra("text") ?: "הודעת צוות בדיקה $id")
         }
         if (kind == "child" || kind.endsWith("summary")) builder.setGroup("calls-regression")
         if (kind.endsWith("summary")) builder.setGroupSummary(true)

@@ -186,7 +186,7 @@ class CallRouteTest {
                 while (!replaced && SystemClock.uptimeMillis() < deadline) {
                     instrumentation.runOnMainSync {
                         replaced = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-                            .filterIsInstance<smsRes>().any { it.findViewById<TextView>(R.id.Address).text.toString() == "בדיקה שנייה" }
+                            .filterIsInstance<smsRes>().any { it.findViewById<TextView>(R.id.Address)?.text?.toString() == "בדיקה שנייה" }
                     }
                     if (!replaced) SystemClock.sleep(20)
                 }
