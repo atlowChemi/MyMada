@@ -3,29 +3,27 @@
 Base: PR #53 `b42820cc94c9417e8c3cd9f095fd24fa41ad01cc`, including #22 prerequisites.
 Native `b36f4a9c` OxyCalc.java and RN `be72a163` Oxygen.tsx agree on 2.4/20 L tanks,
 10 L/min flow and approximate 15 PSI per ATM. This is compatibility documentation,
-not validation of clinical assumptions. #19 explicitly leaves rounding unresolved.
+not independent validation of clinical assumptions.
 
-## Maintainer questions (acceptance blocked)
+## Approved application policy
 
-1. At 1499 PSI / 20 L should the result be native 198 min (truncate PSI/15) or RN
-   200 min (round)? Confirm the 15:1 conversion, tank volumes and fixed 10 L/min.
-2. What pressure bounds should apply? Native limits ATM to three characters even
-   on linked updates: 99999 PSI → 666 ATM, rather than 6666. RN does not clip linked
-   ATM updates. Neither is an approved pressure validation policy.
-The draft retains native calculation/rounding pending approval;
-it does not introduce RN rounding or infer a medical limit from maxLength.
-Input is ASCII digits only, three ATM/five PSI characters, matching native UI.
+Retain native truncation: 1499 PSI / 20 L gives 198 minutes, not RN's rounded 200.
+Accept whole ASCII-digit pressure values from 0 through 999 ATM or 14985 PSI
+(999 × 15), inclusive. An invalid/out-of-range edit or paste is rejected as a whole,
+with a visible range error; the previous accepted values remain. No character
+clipping turns an invalid pressure into a different valid pressure. These bounds
+are the maintainer's app policy, not a newly inferred clinical recommendation.
 Duration is truncation of pressure × tank liters / 10. Defaults are 100/1500/24.
 
 ## Approved clearing and orientation behavior
 
 Clearing either pressure field clears both linked fields and displays zero minutes,
-so no stale estimate remains. Portrait and landscape use the same existing three-ATM/
-five-PSI character limits and calculation behavior. Rotation retains both values and
+so no stale estimate remains. Portrait and landscape use the same numeric bounds
+and calculation behavior. Rotation retains both values and
 tank selection, including an empty pair. The 64%/36% landscape layout remains.
-These requirements do not approve a new pressure maximum or the unresolved 198/200
-rounding policy. The regression exercises both clearing directions, nonempty and
-empty rotation, and the existing limits in both orientations.
+The regression exercises both clearing directions, nonempty and empty rotation,
+inclusive endpoints, overflow/invalid paste rejection and unchanged truncation in
+both orientations. Prior code/evidence below predates these approved changes.
 
 ## Implementation
 
