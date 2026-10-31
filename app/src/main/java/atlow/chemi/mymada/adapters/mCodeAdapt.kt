@@ -20,8 +20,7 @@ class mCodeAdapt(context: Context, codes: List<mCodeKid>) : BaseAdapter() {
     private val font = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
     override fun getCount() = shown.size
     override fun getItem(position: Int) = shown[position]
-    override fun getItemId(position: Int) = getItem(position).order.toLong()
-    override fun hasStableIds() = true
+    override fun getItemId(position: Int) = position.toLong()
     override fun isEnabled(position: Int) = getItem(position).id != "sep"
     override fun areAllItemsEnabled() = false
     fun getId(position: Int) = getItem(position).id
