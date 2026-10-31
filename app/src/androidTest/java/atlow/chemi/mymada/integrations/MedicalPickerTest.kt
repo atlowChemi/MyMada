@@ -41,10 +41,38 @@ class MedicalPickerTest {
                 .perform(androidx.test.espresso.action.ViewActions.replaceText("5000"))
             androidx.test.espresso.Espresso.onView(org.hamcrest.Matchers.allOf(androidx.test.espresso.matcher.ViewMatchers.withText("5000 בצקת ריאות / החמרה באי ספיקת לב"), androidx.test.espresso.matcher.ViewMatchers.withId(R.id.mcName)))
                 .perform(androidx.test.espresso.action.ViewActions.click())
+            scenario.recreate()
+            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.userSearch))
+                .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.withText("5000")))
+            androidx.test.espresso.Espresso.onView(org.hamcrest.Matchers.allOf(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.mcName), androidx.test.espresso.matcher.ViewMatchers.isDisplayed()))
+                .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.isChecked()))
             androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withText(R.string.ok))
                 .perform(androidx.test.espresso.action.ViewActions.click())
+            scenario.recreate()
             scenario.onActivity {
                 assertEquals("2000, 5000", it.findViewById<android.widget.EditText>(R.id.M1button2).text.toString())
+                for ((id, value) in listOf(R.id.M1txt1E to "1234", R.id.M1txt2E to "56", R.id.M1txt4E to "First", R.id.M1txt5 to "Last", R.id.M1txt3 to "78", R.id.M1txt6E to "90")) {
+                    it.findViewById<android.widget.EditText>(id).setText(value)
+                }
+                it.findViewById<android.widget.Button>(R.id.M1btnN).performClick()
+            }
+            instrumentation.waitForIdleSync()
+            scenario.onActivity {
+                val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
+                assertEquals("אמב' 1234\nחולה נפגע 56\nהתחייבות 78\nסכום 90\nקוד 2000, 5000\nשם: First Last", confirmation.requireArguments().getString("body"))
+                (confirmation.requireDialog() as androidx.appcompat.app.AlertDialog).getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).performClick()
+            }
+            instrumentation.waitForIdleSync()
+            scenario.onActivity {
+                it.findViewById<android.widget.EditText>(R.id.M1txt3).setText("")
+                it.findViewById<android.widget.EditText>(R.id.M1txt6E).setText("")
+                it.findViewById<android.widget.Button>(R.id.M1btnN).performClick()
+            }
+            instrumentation.waitForIdleSync()
+            scenario.onActivity {
+                val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
+                assertEquals("אמב' 1234\nחולה נפגע 56\nקוד 2000, 5000\nשם: First Last", confirmation.requireArguments().getString("body"))
+                (confirmation.requireDialog() as androidx.appcompat.app.AlertDialog).getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).performClick()
             }
         }
     }

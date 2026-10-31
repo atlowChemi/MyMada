@@ -155,6 +155,20 @@ does not alter APK inputs. Full-modal parity/Compose acceptance remains open.
 
 ## Compose accounting
 
+### Owning form/picker follow-up
+
+MedicalPickerDialog now owns search and selection in saved dialog state. Its
+child-fragment result updates the form's saved selection; catalog ordering and
+immediate selection semantics remain native. The Java form is a temporary caller
+bridge, not a completed Kotlin/Compose form conversion. The fixture recreates the
+Activity with a filtered selected row, checks restored query/checkbox, dismisses,
+recreates again, then checks both billed and cleared-billing confirmation bodies.
+The stale `yishuv` mode now derives from the current two billing fields on every
+submission; clearing both returns to the native unbilled body. No payload policy
+change is implied. All previews are cancelled without approving SMS.
+
+## Remaining Compose accounting
+
 #26 owns its feature-screen Compose conversions as confirmed by the integrator;
 #21 establishes the shared Compose/lifecycle/latest-target foundation. The present
 chat, activation and dispatch behavior layers retain native XML. They do not count
