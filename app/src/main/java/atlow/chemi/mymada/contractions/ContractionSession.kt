@@ -16,9 +16,18 @@ class ContractionSession(val reactNative: Boolean, entries: List<ContractionEntr
             val last = entries.lastOrNull()
             val start = maxOf(now, last?.end ?: now)
             entries = entries + ContractionEntry((last?.number ?: 0) + 1, start, null,
-                if (reactNative) last?.start else last?.end)
+                last?.start)
         }
     }
 
     fun clear() { entries = emptyList() }
+}
+
+/** A null anchor means no departure was observed, not that the session is old. */
+data class ContractionAway(val wall: Long, val elapsed: Long, val boot: Int) {
+    fun expired(now: ContractionAway): Boolean {
+        val duration = if (boot >= 0 && boot == now.boot && now.elapsed >= elapsed)
+            now.elapsed - elapsed else (now.wall - wall).coerceAtLeast(0)
+        return duration > 20 * 60 * 1000L
+    }
 }
