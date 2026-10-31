@@ -137,6 +137,7 @@ class ChatIntegrationTest {
             val route = PushRoute.parse(mapOf("type" to "newChat", "msg" to "Fixture notification"))!!
             val intent = MyFirebaseMessagingService.destination(context, route)!!
             ActivityScenario.launch<contactChatActivity>(intent).use { scenario ->
+                scenario.onActivity { assertEquals(it.getString(R.string.title_activity_contact), it.supportActionBar?.title.toString()) }
                 capture("disclaimer")
                 onView(withText(R.string.ok)).perform(click())
                 main { backend.token.setResult("historical-token") }

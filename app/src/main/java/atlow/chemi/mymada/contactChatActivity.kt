@@ -36,6 +36,7 @@ class contactChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contact_chat)
+        setTitle(R.string.title_activity_contact)
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         model = ViewModelProvider(this)[ChatModel::class.java]
