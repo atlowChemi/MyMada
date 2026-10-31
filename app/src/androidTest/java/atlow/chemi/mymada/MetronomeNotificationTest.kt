@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.SystemClock
-import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
@@ -63,11 +62,10 @@ class MetronomeNotificationTest {
         try {
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { screen ->
                 awaitState("metronome visible") { toolsResumed() }
-                lateinit var toggle: View
                 lateinit var activity: UtillitiesAndTools
-                screen.onActivity { activity = it; toggle = it.findViewById(R.id.bpmW) }
+                screen.onActivity { activity = it }
                 // ActivityScenario.onActivity waits for idle; the running clock never idles.
-                instrumentation.runOnMainSync { toggle.performClick() }
+                clickMetronome()
                 if (!grantNotifications && Build.VERSION.SDK_INT >= 33) {
                     awaitState("shared permission prompt") {
                         val prompt = activity.supportFragmentManager.findFragmentByTag("notification-permission") as? DialogFragment
@@ -77,7 +75,7 @@ class MetronomeNotificationTest {
                     }
                     awaitState("playback with notification permission denied") { MetroService.running }
                     assertFalse(notifications.areNotificationsEnabled())
-                    instrumentation.runOnMainSync { toggle.performClick() }
+                    clickMetronome(running = true)
                     awaitState("UI stop with permission denied") { !MetroService.running }
                     return@use
                 }
@@ -86,11 +84,11 @@ class MetronomeNotificationTest {
                         it.id == 13 && it.notification.flags and Notification.FLAG_FOREGROUND_SERVICE != 0
                     }
                 }
-                instrumentation.runOnMainSync { toggle.performClick() }
+                clickMetronome(running = true)
                 awaitState("UI stop") { !MetroService.running }
 
                 awaitState("metronome visible") { toolsResumed() }
-                instrumentation.runOnMainSync { toggle.performClick() }
+                clickMetronome()
                 awaitState("restart notification") {
                     MetroService.running && notifications.activeNotifications.any { it.id == 13 }
                 }

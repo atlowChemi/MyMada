@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.media.AudioManager
 import android.os.SystemClock
-import android.view.View
 import android.widget.TextView
 import android.accessibilityservice.AccessibilityService
 import androidx.test.core.app.ActivityScenario
@@ -51,7 +50,7 @@ class MetronomeControlTest {
             lateinit var activity: UtillitiesAndTools
             screen.onActivity { activity = it }
             try {
-                instrumentation.runOnMainSync { activity.findViewById<View>(R.id.bpmW).performClick() }
+                clickMetronome()
                 await("Permission prompt or playback") {
                     var ready = MetroService.running
                     instrumentation.runOnMainSync {
@@ -93,11 +92,8 @@ class MetronomeControlTest {
                 instrumentation.runOnMainSync {
                     val it = activity
                     assertNotEquals("00:00", it.findViewById<TextView>(R.id.metro_Clock).text.toString())
-                    val button = it.findViewById<View>(R.id.bpmW)
-                    assertEquals(it.getString(R.string.MetroStop), button.contentDescription)
-                    assertTrue(button.isFocusable)
-                    button.performClick()
                 }
+                clickMetronome(running = true)
                 await("UI Stop works even while bound / notifications denied") { !MetroService.running }
                 instrumentation.runOnMainSync { }
                 assertFalse(prefs.contains("start"))
@@ -112,7 +108,11 @@ class MetronomeControlTest {
         scenario().use { screen ->
             try {
                 screen.onActivity { MetroService.start(it) }
-                await("Notification posted") { manager.activeNotifications.any { it.id == 13 } }
+                // startForeground posts before the service marks playback running. Waiting only
+                // for the notification can make the following Stop pass before Start is handled.
+                await("Playback running and notification posted") {
+                    MetroService.running && manager.activeNotifications.any { it.id == 13 }
+                }
                 val notification = manager.activeNotifications.first { it.id == 13 }.notification
                 notification.actions.single().actionIntent.send()
                 await("Notification Stop while bound") { !MetroService.running }
