@@ -93,7 +93,7 @@ public class contactChatActivity extends AppCompatActivity {
         msgs.setItemAnimator(itemAnimator);
 
         MyFirebaseMessagingService.getToken(getApplicationContext());
-        fcmToken = getSharedPreferences("Settings", 0).getString("fcm", "empty");
+        fcmToken = MyFirebaseMessagingService.chatIdentity(getApplicationContext());
         root = FirebaseDatabase.getInstance().getReference().child("chats").child(fcmToken);
         ChatT = findViewById(R.id.chatT);
         TextInputLayout chatTil = findViewById(R.id.chatTil);

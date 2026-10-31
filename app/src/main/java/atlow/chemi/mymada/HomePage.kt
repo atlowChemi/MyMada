@@ -30,6 +30,10 @@ class HomePage : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null && MyFirebaseMessagingService.routeLauncher(this, intent)) {
+            finish()
+            return
+        }
         setTitle(R.string.app_name)
         createChannels()
         rateUs.app_launched(this)
@@ -80,6 +84,12 @@ class HomePage : AppCompatActivity() {
 
     private fun overlayPrompt() = HomePrompt.show(this, R.string.permDesOverlay, R.string.permTitle,
         R.string.permYes, Intent(this, SettingsPage::class.java), true, 345)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        MyFirebaseMessagingService.routeLauncher(this, intent)
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
