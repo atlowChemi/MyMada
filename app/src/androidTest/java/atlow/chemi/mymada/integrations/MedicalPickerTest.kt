@@ -35,11 +35,11 @@ class MedicalPickerTest {
                 image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
             }
             image.recycle()
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withText("2000 גוף זר באוזניים"))
+            androidx.test.espresso.Espresso.onView(org.hamcrest.Matchers.allOf(androidx.test.espresso.matcher.ViewMatchers.withText("2000 גוף זר באוזניים"), androidx.test.espresso.matcher.ViewMatchers.withId(R.id.mcName)))
                 .perform(androidx.test.espresso.action.ViewActions.click())
             androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.userSearch))
                 .perform(androidx.test.espresso.action.ViewActions.replaceText("5000"))
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withText("5000 בצקת ריאות / החמרה באי ספיקת לב"))
+            androidx.test.espresso.Espresso.onView(org.hamcrest.Matchers.allOf(androidx.test.espresso.matcher.ViewMatchers.withText("5000 בצקת ריאות / החמרה באי ספיקת לב"), androidx.test.espresso.matcher.ViewMatchers.withId(R.id.mcName)))
                 .perform(androidx.test.espresso.action.ViewActions.click())
             androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withText(R.string.ok))
                 .perform(androidx.test.espresso.action.ViewActions.click())
