@@ -114,6 +114,33 @@ action order. TeamContractTest locks exact provisional native payloads; runtime
 tests cover model restoration/limits, real add/validation/edit, dialog recreation,
 card retention, remove/add visibility and preview body without SMS approval.
 
+### Private team verification (before Calls restack)
+
+Application source `2bb813a0`; fixture-only update `3020cf0b` closes the IME before
+card capture. Full debug/release/unit/lint build passes in 2m03s (`team-build.log`).
+Final fixtures under `~/.local/share/opencode/evidence/integrations/team-final/`:
+API24 EN 2/2 (3.009s), HE 2/2 (3.389s); API37 EN 2/2 (4.609s), HE 2/2 (4.520s).
+Original keyboard-obscured screenshots remain in `team-2bb813a0/`.
+Signed optimized APK SHA256
+`09d7c635dcfaaef553d28ab6d033077dbe9d9035181052042ec4d579c5fb7a24`
+matches pulled installed bytes on both APIs. Real release Add dialog captures
+were opened; initial API37 Back navigation exited because no IME was present,
+then corrected explicit launch/Add navigation succeeded. No Send approval occurred.
+API37 reports actual page size16384. Owned AVD identities and outbound IPv4/IPv6
+blocking were verified before runtime checks.
+
+Opened production12822 EN Add/card and candidate captures: card geometry/name
+font/overflow placement agree; role tint changes with the selected role as expected.
+Dialog title weight is restored; full-modal geometry/focus still differs and is
+not accepted as pixel-identical. Candidate HE labels are localized. Attempting a
+production HE reference by changing its local `lng` preference produced English
+strings with mirrored actions (`production-add-he.png`); this is a retained
+failed locale setup, not a valid Hebrew reference. Production source remains the
+user-supplied12822 APK (`b08c3d812f4781cfc667edf4240c917350c8083ea91cdb95bc971e0524c09179`).
+SavedStateHandle rehydration and Activity recreation pass; an actual killed-process
+restore is not established by those checks. Calls publication/restack and final
+combined artifact verification remain pending; this team layer stays private.
+
 ## Compose accounting
 
 #26 owns its feature-screen Compose conversions as confirmed by the integrator;
