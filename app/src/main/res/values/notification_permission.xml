@@ -1,0 +1,7 @@
+<resources>
+    <string name="notification_permission_allow">אישור התראות</string>
+    <string name="notification_permission_title">הרשאת התראות</string>
+    <string name="notification_permission_explain">כדי להציג התראות מקרים ופקדי פעילות ברקע, יש לאשר קבלת התראות.</string>
+    <string name="notification_permission_denied">הרשאת ההתראות לא אושרה. ניתן לאשר אותה בהגדרות המערכת ולחזור לאפליקציה.</string>
+    <string name="notification_permission_settings">מעבר להגדרות</string>
+</resources>
