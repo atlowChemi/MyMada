@@ -69,6 +69,7 @@ class TeamIntegrationTest {
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
             }
             instrumentation.waitForIdleSync()
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
             capture("member", language)
             scenario.recreate()
             androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.overflow))
