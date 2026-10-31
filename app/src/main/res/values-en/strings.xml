@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="smsAppUnavailable">No SMS app is available to compose this message.</string>
     <string name="app_name">MADA reports</string>
     <string name="smsMoni">Keep app running in background</string>
     <string name="notiMoni">Detect MADA notifications in background</string>

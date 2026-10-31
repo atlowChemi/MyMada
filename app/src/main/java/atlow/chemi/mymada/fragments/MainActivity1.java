@@ -390,38 +390,6 @@ public class MainActivity1 extends Fragment {
         }
     }
     private void sms(final String msg)   {
-        final String[] phones = {"+972523993348","+972523993345","+972523993339","+972523993338","+972523993342","+972523993337","+972523993343","+972523993340"
-                ,"+972523993346","+972523993356","+972523993341","+972586309592"};
-        final String[] merhavim = {"ירושלים","איילון","אשר","גלבוע","דן","ירדן","ירקון","כרמל","לכיש","נגב","שרון","מוקד 4"};
-        final int merhav = sp2.getInt("merhav", 0);
-        int smss = 1 + msg.length()/70;
-        String couT = msg.length() + " " + getResources().getString(R.string.smsCountChar) + " " + smss + " " + getResources().getString(R.string.smsCountMsg);
-        final String me = getActivity().getResources().getString(R.string.toDispatch) + merhavim[merhav] + ".";
-        String a = me + "\n\n" + msg + "\n\n";
-        SpannableString string = new SpannableString(a + couT);
-        string.setSpan(new ForegroundColorSpan(Color.BLUE), 0, me.length(), 0);
-        string.setSpan(new ForegroundColorSpan(Color.GRAY), a.length(), string.length(), 0);
-        final AlertDialog builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle).setTitle(getActivity().getResources().getString(R.string.suc)).setMessage(string)
-                .setCancelable(false)
-                .setNegativeButton(getResources().getString(R.string.ret), (dialog, id) -> dialog.cancel())
-                .setPositiveButton(getResources().getString(R.string.ok), (dialog, id) -> {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + phones[merhav]));
-                    intent.putExtra("sms_body", msg);
-                    try {
-                        startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-//                        Crashlytics.log("sms not sent!");
-//                        Crashlytics.logException(e);
-                    }
-                    dialog.cancel();
-                }).create();
-        builder.setOnShowListener(dialogInterface -> {
-            Button canc = builder.getButton(DialogInterface.BUTTON_NEGATIVE);
-            Button ok = builder.getButton(DialogInterface.BUTTON_POSITIVE);
-            canc.setTypeface(myTypeface);
-            ok.setTypeface(myTypeface);
-            canc.setTextColor(getActivity().getResources().getColor(R.color.OldPrimary));
-        });
-        builder.show();
+        atlow.chemi.mymada.integrations.DispatchConfirmation.show(this, msg);
     }
 }
