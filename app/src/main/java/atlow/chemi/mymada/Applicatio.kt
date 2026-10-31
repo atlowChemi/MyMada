@@ -10,7 +10,6 @@ import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import atlow.chemi.mymada.calls.ListenerAccess
-import atlow.chemi.mymada.helpers.FontsOverride
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.recieversAndServices.GrobootRec
 import atlow.chemi.mymada.calls.DetectionStatus
@@ -31,8 +30,6 @@ class Applicatio : Application() {
             object : ContentObserver(Handler(Looper.getMainLooper())) {
                 override fun onChange(selfChange: Boolean) { ListenerAccess.stopIfRevoked(this@Applicatio) }
             })
-        for (family in listOf("DEFAULT", "MONOSPACE", "SERIF", "SANS_SERIF"))
-            FontsOverride.setDefaultFont(this, family, "fonts/opensanshebrew.ttf")
         LocalBroadcastManager.getInstance(this).registerReceiver(GrobootRec(), IntentFilter("MADA_APP").apply {
             addAction("atlow.chemi.MyMada.MADA_APP")
         })
