@@ -147,8 +147,9 @@ class ChatIntegrationTest {
                     backend.changed("-b", mapOf("sender" to "historical-token", "msg" to "Fixture question / שאלת בדיקה", "time" to 1700000001000L))
                 }
                 capture("messages")
-                android.app.PendingIntent.getActivity(context, 987, intent,
-                    android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE).send()
+                // ActivityScenario mutates its launch Intent with CLEAR_TASK; real FCM does not.
+                android.app.PendingIntent.getActivity(context, 987, MyFirebaseMessagingService.destination(context, route),
+                    android.app.PendingIntent.FLAG_CANCEL_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE).send()
                 instrumentation.waitForIdleSync()
                 assertEquals(1, backend.listens)
                 lateinit var retained: ChatModel
