@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import atlow.chemi.mymada.R
+import atlow.chemi.mymada.permissions.NotificationPermission
 import atlow.chemi.mymada.recieversAndServices.MetroService
 import com.google.firebase.analytics.FirebaseAnalytics
 import java.util.Locale
@@ -51,6 +52,16 @@ class MetroActivity : Fragment(R.layout.activity_metro) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().setTitle(R.string.button_d)
+        requireActivity().supportFragmentManager.setFragmentResultListener("metronome.notifications", viewLifecycleOwner) { _, _ ->
+            // Denial must not remove CPR playback: the screen, widget and tiles still provide Stop.
+            if (!MetroService.running) {
+                try { MetroService.start(requireContext()) }
+                catch (error: RuntimeException) {
+                    android.util.Log.w("MetroActivity", "Cannot start metronome", error)
+                    Toast.makeText(requireContext(), error.localizedMessage, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
         view.findViewById<TextView>(R.id.metroExp).typeface =
             Typeface.createFromAsset(requireContext().assets, "fonts/opensanshebrew.ttf")
         view.isFocusable = true
@@ -68,11 +79,7 @@ class MetroActivity : Fragment(R.layout.activity_metro) {
                         putString(FirebaseAnalytics.Param.ITEM_NAME, "metronome")
                         putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CPR")
                     })
-                try { MetroService.start(requireContext()) }
-                catch (error: RuntimeException) {
-                    android.util.Log.w("MetroActivity", "Cannot start metronome", error)
-                    Toast.makeText(requireContext(), error.localizedMessage, Toast.LENGTH_LONG).show()
-                }
+                NotificationPermission.request(requireActivity(), "metronome.notifications")
             }
         }
         if (savedInstanceState == null && requireActivity().intent.getBooleanExtra("start", false)) {

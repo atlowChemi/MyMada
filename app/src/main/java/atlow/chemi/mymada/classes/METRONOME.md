@@ -53,8 +53,23 @@ Start/Stop button. Notification navigation reaches metronome even when that tool
 was deselected. Native widget and native/RN tile component names are preserved;
 external controls use service state, not a cached tile boolean.
 
-Only metronome mediaPlayback permission/type and RN tile compatibility declaration
-are changed in the manifest. #24 owns POST_NOTIFICATIONS/shared permission UX,
-listener/boot/background work, runInBG and the eventual target bump. Until that
-dependency is integrated, denied notifications do not block playback and Stop
-remains on the screen, widget and tiles; this is not permission-UX acceptance.
+The controls layer changes only metronome mediaPlayback permission/type and RN
+tile compatibility declarations in the manifest. #24 owns POST_NOTIFICATIONS,
+listener/boot/background work, runInBG and the eventual target bump.
+
+The permission follow-up imports #24's API-only commit `670c9d16`, then connects
+foreground Start to that shared, recreation-safe prompt. Grant or declining the
+notification request completes the original playback request; denial does not
+remove CPR playback. Stop remains on the screen, widget and tiles. External
+widget/tile starts do not attempt to request runtime permission from a service.
+The helper's system-dialog dismissal follow-through remains owned by #24.
+
+Controls validation: audio/control/notification suite 6/6 on API24 and API37 with
+16-KB pages; real same-boot process-kill/restart preserves origin/volume on both;
+local signed native-widget install-r fixture retains binding and functional
+PendingIntent on both. RN's original ON_CLICK_TAG action is checked, but a full
+RN signed-install widget/tile upgrade is not claimed. API37 denied notification
+checks pass, including Hebrew/RTL/font1.5. Actual native/RN tile clicks synchronize
+both tiles, including Stop without notification permission. Screenshots were
+opened/inspected; the production layout XML is byte-identical to `b36f4a9c`.
+Evidence and artifact hashes: `~/.local/share/opencode/evidence/metronome`.
