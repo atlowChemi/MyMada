@@ -97,6 +97,23 @@ navigation landed on MokedPage's default team tab; the corrected run explicitly
 selected Form first, with both hierarchy captures retained. No form/dispatch
 approval was performed. The final documentation commit changes no APK inputs.
 
+## Team state migration
+
+Kotlin replaces MainActivity2, VolunteerAdapter and Volunteer. TeamModel uses
+SavedStateHandle Bundle entries for names/roles; add/edit/delete update one list,
+with four-member and role/name validation in the shared model as well as the UI.
+MemberDialog is a child DialogFragment and saves draft name/role across recreation.
+The adapter owns no Activity and uses current binding positions for edit/delete.
+Deleting the last member restores the empty explanation (native previously left
+it hidden); deleting below four restores Add. Native card layout, colors, seven
+roles, mirrored grid geometry and temporary native SMS body are retained.
+Standard button handling replaces the legacy touch interception, retaining click
+actions and allowing platform accessibility/touch cancellation behavior.
+The owning member dialog restores normal title weight and production right-side
+action order. TeamContractTest locks exact provisional native payloads; runtime
+tests cover model restoration/limits, real add/validation/edit, dialog recreation,
+card retention, remove/add visibility and preview body without SMS approval.
+
 ## Compose accounting
 
 #26 owns its feature-screen Compose conversions as confirmed by the integrator;
