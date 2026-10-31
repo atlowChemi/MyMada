@@ -39,9 +39,10 @@ class ToolsBackNavigationTest {
                 }
                 // Modern Android sends a root task to the background instead of finishing it.
                 val deadline = android.os.SystemClock.uptimeMillis() + 5000
-                while (scenario.state == Lifecycle.State.RESUMED && android.os.SystemClock.uptimeMillis() < deadline)
+                while (scenario.state != Lifecycle.State.CREATED && scenario.state != Lifecycle.State.DESTROYED &&
+                    android.os.SystemClock.uptimeMillis() < deadline)
                     Thread.sleep(25)
-                assertTrue("Back leaves Tools", scenario.state == Lifecycle.State.CREATED ||
+                assertTrue("Back leaves Tools (locked=$locked, state=${scenario.state})", scenario.state == Lifecycle.State.CREATED ||
                     scenario.state == Lifecycle.State.DESTROYED)
             }
         }
