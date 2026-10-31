@@ -38,10 +38,10 @@ internal fun CustomDispatchScreen(onPreview: (String) -> Unit) {
     val accent = colorResource(R.color.ColorNice)
     val font = FontFamily(Font(R.font.opensans_hebrew))
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
-        Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(top = 16.dp)) {
+        Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(top = 12.dp)) {
             Text(hint, color = if (invalid) Color.Red else accent, fontFamily = font, fontSize = 12.sp)
             BasicTextField(body, onValueChange = { body = it; if (it.isNotBlank()) invalid = false },
-                modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp).padding(top = 4.dp).testTag("custom-body")
+                modifier = Modifier.fillMaxWidth().heightIn(min = 134.dp).padding(top = 4.dp).testTag("custom-body")
                     .semantics { contentDescription = hint; if (invalid) error(error) },
                 textStyle = TextStyle(fontFamily = font, fontSize = 18.sp, color = Color.Black),
                 cursorBrush = SolidColor(accent))
@@ -49,7 +49,7 @@ internal fun CustomDispatchScreen(onPreview: (String) -> Unit) {
             if (invalid) Text(error, color = Color.Red, fontSize = 12.sp, modifier = Modifier.testTag("custom-error"))
         }
         Surface(onClick = { invalid = body.isBlank(); if (!invalid) onPreview(body) },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 20.dp).heightIn(min = 60.dp).testTag("custom-send"),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 18.dp).heightIn(min = 60.dp).testTag("custom-send"),
             shape = RoundedCornerShape(15.dp), color = accent, shadowElevation = 4.dp) {
             Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), contentAlignment = Alignment.Center) {
                 Text(stringResource(R.string.succ), color = Color.White, fontFamily = font, fontSize = 20.sp)
