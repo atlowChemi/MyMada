@@ -2,6 +2,7 @@ package atlow.chemi.mymada
 
 import android.widget.EditText
 import android.widget.TextView
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.datastore.core.MultiProcessDataStoreFactory
 import androidx.datastore.core.Serializer
 import androidx.test.core.app.ActivityScenario
@@ -19,6 +20,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.Rule
 import org.junit.runner.RunWith
 import java.io.File
 import java.io.InputStream
@@ -27,6 +29,7 @@ import java.io.OutputStream
 /** Run only on an offline disposable device: normal startup initializes production SDKs. */
 @RunWith(AndroidJUnit4::class)
 class PlatformSmokeTest {
+    @get:Rule val compose = createEmptyComposeRule()
     @Test
     fun homeSettingsNavigationAndCalculator() {
         ActivityScenario.launch(HomePage::class.java).use { screen ->
@@ -49,9 +52,15 @@ class PlatformSmokeTest {
                 val menu = it.findViewById<NavigationView>(R.id.navigation).menu
                 assertTrue(it.onNavigationItemSelected(menu.findItem(R.id.oxygenCalc)))
                 it.supportFragmentManager.executePendingTransactions()
+            }
+            compose.waitForIdle()
+            screen.onActivity {
                 val pressure = it.findViewById<EditText>(R.id.ATM)
                 pressure.requestFocus()
                 pressure.setText("100")
+            }
+            compose.waitForIdle()
+            screen.onActivity {
                 assertEquals(it.getString(R.string.oxyCalc, 24), it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
                 assertEquals(it.getString(R.string.oxyCalc, 1500), it.findViewById<EditText>(R.id.PSI).text.toString())
             }
