@@ -57,6 +57,7 @@ object DetectionStatus : Application.ActivityLifecycleCallbacks {
     }
 
     @JvmStatic fun stop(context: Context) {
+        CallRecovery.stop(context)
         context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false).apply()
         context.stopService(Intent(context, SMSMonitorService::class.java))
         context.getSystemService(NotificationManager::class.java).cancel(78)

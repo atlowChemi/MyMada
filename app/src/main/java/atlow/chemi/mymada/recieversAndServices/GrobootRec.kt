@@ -21,6 +21,7 @@ import atlow.chemi.mymada.MokedPage
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.calls.CallAlerts
 import atlow.chemi.mymada.calls.CallEvent
+import atlow.chemi.mymada.calls.CallRecovery
 import atlow.chemi.mymada.permissions.NotificationPermission
 import java.util.Calendar
 
@@ -31,12 +32,19 @@ class GrobootRec : BroadcastReceiver() {
     @SuppressLint("MissingPermission") // Current OS grant is checked immediately before notify.
     override fun onReceive(context: Context, intent: Intent?) {
         if (intent == null) return
+        if (!CallRecovery.allow(context, intent)) {
+            CallRecovery.handled(context, intent)
+            return
+        }
         val preferences = context.getSharedPreferences("Settings", 0)
         val event = CallEvent(intent.getIntExtra("callT", 1), intent.getCharSequenceExtra("text")?.toString() ?: "",
             IntentCompat.getParcelableExtra(intent, "sourceIntent", PendingIntent::class.java))
         val audio = context.getSystemService(AudioManager::class.java)
         val decision = CallAlerts.decide(preferences.all, event.type, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), audio?.ringerMode ?: -1, false)
-        if (!decision.enabled) return
+        if (!decision.enabled) {
+            CallRecovery.handled(context, intent)
+            return
+        }
         val popup = preferences.getBoolean("win", true)
         val loop = preferences.getBoolean("loop", false)
         if (preferences.getBoolean("not", true)) {
@@ -79,6 +87,7 @@ class GrobootRec : BroadcastReceiver() {
             }
         }
         if (popup) context.startActivity(event.popupIntent(context, notificationId, loop))
+        CallRecovery.handled(context, intent, dispatched = true)
     }
 
     private fun ensureChannel(manager: NotificationManager) {

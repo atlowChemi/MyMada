@@ -10,6 +10,16 @@ class Source : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val id = intent.getIntExtra("id", 1)
         val kind = intent.getStringExtra("kind") ?: "event"
+        if (kind == "negative-batch") {
+            val now = System.currentTimeMillis()
+            onReceive(context, Intent().putExtra("id", 8104).putExtra("when", now - 60_000))
+            onReceive(context, Intent().putExtra("id", 8105))
+            onReceive(context, Intent().putExtra("id", 8105).putExtra("kind", "cancel"))
+            onReceive(context, Intent().putExtra("id", 8106).putExtra("kind", "empty-summary"))
+            onReceive(context, Intent().putExtra("id", 8107).putExtra("when", now + 60_000))
+            onReceive(context, Intent().putExtra("id", 8108).putExtra("when", 0L))
+            return
+        }
         if (kind == "probe-unbind") { SnapshotProbe.current?.requestUnbind(); return }
         if (kind == "probe-rebind") {
             android.service.notification.NotificationListenerService.requestRebind(ComponentName(context, SnapshotProbe::class.java))
