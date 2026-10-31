@@ -99,6 +99,7 @@ private fun PressureInput(value: String, viewId: Int, label: Int, maximum: Int, 
     val currentChange by rememberUpdatedState(onChange)
     AndroidView(factory = { context ->
         TextInputLayout(context).apply {
+            val inputLayout = this
             typeface = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
             addView(FixedTextInputEditText(context).apply {
                 id = viewId
@@ -108,10 +109,10 @@ private fun PressureInput(value: String, viewId: Int, label: Int, maximum: Int, 
                 filters = arrayOf(InputFilter { source, start, end, dest, dstart, dend ->
                     val proposed = dest.replaceRange(dstart, dend, source.subSequence(start, end)).toString()
                     if (OxygenCalculation.validInput(proposed, maximum)) {
-                        error = null
+                        inputLayout.error = null
                         null
                     } else {
-                        error = context.getString(R.string.oxygen_pressure_range, maximum)
+                        inputLayout.error = context.getString(R.string.oxygen_pressure_range, maximum)
                         dest.subSequence(dstart, dend)
                     }
                 })

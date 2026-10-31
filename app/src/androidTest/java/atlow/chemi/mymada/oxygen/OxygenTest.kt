@@ -10,6 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.UtillitiesAndTools
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.textfield.TextInputLayout
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.Rule
@@ -101,7 +102,7 @@ class OxygenTest {
             scenario.onActivity {
                 assertEquals("999", it.findViewById<EditText>(R.id.ATM).text.toString())
                 assertEquals("14985", it.findViewById<EditText>(R.id.PSI).text.toString())
-                assertNotNull(it.findViewById<EditText>(R.id.PSI).error)
+                assertNotNull((it.findViewById<EditText>(R.id.PSI).parent.parent as TextInputLayout).error)
                 assertEquals("1998", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
                 it.findViewById<EditText>(R.id.PSI).setText("")
             }
@@ -169,13 +170,13 @@ class OxygenTest {
                 // Reject the complete edit; never clip an overflowing paste into a different pressure.
                 edit(R.id.ATM, "1234")
                 check("", "", "0")
-                scenario.onActivity { assertNotNull(it.findViewById<EditText>(R.id.ATM).error) }
+                scenario.onActivity { assertNotNull((it.findViewById<EditText>(R.id.ATM).parent.parent as TextInputLayout).error) }
                 edit(R.id.ATM, "999")
                 check("999", "14985", "1998")
                 for (invalid in listOf("14986", "123456", "-1", "1.5", "١", "999999999999999999999")) {
                     edit(R.id.PSI, invalid)
                     check("999", "14985", "1998")
-                    scenario.onActivity { assertNotNull(it.findViewById<EditText>(R.id.PSI).error) }
+                    scenario.onActivity { assertNotNull((it.findViewById<EditText>(R.id.PSI).parent.parent as TextInputLayout).error) }
                 }
                 rotate(!landscape)
                 check("999", "14985", "1998")
