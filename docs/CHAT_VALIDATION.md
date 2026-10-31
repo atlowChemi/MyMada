@@ -86,6 +86,42 @@ fixed on owning-layer candidate `f01c0c13` with a passing focused API24 test and
 opened production/candidate confirmation images. Integrator coordinates applying
 that commit in #87 alongside its #77 correction; it is not a new independent PR.
 
+## Post-restack verification
+
+Rebased onto published #87 `04e438bdec18835873dd12074f3ce10225e5f832`,
+including owning #77 typography and #87 confirmation corrections. Source
+`0806a92b` adds the native CoordinatorLayout status-bar background and an API35+
+screenshot-pixel assertion. Debug/release/unit/lint build passed
+(`chat-build-status-fixed.log`). Affected recreation/cold-warm UI test passed
+API24 EN (3.070s), API24 HE (2.815s), and API37 (5.995s).
+Artifacts and captures are retained under `chat-0806a92b/`.
+Its debug-key-signed optimized release SHA256 is
+`d34e0f89ab0174c0b8b47aa8c04d5b053d9d70392774d99e3aae69a2b285be4f`;
+installed APK bytes pulled from both emulators match exactly. API24 lacks
+`getconf`; the first smoke script stopped there and was resumed explicitly.
+
+Opened final API37 empty capture confirms the corrected navy status area.
+Opened API24 EN/HE disclaimers preserve body wrapping and right-side action.
+The Hebrew comparison exposed an omitted native `resetTitle()` behavior: app
+locale was Hebrew but the toolbar retained the system-language English title.
+Restored `setTitle(R.string.title_activity_contact)` before toolbar setup and
+added a selected-language toolbar assertion. The above artifacts predate that
+fix. Final source `cb053eb7ebcd6cac0be74b93802342cdd157c08f` passed the
+existing title-fix debug/release/unit/lint build (1m49s), without a duplicate build.
+Final API24 **5/5 (5.085s)** and API37 **5/5 (8.167s)** fixtures cover all chat
+model/UI scenarios plus token-rotation identity and cold FCM approval routing.
+The chat UI fixture includes warm FCM entry, title/status-area assertions, name
+and send recreation, receipts and listener cleanup. Opened Hebrew capture now
+has the production localized toolbar title. API37 page size is **16384** bytes.
+
+Final artifacts: `chat-cb053eb7/`, with raw fixture logs, captures and SHA256 list.
+Optimized debug-key-signed release SHA256
+`31b23eb2f3238a4d6fce987f929d773929c90009197a7579fd1ee7b100c6eb14`
+matches installed bytes pulled from both devices. Cold real-activity launch and
+opened release captures show chat/disclaimer on API24 and offline-token failure
+over the disclaimer on API37; no write/send action was used. The earlier artifacts
+and failures remain retained, not overwritten or represented as final evidence.
+
 ## Remaining acceptance
 
 Live authenticated Database writes/listens, real token rotation/delivery mapping,
