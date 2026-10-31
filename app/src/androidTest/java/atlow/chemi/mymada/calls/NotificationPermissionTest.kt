@@ -1,12 +1,12 @@
 package atlow.chemi.mymada.calls
 
-import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
+import atlow.chemi.mymada.InfoActivityKt
 import atlow.chemi.mymada.smsRes
 import atlow.chemi.mymada.permissions.NotificationPermission
 import org.junit.Assert.*
@@ -40,6 +40,38 @@ class NotificationPermissionTest {
         assertTrue(target.performAction(AccessibilityNodeInfo.ACTION_CLICK))
     }
 
+    @Test fun aboutDetectionSurvivesRecreationAndRefreshesAfterGrant() {
+        assumeTrue(Build.VERSION.SDK_INT >= 33)
+        instrumentation.uiAutomation.serviceInfo = instrumentation.uiAutomation.serviceInfo.apply {
+            flags = flags or android.accessibilityservice.AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+        }
+        assertFalse(NotificationPermission.granted(context))
+        val preferences = context.getSharedPreferences("Settings", 0)
+        preferences.edit().putBoolean("Mapp", false).commit()
+        ActivityScenario.launch(InfoActivityKt::class.java).use { scenario ->
+            fun detection() = awaitNode { it.contentDescription?.toString() == context.getString(R.string.pref_title_enable) }
+            click(detection())
+            text(R.string.notification_permission_explain)
+            scenario.recreate()
+            click(text(R.string.dialog_no))
+            instrumentation.waitForIdleSync()
+            assertFalse(preferences.getBoolean("Mapp", false))
+            click(detection())
+            click(text(R.string.notification_permission_allow))
+            click(awaitNode { it.viewIdResourceName?.endsWith(":id/permission_allow_button") == true })
+            // Listener access is a separate grant. Cancel its explanation, then inspect the real toolbar.
+            click(text(R.string.dialog_no))
+            assertTrue(preferences.getBoolean("Mapp", false))
+            awaitNode {
+                it.contentDescription?.toString() == context.getString(R.string.pref_title_enable) &&
+                    generateSequence(it) { node -> node.parent }.any { node -> node.isChecked }
+            }
+            click(detection())
+            instrumentation.waitForIdleSync()
+            assertFalse(preferences.getBoolean("Mapp", true))
+        }
+    }
+
     @Test fun freshInstallPermissionRoute() {
         assumeTrue(Build.VERSION.SDK_INT >= 33)
         instrumentation.uiAutomation.serviceInfo = instrumentation.uiAutomation.serviceInfo.apply {
@@ -62,7 +94,10 @@ class NotificationPermissionTest {
             val allow = awaitNode { it.viewIdResourceName?.endsWith(":id/permission_allow_button") == true }
             when (route) {
                 "grant" -> click(allow)
-                "dismiss" -> instrumentation.uiAutomation.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK)
+                "dismiss" -> {
+                    instrumentation.uiAutomation.waitForIdle(300, 5000)
+                    assertTrue(instrumentation.uiAutomation.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK))
+                }
                 "deny", "settings" -> click(awaitNode { it.viewIdResourceName?.endsWith(":id/permission_deny_button") == true })
                 else -> error("Unknown route $route")
             }

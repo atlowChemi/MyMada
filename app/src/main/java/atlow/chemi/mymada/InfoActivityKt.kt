@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -47,9 +48,17 @@ class InfoActivityKt : AppCompatActivity() {
         onCreateOptionsMenu(menu)
         setContent {
             LifecycleResumeEffect(Unit) {
-                detecting = getSharedPreferences("Settings", 0).getBoolean("Mapp", false)
-                detect.isChecked = detecting
-                onPauseOrDispose {}
+                val preferences = getSharedPreferences("Settings", 0)
+                fun refresh() {
+                    detecting = preferences.getBoolean("Mapp", false)
+                    atlow.chemi.mymada.settings.DetectionControls.render(detect, detecting)
+                }
+                val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                    if (key == "Mapp") refresh()
+                }
+                preferences.registerOnSharedPreferenceChangeListener(listener)
+                refresh()
+                onPauseOrDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
             }
             MaterialTheme {
                 AboutScreen(detecting, ::finish, {
