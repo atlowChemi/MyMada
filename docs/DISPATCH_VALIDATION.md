@@ -55,6 +55,34 @@ from an unfocused expanded hint even with identical XML. Candidate API37 initial
 capture showed the inherited toolbar/tab typography and gray status-area issues;
 the owning #77 font correction and this layer's status protection address them.
 
+## Final custom/shared-confirmation evidence
+
+Tested source `9da87f87` atop chat #88. The first restacked build failed lint:
+`smsAppUnavailable` lacked an explicit values-iw translation. Raw failure remains
+in `dispatch-build-restacked.log`; fixed without a lint suppression. The opened
+Hebrew comparison also exposed reversed/left-aligned confirmation actions;
+restored production right-side OK/cancel order and asserted their relative bounds.
+Final debug/release/unit/lint build passed in 1m36s
+(`dispatch-build-actions-fixed.log`).
+
+`dispatch-9da87f87/` preserves exact APKs, source/hash manifests, all four
+API24/API37 EN/HE runs (**2/2 each**), and captures. These verify all 12 literal
+SMS Intent payloads plus blank validation, frozen recipient/body, recreation,
+cancel/draft retention, and blocked/intercepted approval. API37 uses 16384-byte
+pages. Final production/candidate EN/HE comparisons were opened; recipient/count
+colors and button order match. Different fixture text changes dialog height;
+parent AppCompat title/padding is not claimed pixel-identical.
+
+Optimized debug-key-signed release SHA256
+`7b393232a6896d8e189395809c37a14902f7e2728e5cfd8a768b89671b14a711`
+matches pulled installed bytes on both APIs. Opened custom-screen API37 and
+confirmation-preview API24 release captures verify the real optimized path.
+API37 initially correctly redirected to the volunteer gate; local offline-only
+preferences then seeded realM/pickedMoked/region11 for screen access. Initial
+capture automation pressed Back after the keyboard was already hidden and showed
+the launcher; retained that capture and repeated navigation without Back. No
+release approval/composer launch or SMS transmission was used.
+
 ## Remaining #26 scope
 
 Kotlin form dictation/medical codes/team management, team-size and exact wording
