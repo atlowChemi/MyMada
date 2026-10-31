@@ -56,6 +56,11 @@ reduce recovery coverage during extreme bursts, but never suppresses live callba
   when storage writes fail. No speculative exactly-once promise.
 - An identical update with the same key, postTime millisecond, source timestamp and
   content is indistinguishable in a snapshot. Live callbacks still all alert.
+- API37 can demote an orphan app group summary into a flagless child. An observed
+  subsequent live callback then followed the existing malformed-event “תקלה” policy;
+  it was not a recovered duplicate. Public summary provenance is no longer present.
+  The filter still ignores actual metadata-only GROUP_SUMMARY records; it does not
+  silently discard flagless malformed notifications or meaningful grouped children.
 - A complete revoke/regrant occurring while the process is dead may be unobserved.
   Current grant state cannot reconstruct that history; the freshness cap still
   applies. Actual observed Stop/revocation invalidates queued recovery via epoch.

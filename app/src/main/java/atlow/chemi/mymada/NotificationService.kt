@@ -64,8 +64,7 @@ open class NotificationService : NotificationListenerService() {
         DetectionStatus.refresh(this)
         if (ListenerAccess.selected(this) != ComponentName(this, listenerClass)) return
         try {
-            val active = activeNotifications
-            if (CallRecovery.connected(this)) active.sortedBy { it.postTime }.forEach { deliver(it, true) }
+            if (CallRecovery.connected(this)) activeNotifications.sortedBy { it.postTime }.forEach { deliver(it, true) }
         } catch (error: Exception) {
             Log.e("NotificationService", "Cannot reconcile active notifications", error)
         }
