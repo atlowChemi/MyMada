@@ -12,16 +12,20 @@ not validation of clinical assumptions. #19 explicitly leaves rounding unresolve
 2. What pressure bounds should apply? Native limits ATM to three characters even
    on linked updates: 99999 PSI → 666 ATM, rather than 6666. RN does not clip linked
    ATM updates. Neither is an approved pressure validation policy.
-3. Clearing native PSI leaves ATM/result intact; clearing ATM shows zero but keeps
-   PSI. RN clears both linked values and renders zero as blank. Which is intended?
-4. Native landscape limits PSI to four characters versus portrait five. Should the
-   limit be orientation-independent? Draft currently uses five in both; the native
-   64%/36% side-by-side landscape layout is retained with scrollable content.
-
-The draft explicitly retains native behavior for all three, pending approval;
-it does not silently introduce RN rounding or infer a medical limit from maxLength.
+The draft retains native calculation/rounding pending approval;
+it does not introduce RN rounding or infer a medical limit from maxLength.
 Input is ASCII digits only, three ATM/five PSI characters, matching native UI.
 Duration is truncation of pressure × tank liters / 10. Defaults are 100/1500/24.
+
+## Approved clearing and orientation behavior
+
+Clearing either pressure field clears both linked fields and displays zero minutes,
+so no stale estimate remains. Portrait and landscape use the same existing three-ATM/
+five-PSI character limits and calculation behavior. Rotation retains both values and
+tank selection, including an empty pair. The 64%/36% landscape layout remains.
+These requirements do not approve a new pressure maximum or the unresolved 198/200
+rounding policy. The regression exercises both clearing directions, nonempty and
+empty rotation, and the existing limits in both orientations.
 
 ## Implementation
 

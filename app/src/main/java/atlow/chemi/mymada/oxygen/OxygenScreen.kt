@@ -61,12 +61,12 @@ internal fun OxygenScreen() {
             PressureInput(atm, R.id.ATM, R.string.atm, 3,
                 Modifier.padding(start = margin, end = margin, top = if (landscape) 8.dp else 0.dp)) {
                 atm = it
-                OxygenCalculation.psiFromAtm(it)?.let { converted -> psi = converted }
+                psi = OxygenCalculation.psiFromAtm(it).orEmpty()
             }
             PressureInput(psi, R.id.PSI, R.string.psi, 5,
                 Modifier.padding(start = margin, end = margin, top = 10.dp)) {
                 psi = it
-                OxygenCalculation.atmFromPsi(it)?.let { converted -> atm = converted }
+                atm = OxygenCalculation.atmFromPsi(it).orEmpty()
             }
         }
         val result: @Composable () -> Unit = {
