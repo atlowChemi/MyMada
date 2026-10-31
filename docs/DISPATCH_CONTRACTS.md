@@ -181,6 +181,18 @@ navigation selected Custom in RTL; corrected navigation finds the localized tab
 in the hierarchy. Initial hierarchy remains for provenance. Full-modal production
 parity, killed-process restoration and Compose conversion remain acceptance gates.
 
+### Owning picker final append verification above team/#93
+
+Exact combined source `dbdf3376` (same `app/` tree as the final doc-only restack)
+passes full build2m10s in `form-team-restacked-build.log`. Final combined picker/form
+and team runtime: API24 EN/HE4/4 (5.881s/5.341s), API37 EN/HE4/4 (8.569s/9.084s).
+`form-team-restacked/` contains exact APKs, source, tests, release hierarchies and
+screenshots. Optimized signed SHA256
+`ad78ee827c90bc3fa0645737fbb4a6f6eb7e40b450bf6acf92ae52f1c4ef6fde`
+matches both pulled installations; exact release picker launches captured on both.
+All active checks completed before publication; publication does not close the
+explicit remaining UI/Compose/backend gates.
+
 ## Remaining Compose accounting
 
 #26 owns its feature-screen Compose conversions as confirmed by the integrator;
