@@ -41,6 +41,7 @@ internal fun TeamScreen(members: List<Volunteer>, onEdit: (Int) -> Unit, onDelet
     val font = FontFamily(Font(R.font.opensans_hebrew))
     val hint = stringResource(R.string.ambN)
     val error = stringResource(R.string.err_amb)
+    ProvideTextStyle(TextStyle(letterSpacing = 0.sp)) {
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text(hint, color = if (invalid) Color.Red else accent, fontFamily = font, fontSize = 12.sp, lineHeight = 16.sp,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), textAlign = TextAlign.Start)
@@ -73,8 +74,8 @@ internal fun TeamScreen(members: List<Volunteer>, onEdit: (Int) -> Unit, onDelet
                                     Text(TeamContract.roles[member.job], fontFamily = font, fontSize = 12.sp, lineHeight = 16.sp, color = Color.Black)
                                 }
                                 Box(Modifier.align(Alignment.CenterEnd)) {
-                                    IconButton(onClick = { menu = true }, modifier = Modifier.size(48.dp).testTag("team-menu-$index")) {
-                                        Icon(painterResource(R.drawable.ic_more), contentDescription = "${member.name}: ${stringResource(R.string.Nteam)}", tint = Color.Black)
+                                    IconButton(onClick = { menu = true }, modifier = Modifier.offset(x = 12.dp).size(48.dp).testTag("team-menu-$index")) {
+                                        Icon(painterResource(R.drawable.ic_more), contentDescription = "${member.name}: ${stringResource(R.string.Nteam)}", tint = Color.Black, modifier = Modifier.size(20.dp, 30.dp))
                                     }
                                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                                         DropdownMenuItem(text = { Text(stringResource(R.string.edit)) }, onClick = { menu = false; onEdit(index) }, modifier = Modifier.testTag("team-edit-$index"))
@@ -108,5 +109,6 @@ internal fun TeamScreen(members: List<Volunteer>, onEdit: (Int) -> Unit, onDelet
                 }
             }
         }
+    }
     }
 }
