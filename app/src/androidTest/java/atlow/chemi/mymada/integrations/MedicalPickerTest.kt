@@ -22,6 +22,8 @@ class MedicalPickerTest {
             scenario.onActivity {
                 it.findViewById<androidx.viewpager.widget.ViewPager>(R.id.viewpager).setCurrentItem(0, false)
                 it.findViewById<android.widget.EditText>(R.id.M1button2).performClick()
+                it.supportFragmentManager.fragments.filterIsInstance<atlow.chemi.mymada.fragments.MainActivity1>()
+                    .single().childFragmentManager.executePendingTransactions()
             }
             androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.userListView))
                 .check { view, error ->
