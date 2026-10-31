@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import atlow.chemi.mymada.calls.CallParser
 import atlow.chemi.mymada.calls.ListenerAccess
+import atlow.chemi.mymada.calls.DetectionStatus
 
 /** Keep the installed native listener identity. */
 open class NotificationService : NotificationListenerService() {
@@ -40,6 +41,7 @@ open class NotificationService : NotificationListenerService() {
     }
 
     override fun onListenerConnected() {
+        DetectionStatus.refresh(this)
         try { activeNotifications } catch (error: Exception) {
             Log.e("NotificationService", "Cannot read active notifications", error)
         }

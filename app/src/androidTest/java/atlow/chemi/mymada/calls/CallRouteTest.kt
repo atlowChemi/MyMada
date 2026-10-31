@@ -59,6 +59,7 @@ class CallRouteTest {
             .putBoolean("win", false).putBoolean("Nsou", false).putBoolean("Nvib", false)
             .putBoolean("cut", true).commit()
         context.stopService(Intent(context, SMSMonitorService::class.java))
+        context.getSystemService(NotificationManager::class.java).cancel(78)
         manager.cancelAll()
         if (Build.VERSION.SDK_INT >= 26) manager.deleteNotificationChannel("notWithWin")
         notifications(0)

@@ -13,7 +13,7 @@ import atlow.chemi.mymada.calls.ListenerAccess
 import atlow.chemi.mymada.helpers.FontsOverride
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.recieversAndServices.GrobootRec
-import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
+import atlow.chemi.mymada.calls.DetectionStatus
 import atlow.chemi.mymada.settings.LocaleRefresh
 import atlow.chemi.mymada.settings.PreferenceMigration
 
@@ -36,7 +36,7 @@ class Applicatio : Application() {
             addAction("atlow.chemi.MyMada.MADA_APP")
         })
         if (getSharedPreferences("Settings", 0).getBoolean("Mapp", false)) {
-            SMSMonitorService.start(this)
+            DetectionStatus.refresh(this)
             ListenerAccess.rebind(this)
         }
     }

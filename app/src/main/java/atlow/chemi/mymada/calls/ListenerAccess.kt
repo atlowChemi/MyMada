@@ -31,7 +31,6 @@ object ListenerAccess {
 
     fun stopIfRevoked(context: Context) {
         if (selected(context) != null) return
-        context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false).apply()
-        context.stopService(Intent(context, atlow.chemi.mymada.recieversAndServices.SMSMonitorService::class.java))
+        DetectionStatus.stop(context)
     }
 }

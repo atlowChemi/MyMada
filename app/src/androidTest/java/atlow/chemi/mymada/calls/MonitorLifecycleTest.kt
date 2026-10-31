@@ -17,7 +17,7 @@ import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
 import org.junit.Assert.*
 import org.junit.Test
 
-/** Service lifecycle checks, not POST_NOTIFICATIONS user-flow certification. */
+/** Ordinary status/Stop controls; real OS kill/reboot checks live in the device evidence. */
 class MonitorLifecycleTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
@@ -39,8 +39,9 @@ class MonitorLifecycleTest {
         ActivityScenario.launch(InfoActivityKt::class.java).use { scenario ->
             try {
                 preferences.edit().putBoolean("Mapp", true).commit()
-                scenario.onActivity { SMSMonitorService.start(it); SMSMonitorService.start(it) }
+                scenario.onActivity { DetectionStatus.refresh(it); DetectionStatus.refresh(it) }
                 await { manager.activeNotifications.count { it.id == 78 } == 1 }
+                assertEquals(0, manager.activeNotifications.single { it.id == 78 }.notification.flags and android.app.Notification.FLAG_FOREGROUND_SERVICE)
                 val stopped = mutableListOf<String?>()
                 val forwarding = object : ContextWrapper(context) {
                     override fun stopService(service: Intent): Boolean {
@@ -52,11 +53,16 @@ class MonitorLifecycleTest {
                 assertEquals(listOf(SMSMonitorService::class.java.name), stopped)
                 assertFalse(preferences.getBoolean("Mapp", true))
                 await { manager.activeNotifications.none { it.id == 78 } }
-                scenario.onActivity { SMSMonitorService.start(it) }
+                preferences.edit().putBoolean("Mapp", true).commit()
+                scenario.onActivity { DetectionStatus.refresh(it) }
+                await { manager.activeNotifications.any { it.id == 78 } }
+                manager.activeNotifications.single { it.id == 78 }.notification.actions.single().actionIntent.send()
+                await { !preferences.getBoolean("Mapp", true) && manager.activeNotifications.none { it.id == 78 } }
+                scenario.onActivity { DetectionStatus.refresh(it) }
                 assertTrue(manager.activeNotifications.none { it.id == 78 })
             } finally {
                 preferences.edit().putBoolean("Mapp", false).commit()
-                context.stopService(Intent(context, SMSMonitorService::class.java))
+                DetectionStatus.stop(context)
             }
         }
     }
@@ -79,8 +85,8 @@ class MonitorLifecycleTest {
             assertTrue(starts.isEmpty())
             receiver.onReceive(recording, Intent(Intent.ACTION_BOOT_COMPLETED))
             receiver.onReceive(recording, Intent(Intent.ACTION_MY_PACKAGE_REPLACED))
-            assertEquals(2, starts.size)
-            assertTrue(starts.all { it.component?.className == SMSMonitorService::class.java.name })
-        } finally { preferences.edit().putBoolean("Mapp", false).commit() }
+            assertTrue("Boot/update must never start a service", starts.isEmpty())
+            assertTrue(context.getSystemService(NotificationManager::class.java).activeNotifications.any { it.id == 78 })
+        } finally { DetectionStatus.stop(context) }
     }
 }
