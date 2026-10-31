@@ -41,6 +41,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 ?: preferences.getString("fcm", null)?.takeUnless { it.isBlank() || it == "empty" }
                 ?: token
             preferences.edit().putString("chatIdentity", identity).putString("fcm", token).apply()
+            com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().setUserId(token)
         }
 
         @JvmStatic fun chatIdentity(context: Context): String {

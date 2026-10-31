@@ -33,6 +33,7 @@ public class rateUs {
         }
 
         if(launch_count >= LAUNCH_UNTIL_PROMPT) {
+            atlow.chemi.mymada.integrations.SdkAnalytics.ratePrompt(context, launch_count, date_firstLaunch);
             Log.e("Launch:", "number: " + launch_count);
             if(System.currentTimeMillis() >= date_firstLaunch + (DAYS_UNTIL_PROMPT * 24 * 60 * 60 * 1000)){
                 showRateDialog(context, editor);
