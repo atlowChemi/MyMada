@@ -26,6 +26,16 @@ class Target37VisualTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
 
+    @Test fun activationLayoutsKeepToolbarBelowStatusBar() {
+        for (layout in listOf(R.layout.activity_not_mada, R.layout.activity_code_c, R.layout.activity_code_request)) {
+            ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                scenario.onActivity { it.setContentView(layout) }
+                compose.waitForIdle()
+                capture(scenario, "activation-layout-$layout")
+            }
+        }
+    }
+
     @Test fun themeFontAndStatusProtectionMatchInBothLocalesAndOrientations() {
         val font = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
         assertArrayEquals(context.assets.open("fonts/opensanshebrew.ttf").use { it.readBytes() },
@@ -55,6 +65,14 @@ class Target37VisualTest {
                         laidOut
                     }
                     scenario.onActivity { activity ->
+                        val toolbar = activity.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+                        val title = (0 until toolbar.childCount).map { toolbar.getChildAt(it) }
+                            .filterIsInstance<TextView>().first { it.text == toolbar.title }
+                        val expectedTitle = Paint(title.paint).apply {
+                            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                        }
+                        assertEquals(expectedTitle.measureText(title.text.toString()),
+                            title.paint.measureText(title.text.toString()), .01f)
                         val spinner = activity.findViewById<Spinner>(R.id.OxyTypeS)
                         val selected = spinner.selectedView as TextView
                         val dropdown = spinner.adapter.getDropDownView(0, null, spinner) as TextView
@@ -66,6 +84,34 @@ class Target37VisualTest {
                         }
                     }
                     capture(scenario, "oxygen-$language-${if (landscape) "landscape" else "portrait"}")
+                    if (!landscape) {
+                        lateinit var dialog: androidx.appcompat.app.AlertDialog
+                        scenario.onActivity { activity ->
+                            dialog = androidx.appcompat.app.AlertDialog.Builder(activity, R.style.AlertDialogStyle)
+                                .setTitle(R.string.plsNote).setMessage(R.string.plsNoteT)
+                                .setPositiveButton(R.string.ok, null).show()
+                        }
+                        instrumentation.uiAutomation.waitForIdle(500, 5000)
+                        compose.waitUntil(5000) {
+                            var ready = false
+                            scenario.onActivity { ready = dialog.window!!.decorView.hasWindowFocus() &&
+                                dialog.findViewById<TextView>(android.R.id.message)!!.height > 0 }
+                            ready
+                        }
+                        scenario.onActivity {
+                            val message = dialog.findViewById<TextView>(android.R.id.message)!!
+                            val expected = Paint(message.paint).apply {
+                                typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+                            }
+                            assertEquals(expected.measureText(message.text.toString()),
+                                message.paint.measureText(message.text.toString()), .01f)
+                        }
+                        val image = instrumentation.uiAutomation.takeScreenshot()!!
+                        File(context.getExternalFilesDir("target37-visuals"), "request-disclaimer-$language.png")
+                            .outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                        image.recycle()
+                        scenario.onActivity { dialog.dismiss() }
+                    }
                 }
             }
         }

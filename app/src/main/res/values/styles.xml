@@ -117,7 +117,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="fontFamily">@null</item>
+        <item name="android:fontFamily">@null</item>
+    </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
@@ -129,8 +132,8 @@
 
     <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!-- Used for the buttons -->
-        <item name="fontFamily">@font/opensans_hebrew</item>
-        <item name="android:fontFamily">@font/opensans_hebrew</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="colorAccent">@color/ColorAqua</item>
         <item name="colorControlNormal">@color/Ocean</item>
         <item name="colorControlActivated">@color/ColorAqua</item>

@@ -58,3 +58,30 @@ Build deviation: the initial successful release build inadvertently executed
 `uploadCrashlyticsMappingFileRelease`; host backend-write-free status cannot be
 claimed. Subsequent builds exclude that task. Owned emulator IPv4/IPv6 external
 traffic stayed blocked. No phones, merges or global ADB resets were used.
+
+## Owning-layer typography/inset correction
+
+The generic AppTheme font override also reached toolbar titles. Clear both inherited
+fontFamily attributes in AppBarOverlay so the platform title text appearance retains
+its own medium face. Explicitly setting the family name was insufficient on API24;
+the final inherited-style path passes actual title glyph-width checks on both APIs.
+AlertDialogStyle uses the system sans-serif face; the request disclaimer now has the
+published four-line Hebrew wrapping. Explicit per-view asset fonts (including chat
+and request-confirmation buttons) continue to override the theme.
+
+Gate/activation CoordinatorLayout roots lacked fitsSystemWindows under target37;
+request already fit but had no status background. Use the existing CoordinatorLayout
+inset handling and primary-color statusBarBackground for these three shared layouts.
+Tests host the layouts without invoking backend actions and verify toolbar bounds
+and status pixels; the owning activation layer must also verify its actual routes.
+
+Both focused tests pass on API24 and API37, including EN/HE portrait/landscape title,
+selector and dialog font checks. Captures were reopened against published12822.
+Earlier font assertion failures and too-early dialog captures are retained under
+`evidence/m2-integration/theme-parity/`; final captures wait for dialog window focus.
+
+The lone-action button-side difference is independent: compiled production and
+candidate button bars both specify layoutDirection=locale with the same order.
+Old API24 localization did not update the process default locale; the migration
+does. No global locale rollback or button-role swap is made here. Request button
+direction remains an acceptance decision; the chat owner handles its scoped policy.
