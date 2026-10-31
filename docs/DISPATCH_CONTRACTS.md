@@ -195,6 +195,14 @@ explicit remaining UI/Compose/backend gates.
 
 ## Remaining Compose accounting
 
+Private team-content follow-up replaces the RecyclerView/adapter with a Compose
+grid, ambulance input, actions and edit/delete menus, using the existing saved
+TeamModel. Four-member limit, seven roles, native card order/tints, literal
+provisional header and child MemberDialog remain. The fixture now drives real
+Compose add/menu/delete/send semantics, retaining draft/dialog recreation and
+snapshot assertions. Member dialog and shared confirmation are still native;
+this content conversion does not claim complete team-modal parity.
+
 The next private slice converts the custom-message content to actual Compose
 (BasicTextField, Surface action, saveable text/error state), retaining the existing
 fragment identity and mirrored-pager counter-transform. The confirmation remains

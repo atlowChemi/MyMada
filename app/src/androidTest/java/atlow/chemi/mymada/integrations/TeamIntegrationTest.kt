@@ -18,9 +18,15 @@ import atlow.chemi.mymada.helpers.LocalHelper
 import com.google.android.material.textfield.TextInputLayout
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.Rule
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
 import java.io.File
 
 class TeamIntegrationTest {
+    @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     @Test fun stateRestoresFourMemberLimitAndRejectsInvalidEntries() {
@@ -50,8 +56,9 @@ class TeamIntegrationTest {
             fun dialog(activity: MokedPage) = (team(activity).childFragmentManager.findFragmentByTag("team-member") as MainActivity2.MemberDialog).requireDialog() as AlertDialog
             scenario.onActivity {
                 it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(1, false)
-                it.findViewById<Button>(R.id.newManNew).performClick()
             }
+            compose.onNodeWithTag("team-add").performClick()
+            scenario.onActivity { team(it).childFragmentManager.executePendingTransactions() }
             instrumentation.waitForIdleSync()
             capture("add", language)
             scenario.onActivity {
@@ -72,10 +79,9 @@ class TeamIntegrationTest {
             androidx.test.espresso.Espresso.closeSoftKeyboard()
             capture("member", language)
             scenario.recreate()
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.overflow))
-                .perform(androidx.test.espresso.action.ViewActions.click())
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withText(R.string.edit))
-                .perform(androidx.test.espresso.action.ViewActions.click())
+            compose.onNodeWithTag("team-menu-0").performClick()
+            compose.onNodeWithTag("team-edit-0").performClick()
+            scenario.onActivity { team(it).childFragmentManager.executePendingTransactions() }
             scenario.onActivity {
                 val dialog = dialog(it)
                 assertEquals("Fixture Member", dialog.findViewById<EditText>(R.id.addManName)!!.text.toString())
@@ -87,12 +93,15 @@ class TeamIntegrationTest {
                 val model = ViewModelProvider(team(it))[TeamModel::class.java]
                 assertEquals("Edited Member", model.members.single().name)
                 repeat(3) { i -> assertTrue(model.save(-1, "Member$i", i)) }
-                assertEquals(View.GONE, it.findViewById<Button>(R.id.newManNew).visibility)
-                model.delete(1)
-                assertEquals(View.VISIBLE, it.findViewById<Button>(R.id.newManNew).visibility)
-                it.findViewById<EditText>(R.id.M2txt1E).setText("1234")
-                it.findViewById<Button>(R.id.M2btn1ENew).performClick()
             }
+            compose.onNodeWithTag("team-add").assertDoesNotExist()
+            compose.onNodeWithTag("team-menu-1").performClick()
+            compose.onNodeWithTag("team-delete-1").performClick()
+            compose.onNodeWithTag("team-add").assertExists()
+            compose.onNodeWithTag("team-ambulance").performTextReplacement("1234")
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            compose.onNodeWithTag("team-send").performClick()
+            scenario.onActivity { it.supportFragmentManager.executePendingTransactions() }
             instrumentation.waitForIdleSync()
             scenario.onActivity {
                 val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
@@ -100,8 +109,8 @@ class TeamIntegrationTest {
                 (confirmation.requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_NEGATIVE).performClick()
                 val model = ViewModelProvider(team(it))[TeamModel::class.java]
                 repeat(model.members.size) { model.delete(0) }
-                assertEquals(View.VISIBLE, it.findViewById<View>(R.id.explain).visibility)
             }
+            compose.onNodeWithTag("team-empty").assertExists()
         }
     }
     private fun capture(name: String, language: String) {
