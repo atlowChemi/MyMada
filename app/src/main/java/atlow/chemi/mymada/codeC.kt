@@ -4,12 +4,13 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.widget.doAfterTextChanged
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.ComposeView
+import atlow.chemi.mymada.integrations.ActivationScreen
 import androidx.lifecycle.ViewModelProvider
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.integrations.ActivationModel
@@ -24,19 +25,12 @@ class codeC : AppCompatActivity() {
         setContentView(R.layout.activity_code_c)
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
         model = ViewModelProvider(this)[ActivationModel::class.java]
-        val fields = listOf(R.id.code1, R.id.code2, R.id.code3, R.id.code4).map { findViewById<EditText>(it) }
-        fields.forEachIndexed { index, field ->
-            field.contentDescription = "${getString(R.string.title_code)} ${index + 1}"
-            field.doAfterTextChanged {
-                val next = if (it.isNullOrEmpty()) index - 1 else index + 1
-                fields.getOrNull(next)?.requestFocus()
-            }
+        val busy = mutableStateOf(model.state.value!!.busy)
+        findViewById<ComposeView>(R.id.activation_content).setContent {
+            MaterialTheme { ActivationScreen(busy.value) { model.activate(it, null) } }
         }
-        val send = findViewById<Button>(R.id.okBBB)
-        send.setOnClickListener { model.activate(fields.joinToString("") { it.text.toString() }, null) }
         model.state.observe(this) { state ->
-            send.isEnabled = !state.busy
-            fields.forEach { it.isEnabled = !state.busy }
+            busy.value = state.busy
             progress?.dismiss()
             progress = if (state.busy) ProgressDialog.show(this, null, getString(R.string.load), true, false) else null
             message?.dismiss()
