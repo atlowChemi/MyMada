@@ -34,7 +34,28 @@ sh ./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroid
 The initial two API24 fixture tests passed (1.309s) before adding token rejection,
 name-dialog recreation and cold/warm PendingIntent coverage. That earlier run is
 retained as `chat-api24-tests-initial.log`, not represented as final evidence.
-Final revision results and APK hashes are recorded after execution.
+Implementation `eb6f56f4`: debug/release/unit/lint **PASS**
+(`chat-build-committed.log`), 10 JVM tests, lint 0 errors/309 warnings/2 hints.
+Exact artifacts and manifests: `chat-eb6f56f4/`. Optimized release locally signed
+with debug key SHA256 `6436f0fd5648006395fc693c0a65bf22d53559c590d8ea2aa8d8575dc3a1dd8c`;
+installed bytes pulled from both API24 and API37 match. Both launch the real chat
+screen/disclaimer; offline token failure is surfaced. No successful live write or
+production-signing acceptance is implied by this release smoke.
+
+API24 and API37 actual16384-byte-page runtime: token rejection/retry, cached identity,
+receipts and write-ack tests pass in `api{24,37}-tests.log`. The new warm-entry test
+first failed because ActivityScenario mutated its input Intent with CLEAR_TASK.
+Reusing that Intent in a PendingIntent destroyed the scenario; UPDATE_CURRENT then
+retained those flags across reruns. Fixed the harness to construct the real FCM
+destination afresh and cancel its old fixture PendingIntent. No application change.
+Retained failing logs and diagnostic screenshot/thread request. The corrected test
+passes API24 **1/1,2.905s** and API37 **1/1,5.123s** (`api{24,37}-warm-fixture.log`),
+including both send and name recreation and one listener across warm entry.
+The two unaffected tests were not repeated after this harness-only delta.
+Matched he-IL API24 capture/recreation run also passes **1/1,2.848s**
+(`api24-he-fixture.log`); opened final disclaimer/name/empty captures confirm
+published body wrapping/geometry and right-aligned actions. Message fixtures and
+API37 layouts were opened too. The toolbar difference remains owned by #77.
 
 ## Published-production UI comparison
 
@@ -59,7 +80,11 @@ been referred to the integrator's owning #77 correction. Parent #77 request Java
 and #87 Kotlin use the same builder style/title/message/positive OK: the earlier
 claim that #87 switched button polarity or removed an explicit font was withdrawn
 after checking the exact parent source. Do not mask those differences by changing
-unrelated chat logic or mark them permanently accepted.
+unrelated chat logic or mark them permanently accepted. A separate actual #87
+confirmation regression (missing Message-label accent/button fonts/red cancel) was
+fixed on owning-layer candidate `f01c0c13` with a passing focused API24 test and
+opened production/candidate confirmation images. Integrator coordinates applying
+that commit in #87 alongside its #77 correction; it is not a new independent PR.
 
 ## Remaining acceptance
 
