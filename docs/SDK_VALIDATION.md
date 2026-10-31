@@ -35,6 +35,20 @@ source; adding a new consent product flow requires a decision rather than
 inventing one during migration. SDK defaults alone do not establish deployed
 console consent/configuration parity.
 
+## Demo-ad layer verification
+
+Tested code `a1bea4f6`: debug/release/unit/lint PASS (2m13s), raw log
+`sdk-test-ads-build.log`. API24/API37 offline instrumentation **1/1 each**
+resolves both demo unit IDs in both EN/HE contexts. `aapt2 dump resources` on
+the exact debug/release APKs confirms demo IDs in debug and unchanged production
+IDs in release. Artifacts, resource dumps and runtime logs: `sdk-test-ads/`
+under `~/.local/share/opencode/evidence/integrations/`.
+Optimized debug-key-signed release SHA256
+`5272f59a91a802519ca3870ac38884bd8f81a42cff305f5df486b624441deeee`
+matches installed bytes pulled from API24 and actual16KB API37. Both launch
+the real About activity offline, exercising its interstitial configuration;
+no live ad load or impression acceptance is inferred.
+
 ## Acceptance boundaries
 
 All emulator execution remains offline. A demo ad-unit selection check is not a
