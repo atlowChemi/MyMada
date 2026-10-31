@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import atlow.chemi.mymada.permissions.NotificationPermission
 import atlow.chemi.mymada.NotificationService
 import atlow.chemi.mymada.R
-import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
 
 /** Existing detection contract; current-target permission/service behavior remains #24. */
@@ -73,15 +72,8 @@ object DetectionControls {
         preferences.edit().putBoolean("Mapp", true).apply()
         SMSMonitorService.start(activity)
         val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-        if (intent.resolveActivity(activity.packageManager) != null) {
-            if (atlow.chemi.mymada.calls.ListenerAccess.selected(activity) == null)
-                Prompt.show(activity, R.string.dialog_help, intent, style = style)
-        } else {
-            activity.stopService(Intent(activity, NotificationService::class.java))
-            activity.startService(Intent(activity, NotificationServiceOld::class.java))
-            if (!NotificationServiceOld.isAccessibilitySettingsOn(activity.applicationContext))
-                Prompt.show(activity, R.string.dialog_help, Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), request = 101, style = style)
-        }
+        if (atlow.chemi.mymada.calls.ListenerAccess.selected(activity) == null && intent.resolveActivity(activity.packageManager) != null)
+            Prompt.show(activity, R.string.dialog_help, intent, style = style)
         activity.invalidateOptionsMenu()
         activity.findViewById<com.google.android.material.navigation.NavigationView>(R.id.navigation)
             ?.menu?.findItem(R.id.detect)?.let { render(it, true) }
