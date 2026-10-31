@@ -60,8 +60,11 @@ class MetronomeWidgetUpgradeTest {
                 }
                 await {
                     var present = false
-                    // The provider's initial placeholder has the same ID but no PendingIntent yet.
-                    instrumentation.runOnMainSync { present = view.findViewById<View>(R.id.metro_widget_image)?.isClickable == true }
+                    // Wait for the new provider update, not a placeholder or cached pre-upgrade PendingIntent.
+                    instrumentation.runOnMainSync {
+                        val button = view.findViewById<View>(R.id.metro_widget_image)
+                        present = button?.isClickable == true && button.contentDescription == context.getString(R.string.startT)
+                    }
                     present
                 }
                 instrumentation.runOnMainSync { view.findViewById<View>(R.id.metro_widget_image).performClick() }
