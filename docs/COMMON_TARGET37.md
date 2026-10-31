@@ -30,3 +30,25 @@ The first target37 build exposed GestureBackNavigation lint: Tools still overrod
 Activity.onBackPressed, which modern back gestures bypass. Its Kotlin dispatcher
 bridge closes an unlocked drawer, otherwise delegates normal back navigation.
 The focused regression covers recreation, closed drawer and locked-open drawer.
+
+## Observed gates on application source1352cdca
+
+Debug/test/optimized release, JVM5/5 and both lints pass. Common API24/API37 runs
+cover Platform2/2, metronome controls2/2, Oxygen3/3, and corrected Tools back1/1
+on each API; API37 actual notification grant/deny passes1/1 each. Real API37 back
+gestures close the open drawer, then leave Tools. The test-only corrections await
+normal root-task backgrounding/stop, not immediate Activity.isFinishing.
+
+Target37 typography is **not accepted**: runtime throws IllegalAccessException
+when legacy FontsOverride tries to assign static-final Typeface fields. The
+Oxygen spinner consequently renders monospace; enforced edge-to-edge also changes
+the status-bar background. Retain evidence and migrate to supported explicit
+font/theme/inset handling before affected-screen visual acceptance. These issues
+are not waived by passing functional tests or isolated target33 screenshots.
+
+Calls owner additionally observed a pre-existing rebind loss window in a direct
+API37 comparison: both the prior FGS and listener-only versions missed a source
+event sent immediately after SIGKILL, before rebinding, then restored controls.
+This is not zero-loss delivery evidence. No replay/deduplication policy is inferred.
+Common-target37 calls results remain a separate owner handoff, not assumed from
+that isolated comparison or from successful compilation.
