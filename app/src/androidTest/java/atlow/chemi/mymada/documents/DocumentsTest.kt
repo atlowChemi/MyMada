@@ -223,12 +223,18 @@ class DocumentsTest {
                 ).fetchSemanticsNodes().isNotEmpty()
                 compose.waitUntil(30_000) { rendered("100%") }
                 screenshot("$kind-small-text-1x")
+                val captureGeometry = mutableListOf<String>()
                 fun headerImage(): android.graphics.Bitmap {
                     compose.waitForIdle()
                     // Activity window transitions also move pixels, outside Compose's idling clock.
                     instrumentation.uiAutomation.waitForIdle(500, 5_000)
                     val bounds = compose.onNodeWithText(label).fetchSemanticsNode().boundsInWindow
                     val screen = instrumentation.uiAutomation.takeScreenshot()!!
+                    scenario.onActivity {
+                        val location = IntArray(2)
+                        it.window.decorView.getLocationOnScreen(location)
+                        captureGeometry += "bounds=$bounds window=${location.toList()} screen=${screen.width}x${screen.height}"
+                    }
                     return try {
                         android.graphics.Bitmap.createBitmap(screen, bounds.left.toInt(), bounds.top.toInt(),
                             bounds.width.toInt(), bounds.height.toInt())
@@ -239,6 +245,14 @@ class DocumentsTest {
                 compose.waitUntil(30_000) { rendered("400%") }
                 val zoomedHeader = headerImage()
                 screenshot("$kind-small-text-4x")
+                if (!header.sameAs(zoomedHeader)) {
+                    for ((phase, image) in listOf("before" to header, "after" to zoomedHeader)) {
+                        File(context.getExternalFilesDir("documents-evidence"), "$kind-header-$phase.png")
+                            .outputStream().use { image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+                    }
+                    File(context.getExternalFilesDir("documents-evidence"), "$kind-header-geometry.txt")
+                        .writeText(captureGeometry.joinToString("\n"))
+                }
                 assertTrue("Zoom must not draw over its own controls", header.sameAs(zoomedHeader))
                 header.recycle()
                 zoomedHeader.recycle()
