@@ -44,6 +44,27 @@ precision restoration, malformed data preservation, and the new storage boundary
 Evidence is retained outside the worktree at
 `~/.local/share/opencode/evidence/shared-kotlin/`.
 
+Verified on the private slice rebased onto #102
+(`1fc56d4e4ada08f67e9274f00053a1b848a4a0ab`):
+
+- `testDebugUnitTest --tests 'atlow.chemi.mymada.helpers.*'`: 2 tests passed.
+- `assembleDebug`, `assembleDebugAndroidTest`, `assembleRelease`, `lintDebug`:
+  passed. Lint reported 0 errors, 313 warnings, and 2 hints.
+- The eight focused instrumentation checks above passed on API24 and API37
+  (16-KB pages), using only private emulator ports 5620/5622. IPv4/IPv6 routing
+  isolation was recorded; API24's Ethernet interface was explicitly disabled.
+- Builds use cached SDK/JDK17 and command-line
+  `-Dorg.gradle.jvmargs='-Xmx6g -XX:ActiveProcessorCount=2 -Dfile.encoding=UTF-8'`
+  with `--max-workers=2`. The repository's 2-GiB default exhausted R8's heap;
+  no build configuration was changed.
+- APKs and SHA-256 hashes, JVM signatures, build/lint logs, instrumentation
+  output, network state, and the remaining-Java inventory are saved in evidence.
+
+The installed `avdmanager` generated `target=android-0` for new API37 minor-version
+images, causing an offline guest with misleading HVF/mprotect errors. Correcting
+only the private AVD's `.ini` to `target=android-37` restored boot; no shared
+emulator, global adb reset, physical device, or production state was used.
+
 ## Remaining app-owned Java at this slice's base
 
 `MokedPage`, `PrivacyActivity`, `UtillitiesAndTools`, `CircularAnimatedDrawable`,
