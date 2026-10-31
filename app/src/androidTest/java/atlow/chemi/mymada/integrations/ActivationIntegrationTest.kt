@@ -1,6 +1,7 @@
 package atlow.chemi.mymada.integrations
 
 import android.app.Application
+import android.app.Activity
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
@@ -10,10 +11,14 @@ import android.widget.EditText
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleCallback
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import atlow.chemi.mymada.*
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.helpers.MyFirebaseMessagingService
@@ -21,6 +26,8 @@ import com.google.android.gms.tasks.TaskCompletionSource
 import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /** Run only on the owned offline emulator. All backend outcomes here are fixtures, not live delivery. */
 class ActivationIntegrationTest {
@@ -84,17 +91,39 @@ class ActivationIntegrationTest {
         preferences.edit().putString(ActivationContract.KEY, "existing-identity").commit()
         val backend = Backend()
         ActivityScenario.launch(codeC::class.java).use { scenario ->
+            lateinit var original: Activity
+            lateinit var retained: ActivationModel
             scenario.onActivity {
+                original = it
                 val model = ViewModelProvider(it)[ActivationModel::class.java]
+                retained = model
                 model.backend = backend
                 model.activate("0012", null)
                 assertFalse(preferences.getBoolean("realM", false))
                 assertEquals("existing-identity", backend.identity)
             }
-            scenario.recreate()
-            scenario.onActivity { ViewModelProvider(it)[ActivationModel::class.java].activate("0012", null) }
-            assertEquals(1, backend.activations)
-            main { backend.activationResult.setException(IllegalStateException("fixture rejection")) }
+            // ActivityScenario.recreate waits for an idle queue; API24's indeterminate
+            // progress animation never idles. Observe the actual lifecycle instead.
+            val resumed = CountDownLatch(1)
+            var recreated: codeC? = null
+            val callback = ActivityLifecycleCallback { activity, stage ->
+                if (activity is codeC && activity !== original && stage == Stage.RESUMED) {
+                    recreated = activity
+                    resumed.countDown()
+                }
+            }
+            ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(callback)
+            try {
+                instrumentation.runOnMainSync { original.recreate() }
+                assertTrue(resumed.await(5, TimeUnit.SECONDS))
+                instrumentation.runOnMainSync {
+                    assertSame(retained, ViewModelProvider(recreated!!)[ActivationModel::class.java])
+                    retained.activate("0012", null)
+                    assertEquals(1, backend.activations)
+                    backend.activationResult.setException(IllegalStateException("fixture rejection"))
+                }
+                instrumentation.waitForIdleSync()
+            } finally { ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(callback) }
             scenario.onActivity {
                 val model = ViewModelProvider(it)[ActivationModel::class.java]
                 assertFalse(preferences.getBoolean("realM", false))
@@ -193,6 +222,8 @@ class ActivationIntegrationTest {
             capture("disclaimer")
             onView(withText(R.string.ok)).perform(click())
             capture("request")
+            closeSoftKeyboard()
+            capture("request-full")
         }
     }
 }
