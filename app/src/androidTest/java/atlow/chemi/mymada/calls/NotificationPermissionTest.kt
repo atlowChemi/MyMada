@@ -2,6 +2,9 @@ package atlow.chemi.mymada.calls
 
 import android.os.Build
 import android.os.SystemClock
+import android.os.ParcelFileDescriptor
+import android.content.Intent
+import android.provider.Settings
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
@@ -9,6 +12,7 @@ import atlow.chemi.mymada.R
 import atlow.chemi.mymada.InfoActivityKt
 import atlow.chemi.mymada.smsRes
 import atlow.chemi.mymada.permissions.NotificationPermission
+import atlow.chemi.mymada.calls.ListenerAccess
 import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
 import org.junit.Test
@@ -40,7 +44,52 @@ class NotificationPermissionTest {
         assertTrue(target.performAction(AccessibilityNodeInfo.ACTION_CLICK))
     }
 
-    @Test fun aboutDetectionSurvivesRecreationAndRefreshesAfterGrant() {
+    /** Notification permission is seeded here; the listener grant itself is exercised in Android Settings. */
+    @Test fun listenerSettingsGrantReturnsToCheckedDetectionControl() {
+        assumeTrue(Build.VERSION.SDK_INT >= 33)
+        instrumentation.uiAutomation.serviceInfo = instrumentation.uiAutomation.serviceInfo.apply {
+            flags = flags or android.accessibilityservice.AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+        }
+        ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
+            "pm grant ${context.packageName} android.permission.POST_NOTIFICATIONS")).use { it.readBytes() }
+        assertNull("Run with no listener grant", ListenerAccess.selected(context))
+        val preferences = context.getSharedPreferences("Settings", 0)
+        preferences.edit().putBoolean("Mapp", false).commit()
+        ActivityScenario.launch(InfoActivityKt::class.java).use { scenario ->
+            click(awaitNode { it.contentDescription?.toString() == context.getString(R.string.pref_title_enable) })
+            text(R.string.dialog_help)
+            scenario.recreate()
+            click(text(R.string.dialog_yes))
+            click(awaitNode { it.isCheckable && !it.isChecked && it.className?.toString()?.contains("Switch") == true })
+            click(awaitNode { it.viewIdResourceName == "com.android.settings:id/allow_button" || it.viewIdResourceName == "android:id/button1" })
+            awaitNode { it.isCheckable && it.isChecked && it.className?.toString()?.contains("Switch") == true }
+            instrumentation.uiAutomation.waitForIdle(300, 5000)
+            assertTrue(instrumentation.uiAutomation.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK))
+            awaitNode {
+                it.contentDescription?.toString() == context.getString(R.string.pref_title_enable) &&
+                    generateSequence(it) { node -> node.parent }.any { node -> node.isChecked }
+            }
+            assertNotNull(ListenerAccess.selected(context))
+            assertTrue(preferences.getBoolean("Mapp", false))
+            val notifications = context.getSystemService(android.app.NotificationManager::class.java)
+            assertTrue(notifications.activeNotifications.any { it.id == 78 })
+            // Revoke using the same actual Settings UI, not a cached application flag.
+            scenario.onActivity { it.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS)
+                .putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, ListenerAccess.selected(context)!!.flattenToString())) }
+            click(awaitNode { it.isCheckable && it.isChecked && it.className?.toString()?.contains("Switch") == true })
+            click(awaitNode { it.viewIdResourceName == "android:id/button1" })
+            awaitNode { it.isCheckable && !it.isChecked && it.className?.toString()?.contains("Switch") == true }
+            instrumentation.uiAutomation.waitForIdle(300, 5000)
+            instrumentation.uiAutomation.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK)
+            val deadline = SystemClock.uptimeMillis() + 5000
+            while (preferences.getBoolean("Mapp", false) && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(30)
+            assertNull(ListenerAccess.selected(context))
+            assertFalse(preferences.getBoolean("Mapp", true))
+            assertTrue(notifications.activeNotifications.none { it.id == 78 })
+        }
+    }
+
+    @Test fun aboutDetectionSurvivesRecreationAndStaysOffWhenListenerAccessIsCanceled() {
         assumeTrue(Build.VERSION.SDK_INT >= 33)
         instrumentation.uiAutomation.serviceInfo = instrumentation.uiAutomation.serviceInfo.apply {
             flags = flags or android.accessibilityservice.AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
@@ -61,14 +110,7 @@ class NotificationPermissionTest {
             click(awaitNode { it.viewIdResourceName?.endsWith(":id/permission_allow_button") == true })
             // Listener access is a separate grant. Cancel its explanation, then inspect the real toolbar.
             click(text(R.string.dialog_no))
-            assertTrue(preferences.getBoolean("Mapp", false))
-            awaitNode {
-                it.contentDescription?.toString() == context.getString(R.string.pref_title_enable) &&
-                    generateSequence(it) { node -> node.parent }.any { node -> node.isChecked }
-            }
-            click(detection())
-            instrumentation.waitForIdleSync()
-            assertFalse(preferences.getBoolean("Mapp", true))
+            assertFalse(preferences.getBoolean("Mapp", false))
         }
     }
 

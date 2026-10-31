@@ -46,6 +46,13 @@ open class NotificationService : NotificationListenerService() {
     }
 
     override fun onListenerDisconnected() {
+        ListenerAccess.stopIfRevoked(this)
         ListenerAccess.rebind(this)
     }
+
+    override fun onDestroy() {
+        ListenerAccess.stopIfRevoked(this)
+        super.onDestroy()
+    }
+
 }
