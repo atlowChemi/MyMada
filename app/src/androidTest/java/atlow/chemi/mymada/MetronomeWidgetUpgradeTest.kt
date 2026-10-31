@@ -60,7 +60,8 @@ class MetronomeWidgetUpgradeTest {
                 }
                 await {
                     var present = false
-                    instrumentation.runOnMainSync { present = view.findViewById<View>(R.id.metro_widget_image) != null }
+                    // The provider's initial placeholder has the same ID but no PendingIntent yet.
+                    instrumentation.runOnMainSync { present = view.findViewById<View>(R.id.metro_widget_image)?.isClickable == true }
                     present
                 }
                 instrumentation.runOnMainSync { view.findViewById<View>(R.id.metro_widget_image).performClick() }
