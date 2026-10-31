@@ -14,6 +14,7 @@ class VitalsTest {
             assertEquals(false, range.contains("NaN"))
         }
         val adult = nativeVitals[0]
+        assertEquals(true, adult.pulse.contains("60"))
         for ((sys, dia, good) in listOf(Triple("119","90",false), Triple("120","90",true),
             Triple("120","60",true), Triple("121","60",false), Triple("89","59",false))) {
             assertEquals(good to good, pressureStatus(sys, dia, adult))
@@ -22,6 +23,7 @@ class VitalsTest {
         assertEquals(true to null, pressureStatus("120", "", adult))
         assertEquals(false to false, pressureStatus("999", "80", adult))
         assertEquals(true, nativeVitals[2].pulse.contains("125"))
+        assertEquals(VitalRange(125, 130), remoteVitalRange(null, null, nativeVitals[2].pulse))
         val fallback = adult.pulse
         for ((low, high) in listOf(null to 100, 60 to null, "60" to 100, 120 to 60,
             -1 to 100, Double.NaN to 100, 60.5 to 100, 60 to Double.POSITIVE_INFINITY,

@@ -1,6 +1,6 @@
 package atlow.chemi.mymada.tools.vitals
 
-/** Native rules retained provisionally; clinical discrepancies are recorded in #23. */
+/** Maintainer-approved native app rules; not independent clinical validation. */
 internal data class VitalRange(val low: Int, val high: Int) {
     fun contains(input: String): Boolean? = input.takeIf { it.isNotEmpty() }?.let {
         it.toIntOrNull()?.let { value -> value in low..high } ?: false
