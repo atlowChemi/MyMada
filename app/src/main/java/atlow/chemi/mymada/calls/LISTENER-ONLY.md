@@ -34,7 +34,10 @@ force-stop was unbound and did not recover within30s; retained evidence is not a
 force-stop pass. Reapplying grants in the harness established the valid kill trial.
 Real kernel reboots on both APIs restored ordinary78 and the OS listener without
 opening UI. Two identical screen-off source callbacks produced distinct calls5001
-and5002. Forced-idle source delivery produced5003 on both APIs. No idle FGS appeared
+and5002. Forced-idle source delivery produced5003 on API37. API24 initially had
+device-idle disabled, so its5003 is not an idle pass; a second trial explicitly
+enabled idle, verified IDLE, delivered5006, then restored disabled idle settings.
+No idle FGS appeared
 in service dumps. These checks use an offline, shell-triggered source fixture, not
 real push arrival or physical-device battery behavior.
 
