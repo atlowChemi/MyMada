@@ -4,6 +4,9 @@ Only the selected OS-bound listener reconciles `activeNotifications` on reconnec
 The same parser, metadata-only summary filter and GrobootRec route handle both live
 and recovered events, including source PendingIntent and existing popup/BAL policy.
 Live callbacks remain asynchronous, repeated and unfiltered by age or ledger state.
+The popup's explicit Call info click sends the original source PendingIntent with
+the API34+ sender BAL opt-in (API36+ visible-only). Target37 otherwise blocks even
+this foreground user action. This opt-in is not used for automatic popup launches.
 
 ## Eligibility (user-selected inclusive 45 seconds)
 

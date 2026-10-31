@@ -12,7 +12,7 @@ class Source : BroadcastReceiver() {
         val kind = intent.getStringExtra("kind") ?: "event"
         if (kind == "negative-batch") {
             val now = System.currentTimeMillis()
-            onReceive(context, Intent().putExtra("id", 8104).putExtra("when", now - 60_000))
+            onReceive(context, Intent().putExtra("id", 8104).putExtra("kind", "child").putExtra("when", now - 60_000))
             onReceive(context, Intent().putExtra("id", 8105))
             onReceive(context, Intent().putExtra("id", 8105).putExtra("kind", "cancel"))
             onReceive(context, Intent().putExtra("id", 8106).putExtra("kind", "empty-summary"))
@@ -48,7 +48,8 @@ class Source : BroadcastReceiver() {
 class Details : Activity() {
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
-        getSharedPreferences("fixture", 0).edit().putInt("opened", intent.getIntExtra("id", -1)).commit()
+        getSharedPreferences("fixture", 0).edit().putInt("opened", intent.getIntExtra("id", -1))
+            .putLong("openedAt", System.currentTimeMillis()).commit()
         finish()
     }
 }

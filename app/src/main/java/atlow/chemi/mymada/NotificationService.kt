@@ -67,7 +67,7 @@ open class NotificationService : NotificationListenerService() {
             val active = activeNotifications
             if (CallRecovery.connected(this)) active.sortedBy { it.postTime }.forEach { deliver(it, true) }
         } catch (error: Exception) {
-            Log.e("NotificationService", "Cannot read active notifications", error)
+            Log.e("NotificationService", "Cannot reconcile active notifications", error)
         }
     }
 
