@@ -149,9 +149,10 @@ class DictionaryScreenTest {
     }
 
     private fun capture(name: String) {
-        if (InstrumentationRegistry.getArguments().getString("capture") != "true") return
+        // Dialog dim-layer transitions must settle before the next real tap, even without screenshots.
         compose.waitForIdle()
         instrumentation.uiAutomation.waitForIdle(400, 5_000)
+        if (InstrumentationRegistry.getArguments().getString("capture") != "true") return
         val image = instrumentation.uiAutomation.takeScreenshot()
         File(context.filesDir, "dictionary-$name.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
         image.recycle()
