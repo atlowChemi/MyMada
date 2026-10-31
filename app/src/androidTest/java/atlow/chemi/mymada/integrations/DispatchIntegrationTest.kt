@@ -69,7 +69,6 @@ class DispatchIntegrationTest {
                     val text = (fragment.requireDialog() as AlertDialog).findViewById<TextView>(android.R.id.message)!!.text.toString()
                     assertTrue(text.contains("מוקד 4")); assertTrue(text.contains(body))
                 }
-                closeSoftKeyboard()
                 capture("confirmation", language)
                 onView(withText(R.string.ret)).perform(click())
                 assertEquals(0, monitor.hits)
@@ -84,6 +83,8 @@ class DispatchIntegrationTest {
         instrumentation.waitForIdleSync()
         instrumentation.uiAutomation.waitForIdle(500, 5000)
         val image = instrumentation.uiAutomation.takeScreenshot()
+        if (name == "custom" && android.os.Build.VERSION.SDK_INT >= 35)
+            assertEquals(context.getColor(R.color.ColorPrimary), image.getPixel(image.width / 2, 2))
         val directory = File(context.getExternalFilesDir(null), "dispatch").apply { mkdirs() }
         File(directory, "$name-$language.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
         image.recycle()
