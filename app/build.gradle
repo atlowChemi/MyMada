@@ -14,8 +14,8 @@ android {
         applicationId "atlow.chemi.mymada"
         minSdk 24
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        // Target changes require notification/service and edge-to-edge work in #24/#25.
-        targetSdkVersion 33
+        // Experimental common candidate: actual enforcement validation, not release acceptance.
+        targetSdkVersion 37
         // Development version only; verify Play's highest versionCode before release (#11).
         versionCode 12828
         versionName '4.0.0-native-dev'
