@@ -57,6 +57,8 @@ class DispatchIntegrationTest {
         try {
             ActivityScenario.launch(MokedPage::class.java).use { scenario ->
                 scenario.onActivity { it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(2, false) }
+                compose.waitForIdle()
+                closeSoftKeyboard()
                 capture("custom", language)
                 compose.onNodeWithTag("custom-send").performClick()
                 val body = "  Fixture & #? +%\nשלום  "
@@ -64,6 +66,7 @@ class DispatchIntegrationTest {
                 compose.onNodeWithTag("custom-body").performTextReplacement(body)
                 closeSoftKeyboard()
                 compose.onNodeWithTag("custom-send").performClick()
+                scenario.onActivity { it.supportFragmentManager.executePendingTransactions() }
                 assertEquals(0, monitor.hits)
                 preferences.edit().putInt("merhav", 0).commit()
                 scenario.recreate()
@@ -78,9 +81,11 @@ class DispatchIntegrationTest {
                 }
                 capture("confirmation", language)
                 onView(withText(R.string.ret)).perform(click())
+                scenario.onActivity { it.supportFragmentManager.executePendingTransactions() }
                 assertEquals(0, monitor.hits)
                 compose.onNodeWithTag("custom-body").assertTextEquals(body)
                 compose.onNodeWithTag("custom-send").performClick()
+                scenario.onActivity { it.supportFragmentManager.executePendingTransactions() }
                 onView(withText(R.string.ok)).perform(click())
                 assertEquals(1, monitor.hits)
             }
