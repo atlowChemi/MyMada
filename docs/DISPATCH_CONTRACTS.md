@@ -195,6 +195,14 @@ explicit remaining UI/Compose/backend gates.
 
 ## Remaining Compose accounting
 
+The next private slice converts the custom-message content to actual Compose
+(BasicTextField, Surface action, saveable text/error state), retaining the existing
+fragment identity and mirrored-pager counter-transform. The confirmation remains
+the shared restorable DialogFragment. The existing literal-recipient/body and
+blocked-approval fixture now drives Compose semantics, including restored draft
+after confirmation recreation. This is one feature-content conversion, not the
+remaining team/form/activation/chat/Moked host conversion or full UI acceptance.
+
 #26 owns its feature-screen Compose conversions as confirmed by the integrator;
 #21 establishes the shared Compose/lifecycle/latest-target foundation. The present
 chat, activation and dispatch behavior layers retain native XML. They do not count
