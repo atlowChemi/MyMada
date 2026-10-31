@@ -1,5 +1,43 @@
 # Remaining dispatch contracts (#19 / #26)
 
+## Team Compose layer above #103
+
+Exact tested source: `4c5875dc87ae381dc9876bf59250628b2995dd22`, descending
+from shared-helper #103 (`25a5aef2`). Team content, bounded two-column member
+cards and edit/delete menus now use Compose. Member entry and SMS confirmation
+remain native dialogs; the four-member cap, seven roles and provisional SMS
+contract remain intact. This is partial #26 work, not whole-screen acceptance.
+
+API24 launch originally timed out and test cleanup hung. Sampling evidence
+showed repeated inset dispatch; consuming system/stable insets at the legacy
+ViewPager boundary below API30 resolved the traversal loop. CoordinatorLayout
+already handles system bars. Child-root consumption, focus, clock and layout
+experiments did not resolve it and were removed. Failed runs remain under
+`~/.local/share/opencode/evidence/integrations/team-compose-rows/`.
+
+Final evidence: `~/.local/share/opencode/evidence/integrations/team-compose-above103/`.
+Full unit/debug/test APK/release/lintDebug build passed in 1m38s; separate
+lintRelease passed. Combined dispatch/team/picker fixtures passed 6/6 each:
+API24 EN 8.862s / HE 8.884s; API37 EN 13.555s / HE 13.911s.
+API37 reports 16384-byte pages. A prior combined run selected the wrong window
+for the medical catalog; the fixture now explicitly selects the dialog root.
+Earlier failures and pre-rebase artifacts remain in their original directories.
+
+Locally debug-key-signed optimized APK SHA256:
+`3a040f0649ebef25cb535d32d2e26162f252d12708c9a34e1b9cf641d644beb2`.
+Both pulled installed APKs match those bytes. On both optimized installations,
+a locally entered team member survived background SIGKILL and relaunch:
+API24 PID 13606→13933; API37 PID 31545→31945. Before/after UI XML and per-PID
+logs are retained; logs contain no fatal exception. The first runtime script
+failed before producing restoration evidence; only the subsequent explicit
+before/after checks support this claim. No SMS was sent.
+
+Remaining gates: production EN/HE visual parity, member/confirmation dialog
+Compose conversion and process-death coverage for open dialogs/full form,
+approved SMS policy, full form/picker/host migration and authorized live SDK/
+backend acceptance. Current screenshots are candidate evidence, not approved
+production parity. Optimization milestone #78–86 remains deferred.
+
 References: native source inherited by #91; RN `be72a163` FormDictation,
 TeamReport, TeamMemberDialog, MedicalCodePicker, medicalCodes and DispatchService.
 
