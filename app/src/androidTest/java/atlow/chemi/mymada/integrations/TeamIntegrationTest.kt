@@ -57,6 +57,7 @@ class TeamIntegrationTest {
             scenario.onActivity {
                 it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(1, false)
             }
+            android.util.Log.i("TeamFixture", "Open add")
             compose.onNodeWithTag("team-add").performClick()
             scenario.onActivity { team(it).childFragmentManager.executePendingTransactions() }
             instrumentation.waitForIdleSync()
@@ -69,6 +70,7 @@ class TeamIntegrationTest {
                 dialog.findViewById<Spinner>(R.id.addManSpinner)!!.setSelection(2)
             }
             scenario.recreate()
+            android.util.Log.i("TeamFixture", "Restored draft")
             scenario.onActivity {
                 val dialog = dialog(it)
                 assertEquals("Fixture Member", dialog.findViewById<EditText>(R.id.addManName)!!.text.toString())
@@ -80,6 +82,7 @@ class TeamIntegrationTest {
             capture("member", language)
             scenario.recreate()
             compose.onNodeWithTag("team-menu-0").performClick()
+            android.util.Log.i("TeamFixture", "Open edit menu")
             compose.onNodeWithTag("team-edit-0").performClick()
             scenario.onActivity { team(it).childFragmentManager.executePendingTransactions() }
             scenario.onActivity {
@@ -95,6 +98,7 @@ class TeamIntegrationTest {
                 repeat(3) { i -> assertTrue(model.save(-1, "Member$i", i)) }
             }
             compose.onNodeWithTag("team-add").assertDoesNotExist()
+            android.util.Log.i("TeamFixture", "Four-member cap")
             compose.onNodeWithTag("team-menu-1").performClick()
             compose.onNodeWithTag("team-delete-1").performClick()
             compose.onNodeWithTag("team-add").assertExists()

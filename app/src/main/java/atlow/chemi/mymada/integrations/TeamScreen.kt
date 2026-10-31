@@ -2,9 +2,8 @@ package atlow.chemi.mymada.integrations
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -56,12 +55,14 @@ internal fun TeamScreen(members: List<Volunteer>, onEdit: (Int) -> Unit, onDelet
             color = colorResource(R.color.DarkGrey), modifier = Modifier.testTag("team-empty"))
         // Published grid begins on the right in both app locales; each card's Hebrew role stays right-aligned.
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.weight(1f).fillMaxWidth(),
-                contentPadding = PaddingValues(20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp),
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                itemsIndexed(members) { index, member ->
+                members.indices.chunked(2).forEach { row ->
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                    row.forEach { index ->
+                    val member = members[index]
                     var menu by remember(member) { mutableStateOf(false) }
-                    Surface(shape = RoundedCornerShape(6.dp), color = Color.White) {
+                    Surface(modifier = Modifier.weight(1f), shape = RoundedCornerShape(6.dp), color = Color.White) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(painterResource(R.drawable.ic_person), null,
                                 tint = colorResource(when (member.job) { 2, 3 -> R.color.para; 4 -> R.color.noar; else -> R.color.hovesh }),
@@ -82,6 +83,9 @@ internal fun TeamScreen(members: List<Volunteer>, onEdit: (Int) -> Unit, onDelet
                                 }
                             }
                         }
+                    }
+                    }
+                    if (row.size == 1) Spacer(Modifier.weight(1f))
                     }
                 }
             }
