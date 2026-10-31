@@ -29,15 +29,22 @@ class OxygenTest {
         assertEquals("100", OxygenCalculation.atmFromPsi("1500"))
         assertEquals("0", OxygenCalculation.atmFromPsi("14"))
         assertEquals("1", OxygenCalculation.atmFromPsi("15"))
-        assertEquals("666", OxygenCalculation.atmFromPsi("99999"))
+        assertEquals("999", OxygenCalculation.atmFromPsi("14985"))
+        assertNull(OxygenCalculation.atmFromPsi("14986"))
+        assertNull(OxygenCalculation.psiFromAtm("1000"))
         assertEquals("14985", OxygenCalculation.psiFromAtm("999"))
         assertEquals(239, OxygenCalculation.minutes("999", false))
         assertEquals(1998, OxygenCalculation.minutes("999", true))
         assertEquals(0, OxygenCalculation.minutes("", true))
         assertEquals(0, OxygenCalculation.minutes("0", false))
         assertNull(OxygenCalculation.atmFromPsi(""))
-        listOf("-1", "1.5", "١", "1000", "x").forEach { assertFalse(OxygenCalculation.validInput(it, 3)) }
-        assertTrue(OxygenCalculation.validInput("000", 3))
+        listOf("-1", "1.5", "١", "1000", "x", "999999999999999999999").forEach {
+            assertFalse(OxygenCalculation.validInput(it, OxygenCalculation.MAX_ATM))
+        }
+        assertTrue(OxygenCalculation.validInput("999", OxygenCalculation.MAX_ATM))
+        assertTrue(OxygenCalculation.validInput("14985", OxygenCalculation.MAX_PSI))
+        assertFalse(OxygenCalculation.validInput("14986", OxygenCalculation.MAX_PSI))
+        assertTrue(OxygenCalculation.validInput("000", OxygenCalculation.MAX_ATM))
     }
 
     @Test fun editsTankAndRecreation() {
@@ -88,12 +95,14 @@ class OxygenTest {
             scenario.onActivity {
                 assertEquals("14985", it.findViewById<EditText>(R.id.PSI).text.toString())
                 assertEquals("1998", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
-                it.findViewById<EditText>(R.id.PSI).apply { requestFocus(); setText("99999") }
+                it.findViewById<EditText>(R.id.PSI).apply { requestFocus(); text!!.replace(0, text!!.length, "99999") }
             }
             compose.waitForIdle()
             scenario.onActivity {
-                assertEquals("666", it.findViewById<EditText>(R.id.ATM).text.toString())
-                assertEquals("1332", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
+                assertEquals("999", it.findViewById<EditText>(R.id.ATM).text.toString())
+                assertEquals("14985", it.findViewById<EditText>(R.id.PSI).text.toString())
+                assertNotNull(it.findViewById<EditText>(R.id.PSI).error)
+                assertEquals("1998", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
                 it.findViewById<EditText>(R.id.PSI).setText("")
             }
             compose.waitForIdle()
@@ -126,7 +135,7 @@ class OxygenTest {
                 }
             }
             fun edit(id: Int, value: String) {
-                scenario.onActivity { it.findViewById<EditText>(id).apply { requestFocus(); setText(value) } }
+                scenario.onActivity { it.findViewById<EditText>(id).apply { requestFocus(); text!!.replace(0, text!!.length, value) } }
                 compose.waitForIdle()
             }
             fun rotate(landscape: Boolean) {
@@ -157,13 +166,21 @@ class OxygenTest {
                 rotate(landscape)
                 edit(R.id.PSI, "")
                 check("", "", "0")
-                // Existing character limits are identical in both layouts, not new medical bounds.
+                // Reject the complete edit; never clip an overflowing paste into a different pressure.
                 edit(R.id.ATM, "1234")
-                check("123", "1845", "246")
-                edit(R.id.PSI, "123456")
-                check("823", "12345", "1646")
+                check("", "", "0")
+                scenario.onActivity { assertNotNull(it.findViewById<EditText>(R.id.ATM).error) }
+                edit(R.id.ATM, "999")
+                check("999", "14985", "1998")
+                for (invalid in listOf("14986", "123456", "-1", "1.5", "١", "999999999999999999999")) {
+                    edit(R.id.PSI, invalid)
+                    check("999", "14985", "1998")
+                    scenario.onActivity { assertNotNull(it.findViewById<EditText>(R.id.PSI).error) }
+                }
                 rotate(!landscape)
-                check("823", "12345", "1646")
+                check("999", "14985", "1998")
+                edit(R.id.PSI, "0")
+                check("0", "0", "0")
             }
         }
     }

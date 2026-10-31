@@ -58,12 +58,12 @@ internal fun OxygenScreen() {
                 }
             }, update = { it.setSelection(if (large) 1 else 0) },
                 modifier = Modifier.padding(start = margin, end = margin, top = if (landscape) 8.dp else 10.dp).fillMaxWidth().height(54.dp))
-            PressureInput(atm, R.id.ATM, R.string.atm, 3,
+            PressureInput(atm, R.id.ATM, R.string.atm, OxygenCalculation.MAX_ATM,
                 Modifier.padding(start = margin, end = margin, top = if (landscape) 8.dp else 0.dp)) {
                 atm = it
                 psi = OxygenCalculation.psiFromAtm(it).orEmpty()
             }
-            PressureInput(psi, R.id.PSI, R.string.psi, 5,
+            PressureInput(psi, R.id.PSI, R.string.psi, OxygenCalculation.MAX_PSI,
                 Modifier.padding(start = margin, end = margin, top = 10.dp)) {
                 psi = it
                 atm = OxygenCalculation.atmFromPsi(it).orEmpty()
@@ -94,7 +94,7 @@ internal fun OxygenScreen() {
 }
 
 @Composable
-private fun PressureInput(value: String, viewId: Int, label: Int, digits: Int, modifier: Modifier,
+private fun PressureInput(value: String, viewId: Int, label: Int, maximum: Int, modifier: Modifier,
                           onChange: (String) -> Unit) {
     val currentChange by rememberUpdatedState(onChange)
     AndroidView(factory = { context ->
@@ -105,11 +105,20 @@ private fun PressureInput(value: String, viewId: Int, label: Int, digits: Int, m
                 isSaveEnabled = false
                 layoutParams = LinearLayout.LayoutParams(-1, -2)
                 inputType = InputType.TYPE_CLASS_NUMBER
-                filters = arrayOf(InputFilter.LengthFilter(digits))
+                filters = arrayOf(InputFilter { source, start, end, dest, dstart, dend ->
+                    val proposed = dest.replaceRange(dstart, dend, source.subSequence(start, end)).toString()
+                    if (OxygenCalculation.validInput(proposed, maximum)) {
+                        error = null
+                        null
+                    } else {
+                        error = context.getString(R.string.oxygen_pressure_range, maximum)
+                        dest.subSequence(dstart, dend)
+                    }
+                })
                 hint = context.getString(label)
                 typeface = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
                 doAfterTextChanged { text ->
-                    if (hasFocus() && OxygenCalculation.validInput(text.toString(), digits)) currentChange(text.toString())
+                    if (hasFocus() && OxygenCalculation.validInput(text.toString(), maximum)) currentChange(text.toString())
                 }
             })
         }
