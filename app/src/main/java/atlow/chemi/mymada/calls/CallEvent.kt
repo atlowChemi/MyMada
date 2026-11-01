@@ -16,7 +16,10 @@ data class CallEvent(val type: Int, val text: String, val source: PendingIntent?
 
     companion object {
         @JvmStatic fun from(intent: Intent?): CallEvent = CallEvent(
-            intent?.getIntExtra("callT", 1) ?: 1,
+            if (intent?.hasExtra("callT") == true) intent.getIntExtra("callT", 1)
+            else (intent?.extras?.get("callType") as? Number)?.let { value ->
+                value.toInt().takeIf { it in 1..6 && value.toDouble() == it.toDouble() }
+            } ?: 1, // RN Arguments.toBundle stores numeric enum values as doubles.
             intent?.getCharSequenceExtra("text")?.toString() ?: "מקרה חדש",
             intent?.let { IntentCompat.getParcelableExtra(it, "sourceIntent", PendingIntent::class.java) },
         )

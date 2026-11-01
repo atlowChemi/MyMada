@@ -7,9 +7,9 @@ data class PushRoute(val kind: Kind, val title: String, val message: String, val
             val message = data["msg"].orEmpty()
             val title = data["title"].orEmpty()
             val code = data["code"].orEmpty()
-            val key = data["key"].orEmpty()
+            val key = (data["key"] ?: data["firebaseKey"]).orEmpty()
             return when {
-                data["type"] == "newChat" -> PushRoute(Kind.CHAT, "הודעת צ'אט חדשה!", message)
+                data["type"] == "newChat" || data["target"] == "ContactUs" -> PushRoute(Kind.CHAT, "הודעת צ'אט חדשה!", message)
                 data["type"] == "newC" -> PushRoute(Kind.REQUEST, "בקשת קוד חדשה!", message.ifEmpty { title })
                 data["type"] == "codeApproval" || code.isNotEmpty() ->
                     if (ActivationContract.validCode(code) && (key.isEmpty() || ActivationContract.validKey(key)))
