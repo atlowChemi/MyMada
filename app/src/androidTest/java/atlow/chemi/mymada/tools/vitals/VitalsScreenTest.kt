@@ -56,7 +56,21 @@ class VitalsScreenTest {
             onView(withId(R.id.baby)).perform(click())
             compose.waitForIdle()
             val reservedTop = fieldTop()
-            assertTrue("Valid pulse reserves native caption space", reservedTop > initialTop)
+            scenario.onActivity { activity ->
+                val caption = activity.findViewById<android.widget.TextView>(com.google.android.material.R.id.textinput_error)
+                val font = android.graphics.Typeface.createFromAsset(activity.assets, "fonts/opensanshebrew.ttf")
+                assertEquals("Final caption uses native font after appearance", font, caption.typeface)
+                val reference = android.widget.TextView(activity).apply {
+                    typeface = font
+                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, caption.textSize)
+                    if (android.os.Build.VERSION.SDK_INT >= 28) setFallbackLineSpacing(false)
+                    if (android.os.Build.VERSION.SDK_INT >= 35) setLocalePreferredLineHeightForMinimumUsed(false)
+                }
+                reference.measure(android.view.View.MeasureSpec.makeMeasureSpec(caption.width, android.view.View.MeasureSpec.EXACTLY),
+                    android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED))
+                assertEquals("Native natural caption metrics: ${caption.paint.fontMetricsInt}", reference.measuredHeight, caption.height)
+                assertEquals("Reservation is caption only, without Material's new inset", caption.height, reservedTop - initialTop)
+            }
             onView(withId(R.id.old)).perform(click())
             compose.waitForIdle()
             assertEquals("Invalid pulse retains the reservation", reservedTop, fieldTop())
@@ -71,6 +85,9 @@ class VitalsScreenTest {
             scenario.onActivity {
                 assertEquals(Color.rgb(70,178,58), it.findViewById<EditText>(R.id.pulsa).currentTextColor)
                 assertEquals(Color.rgb(191,21,22), it.findViewById<EditText>(R.id.breathing).currentTextColor)
+                val breathing = it.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.breathing)
+                assertEquals("Calculated underline survives focus changes", Color.rgb(191,21,22),
+                    breathing.supportBackgroundTintList?.getColorForState(breathing.drawableState, 0))
                 assertEquals(Color.rgb(70,178,58), it.findViewById<EditText>(R.id.diastolic).currentTextColor)
             }
             onView(withId(R.id.diastolic)).perform(replaceText("91"), closeSoftKeyboard())
