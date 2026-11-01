@@ -128,7 +128,9 @@ fun ContractionScreen(entries: List<ContractionEntry>, showActiveRow: Boolean, d
                         val minimum = attributes.getDimensionPixelSize(0, alert.getButton(AlertDialog.BUTTON_POSITIVE).minHeight)
                         attributes.recycle()
                         alert.getButton(AlertDialog.BUTTON_POSITIVE).minHeight = minimum
+                        alert.getButton(AlertDialog.BUTTON_POSITIVE).minimumHeight = minimum
                         alert.getButton(AlertDialog.BUTTON_NEGATIVE)?.minHeight = minimum
+                        alert.getButton(AlertDialog.BUTTON_NEGATIVE)?.minimumHeight = minimum
                     }
                     if (dialog != R.string.ContracDeleteEmpty) {
                         val typeface = Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")

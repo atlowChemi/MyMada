@@ -240,7 +240,7 @@ HE accessibility exposes title/choice/action text once. Failed prototypes retain
 Full provenance: `MODE-HANDOFF.md`; missing release and both lints passed in
 `mode-integration-release-lints.log` (BUILD SUCCESSFUL). No unchanged runtime matrix rerun.
 
-# Contractions shared alert host (verification pending)
+# Contractions shared alert host (bounded correction)
 
 Matched medical batch1 images show recovery, delete and empty-delete using an
 840px candidate surface versus940px native at1080px/420dpi. Empty-delete gains
@@ -264,3 +264,22 @@ three-dialog geometry test at font1.5 on both APIs). Opened empty-delete debug
 images: width/wrapping corrected; API37 height still differs from retained native.
 Failure logs remain retained; optimized comparisons and metric disposition remain
 pending. The three medical rows remain D.
+
+Above #133, native action sizing also depends on AppCompat's h720dp resource.
+Target35 includes system bars in screenHeightDp; resolve the existing button
+style using legacy inset-excluding height rather than hardcoding48dp. Both
+TextView.minHeight and View.minimumHeight constrain the button. The resource-only
+experiment resolved126px but rendered142px until both constraints were set.
+Failed logs/artifacts remain retained.
+
+Targeted geometry delta passed API24 and API37 at fonts1/1.5 (four checks),
+including940px content width,126px normal action height and single-line empty text.
+Prior16/16 checks are reused for unchanged recovery/expiry/store behavior.
+Debug/test/release/JVM/both lints passed before the final two-line View constraint;
+that delta's debug/test build and API37 normal/large checks passed. Final release/
+both lints passed in `build-final-viewminimum-release-lints.log`; optimized images
+are retained separately in `inventory-contractions-final-viewminimum37/`.
+Opened API37 debug recovery/empty-delete pairs: window bounds are restored, but
+small message/action glyph-baseline differences remain visible. This is a scoped
+host/size correction, not universal typography parity; T5/T6/T7 remain D pending
+those residuals and missing variant acceptance.
