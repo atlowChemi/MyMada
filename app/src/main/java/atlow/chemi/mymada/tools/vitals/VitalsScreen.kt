@@ -124,6 +124,10 @@ private fun VitalInput(value: String, onChange: (String) -> Unit, label: Int, vi
     }, update = { layout ->
         val edit = layout.editText!!
         if (edit.text.toString() != value) { edit.setText(value); edit.setSelection(value.length) }
+        // Native calc reserves an empty caption on the first valid pulse, then keeps it.
+        if (viewId == R.id.pulsa && status == true) {
+            layout.isErrorEnabled = true
+        }
         val color = when (status) { true -> Color.rgb(70,178,58); false -> Color.rgb(191,21,22); null -> Color.rgb(50,167,195) }
         edit.setTextColor(color)
         // Published initial underlines use theme state colors until the first calculation.

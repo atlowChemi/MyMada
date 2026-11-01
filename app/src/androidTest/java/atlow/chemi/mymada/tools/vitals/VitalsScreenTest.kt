@@ -41,6 +41,28 @@ class VitalsScreenTest {
                 assertTrue(it.findViewById<RadioButton>(R.id.old).isChecked)
             }
             capture("candidate-$language-default")
+            fun fieldTop(): Int {
+                var top = 0
+                scenario.onActivity {
+                    val location = IntArray(2)
+                    it.findViewById<EditText>(R.id.breathing).getLocationOnScreen(location)
+                    top = location[1]
+                }
+                return top
+            }
+            onView(withId(R.id.pulsa)).perform(replaceText("125"), closeSoftKeyboard())
+            compose.waitForIdle()
+            val initialTop = fieldTop()
+            onView(withId(R.id.baby)).perform(click())
+            compose.waitForIdle()
+            val reservedTop = fieldTop()
+            assertTrue("Valid pulse reserves native caption space", reservedTop > initialTop)
+            onView(withId(R.id.old)).perform(click())
+            compose.waitForIdle()
+            assertEquals("Invalid pulse retains the reservation", reservedTop, fieldTop())
+            onView(withId(R.id.pulsa)).perform(clearText(), closeSoftKeyboard())
+            compose.waitForIdle()
+            assertEquals("Empty pulse retains the reservation", reservedTop, fieldTop())
             onView(withId(R.id.pulsa)).perform(replaceText("60"), closeSoftKeyboard())
             onView(withId(R.id.breathing)).perform(replaceText("21"), closeSoftKeyboard())
             onView(withId(R.id.systolic)).perform(replaceText("120"), closeSoftKeyboard())
