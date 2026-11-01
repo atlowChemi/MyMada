@@ -31,7 +31,7 @@ class contactChatActivity : AppCompatActivity() {
         model = ViewModelProvider(this)[ChatModel::class.java]
         val ui = androidx.compose.runtime.mutableStateOf(model.state.value!!)
         findViewById<androidx.compose.ui.platform.ComposeView>(R.id.chat_content).setContent {
-            androidx.compose.material3.MaterialTheme {
+            atlow.chemi.mymada.integrations.IntegrationTheme {
                 var emptyMessage by rememberSaveable { mutableStateOf(false) }
                 atlow.chemi.mymada.integrations.ChatScreen(ui.value, model.name, { askForName(true) }) { text ->
                     when {
@@ -100,7 +100,7 @@ class contactChatActivity : AppCompatActivity() {
             androidx.compose.ui.platform.ComposeView(requireContext()).apply {
                 setViewCompositionStrategy(androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-                    androidx.compose.material3.MaterialTheme {
+                    atlow.chemi.mymada.integrations.IntegrationTheme {
                         atlow.chemi.mymada.integrations.ChatDialogScreen(arguments?.getBoolean("name") == true,
                             draft, { draft = it }, invalid, state.ready && !state.busy) {
                             if (arguments?.getBoolean("name") != true) {

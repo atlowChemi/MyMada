@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material3.MaterialTheme
+import atlow.chemi.mymada.integrations.IntegrationTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
@@ -19,6 +19,6 @@ class MainActivity3 : Fragment() {
             id = R.id.main3 // Stable registry key for rememberSaveable across view/process recreation.
             if (SettingsPage.isRTL()) rotationY = 180f // Counter the legacy mirrored ViewPager.
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent { MaterialTheme { CustomDispatchScreen { DispatchConfirmation.show(this@MainActivity3, it) } } }
+            setContent { IntegrationTheme { CustomDispatchScreen { DispatchConfirmation.show(this@MainActivity3, it) } } }
         }
 }

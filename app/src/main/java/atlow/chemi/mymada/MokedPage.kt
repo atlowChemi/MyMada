@@ -75,7 +75,7 @@ class MokedPage : AppCompatActivity() {
             override fun onPageSelected(position: Int) { selected = position }
         })
         findViewById<ComposeView>(R.id.dispatch_header).setContent {
-            MaterialTheme {
+            atlow.chemi.mymada.integrations.IntegrationTheme {
                 val background = colorResource(R.color.ColorPrimary)
                 val foreground = colorResource(R.color.White)
                 Column(Modifier.background(background)) {

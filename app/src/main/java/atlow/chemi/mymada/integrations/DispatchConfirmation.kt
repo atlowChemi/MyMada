@@ -51,7 +51,7 @@ class DispatchConfirmation : DialogFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MaterialTheme {
+                IntegrationTheme {
                     Surface {
                         Column(Modifier.padding(24.dp)) {
                             Text(getString(R.string.suc), fontSize = 20.sp)

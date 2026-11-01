@@ -1,6 +1,8 @@
 package atlow.chemi.mymada.integrations
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -15,7 +17,7 @@ import atlow.chemi.mymada.R
 @Composable
 fun ChatDialogScreen(editingName: Boolean, draft: String, update: (String) -> Unit, invalid: Boolean, ready: Boolean, confirm: () -> Unit) {
     Surface {
-        Column(Modifier.padding(24.dp)) {
+        Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp)) {
             Text(stringResource(if (editingName) R.string.writeName else R.string.plsNote), fontSize = 20.sp)
             if (editingName) TextField(draft, update, singleLine = true, label = { Text(stringResource(R.string.name)) },
                 isError = invalid, supportingText = if (invalid) ({ Text(stringResource(if (draft.trim().isEmpty()) R.string.emailNameNone else R.string.chatNameNum)) }) else null,

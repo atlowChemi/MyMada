@@ -50,6 +50,23 @@ team/picker passed 7/7 in 16.779s (`moked-host-compose-5980.log`), including
 tab/pager synchronization, selected-page recreation and prompt dismissal state.
 Final combined/API37/release and production parity remain pending.
 
+Private visual follow-up compares the retained production request/catalog
+captures with Compose: removes new purple/filled-field styling, restores native
+accent/dialog palette and zero letter spacing, adjusts request action margins,
+and restores catalog separators/right-aligned confirmation. This is a shared
+integration theme, not a change to the approved Android font-scaling policy.
+Chat/member dialogs scroll at enlarged font sizes.
+
+Normal-size private integration tests passed 17/17 on API24 (30.406s) and API37
+(42.838s). At 2× Hebrew font, initial runs exposed off-screen chat action taps
+and a medical selection attempted beneath the keyboard. The fixture now scrolls
+to dialog actions; medical search exposes a Done action to hide the IME and
+selection is asserted before recreation. A mistaken chained fixture call caused
+one compile failure and was corrected. Focused medical/chat reruns passed 5/5
+on both APIs (12.751s / 19.95s). Logs are `ui-parity-*.log`; font scales were
+restored afterward. These checks are not landscape or final production-parity
+acceptance and do not replace final combined installed-release verification.
+
 ## Activation request and dialog Compose layer above #106
 
 Tested source `3278850e`: request form, disclaimer/confirmation and request

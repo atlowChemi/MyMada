@@ -1,6 +1,8 @@
 package atlow.chemi.mymada.integrations
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,7 +23,7 @@ fun TeamMemberScreen(name: String, updateName: (String) -> Unit, role: Int, upda
     var expanded by remember { mutableStateOf(false) }
     val font = FontFamily(Font(R.font.opensans_hebrew))
     Surface {
-        Column(Modifier.padding(24.dp)) {
+        Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp)) {
             Text(stringResource(R.string.Nteam), fontSize = 20.sp)
             TextField(name, updateName, singleLine = true, label = { Text(stringResource(R.string.name), fontFamily = font) },
                 isError = invalid, supportingText = if (invalid) ({ Text(stringResource(R.string.emailNameNone)) }) else null,
