@@ -250,3 +250,11 @@ passed before the API35-only action correction. Matched images live in the priva
 `settings-measured-parity/native-alerts-final/` archive (API37 EN) and
 `native-alerts-metrics/` (API24 HE); failed intermediate themes are retained in
 separate directories. Image acceptance is tracked independently by the auditor.
+
+Row29 follow-up: the English choice label is a BoringLayout leaf. Target33's
+default fallback spacing moved its glyphs3px down inside an otherwise matching
+row. Choice-list children now retain fallback spacing for Hebrew and disable it
+for boring text, including newly attached/recycled rows. The focused recreation
+check asserts English fallback spacing is disabled. Debug/test assembly, both
+lints and that API37 check pass; the sole changed language pair is archived in
+`settings-measured-parity/language-final/`.

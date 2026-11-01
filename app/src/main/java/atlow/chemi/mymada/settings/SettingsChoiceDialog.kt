@@ -39,6 +39,19 @@ class SettingsChoiceDialog : DialogFragment() {
         super.onStart()
         val alert = requireDialog() as AlertDialog
         restoreNativeAlertTextMetrics(alert)
+        if (Build.VERSION.SDK_INT >= 33) {
+            // Native target29 adds fallback spacing for Hebrew, not the boring English list label.
+            fun restoreChoiceText(view: android.view.View) {
+                (view as? TextView)?.let { it.setFallbackLineSpacing(android.text.BoringLayout.isBoring(it.text, it.paint) == null) }
+            }
+            alert.listView.apply {
+                for (index in 0 until childCount) restoreChoiceText(getChildAt(index))
+                setOnHierarchyChangeListener(object : android.view.ViewGroup.OnHierarchyChangeListener {
+                    override fun onChildViewAdded(parent: android.view.View, child: android.view.View) = restoreChoiceText(child)
+                    override fun onChildViewRemoved(parent: android.view.View, child: android.view.View) = Unit
+                })
+            }
+        }
         // AppCompat's button bar uses layoutDirection="locale" (process locale), not the app selection.
         (alert.getButton(AlertDialog.BUTTON_NEGATIVE).parent as android.view.View).layoutDirection =
             resources.configuration.layoutDirection
