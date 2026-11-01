@@ -56,7 +56,23 @@ class DispatchIntegrationTest {
                 if (node.className?.toString() == "android.widget.EditText" && node.isVisibleToUser && !bounds.isEmpty) return true
                 return (0 until node.childCount).any { visibleInput(node.getChild(it)) }
             }
-            assertTrue("Form inputs must expose usable screen bounds to accessibility", visibleInput(instrumentation.uiAutomation.rootInActiveWindow))
+            val automation = instrumentation.uiAutomation
+            val oldFlags = automation.serviceInfo.flags
+            try {
+                // API24 can retain a stale active-window lookup after earlier dialog tests.
+                // Query the focused application window explicitly; keep the real bounds check.
+                automation.serviceInfo = automation.serviceInfo.apply {
+                    flags = flags or android.accessibilityservice.AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+                }
+                val window = automation.windows.single {
+                    it.type == android.view.accessibility.AccessibilityWindowInfo.TYPE_APPLICATION && it.isActive && it.isFocused
+                }
+                val root = window.root
+                assertEquals(context.packageName, root?.packageName?.toString())
+                assertTrue("Form inputs must expose usable screen bounds to accessibility", visibleInput(root))
+            } finally {
+                automation.serviceInfo = automation.serviceInfo.apply { flags = oldFlags }
+            }
             val rtl = atlow.chemi.mymada.SettingsPage.isRTL()
             fun swipe(forward: Boolean) {
                 // Each page can focus an input and reopen the IME. Pager bounds extend
