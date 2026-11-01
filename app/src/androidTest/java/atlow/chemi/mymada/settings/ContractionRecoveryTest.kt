@@ -45,7 +45,8 @@ class ContractionRecoveryTest {
             R.string.ContracRecover, R.string.ContracDelete, R.string.startContract, R.string.endContract)
             .associateWith { activity.getString(it) } }
     }
-    private fun choose(id: Int) = compose.onNodeWithText(labels.getValue(id), ignoreCase = true).performClick()
+    private fun choose(id: Int) = onView(withId(if (id == R.string.ok) android.R.id.button1 else android.R.id.button2))
+        .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).perform(click())
     private fun toggle() = compose.onNodeWithTag("contraction-toggle")
     private fun expect(id: Int) {
         toggle().assertTextContains(labels.getValue(id))
@@ -68,7 +69,8 @@ class ContractionRecoveryTest {
         onView(withId(R.id.action_delete)).perform(click())
         instrumentation.uiAutomation.waitForIdle(500, 5_000)
         try {
-            compose.onNodeWithText(labels.getValue(R.string.ContracDelete)).assertIsDisplayed()
+            onView(withId(android.R.id.message)).inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.withText(labels.getValue(R.string.ContracDelete))))
         } catch (failure: AssertionError) {
             capture("delete-failure", scenario)
             throw failure
@@ -85,6 +87,39 @@ class ContractionRecoveryTest {
             ready
         }
         instrumentation.waitForIdleSync()
+    }
+
+    @Test fun recoveryDeleteAndEmptyDeleteUseNativeAlertWidth() {
+        prepare("""[{"number":1,"start":${System.currentTimeMillis() - 10000}}]""")
+        ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            labels(scenario)
+            for ((index, message) in listOf(R.string.ContracRecover, R.string.ContracDelete, R.string.ContracDeleteEmpty).withIndex()) {
+                if (index > 0) {
+                    compose.waitUntil(5_000) {
+                        var focused = false
+                        scenario.onActivity { focused = it.hasWindowFocus() }
+                        focused
+                    }
+                    onView(withId(R.id.action_delete)).perform(click())
+                }
+                onView(withId(android.R.id.message)).inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                    .check { view, error ->
+                        if (error != null) throw error
+                        val text = view as android.widget.TextView
+                        assertEquals(text.context.getString(message), text.text.toString())
+                        val metrics = text.resources.displayMetrics
+                        if (metrics.widthPixels == 1080 && metrics.density == 2.625f) {
+                            val panel = text.rootView.findViewById<android.view.View>(androidx.appcompat.R.id.parentPanel)
+                            assertEquals("Native alert content width", 940, panel.width)
+                            if (message == R.string.ContracDeleteEmpty && text.resources.configuration.fontScale == 1f)
+                                assertEquals("Empty-delete message must not gain a wrapped line", 1, text.lineCount)
+                        }
+                    }
+                capture("dialog-$index-en", scenario)
+                choose(R.string.ok)
+                compose.waitForIdle()
+            }
+        }
     }
 
     @Test fun activeOnlyRecoveryCanCancelThenConfirmDeleteAndStayDeletedOnReopen() {
@@ -106,7 +141,7 @@ class ContractionRecoveryTest {
         }
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
             labels(scenario)
-            compose.onNodeWithText(labels.getValue(R.string.ContracRecover)).assertDoesNotExist()
+            onView(withId(android.R.id.message)).check(androidx.test.espresso.assertion.ViewAssertions.doesNotExist())
             expect(R.string.startContract)
             toggle().performClick()
             scenario.recreate()
@@ -276,7 +311,7 @@ class ContractionRecoveryTest {
             var ready = false
             scenario.onActivity { ready = it.hasWindowFocus() }
             // Recovery dialogs own focus instead of the Activity.
-            ready || name.startsWith("native-recover") || name == "delete-failure"
+            ready || name.startsWith("native-recover") || name.startsWith("dialog-") || name == "delete-failure"
         }
         compose.waitForIdle()
         instrumentation.waitForIdleSync()

@@ -240,3 +240,21 @@ large English titles wrap and choices/Cancel remain reachable. Important compres
 HE accessibility exposes title/choice/action text once. Failed prototypes retained.
 Full provenance: `MODE-HANDOFF.md`; missing release and both lints passed in
 `mode-integration-release-lints.log` (BUILD SUCCESSFUL). No unchanged runtime matrix rerun.
+
+# Contractions shared alert host (verification pending)
+
+Matched medical batch1 images show recovery, delete and empty-delete using an
+840px candidate surface versus940px native at1080px/420dpi. Empty-delete gains
+an extra wrapped line. All three resource states route through one renderer in
+ContractionScreen and one callback in ContracTimer.
+
+The correction restores AlertDialogStyle's native alert host for this renderer,
+with composition-scoped disposal and the latest state callback. Recovery/delete
+retain native explicit message/negative-button typefaces; empty-delete retains
+theme defaults. Non-cancelability, saved dialog state, recovery/delete decisions
+and expiry/persistence logic are unchanged. Settings files are not involved.
+
+Existing recovery tests now target native dialog controls. A focused regression
+checks all three states'940px content width at the matched configuration and
+empty-delete single-line text. Build/runtime and actual new image comparisons
+remain pending; the three medical rows remain D until verified.

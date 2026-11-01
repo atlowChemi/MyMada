@@ -182,8 +182,11 @@ class ToolsBackNavigationTest {
         prefs.edit().putBoolean("Mapp", false).putStringSet("Tools", setOf("dict", "contrac")).commit()
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
             compose.onNodeWithTag("shell-action-${R.id.action_delete}").performClick()
-            compose.onNodeWithText(context.getString(R.string.ContracDeleteEmpty)).assertIsDisplayed()
-            pressBack()
+            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withText(context.getString(R.string.ContracDeleteEmpty)))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.isDisplayed()))
+            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).perform(androidx.test.espresso.action.ViewActions.click())
             open()
             destination(R.id.dictionary).performScrollTo().performClick()
             compose.onNodeWithTag("shell-action-${R.id.app_bar_search}").performClick()
