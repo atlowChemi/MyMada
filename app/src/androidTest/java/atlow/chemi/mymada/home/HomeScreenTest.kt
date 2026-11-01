@@ -35,6 +35,7 @@ import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.UtillitiesAndTools
 import atlow.chemi.mymada.lockPage
 import atlow.chemi.mymada.waitForShellDrawer
+import atlow.chemi.mymada.waitForShellCondition
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Rule
@@ -191,10 +192,12 @@ class HomeScreenTest {
             assertFalse(preferences.getBoolean("realM", true))
             compose.onNodeWithText(labels.getValue(R.string.test_beep)).performScrollTo().performClick()
             onView(withText(labels.getValue(R.string.TestCallMsg))).inRoot(isDialog()).check(matches(isDisplayed()))
+            waitForPromptFocus(scenario)
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             waitForHomeFocus(scenario)
             compose.onNodeWithText(labels.getValue(R.string.title_activity_contact)).performScrollTo().performClick()
             onView(withText(labels.getValue(R.string.plsNoteCon))).inRoot(isDialog()).check(matches(isDisplayed()))
+            waitForPromptFocus(scenario)
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.onNodeWithText(labels.getValue(R.string.app_name)).assertIsDisplayed()
             assertEquals(setOf("metro", "oxy"), preferences.getStringSet("Tools", emptySet()))
@@ -205,9 +208,21 @@ class HomeScreenTest {
     }
 
     private fun waitForHomeFocus(scenario: ActivityScenario<HomePage>) {
-        compose.waitUntil(5_000) {
+        compose.waitForShellCondition("home-focus") {
             var focused = false
             scenario.onActivity { focused = it.hasWindowFocus() }
+            focused
+        }
+    }
+
+    private fun waitForPromptFocus(scenario: ActivityScenario<HomePage>) {
+        compose.waitForShellCondition("home-prompt-focus") {
+            var focused = false
+            scenario.onActivity { activity ->
+                focused = activity.supportFragmentManager.fragments
+                    .filterIsInstance<androidx.fragment.app.DialogFragment>()
+                    .any { it.dialog?.window?.decorView?.hasWindowFocus() == true }
+            }
             focused
         }
     }

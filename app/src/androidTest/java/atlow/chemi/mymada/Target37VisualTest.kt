@@ -94,13 +94,16 @@ class Target37VisualTest {
                     val layouts = mutableListOf<TextLayoutResult>()
                     compose.onNode(hasText(title) and !hasTestTag("shell-destination-${R.id.oxygenCalc}"))
                         .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
-                    val expectedTitle = Paint().apply {
+                    // TextView enables subpixel positioning; bare Paint does not. Compare
+                    // full shaped text, not a line shortened by toolbar ellipsizing.
+                    val expectedTitle = android.text.TextPaint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG).apply {
                         textSize = titleSize
                         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
                     }
                     val layout = layouts.single()
-                    assertEquals("Compose title keeps native medium glyph metrics",
-                        expectedTitle.measureText(title), layout.getLineRight(0) - layout.getLineLeft(0), 1f)
+                    assertEquals("Compose title keeps native medium glyph metrics ($language, landscape=$landscape, ellipsized=${layout.isLineEllipsized(0)})",
+                        android.text.Layout.getDesiredWidth(title, expectedTitle),
+                        layout.multiParagraph.intrinsics.maxIntrinsicWidth, 1f)
                     capture(scenario, "oxygen-$language-${if (landscape) "landscape" else "portrait"}")
                     if (!landscape) {
                         lateinit var dialog: androidx.appcompat.app.AlertDialog
