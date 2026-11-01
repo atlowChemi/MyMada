@@ -35,7 +35,8 @@ class MetronomeControlTest {
         fail(message)
     }
     private fun scenario(): ActivityScenario<UtillitiesAndTools> {
-        context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false).commit()
+        context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
+            .putStringSet("Tools", setOf("metro")).commit()
         return ActivityScenario.launch(Intent(context, UtillitiesAndTools::class.java))
     }
     private fun stop() {

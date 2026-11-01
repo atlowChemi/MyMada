@@ -35,6 +35,7 @@ class MetronomePermissionTest {
     @Test fun recreatedPromptStartsOnceAfterActualOsDecisionAndStillStops() {
         assumeTrue(Build.VERSION.SDK_INT >= 33)
         val context = instrumentation.targetContext
+        context.getSharedPreferences("Settings", 0).edit().putStringSet("Tools", setOf("metro")).commit()
         assertFalse(NotificationPermission.granted(context))
         val grant = InstrumentationRegistry.getArguments().getString("permissionRoute", "grant") == "grant"
         instrumentation.uiAutomation.serviceInfo = instrumentation.uiAutomation.serviceInfo.apply {

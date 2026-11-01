@@ -58,6 +58,7 @@ class MetronomeNotificationTest {
         }
         // Follow normal startup, which creates notification channels on a fresh install.
         ActivityScenario.launch(HomePage::class.java).close()
+        context.getSharedPreferences("Settings", 0).edit().putStringSet("Tools", setOf("metro")).commit()
         val service = Intent(context, MetroService::class.java)
         try {
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { screen ->
