@@ -48,6 +48,7 @@ fun ContractionScreen(entries: List<ContractionEntry>, showActiveRow: Boolean, d
     val assets = LocalContext.current.assets
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
+    val density = LocalDensity.current.density
     val negativeColor = colorResource(R.color.OldPrimary).toArgb()
     val currentOnDialog = rememberUpdatedState(onDialog)
     val font = remember(assets) { FontFamily(Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")) }
@@ -115,6 +116,20 @@ fun ContractionScreen(entries: List<ContractionEntry>, showActiveRow: Boolean, d
                 }
                 val alert = builder.create()
                 alert.setOnShowListener {
+                    // Target35 includes system bars in screenHeightDp, changing AppCompat's h720dp button size.
+                    if (android.os.Build.VERSION.SDK_INT >= 35) {
+                        val metrics = context.getSystemService(android.view.WindowManager::class.java).currentWindowMetrics
+                        val bars = metrics.windowInsets.getInsetsIgnoringVisibility(android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout())
+                        val legacy = Configuration(configuration).apply {
+                            screenHeightDp = ((metrics.bounds.height() - bars.top - bars.bottom) / density).toInt()
+                        }
+                        val theme = androidx.appcompat.view.ContextThemeWrapper(context.createConfigurationContext(legacy), R.style.AlertDialogStyle)
+                        val attributes = theme.obtainStyledAttributes(null, intArrayOf(android.R.attr.minHeight), androidx.appcompat.R.attr.buttonBarButtonStyle, 0)
+                        val minimum = attributes.getDimensionPixelSize(0, alert.getButton(AlertDialog.BUTTON_POSITIVE).minHeight)
+                        attributes.recycle()
+                        alert.getButton(AlertDialog.BUTTON_POSITIVE).minHeight = minimum
+                        alert.getButton(AlertDialog.BUTTON_NEGATIVE)?.minHeight = minimum
+                    }
                     if (dialog != R.string.ContracDeleteEmpty) {
                         val typeface = Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")
                         alert.findViewById<android.widget.TextView>(android.R.id.message)?.typeface = typeface

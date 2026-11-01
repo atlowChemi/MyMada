@@ -66,7 +66,7 @@ class ContractionRecoveryTest {
             focused
         }
         instrumentation.uiAutomation.waitForIdle(500, 5_000)
-        onView(withId(R.id.action_delete)).perform(click())
+        compose.onNodeWithTag("shell-action-${R.id.action_delete}").performClick()
         instrumentation.uiAutomation.waitForIdle(500, 5_000)
         try {
             onView(withId(android.R.id.message)).inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
@@ -100,7 +100,7 @@ class ContractionRecoveryTest {
                         scenario.onActivity { focused = it.hasWindowFocus() }
                         focused
                     }
-                    onView(withId(R.id.action_delete)).perform(click())
+                    compose.onNodeWithTag("shell-action-${R.id.action_delete}").performClick()
                 }
                 onView(withId(android.R.id.message)).inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
                     .check { view, error ->
@@ -111,6 +111,11 @@ class ContractionRecoveryTest {
                         if (metrics.widthPixels == 1080 && metrics.density == 2.625f) {
                             val panel = text.rootView.findViewById<android.view.View>(androidx.appcompat.R.id.parentPanel)
                             assertEquals("Native alert content width", 940, panel.width)
+                            if (text.resources.configuration.fontScale == 1f) {
+                                val button = text.rootView.findViewById<android.widget.Button>(android.R.id.button1)
+                                android.util.Log.i("ContractionDialogGeometry", "message=${text.height} button=${button.height} min=${button.minHeight} padding=${button.paddingTop},${button.paddingBottom} metrics=${button.paint.fontMetricsInt}")
+                                assertEquals("Native alert action height", 126, button.height)
+                            }
                             if (message == R.string.ContracDeleteEmpty && text.resources.configuration.fontScale == 1f)
                                 assertEquals("Empty-delete message must not gain a wrapped line", 1, text.lineCount)
                         }

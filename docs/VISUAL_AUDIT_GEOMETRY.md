@@ -185,12 +185,11 @@ candidate605..<1252 (6px shorter); API37 native630..<1289 versus634..<1285
 monospace and Applicatio replaces default typefaces with the bundled font via
 reflection. Current sans-serif styles are migration code, not native evidence.
 Metrics investigation continues without a compensating padding adjustment.
-Follow-up read-only trace identifies native DialogTitle fitting: title starts20sp
-and falls back to textAppearanceMedium18sp when ellipsized. Long English fits via
-fallback (53px), while short Hebrew retains20sp (59px API24/65px API37). These
-title-height differences account for the entire6px/8px modal residual. A separate
-native-host-title correction is being validated; no locale-specific sizing is
-included in this primary layer.
+DialogTitle's20sp-to18sp ellipsis fallback is confirmed, but the first native-host
+prototype produced63px English titles instead of53px on both APIs. Native APK
+theme typeface is monospace; migrated theme uses sans-serif. Title-fitting/font
+resolution remains under diagnostic investigation. No locale-specific sizing or
+unverified host-title change is included in the published primary layer.
 Delay hint/height is a separate follow-up. These gaps remain explicit: this layer
 does not claim complete Settings parity. Missing release/JVM/lint checks are
 recorded in `integration-release-jvm-lints.log`: lint rejected the platform
@@ -256,5 +255,12 @@ and expiry/persistence logic are unchanged. Settings files are not involved.
 
 Existing recovery tests now target native dialog controls. A focused regression
 checks all three states'940px content width at the matched configuration and
-empty-delete single-line text. Build/runtime and actual new image comparisons
-remain pending; the three medical rows remain D until verified.
+empty-delete single-line text. Debug/test/release/JVM/lints passed after correcting
+a configuration-sensitive color lookup. Initial runtime passed5/7 recovery tests;
+two failed on the obsolete native toolbar selector. Tests now use the existing
+Compose shell-action tag. Corrected replay above #132 passed debug/test/release,
+JVM/both lints and16/16 device checks (seven recovery tests at font1.0 plus the
+three-dialog geometry test at font1.5 on both APIs). Opened empty-delete debug
+images: width/wrapping corrected; API37 height still differs from retained native.
+Failure logs remain retained; optimized comparisons and metric disposition remain
+pending. The three medical rows remain D.
