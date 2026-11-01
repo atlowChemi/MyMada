@@ -154,3 +154,46 @@ are recorded below.
   `sh_19704d7a3001qWXyzefDb8GIC6`; successful normal-font retry is in sibling
   `form-presentation-candidate-he24-retry`. Other optimized captures are in
   `form-presentation-candidate-{1.0,1.5}`. Both devices restored to font1.0.
+# Settings measured text geometry above #130
+
+Replayed private owner commit `2fa9a360390ab26a68921d1c0537c520299fb395`
+onto published #130 without Team's private changes. Scope is SettingsContent,
+ModeDialog choice metrics, and SettingsTextGeometryTest.
+
+The native TextView drawing leaf restores legacy StaticLayout-only fallback
+spacing instead of modern BoringLayout fallback inflation. Wrapped/RTL text,
+unbounded width and system font scaling remain supported. Compose retains row
+interaction, switch state/action and merged text semantics; native drawing nodes
+are accessibility-unimportant. Shared callers reviewed include headings, links,
+toggle/plain rows, mode choices, Delay/Volume actions and audio access prompts.
+No callback or persistence contract changed.
+
+Owner verification: 48/48 affected checks across API24/37 and fonts1/1.5/2,
+plus8/8 system-Hebrew API37 checks. Actual compressed accessibility nodes carry
+single labels and checkable/checked/clickable rows. Uncompressed dumps include
+unimportant native duplicates; this is not universal duplicate-free certification.
+
+Evidence: `/Users/chemiatlow/.local/share/opencode/evidence/m2-integration/settings-measured-parity/PRIMARY-HANDOFF.md`.
+Integrator opened API37 EN Advanced and HE Mode comparisons: EN row pitch/card
+align with native; Hebrew Mode retains a small vertical offset. Owner subsequently
+captured valid API24 Hebrew via system Language preferences; integrator opened
+`pair-5940-he-mode.png`, confirming the small offset also exists on API24.
+Earlier English-mislabeled captures remain archived as failures, not references.
+Owner's raw interior-edge measurements: HE Mode API24 native602..<1255 versus
+candidate605..<1252 (6px shorter); API37 native630..<1289 versus634..<1285
+(8px shorter). Font mismatch is not established: historical `b36f4a9c` uses
+monospace and Applicatio replaces default typefaces with the bundled font via
+reflection. Current sans-serif styles are migration code, not native evidence.
+Metrics investigation continues without a compensating padding adjustment.
+Delay hint/height is a separate follow-up. These gaps remain explicit: this layer
+does not claim complete Settings parity. Missing release/JVM/lint checks are
+recorded in `integration-release-jvm-lints.log`: lint rejected the platform
+TextView subclass (`AppCompatCustomView`). Integration now uses AppCompatTextView
+with the same measurement policy; the owner's private commit is preserved.
+Corrective debug/test/release builds, JVM tests and both lints passed in
+`integration-appcompat-build.log`. Post-superclass runtime recheck passed10/10:
+geometry, Advanced and Day/Night at font1.0 on API24/37, plus geometry at font2.0
+on both. Artifacts/hashes/logs are frozen in `integration-appcompat-runtime/`.
+Opened resulting API37 EN Advanced and API24 EN Mode images, retaining the
+aligned row/card and mode presentation. Both integrator devices restored font1.0.
+The owner's earlier matrix remains distinct from these corrected-artifact checks.

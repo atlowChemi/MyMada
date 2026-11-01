@@ -5,7 +5,7 @@ import android.os.Build
 import android.text.BoringLayout
 import android.util.TypedValue
 import android.view.View
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.SwitchCompat
@@ -69,7 +69,7 @@ internal fun DialogFragment.settingsDialog(id: Int, content: @Composable () -> U
     val pixels = with(LocalDensity.current) { size.sp.roundToPx().toFloat() }
     Box(modifier.semantics { this.text = AnnotatedString(text) }, propagateMinConstraints = true) {
         AndroidView(factory = { context ->
-            object : TextView(context) {
+            object : AppCompatTextView(context) {
                 override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
                     if (Build.VERSION.SDK_INT >= 33) {
                         // Native12822 uses fallback spacing for StaticLayout, not BoringLayout.
