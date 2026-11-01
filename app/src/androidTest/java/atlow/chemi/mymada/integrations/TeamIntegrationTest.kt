@@ -57,7 +57,7 @@ class TeamIntegrationTest {
         ActivityScenario.launch(MokedPage::class.java).use { scenario ->
             fun team(activity: MokedPage) = activity.supportFragmentManager.fragments.filterIsInstance<MainActivity2>().single()
             scenario.onActivity {
-                it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(1, false)
+                it.selectPage(1)
             }
             android.util.Log.i("TeamFixture", "Open add")
             compose.onNodeWithTag("team-add").performClick()

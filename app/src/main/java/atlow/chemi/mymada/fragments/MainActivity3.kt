@@ -17,7 +17,6 @@ class MainActivity3 : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View =
         ComposeView(requireContext()).apply {
             id = R.id.main3 // Stable registry key for rememberSaveable across view/process recreation.
-            if (SettingsPage.isRTL()) rotationY = 180f // Counter the legacy mirrored ViewPager.
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent { IntegrationTheme { CustomDispatchScreen { DispatchConfirmation.show(this@MainActivity3, it) } } }
         }

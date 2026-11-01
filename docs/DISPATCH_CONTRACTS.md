@@ -77,6 +77,16 @@ fallback-name reads. Both now use observable Compose locale/resource APIs;
 the subsequent unit/debug/test APK/release/lintDebug/lintRelease build passed
 (`owned-compose-private-locale-build.log`). This private artifact includes all
 later layers and is distinct from the coordinator's shell/request integration.
+That private artifact subsequently passed all 17 tests on API24 EN29.288s /
+HE29.647s and API37 EN41.239s / HE40.651s. Its optimized runtime check then
+exposed an API24 RTL accessibility defect: mirrored pager/fragment transforms
+produced zero input bounds despite correct rendering. The next private fix
+reverses physical page order in RTL instead, preserving logical tab/swipe order
+without transformed content. UIAutomator now reports real visible input bounds;
+the host regression passed 1/1 in 1.902s after waiting for accessibility events
+to settle. Earlier test failure and zero-bound XML are retained. The RTL fix
+still requires its final combined/release matrix; earlier 17/17 evidence does
+not establish those new bytes.
 
 ## Activation request and dialog Compose layer above #106
 

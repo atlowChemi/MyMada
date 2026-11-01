@@ -28,7 +28,6 @@ class MainActivity1 : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         ComposeView(requireContext()).apply {
             id = R.id.rap
-            if (SettingsPage.isRTL()) rotationY = 180f
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 IntegrationTheme {

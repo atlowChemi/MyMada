@@ -45,8 +45,18 @@ class DispatchIntegrationTest {
             compose.onNodeWithTag("dispatch-region-skip").performClick()
             compose.onNodeWithTag("dispatch-tab-1").assertIsSelected()
             compose.onNodeWithTag("dispatch-tab-0").performClick()
-            scenario.onActivity { assertEquals(0, it.findViewById<ViewPager>(R.id.viewpager).currentItem) }
-            scenario.onActivity { it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(2, false) }
+            scenario.onActivity { assertEquals(0, it.currentPage) }
+            compose.waitForIdle()
+            instrumentation.uiAutomation.waitForIdle(500, 5000)
+            fun visibleInput(node: android.view.accessibility.AccessibilityNodeInfo?): Boolean {
+                if (node == null) return false
+                val bounds = android.graphics.Rect()
+                node.getBoundsInScreen(bounds)
+                if (node.className?.toString() == "android.widget.EditText" && node.isVisibleToUser && !bounds.isEmpty) return true
+                return (0 until node.childCount).any { visibleInput(node.getChild(it)) }
+            }
+            assertTrue("Form inputs must expose usable screen bounds to accessibility", visibleInput(instrumentation.uiAutomation.rootInActiveWindow))
+            scenario.onActivity { it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(if (atlow.chemi.mymada.SettingsPage.isRTL()) 0 else 2, false) }
             compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()
             scenario.recreate()
             compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()
@@ -74,7 +84,7 @@ class DispatchIntegrationTest {
         val monitor = instrumentation.addMonitor(filter, Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null), true)
         try {
             ActivityScenario.launch(MokedPage::class.java).use { scenario ->
-                scenario.onActivity { it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(2, false) }
+                scenario.onActivity { it.selectPage(2) }
                 compose.waitForIdle()
                 closeSoftKeyboard()
                 capture("custom", language)

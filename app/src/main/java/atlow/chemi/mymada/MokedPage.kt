@@ -35,6 +35,12 @@ class MokedPage : AppCompatActivity() {
     private var detecting by mutableStateOf(false)
     private var prompt by mutableStateOf(false)
     private lateinit var detection: MenuItem
+    private fun page(index: Int) = if (SettingsPage.isRTL()) 2 - index else index
+    fun selectPage(index: Int, smooth: Boolean = false) {
+        require(index in 0..2)
+        findViewById<ViewPager>(R.id.viewpager).setCurrentItem(page(index), smooth)
+    }
+    val currentPage: Int get() = selected
     private val preferences by lazy { getSharedPreferences("Settings", 0) }
     private val preferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == "Mapp") detecting = preferences.getBoolean("Mapp", false)
@@ -66,13 +72,14 @@ class MokedPage : AppCompatActivity() {
         val pages = listOf(MainActivity1(), MainActivity2(), MainActivity3())
         pager.adapter = object : FragmentPagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
             override fun getCount() = pages.size
-            override fun getItem(position: Int): Fragment = pages[position]
+            override fun getItem(position: Int): Fragment = pages[page(position)]
         }
-        if (SettingsPage.isRTL()) pager.rotationY = 180f
-        if (savedInstanceState == null) pager.setCurrentItem(if (intent.getBooleanExtra("msg", false)) 0 else 1, false)
-        selected = pager.currentItem
+        // Reverse physical pages for RTL instead of mirrored Views, which yield zero
+        // accessibility bounds for Compose descendants on API24.
+        if (savedInstanceState == null) selectPage(if (intent.getBooleanExtra("msg", false)) 0 else 1)
+        selected = page(pager.currentItem)
         pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
-            override fun onPageSelected(position: Int) { selected = position }
+            override fun onPageSelected(position: Int) { selected = page(position) }
         })
         findViewById<ComposeView>(R.id.dispatch_header).setContent {
             atlow.chemi.mymada.integrations.IntegrationTheme {
@@ -92,7 +99,7 @@ class MokedPage : AppCompatActivity() {
                     @Suppress("DEPRECATION")
                     TabRow(selectedTabIndex = selected, containerColor = background, contentColor = foreground) {
                         listOf(R.string.button_a, R.string.button_b, R.string.button_i).forEachIndexed { index, labelId ->
-                            Tab(selected == index, onClick = { pager.currentItem = index }, modifier = Modifier.testTag("dispatch-tab-$index"),
+                            Tab(selected == index, onClick = { selectPage(index, true) }, modifier = Modifier.testTag("dispatch-tab-$index"),
                                 text = { Text(getString(labelId), fontSize = 14.sp) })
                         }
                     }

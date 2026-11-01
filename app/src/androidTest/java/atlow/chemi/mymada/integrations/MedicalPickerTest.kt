@@ -24,7 +24,7 @@ class MedicalPickerTest {
         instrumentation.runOnMainSync { atlow.chemi.mymada.helpers.LocalHelper.setLocale(context, language) }
         androidx.test.core.app.ActivityScenario.launch(atlow.chemi.mymada.MokedPage::class.java).use { scenario ->
             scenario.onActivity {
-                it.findViewById<androidx.viewpager.widget.ViewPager>(R.id.viewpager).setCurrentItem(0, false)
+                it.selectPage(0)
             }
             compose.onNodeWithTag("form-codes").performScrollTo().performClick()
             scenario.onActivity {

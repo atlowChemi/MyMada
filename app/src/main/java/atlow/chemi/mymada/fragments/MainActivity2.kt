@@ -26,7 +26,6 @@ class MainActivity2 : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View =
         ComposeView(requireContext()).apply {
             id = R.id.recycler_view
-            if (SettingsPage.isRTL()) rotationY = 180f
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent { IntegrationTheme {
                 var emptyError by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
