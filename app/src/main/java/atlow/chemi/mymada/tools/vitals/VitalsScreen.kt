@@ -108,6 +108,8 @@ private fun VitalInput(value: String, onChange: (String) -> Unit, label: Int, vi
             typeface = font
             addView(TextInputEditText(context).apply {
                 id = viewId; setHint(label); typeface = font
+                // Numeric single-line content needs legacy fitting-text metrics, even after clearing.
+                if (android.os.Build.VERSION.SDK_INT >= 28) setFallbackLineSpacing(false)
                 if (android.os.Build.VERSION.SDK_INT >= 35) setLocalePreferredLineHeightForMinimumUsed(false)
                 inputType = InputType.TYPE_CLASS_NUMBER
                 imeOptions = if (nextId == null) EditorInfo.IME_ACTION_DONE else EditorInfo.IME_ACTION_NEXT
