@@ -198,6 +198,12 @@ class ActivationIntegrationTest {
         val language = InstrumentationRegistry.getArguments().getString("captureLanguage", "en")
         main { LocalHelper.setLocale(context, language) }
         ActivityScenario.launch(codeRequest::class.java).use { scenario ->
+            fun assertLocalizedTitle() = scenario.onActivity { activity ->
+                val expected = activity.getString(R.string.title_activity_code)
+                assertEquals(expected, activity.title.toString())
+                assertEquals(expected, activity.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).title.toString())
+            }
+            assertLocalizedTitle()
             compose.onNodeWithTag("activation-request-confirm").performClick()
             closeSoftKeyboard()
             compose.onNodeWithTag("activation-request-submit").performClick()
@@ -208,6 +214,7 @@ class ActivationIntegrationTest {
             closeSoftKeyboard()
             compose.onNodeWithTag("activation-request-submit").performClick()
             scenario.recreate()
+            assertLocalizedTitle()
             val text = compose.onNodeWithTag("activation-request-summary").fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].single()
             val label = text.text.indexOf(LocalHelper.onAttach(context).getString(R.string.msg))
             assertTrue(text.spanStyles.any { it.start == label && it.item.color == androidx.compose.ui.graphics.Color(0xff238bad) })
