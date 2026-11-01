@@ -25,7 +25,9 @@ class MedicalPickerTest {
         androidx.test.core.app.ActivityScenario.launch(atlow.chemi.mymada.MokedPage::class.java).use { scenario ->
             scenario.onActivity {
                 it.findViewById<androidx.viewpager.widget.ViewPager>(R.id.viewpager).setCurrentItem(0, false)
-                it.findViewById<android.widget.EditText>(R.id.M1button2).performClick()
+            }
+            compose.onNodeWithTag("form-codes").performScrollTo().performClick()
+            scenario.onActivity {
                 it.supportFragmentManager.fragments.filterIsInstance<atlow.chemi.mymada.fragments.MainActivity1>()
                     .single().childFragmentManager.executePendingTransactions()
             }
@@ -47,13 +49,15 @@ class MedicalPickerTest {
             compose.onAllNodesWithTag("medical-code-5000").assertCountEquals(1)
             compose.onNodeWithTag("medical-done").performClick()
             scenario.recreate()
-            scenario.onActivity {
-                assertEquals("2000, 5000", it.findViewById<android.widget.EditText>(R.id.M1button2).text.toString())
-                for ((id, value) in listOf(R.id.M1txt1E to "1234", R.id.M1txt2E to "56", R.id.M1txt4E to "First", R.id.M1txt5 to "Last", R.id.M1txt3 to "78", R.id.M1txt6E to "90")) {
-                    it.findViewById<android.widget.EditText>(id).setText(value)
-                }
-                it.findViewById<android.widget.Button>(R.id.M1btnN).performClick()
+            compose.onNodeWithTag("form-codes").assertTextContains("2000, 5000")
+            for ((index, value) in listOf(0 to "1234", 3 to "56", 6 to "First", 7 to "Last", 4 to "78", 5 to "90")) {
+                compose.onNodeWithTag("form-field-$index").performScrollTo().performTextReplacement(value)
             }
+            scenario.recreate()
+            compose.onNodeWithTag("form-field-0").assertTextContains("1234")
+            compose.onNodeWithTag("form-field-6").assertTextContains("First")
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            compose.onNodeWithTag("form-send").performClick()
             instrumentation.waitForIdleSync()
             scenario.onActivity {
                 val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
@@ -61,11 +65,10 @@ class MedicalPickerTest {
             }
             compose.onNodeWithTag("dispatch-cancel").performClick()
             instrumentation.waitForIdleSync()
-            scenario.onActivity {
-                it.findViewById<android.widget.EditText>(R.id.M1txt3).setText("")
-                it.findViewById<android.widget.EditText>(R.id.M1txt6E).setText("")
-                it.findViewById<android.widget.Button>(R.id.M1btnN).performClick()
-            }
+            compose.onNodeWithTag("form-field-4").performScrollTo().performTextReplacement("")
+            compose.onNodeWithTag("form-field-5").performScrollTo().performTextReplacement("")
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            compose.onNodeWithTag("form-send").performClick()
             instrumentation.waitForIdleSync()
             scenario.onActivity {
                 val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
