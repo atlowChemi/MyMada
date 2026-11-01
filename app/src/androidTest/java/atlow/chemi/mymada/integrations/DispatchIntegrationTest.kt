@@ -12,10 +12,11 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeLeft
+import androidx.test.espresso.action.ViewActions.swipeRight
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.viewpager.widget.ViewPager
 import atlow.chemi.mymada.MokedPage
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.helpers.LocalHelper
@@ -56,7 +57,21 @@ class DispatchIntegrationTest {
                 return (0 until node.childCount).any { visibleInput(node.getChild(it)) }
             }
             assertTrue("Form inputs must expose usable screen bounds to accessibility", visibleInput(instrumentation.uiAutomation.rootInActiveWindow))
-            scenario.onActivity { it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(if (atlow.chemi.mymada.SettingsPage.isRTL()) 0 else 2, false) }
+            val rtl = atlow.chemi.mymada.SettingsPage.isRTL()
+            fun swipe(forward: Boolean) {
+                // Each page can focus an input and reopen the IME. Pager bounds extend
+                // behind it on API24: otherwise injected drags hit the keyboard.
+                closeSoftKeyboard()
+                onView(withId(R.id.viewpager)).perform(if (rtl == forward) swipeRight() else swipeLeft())
+                instrumentation.uiAutomation.waitForIdle(500, 5000)
+            }
+            swipe(true)
+            compose.onNodeWithTag("dispatch-tab-1").assertIsSelected()
+            swipe(true)
+            compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()
+            swipe(false)
+            compose.onNodeWithTag("dispatch-tab-1").assertIsSelected()
+            swipe(true)
             compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()
             scenario.recreate()
             compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()

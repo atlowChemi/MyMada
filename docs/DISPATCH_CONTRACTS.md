@@ -106,6 +106,52 @@ tab navigation, programmatic pager selection and recreation, not actual swipe
 acceptance. Root cause and API37 gesture verification remain open; this blocks
 host/RTL acceptance. No application bytes changed during these fixture trials.
 
+### Direct-swipe investigation resolved (private follow-up)
+
+The subsequent investigation traced the apparent API24 failure to input targeting,
+not ViewPager's RTL mapping. The pager measured `[0,369]`, size `1080×1425`, while
+the IME covered the lower screen. Its center/lower drag coordinates landed in the
+keyboard. A temporary Window.Callback trace recorded no activity touch events for
+the failing drag; `swipe-before.png` captures the occlusion. Closing the keyboard
+only once was insufficient: moving to another input-bearing page reopened it.
+ADB swipes on unobscured content worked, including cold-start Hebrew in the
+optimized application. No host or shared-shell change was needed for this failure.
+
+The native production12822 baseline was installed locally on owned API24, then the
+candidate and original preferences were restored. With a single unambiguous EN
+locale preference, real swipes reached form → team → custom; the reverse gesture
+worked after hiding the custom-page IME. Initial native captures had duplicate
+locale preferences and a keyboard contacts-permission dialog (denied), so those
+attempts are retained but excluded from parity conclusions. This is gesture-flow
+evidence, not broad production visual acceptance.
+
+The host regression now dismisses the IME before **each** real Espresso drag and
+asserts logical tab selection for 0→1→2→1→2, then recreation. It replaces the old
+programmatic page jump; it does not synthesize tab clicks for the swipe assertions.
+Accessibility-event idle synchronization remains at the existing 500/5000ms bounds;
+no timeout increase or application gesture workaround was introduced.
+
+Evidence: `~/.local/share/opencode/evidence/integrations/swipe-rootcause/`.
+Affected dispatch/team/picker suites passed 7/7 on API24 EN22.585s / HE22.077s and
+API37 EN28.05s / HE27.468s. The actual-swipe/accessibility/recreation regression also
+passed at 2× font: API24 EN8.648s / HE7.873s, API37 EN8.422s / HE8.441s. Original
+font settings were restored. Unit/debug/test APK/release/both lints passed in 1m59s.
+
+The rebuilt optimized artifact (separate bytes from the earlier preserved release)
+has SHA256 `745e0415f51cc99297ecb9bb4e7367194e71c9d75d35a9046366893fe3e2025c`;
+pulled installed APKs match on both APIs. Independent ADB cold-start gestures
+0→1→2→1→0 passed EN/HE at 1× and 2× on both APIs (eight combinations). The script
+checks the IME is hidden before dragging and checks selected labels in UIAutomator
+XML. One initial API24 2× run raced asynchronous IME dismissal; that failure is
+retained separately. The final script waits for UIAutomator's idle hierarchy and
+asserts hidden IME before injection (`release-settled-*`), without retrying gestures.
+It restores original preferences, app locales and font settings in finally.
+
+Application source remains `2931c87b`; the earlier 17-test/release/process-death
+results and raw swipe failures remain intact. This follow-up resolves the direct
+swipe acceptance blocker only; other production/live acceptance gates and the
+serialized publication queue remain unchanged.
+
 ## Activation request and dialog Compose layer above #106
 
 Tested source `3278850e`: request form, disclaimer/confirmation and request
