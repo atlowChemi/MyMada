@@ -221,3 +221,22 @@ y782..<1137, editor113px. Follow-up details and invalid-reference history are in
 Release assembly and both lints passed in `delay-integration-release-lints.log`.
 Owner's verified source tree matches this replay under `app/`; no unchanged
 device matrix was rerun. Earlier private commits and failed captures are retained.
+# Mode native-title follow-up above #132
+
+Replayed `aa4f791d9bc9cb00a550c8dba928488d708cb578`; full `app/` tree is
+identical to the owner's verified slice. Optional native title/theme arguments
+leave other settingsDialog callers on their existing defaults. Mode alone uses
+the bundled title font before native fitting, the existing8dp native divider,
+StaticLayout-only fallback compatibility and target35 minimum-line-height opt-out.
+No global AlertDialogStyle change or locale-specific font size is introduced.
+
+Owner's16/16 bounded checks cover both APIs, fonts1/1.5/2 and matched systemHE;
+reused after source-equivalence review. Integrator opened all four normal pairs:
+`pair-mode-spacing-{5940,5942}-en.png` and
+`pair-mode-final-{5940,5942}-he.png` in `settings-measured-parity/`.
+Native/candidate modal interior bounds match: API24 EN605..<1252, HE602..<1255;
+API37 EN636..<1282, HE630..<1289. Native fitting remains EN18sp/shortHE20sp;
+large English titles wrap and choices/Cancel remain reachable. Important compressed
+HE accessibility exposes title/choice/action text once. Failed prototypes retained.
+Full provenance: `MODE-HANDOFF.md`; missing release and both lints passed in
+`mode-integration-release-lints.log` (BUILD SUCCESSFUL). No unchanged runtime matrix rerun.
