@@ -39,8 +39,17 @@ class SoundSettingsTest {
             }
             clickRow("Napp")
             scenario.recreate()
-            compose.onNodeWithTag("dialog-cancel").assertExists()
-            clickRow("dialog-cancel")
+            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                .check { view, error ->
+                    if (error != null) throw error
+                    assertEquals(android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL),
+                        (view as android.widget.TextView).typeface)
+                }
+            capture("audio-access-restored")
+            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button2))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                .perform(androidx.test.espresso.action.ViewActions.click())
             assertFalse(preferences.getBoolean("Napp", true))
             assertTrue(preferences.getBoolean("NappT4", false))
             assertEquals("content://original/tone", preferences.getString("NuRi", null))
