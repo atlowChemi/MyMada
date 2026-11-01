@@ -3,8 +3,7 @@ package atlow.chemi.mymada.tools.apgar
 import android.graphics.Bitmap
 import android.widget.Spinner
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.*
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.action.ViewActions.click
@@ -32,6 +31,7 @@ class ApgarScreenTest {
             context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
                 .putStringSet("Tools", setOf("apgar")).commit()
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                compose.waitForIdle()
                 var format = ""
                 var title = ""
                 lateinit var labels: List<Array<String>>
@@ -65,21 +65,15 @@ class ApgarScreenTest {
                 assertScore(format, 6)
                 scenario.recreate()
                 assertScore(format, 6)
-                onView(allOf(withText(title), isDescendantOfA(withId(R.id.toolbar)))).check(matches(isDisplayed()))
+                compose.onNode(hasText(title) and !hasTestTag("shell-destination-${R.id.apgarCalc}")).assertIsDisplayed()
                 for (field in 0..4) onView(withTagValue(`is`("apgar-choice-$field"))).check { view, error ->
                     if (error != null) throw error
                     assertEquals(restoredChoices[field], (view as Spinner).selectedItemPosition)
                 }
                 // Toolbar drawer back dismisses only the drawer, preserving all choices.
-                scenario.onActivity { it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
-                    .openDrawer(androidx.core.view.GravityCompat.START, false) }
+                compose.onNodeWithTag("shell-navigation").performClick()
                 pressBack()
-                compose.waitUntil(5_000) {
-                    var closed = false
-                    scenario.onActivity { closed = !it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
-                        .isDrawerVisible(androidx.core.view.GravityCompat.START) }
-                    closed
-                }
+                compose.onNodeWithTag("shell-destination-${R.id.apgarCalc}").assertIsNotDisplayed()
                 assertScore(format, 6)
                 pressBackUnconditionally()
                 compose.waitUntil(5_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }

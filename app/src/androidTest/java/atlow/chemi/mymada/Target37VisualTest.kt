@@ -9,6 +9,9 @@ import android.graphics.Typeface
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.test.core.app.ActivityScenario
@@ -29,6 +32,7 @@ class Target37VisualTest {
     @Test fun activationLayoutsKeepToolbarBelowStatusBar() {
         for (layout in listOf(R.layout.activity_not_mada, R.layout.activity_code_c, R.layout.activity_code_request)) {
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                compose.waitForIdle()
                 scenario.onActivity { it.setContentView(layout) }
                 compose.waitForIdle()
                 capture(scenario, "activation-layout-$layout")
@@ -64,15 +68,11 @@ class Target37VisualTest {
                         }
                         laidOut
                     }
+                    var title = ""
+                    var titleSize = 0f
                     scenario.onActivity { activity ->
-                        val toolbar = activity.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-                        val title = (0 until toolbar.childCount).map { toolbar.getChildAt(it) }
-                            .filterIsInstance<TextView>().first { it.text == toolbar.title }
-                        val expectedTitle = Paint(title.paint).apply {
-                            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-                        }
-                        assertEquals(expectedTitle.measureText(title.text.toString()),
-                            title.paint.measureText(title.text.toString()), .01f)
+                        title = activity.title.toString()
+                        titleSize = activity.resources.getDimension(androidx.appcompat.R.dimen.abc_text_size_title_material_toolbar)
                         val spinner = activity.findViewById<Spinner>(R.id.OxyTypeS)
                         val selected = spinner.selectedView as TextView
                         val dropdown = spinner.adapter.getDropDownView(0, null, spinner) as TextView
@@ -83,6 +83,16 @@ class Target37VisualTest {
                                 view.paint.measureText(sample), .01f)
                         }
                     }
+                    val layouts = mutableListOf<TextLayoutResult>()
+                    compose.onNode(hasText(title) and !hasTestTag("shell-destination-${R.id.oxygenCalc}"))
+                        .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+                    val expectedTitle = Paint().apply {
+                        textSize = titleSize
+                        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                    }
+                    val layout = layouts.single()
+                    assertEquals("Compose title keeps native medium glyph metrics",
+                        expectedTitle.measureText(title), layout.getLineRight(0) - layout.getLineLeft(0), 1f)
                     capture(scenario, "oxygen-$language-${if (landscape) "landscape" else "portrait"}")
                     if (!landscape) {
                         lateinit var dialog: androidx.appcompat.app.AlertDialog
@@ -128,17 +138,25 @@ class Target37VisualTest {
         val drawn = CountDownLatch(1)
         var top = 0
         var color = 0
+        var composeToolbar = false
         scenario.onActivity { activity ->
             top = ViewCompat.getRootWindowInsets(activity.window.decorView)!!
                 .getInsets(WindowInsetsCompat.Type.statusBars()).top
             color = activity.getColor(R.color.ColorPrimary)
             val toolbar = activity.findViewById<android.view.View>(R.id.toolbar)
-            val location = IntArray(2)
-            toolbar.getLocationOnScreen(location)
-            assertTrue("Toolbar remains below status inset", location[1] >= top)
+            composeToolbar = toolbar == null
+            if (toolbar != null) {
+                val location = IntArray(2)
+                toolbar.getLocationOnScreen(location)
+                assertTrue("Toolbar remains below status inset", location[1] >= top)
+            }
             activity.window.decorView.postOnAnimation {
                 activity.window.decorView.postOnAnimation { drawn.countDown() }
             }
+        }
+        if (composeToolbar) {
+            assertTrue("Compose navigation remains below status inset",
+                compose.onNodeWithTag("shell-navigation").fetchSemanticsNode().boundsInWindow.top >= top)
         }
         assertTrue(drawn.await(5, TimeUnit.SECONDS))
         val image = instrumentation.uiAutomation.takeScreenshot()!!

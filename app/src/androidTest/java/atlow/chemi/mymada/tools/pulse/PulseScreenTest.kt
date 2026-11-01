@@ -6,6 +6,8 @@ import android.widget.TextView
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.assertIsNotDisplayed
+import atlow.chemi.mymada.selectShellDestination
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.action.ViewActions.clearText
@@ -38,6 +40,7 @@ class PulseScreenTest {
             context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
                 .putStringSet("Tools", setOf("pulse")).commit()
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                compose.waitForIdle()
                 scenario.onActivity {
                     assertTrue(it.supportFragmentManager.findFragmentById(R.id.frame) is PulseCalc)
                 }
@@ -79,15 +82,9 @@ class PulseScreenTest {
                 compose.waitUntil(3_000) { seconds(scenario) in 13..15 }
                 compose.onNodeWithTag("pulse-timer").performClick()
                 onView(withId(R.id.txtTimerSecond)).check(matches(withText("15")))
-                scenario.onActivity { it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
-                    .openDrawer(androidx.core.view.GravityCompat.START, false) }
+                compose.onNodeWithTag("shell-navigation").performClick()
                 pressBack()
-                compose.waitUntil(5_000) {
-                    var closed = false
-                    scenario.onActivity { closed = !it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
-                        .isDrawerVisible(androidx.core.view.GravityCompat.START) }
-                    closed
-                }
+                compose.onNodeWithTag("shell-destination-${R.id.pulseCalc}").assertIsNotDisplayed()
                 onView(withId(R.id.fullPulseA)).check(matches(withText("396")))
                 pressBackUnconditionally()
                 compose.waitUntil(5_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
@@ -144,9 +141,9 @@ class PulseScreenTest {
     }
 
     private fun switchTool(scenario: ActivityScenario<UtillitiesAndTools>, id: Int) {
+        compose.selectShellDestination(id)
+        compose.waitForIdle()
         scenario.onActivity {
-            val menu = it.findViewById<com.google.android.material.navigation.NavigationView>(R.id.navigation).menu
-            it.onNavigationItemSelected(menu.findItem(id))
             it.supportFragmentManager.executePendingTransactions()
             assertEquals(id == R.id.pulseCalc, it.supportFragmentManager.findFragmentById(R.id.frame) is PulseCalc)
         }

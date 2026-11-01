@@ -74,11 +74,20 @@ exercise that change without repeating the full behavioral suites.
   The corrected 16-image API24 matrix also matches toolbar/drawer bounds within
   one pixel after allowing the transient native scrollbar to fade.
 - API24 production keeps app text at font1.0 under system font1.5, while the
-  candidate honors scaling. This is an explicit acceptance decision, not a
-  claimed pixel match or permission to disable accessibility scaling.
-- Production resets some toolbar titles to the generic Tools/Settings label
-  after configuration recreation; candidate retains the active feature title.
-  This difference is recorded for review rather than copying a restoration bug.
+  candidate honors scaling. The user approved honoring Android font scaling
+  across migrated screens. This is no longer a product blocker; readability,
+  reachability, clipping and RTL still require verification, not pixel equality
+  to production's suppressed scaling.
+- Precise restored-title evidence: launch Tools in English, select APGAR, rotate
+  portrait → landscape → portrait. On both API24 and API37, production retains
+  APGAR content but changes the toolbar from `APGAR calculator` to `Tools`;
+  candidate retains both APGAR content and `APGAR calculator`. Expected behavior
+  is the active feature title, already asserted by `ApgarScreenTest` before this
+  shell migration. Evidence: `behavior24/` and `behavior37/`, respectively
+  `production12822-apgar-selected.png`, `production12822-apgar-recreated.png`,
+  `candidate-apgar-selected.png`, `candidate-apgar-recreated.png`. These are
+  configuration-recreation comparisons, not process-death or signed-upgrade
+  claims. This observation is not a broad title/parity acceptance gate.
 - Paired API24/37 `behavior24/` / `behavior37/` captures show drawer swipe-close,
   Back closing the drawer, APGAR destination retained after rotation, and API37
   system-edge Back finishing Tools. The previous task differs by launch history.
@@ -137,10 +146,13 @@ Tools. Captures are in `release24/` and `release37/`.
 
 ### Acceptance and publication status
 
-Implementation and local checks are complete for this private slice. Acceptance
-still needs disposition of API24 font scaling and the corrected restored title,
-plus the coordinator's ownership/integration of legacy feature-test adapters.
-The two dedicated shell suites pass; tests elsewhere that directly require the
-removed NavigationView/Toolbar are not claimed to pass. Append only in the
+The two dedicated shell suites pass. The authorized follow-up adapts PlatformSmoke,
+Target37Visual, Documents, Oxygen, Home, Pulse, APGAR, Glasgow and Dictionary tests
+to shell semantics, preserving their feature assertions. Only tests and this
+document change; the coordinator owns the combined test-APK build and affected
+runtime checks, whose results are not claimed by this private adapter commit.
+The font-scaling policy is approved; the precise title comparison above documents
+an existing test expectation. Integration acceptance belongs to the coordinator.
+Append only in the
 integrator's exclusive window above the then-current single-stack tip, not above
 the private #103 base or an assumed #104 tip. No merge is authorized.

@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
@@ -40,6 +42,7 @@ class DictionaryScreenTest {
             val source = FixtureSource()
             val model = DictionaryModel(source)
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                compose.waitForIdle()
                 scenario.onActivity { activity ->
                     activity.supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
                         override fun onFragmentPreCreated(fm: FragmentManager, fragment: Fragment, state: Bundle?) {
@@ -56,7 +59,7 @@ class DictionaryScreenTest {
                 capture("loading-$language")
                 scenario.onActivity { source.emit(emptyList()) }
                 capture("empty-$language")
-                onView(withId(R.id.app_bar_word_add)).perform(click())
+                compose.onNodeWithTag("shell-action-${R.id.app_bar_word_add}").performClick()
                 capture("add-$language")
                 onView(withId(android.R.id.button1)).perform(click())
                 assertEquals(0, source.writes.size)
@@ -86,7 +89,7 @@ class DictionaryScreenTest {
                 capture("cached-$language")
                 scenario.onActivity { source.emit(listOf(beta, alpha)) }
                 capture("list-$language")
-                onView(withId(R.id.app_bar_search)).perform(click())
+                compose.onNodeWithTag("shell-action-${R.id.app_bar_search}").performClick()
                 onView(withId(androidx.appcompat.R.id.search_src_text)).perform(replaceText("meaning"), pressImeActionButton())
                 compose.onNodeWithText("Alpha").assertExists()
                 compose.onNodeWithText("beta").assertDoesNotExist()
@@ -112,18 +115,10 @@ class DictionaryScreenTest {
                 scenario.onActivity { model.retry(); source.emit(listOf(beta)) }
                 assertFalse(model.readError)
                 assertTrue(source.removals > 0)
-                scenario.onActivity {
-                    it.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).menu.findItem(R.id.app_bar_search).collapseActionView()
-                    it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
-                        .openDrawer(androidx.core.view.GravityCompat.START, false)
-                }
+                compose.onNodeWithTag("shell-navigation").performClick() // Collapse native SearchView.
+                compose.onNodeWithTag("shell-navigation").performClick() // Open Compose drawer.
                 pressBack()
-                compose.waitUntil(5_000) {
-                    var closed = false
-                    scenario.onActivity { closed = !it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
-                        .isDrawerVisible(androidx.core.view.GravityCompat.START) }
-                    closed
-                }
+                compose.onNodeWithTag("shell-destination-${R.id.dictionary}").assertIsNotDisplayed()
                 pressBackUnconditionally()
                 compose.waitUntil(5_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
             }

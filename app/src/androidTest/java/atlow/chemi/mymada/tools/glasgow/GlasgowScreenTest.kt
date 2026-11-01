@@ -3,8 +3,7 @@ package atlow.chemi.mymada.tools.glasgow
 import android.graphics.Bitmap
 import android.widget.Spinner
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.*
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.action.ViewActions.click
@@ -34,6 +33,7 @@ class GlasgowScreenTest {
             context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
                 .putStringSet("Tools", setOf("glaz")).commit()
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                compose.waitForIdle()
                 var format = ""
                 var title = ""
                 lateinit var bands: List<String>
@@ -76,20 +76,14 @@ class GlasgowScreenTest {
                 assertScore(9)
                 scenario.recreate()
                 assertScore(9)
-                onView(allOf(withText(title), isDescendantOfA(withId(R.id.toolbar)))).check(matches(isDisplayed()))
+                compose.onNode(hasText(title) and !hasTestTag("shell-destination-${R.id.glazgowCalc}")).assertIsDisplayed()
                 for (field in 0..2) onView(withTagValue(`is`("glasgow-choice-$field"))).check { view, error ->
                     if (error != null) throw error
                     assertEquals(restoredChoices[field], (view as Spinner).selectedItemPosition)
                 }
-                scenario.onActivity { it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
-                    .openDrawer(androidx.core.view.GravityCompat.START, false) }
+                compose.onNodeWithTag("shell-navigation").performClick()
                 pressBack()
-                compose.waitUntil(5_000) {
-                    var closed = false
-                    scenario.onActivity { closed = !it.findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.activity_Utils)
-                        .isDrawerVisible(androidx.core.view.GravityCompat.START) }
-                    closed
-                }
+                compose.onNodeWithTag("shell-destination-${R.id.glazgowCalc}").assertIsNotDisplayed()
                 assertScore(9)
                 pressBackUnconditionally()
                 compose.waitUntil(5_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
