@@ -3,6 +3,7 @@ package atlow.chemi.mymada.integrations
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -34,17 +36,27 @@ internal fun IntegrationField(value: String, update: (String) -> Unit, modifier:
     visualTransformation: VisualTransformation = VisualTransformation.None,
     textStyle: TextStyle = TextStyle(),
     inputMinHeight: androidx.compose.ui.unit.Dp = 41.dp,
+    onClick: (() -> Unit)? = null,
 ) {
     val interaction = remember { MutableInteractionSource() }
+    LaunchedEffect(interaction, onClick) {
+        if (onClick != null) interaction.interactions.collect {
+            if (it is PressInteraction.Release) onClick()
+        }
+    }
     val focused by interaction.collectIsFocusedAsState()
     val accent = colorResource(R.color.ColorAqua)
     val color = if (error != null) Color.Red else if (focused) accent else colorResource(R.color.ColorBlue)
     val style = TextStyle(fontFamily = FontFamily(Font(R.font.opensans_hebrew)), fontSize = 18.sp,
         color = Color.Black, letterSpacing = 0.sp).merge(textStyle)
-    BasicTextField(value, update, enabled = enabled, singleLine = singleLine, minLines = minLines,
+    BasicTextField(value, update, enabled = enabled, readOnly = onClick != null, singleLine = singleLine, minLines = minLines,
         textStyle = style, keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
         visualTransformation = visualTransformation, interactionSource = interaction, cursorBrush = SolidColor(accent),
-        modifier = modifier.semantics { if (label != null) contentDescription = label; if (error != null) error(error) },
+        modifier = modifier.semantics {
+            if (label != null) contentDescription = label
+            if (error != null) error(error)
+            if (onClick != null) onClick { onClick(); true }
+        },
         decorationBox = { field -> Column {
         if (label != null) Box(Modifier.fillMaxWidth().heightIn(min = 11.dp).padding(horizontal = 4.dp)) {
             if (value.isNotEmpty() || focused) Text(label, color = color, fontSize = 12.sp, lineHeight = 14.sp)
