@@ -28,6 +28,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.assertTextContains
 import java.io.File
 
 /** A blocking Instrumentation monitor intercepts approval: no SMS composer or transmission. */
@@ -74,19 +75,18 @@ class DispatchIntegrationTest {
                     val fragment = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
                     assertEquals(11, fragment.requireArguments().getInt("region"))
                     assertEquals(body, fragment.requireArguments().getString("body"))
-                    val text = (fragment.requireDialog() as AlertDialog).findViewById<TextView>(android.R.id.message)!!.text.toString()
-                    assertTrue(text.contains("מוקד 4")); assertTrue(text.contains(body))
-                    val dialog = fragment.requireDialog() as AlertDialog
-                    assertTrue(dialog.getButton(AlertDialog.BUTTON_POSITIVE).left > dialog.getButton(AlertDialog.BUTTON_NEGATIVE).left)
                 }
+                compose.onNodeWithTag("dispatch-summary").assertTextContains("מוקד 4", substring = true).assertTextContains(body, substring = true)
+                assertTrue(compose.onNodeWithTag("dispatch-confirm").fetchSemanticsNode().boundsInRoot.left >
+                    compose.onNodeWithTag("dispatch-cancel").fetchSemanticsNode().boundsInRoot.left)
                 capture("confirmation", language)
-                onView(withText(R.string.ret)).perform(click())
+                compose.onNodeWithTag("dispatch-cancel").performClick()
                 scenario.onActivity { it.supportFragmentManager.executePendingTransactions() }
                 assertEquals(0, monitor.hits)
                 compose.onNodeWithTag("custom-body").assertTextEquals(body)
                 compose.onNodeWithTag("custom-send").performClick()
                 scenario.onActivity { it.supportFragmentManager.executePendingTransactions() }
-                onView(withText(R.string.ok)).perform(click())
+                compose.onNodeWithTag("dispatch-confirm").performClick()
                 assertEquals(1, monitor.hits)
             }
         } finally { instrumentation.removeMonitor(monitor) }

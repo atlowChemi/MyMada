@@ -23,6 +23,9 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.assertIsDisplayed
 import java.io.File
 
 class TeamIntegrationTest {
@@ -53,7 +56,6 @@ class TeamIntegrationTest {
         instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
         ActivityScenario.launch(MokedPage::class.java).use { scenario ->
             fun team(activity: MokedPage) = activity.supportFragmentManager.fragments.filterIsInstance<MainActivity2>().single()
-            fun dialog(activity: MokedPage) = (team(activity).childFragmentManager.findFragmentByTag("team-member") as MainActivity2.MemberDialog).requireDialog() as AlertDialog
             scenario.onActivity {
                 it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(1, false)
             }
@@ -62,21 +64,16 @@ class TeamIntegrationTest {
             scenario.onActivity { team(it).childFragmentManager.executePendingTransactions() }
             instrumentation.waitForIdleSync()
             capture("add", language)
-            scenario.onActivity {
-                val dialog = dialog(it)
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
-                assertNotNull(dialog.findViewById<TextInputLayout>(R.id.addManTIL)!!.error)
-                dialog.findViewById<EditText>(R.id.addManName)!!.setText("Fixture Member")
-                dialog.findViewById<Spinner>(R.id.addManSpinner)!!.setSelection(2)
-            }
+            compose.onNodeWithTag("member-save").performClick()
+            compose.onNodeWithText(LocalHelper.onAttach(context).getString(R.string.emailNameNone)).assertIsDisplayed()
+            compose.onNodeWithTag("member-name").performTextReplacement("Fixture Member")
+            compose.onNodeWithTag("member-role").performClick()
+            compose.onNodeWithTag("member-role-2").performClick()
             scenario.recreate()
             android.util.Log.i("TeamFixture", "Restored draft")
-            scenario.onActivity {
-                val dialog = dialog(it)
-                assertEquals("Fixture Member", dialog.findViewById<EditText>(R.id.addManName)!!.text.toString())
-                assertEquals(2, dialog.findViewById<Spinner>(R.id.addManSpinner)!!.selectedItemPosition)
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
-            }
+            compose.onNodeWithTag("member-name").assertTextContains("Fixture Member")
+            compose.onNodeWithTag("member-role").assertTextContains(TeamContract.roles[2])
+            compose.onNodeWithTag("member-save").performClick()
             instrumentation.waitForIdleSync()
             androidx.test.espresso.Espresso.closeSoftKeyboard()
             capture("member", language)
@@ -85,13 +82,11 @@ class TeamIntegrationTest {
             android.util.Log.i("TeamFixture", "Open edit menu")
             compose.onNodeWithTag("team-edit-0").performClick()
             scenario.onActivity { team(it).childFragmentManager.executePendingTransactions() }
-            scenario.onActivity {
-                val dialog = dialog(it)
-                assertEquals("Fixture Member", dialog.findViewById<EditText>(R.id.addManName)!!.text.toString())
-                dialog.findViewById<EditText>(R.id.addManName)!!.setText("Edited Member")
-                dialog.findViewById<Spinner>(R.id.addManSpinner)!!.setSelection(6)
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
-            }
+            compose.onNodeWithTag("member-name").assertTextContains("Fixture Member")
+            compose.onNodeWithTag("member-name").performTextReplacement("Edited Member")
+            compose.onNodeWithTag("member-role").performClick()
+            compose.onNodeWithTag("member-role-6").performClick()
+            compose.onNodeWithTag("member-save").performClick()
             scenario.onActivity {
                 val model = ViewModelProvider(team(it))[TeamModel::class.java]
                 assertEquals("Edited Member", model.members.single().name)
@@ -110,7 +105,9 @@ class TeamIntegrationTest {
             scenario.onActivity {
                 val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
                 assertEquals("צוות אמבולנס י-ם 1234:\nשירות לאומי - Edited Member\nחובש - Member1\nפראמדיק - Member2", confirmation.requireArguments().getString("body"))
-                (confirmation.requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_NEGATIVE).performClick()
+            }
+            compose.onNodeWithTag("dispatch-cancel").performClick()
+            scenario.onActivity {
                 val model = ViewModelProvider(team(it))[TeamModel::class.java]
                 repeat(model.members.size) { model.delete(0) }
             }

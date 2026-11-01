@@ -8,6 +8,23 @@ that policy are intentional, not a product blocker. Readability, reachability,
 clipping and RTL still require verification; this does not approve other
 geometry differences or restored-title behavior.
 
+## Private follow-ons awaiting coordinated attachment
+
+Chat content, saved draft, seen status, WhatsApp handoff and name/disclaimer/
+error dialogs are now Compose on the private chat layer (`106f303e`). API24
+chat fixture passed 3/3 in 3.782s, including pending send/rename recreation,
+acknowledged clearing and listener cleanup. Raw log: `chat-dialog-compose-5980.log`.
+Live backend identity mapping, queued-write process death and production visual
+parity remain unclaimed; final combined/release/API37 verification is pending.
+
+The next private layer converts member name/role entry, empty-team feedback
+and shared dispatch confirmation to Compose. API24 combined dispatch/team/picker
+fixture passed 6/6 in 16.07s (`team-dialog-compose-5980.log`). Seven role choices
+are retained. The fixture verifies saved member draft/role editing, four cap,
+literal recipient/body snapshots, action ordering, and blocked SMS approval.
+Final combined/release/API37 and production visual verification remain pending.
+These private layers do not reserve an append window or modify shared shell APIs.
+
 ## Activation request and dialog Compose layer above #106
 
 Tested source `3278850e`: request form, disclaimer/confirmation and request
