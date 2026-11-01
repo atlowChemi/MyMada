@@ -1,6 +1,11 @@
 package atlow.chemi.mymada.settings
 
 import android.widget.SeekBar
+import android.widget.EditText
+import android.view.Gravity
+import android.util.Log
+import androidx.core.content.ContextCompat
+import com.google.android.material.textfield.TextInputLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
@@ -46,6 +51,22 @@ class AdvancedSettingsTest {
                 scenario.recreate()
                 clickRow("timeK")
                 compose.onNodeWithTag("dialog-cancel").assertIsDisplayed()
+                scenario.onActivity {
+                    val parent = it.supportFragmentManager.findFragmentById(R.id.frame) as SettingsAdvanced
+                    val dialog = (parent.childFragmentManager.findFragmentByTag("delay") as SettingsAdvanced.DelayDialog).requireDialog()
+                    val field = dialog.findViewById<EditText>(R.id.shabatT)
+                    val layout = dialog.findViewById<TextInputLayout>(R.id.shabatTil)
+                    // Native shabat_t is inflated with the activity theme, not AlertDialogStyle.
+                    assertEquals(Gravity.START or Gravity.TOP, field.gravity)
+                    assertEquals(ContextCompat.getColor(it, R.color.ColorAqua), layout.defaultHintTextColor!!.defaultColor)
+                    if (it.resources.displayMetrics.density == 2.625f && it.resources.configuration.fontScale == 1f) {
+                        // Measured native12822 EN/HE on the owned API24/API37 references.
+                        if (android.os.Build.VERSION.SDK_INT == 24) assertEquals(108, field.height)
+                        if (android.os.Build.VERSION.SDK_INT == 37) assertEquals(113, field.height)
+                    }
+                    val metrics = field.paint.fontMetricsInt
+                    Log.i("SettingsDelayGeometry", "$language focused=${field.hasFocus()} fieldHeight=${field.height} layoutHeight=${layout.height} textSize=${field.textSize} top=${metrics.top} ascent=${metrics.ascent} descent=${metrics.descent} bottom=${metrics.bottom} padding=${field.paddingTop},${field.paddingBottom}")
+                }
                 capture("advanced-delay-$language")
                 onView(withId(R.id.shabatT)).inRoot(isDialog()).perform(replaceText("999999999999"), closeSoftKeyboard())
                 clickRow("dialog-confirm")
