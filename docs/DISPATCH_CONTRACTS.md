@@ -72,6 +72,11 @@ and API37 (6.986s); captured name-dialog images are 1920×1080. Evidence is unde
 existing manifest portrait lock. Original font/rotation settings were restored;
 API24's originally absent user_rotation required deleting the temporary setting
 after a rejected attempt to write the literal `null` value.
+The first full private build caught two Compose lint errors in chat locale/
+fallback-name reads. Both now use observable Compose locale/resource APIs;
+the subsequent unit/debug/test APK/release/lintDebug/lintRelease build passed
+(`owned-compose-private-locale-build.log`). This private artifact includes all
+later layers and is distinct from the coordinator's shell/request integration.
 
 ## Activation request and dialog Compose layer above #106
 
