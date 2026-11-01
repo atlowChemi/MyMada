@@ -3,6 +3,49 @@
 Refs #35, #19, #27. Visual auditing is agent-owned execution, not a blanket
 user blocker. This batch does not close the full inventory or authorize merging.
 
+## Approved Home empty-ad policy — 2026-11-01
+
+The maintainer explicitly approved retaining reserved ad space **transparent
+when no ad loads**, consistently across Android versions. The resulting API24
+difference from production12822 is intentional and accepted. This supersedes
+the earlier pending-policy status. Completed verification is recorded below.
+
+Private `5bec8950` and diagnostic `950bf568` remain retained evidence. Inspection
+shows that the private test conditionally accepts navy based on candidate ad
+height; that condition does not establish the newly approved policy. The final
+offline check must assert reserved space and transparency independently of ad
+height, with matched EN/HE API24/API37 images documenting the intentional
+production difference. Geometry work continues independently, with one owner
+serializing access to emulators5960/5962. No phone actions or merges authorized.
+
+Approved-policy candidate evidence is under `../geometry/home-approved/`
+relative to the original audit archive. Build/debug/release lints passed in
+1m45s, with 20 JVM tests. API37's full Home class passed 7/7. The initial API24
+class run exhausted its heap in Chrome_IOThread; raw records are
+`5962-class-process-failed.txt` and `5962-crash-full.txt`. An isolated retry
+passed English navigation before the emulator host crashed with SIGSEGV and
+graphics ColorBuffer errors. These failures are retained, not counted as
+passing tests. Recovery uses the same owned AVD under an outbound-network-denying
+host sandbox, followed by restoring both guest firewalls; no global ADB reset.
+
+Recovery completed: API24 passed all seven Home tests in isolated processes;
+API37's completed seven-test run was reused, giving **14/14 completed checks**.
+Both include unconditional 50dp reserved-slot/artwork assertions (EN normal,
+HE 1.5 font scale), navigation/recreation and onboarding/dialog coverage.
+All four optimized production/candidate pairs were opened:
+`geometry/home-approved/pair-5960-en-home.png`,
+`geometry/home-approved/pair-5960-he-home.png`,
+`geometry/home-approved/pair-5962-en-home.png`, and
+`geometry/home-approved/pair-5962-he-home.png`, relative to the milestone evidence
+root. They show preserved tile geometry and transparent empty reserved space.
+API37 matches the production empty band; API24 intentionally replaces the
+historical navy band with artwork under the approved policy.
+Installed optimized SHA256:
+`0c1eb79ee6b14f5277911bf122211630a274c904acbd554ab228bc4467c5a04e`.
+The private patch was inspected rather than cherry-picked: its wrapper-color
+removal is retained, but its conditional navy assertion and explicit navy ad
+background are not. No API-specific branch is needed.
+
 ## Evidence and provenance
 
 Local archive: `~/.local/share/opencode/evidence/m2-integration/visual-audit-121/`.
