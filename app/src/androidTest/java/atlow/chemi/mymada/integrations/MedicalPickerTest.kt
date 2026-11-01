@@ -26,7 +26,22 @@ class MedicalPickerTest {
             scenario.onActivity {
                 it.selectPage(0)
             }
-            compose.onNodeWithTag("form-codes").performScrollTo().performClick()
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            val codes = compose.onNodeWithTag("form-codes").performScrollTo().assertIsDisplayed()
+            val fullBounds = codes.getUnclippedBoundsInRoot()
+            val sendBounds = compose.onNodeWithTag("form-send").getUnclippedBoundsInRoot()
+            assertTrue("Scrolled picker must be wholly above Send", fullBounds.bottom <= sendBounds.top)
+            val clipped = codes.fetchSemanticsNode().boundsInRoot
+            var density = 1f
+            scenario.onActivity { density = it.resources.displayMetrics.density }
+            assertEquals("Picker must not be clipped after scrolling", (fullBounds.bottom - fullBounds.top).value * density, clipped.height, 1f)
+            val scrolled = instrumentation.uiAutomation.takeScreenshot()
+            val evidence = java.io.File(context.getExternalFilesDir(null), "medical-picker").apply { mkdirs() }
+            java.io.File(evidence, "scrolled-$language.png").outputStream().use {
+                scrolled.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+            }
+            scrolled.recycle()
+            codes.performClick()
             scenario.onActivity {
                 it.supportFragmentManager.fragments.filterIsInstance<atlow.chemi.mymada.fragments.MainActivity1>()
                     .single().childFragmentManager.executePendingTransactions()

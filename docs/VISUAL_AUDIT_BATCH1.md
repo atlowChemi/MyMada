@@ -96,6 +96,14 @@ Paths below are relative to `~/.local/share/opencode/evidence/`.
 
 ## Remaining state inventory (agent-owned unless explicitly live)
 
+This is the existing batch-1 inventory, not a new acceptance gate. Later scoped
+results supersede individual entries: #123/#124 correct information insets and
+About wrapping; #125 restores chat first-open order; #126 corrects activation,
+shared fields/dialogs and dispatch tabs; #127 finishes the approved empty Home
+slot; #128 restores chat cards. `VISUAL_AUDIT_GEOMETRY.md` records the subsequent
+form-picker scroll/access evidence. Initial picker clipping is not a permanent
+Send occlusion. These results do not mark every state in the table complete.
+
 | Family | Remaining comparisons after this batch |
 | --- | --- |
 | Home/About/Privacy/onboarding | Unobscured Home, scrolled About links, Privacy loaded/offline distinction, complete settings→overlay→privacy sequence; RN privacy-first remains a specific behavior decision. |
@@ -218,3 +226,27 @@ Current `BaseAdView.onMeasure` measures a non-GONE child before considering
 the AdSize fallback. This is an ad-runtime child-sizing difference, not a
 navigation inset; no arbitrary API threshold or redesign approval is inferred.
 Home remains open, with the private attempt and all failed evidence preserved.
+
+## Current handoff scope (supersedes historical open findings above)
+
+| Finding | Current disposition |
+| --- | --- |
+| Home reserved empty-ad band | Finished in #127: approved transparent policy, 14 checks and four opened matched pairs. |
+| Activation digits/SEND; shared alert/input geometry; dispatch tabs | Finished correction in #126: 56 checks and 20 opened pairs. |
+| Chat first-open order and card styling | #125 and #128 published; #128 passed 60 checks. API24 background focus difference is documented separately from card geometry. |
+| Form picker initial clipping | Initial clipping confirmed; eight normal/large EN/HE/API24/37 checks prove full scrolled control above Send and catalog activation. No application layout change needed. |
+| Remaining local visual inventory | Settings/selectors, calculator/timer result states, local Vitals/dictionary states, dispatch preview/error/row variants and other rows above still require explicit retained-image applicability review. They are agent-owned, not phone/live-data blockers. |
+| Live-content gaps | Authorized nonproduction chat/SeenByAdmin/FCM/queue recovery, populated Vitals/dictionary and production documents/privacy content. No live-write acceptance inferred from offline tests. |
+| Product/release decisions | Native settings→overlay→privacy versus RN privacy-first remains unresolved; Play-signed upgrade stays deferred to #11. |
+
+Guided physical-device checks, when authorized (none executed here):
+
+1. Check EN/HE normal/large text with the OEM keyboard and TalkBack: navigate to
+   the form picker, scroll, open/select/cancel; verify Send remains separate.
+2. Exercise metronome tempo/audio/vibration, pause/reset and background/lock-screen
+   behavior; confirm volume Cancel preserves the old setting and OK applies it.
+3. Check popup/overlay permission denial/grant and widget/tile actions on the OEM
+   device using an agreed local test scenario, without a live emergency call.
+4. With separately authorized test accounts only, verify chat send/receipt, FCM
+   notification, offline queue recovery and server authorization. Any SMS composer
+   handoff or carrier delivery needs its own explicit recipient/send approval.
