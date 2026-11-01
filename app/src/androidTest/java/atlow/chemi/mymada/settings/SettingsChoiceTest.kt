@@ -13,6 +13,7 @@ import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.selectShellDestination
+import atlow.chemi.mymada.waitForShellDrawer
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -72,6 +73,10 @@ class SettingsChoiceTest {
                     onView(withText("דן")).perform(click())
                     assertEquals(4, context.getSharedPreferences("Settings", 0).getInt("merhav", -1))
                     assertTrue(context.getSharedPreferences("Settings", 0).getBoolean("pickedMoked", false))
+                    // Language/region actions retain the drawer, unlike the old direct menu callback fixture.
+                    compose.waitForShellDrawer(true)
+                    instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                    compose.waitForShellDrawer(false)
                     instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
                     compose.waitUntil(5_000) { !withSettings { } }
                     compose.waitUntil(5_000) {
