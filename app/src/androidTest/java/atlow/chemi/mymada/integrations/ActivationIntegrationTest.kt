@@ -198,10 +198,10 @@ class ActivationIntegrationTest {
         val language = InstrumentationRegistry.getArguments().getString("captureLanguage", "en")
         main { LocalHelper.setLocale(context, language) }
         ActivityScenario.launch(codeRequest::class.java).use { scenario ->
-            compose.onNodeWithText(context.getString(R.string.ok)).performClick()
+            compose.onNodeWithTag("activation-request-confirm").performClick()
             closeSoftKeyboard()
             compose.onNodeWithTag("activation-request-submit").performClick()
-            compose.onNodeWithText(context.getString(R.string.emailNone)).assertIsDisplayed()
+            compose.onNodeWithText(LocalHelper.onAttach(context).getString(R.string.emailNone)).assertIsDisplayed()
             compose.onNodeWithTag("activation-request-0").performScrollTo().performTextReplacement("fixture@example.org")
             compose.onNodeWithTag("activation-request-1").performScrollTo().performTextReplacement("Fixture Name")
             compose.onNodeWithTag("activation-request-2").performScrollTo().performTextReplacement("A&B#\nשלום")
@@ -209,7 +209,7 @@ class ActivationIntegrationTest {
             compose.onNodeWithTag("activation-request-submit").performClick()
             scenario.recreate()
             val text = compose.onNodeWithTag("activation-request-summary").fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].single()
-            val label = text.text.indexOf(context.getString(R.string.msg))
+            val label = text.text.indexOf(LocalHelper.onAttach(context).getString(R.string.msg))
             assertTrue(text.spanStyles.any { it.start == label && it.item.color == androidx.compose.ui.graphics.Color(0xff238bad) })
             assertTrue(text.text.contains("A&B#\nשלום"))
             instrumentation.uiAutomation.waitForIdle(500, 5000)
@@ -217,7 +217,7 @@ class ActivationIntegrationTest {
             val directory = File(context.getExternalFilesDir(null), "integrations").apply { mkdirs() }
             File(directory, "confirmation-$language.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
             image.recycle()
-            compose.onNodeWithText(context.getString(R.string.ret)).assertIsDisplayed().performClick()
+            compose.onNodeWithTag("activation-request-cancel").assertIsDisplayed().performClick()
             compose.onNodeWithTag("activation-request-2").assertTextContains("A&B#\nשלום")
             assertFalse(preferences.contains(ActivationContract.KEY))
         }
@@ -239,7 +239,7 @@ class ActivationIntegrationTest {
         ActivityScenario.launch(codeC::class.java).use { capture("activation") }
         ActivityScenario.launch(codeRequest::class.java).use {
             capture("disclaimer")
-            compose.onNodeWithText(context.getString(R.string.ok)).performClick()
+            compose.onNodeWithTag("activation-request-confirm").performClick()
             capture("request")
             closeSoftKeyboard()
             capture("request-full")

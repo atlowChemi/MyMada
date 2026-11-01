@@ -34,10 +34,10 @@ fun ActivationRequestDialog(args: Bundle?, onCancel: () -> Unit, onConfirm: () -
             Text(body, modifier = Modifier.weight(1f, fill = false).padding(vertical = 16.dp)
                 .verticalScroll(rememberScrollState()).testTag("activation-request-summary"))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                if (args != null) TextButton(onClick = onCancel) {
+                if (args != null) TextButton(onClick = onCancel, modifier = Modifier.testTag("activation-request-cancel")) {
                     Text(stringResource(R.string.ret), color = colorResource(R.color.OldPrimary))
                 }
-                TextButton(onClick = if (args == null) onCancel else onConfirm) { Text(stringResource(R.string.ok)) }
+                TextButton(onClick = if (args == null) onCancel else onConfirm, modifier = Modifier.testTag("activation-request-confirm")) { Text(stringResource(R.string.ok)) }
             }
         }
     }
