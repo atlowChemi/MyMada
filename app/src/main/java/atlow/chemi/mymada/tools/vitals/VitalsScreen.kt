@@ -144,7 +144,7 @@ private fun VitalInput(value: String, onChange: (String) -> Unit, label: Int, vi
         val color = when (status) { true -> Color.rgb(70,178,58); false -> Color.rgb(191,21,22); null -> Color.rgb(50,167,195) }
         edit.setTextColor(color)
         // Published initial underlines use theme state colors until the first calculation.
-        if (interacted) (edit as TextInputEditText).supportBackgroundTintList = ColorStateList.valueOf(color)
+        if (interacted) androidx.core.view.ViewCompat.setBackgroundTintList(edit, ColorStateList.valueOf(color))
         layout.defaultHintTextColor = ColorStateList.valueOf(color)
         edit.contentDescription = layout.context.getString(label) + when(status) {
             true -> ": " + layout.context.getString(R.string.vitalsTakin)

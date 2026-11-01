@@ -26,8 +26,9 @@ class VitalsScreenTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     @Test fun english() = verify("en")
     @Test fun hebrew() = verify("he")
+    @Test fun captionAndTintMetrics() = verify("en", metricsOnly = true)
 
-    private fun verify(language: String) {
+    private fun verify(language: String, metricsOnly: Boolean = false) {
         instrumentation.targetContext.getSharedPreferences("Settings", 0).edit()
             .putString("lng", language).putBoolean("privacy", true).putBoolean("oldU", true)
             .putBoolean("Mapp", false).putStringSet("Tools", setOf("vital")).commit()
@@ -70,10 +71,14 @@ class VitalsScreenTest {
                     android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED))
                 assertEquals("Native natural caption metrics: ${caption.paint.fontMetricsInt}", reference.measuredHeight, caption.height)
                 assertEquals("Reservation is caption only, without Material's new inset", caption.height, reservedTop - initialTop)
+                if (activity.resources.configuration.fontScale == 1f && activity.resources.displayMetrics.densityDpi == 420)
+                    assertEquals("Retained native API24/API37 normal-scale caption reference", 43, reservedTop - initialTop)
             }
+            if (metricsOnly) capture("caption-baby")
             onView(withId(R.id.old)).perform(click())
             compose.waitForIdle()
             assertEquals("Invalid pulse retains the reservation", reservedTop, fieldTop())
+            if (metricsOnly) capture("caption-return-adult")
             onView(withId(R.id.pulsa)).perform(clearText(), closeSoftKeyboard())
             compose.waitForIdle()
             assertEquals("Empty pulse retains the reservation", reservedTop, fieldTop())
@@ -87,8 +92,20 @@ class VitalsScreenTest {
                 assertEquals(Color.rgb(191,21,22), it.findViewById<EditText>(R.id.breathing).currentTextColor)
                 val breathing = it.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.breathing)
                 assertEquals("Calculated underline survives focus changes", Color.rgb(191,21,22),
-                    breathing.supportBackgroundTintList?.getColorForState(breathing.drawableState, 0))
+                    androidx.core.view.ViewCompat.getBackgroundTintList(breathing)?.getColorForState(breathing.drawableState, 0))
+                val bitmap = android.graphics.Bitmap.createBitmap(breathing.width, breathing.height, android.graphics.Bitmap.Config.ARGB_8888)
+                breathing.background.draw(android.graphics.Canvas(bitmap))
+                val pixels = IntArray(bitmap.width * bitmap.height)
+                bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+                bitmap.recycle()
+                assertTrue("Rendered breathing underline is red, not stale theme aqua", pixels.any { pixel ->
+                    Color.alpha(pixel) > 0 && (pixel and 0x00ffffff) == (Color.rgb(191,21,22) and 0x00ffffff)
+                })
                 assertEquals(Color.rgb(70,178,58), it.findViewById<EditText>(R.id.diastolic).currentTextColor)
+            }
+            if (metricsOnly) {
+                capture("calculated-tint")
+                return@use
             }
             onView(withId(R.id.diastolic)).perform(replaceText("91"), closeSoftKeyboard())
             compose.waitForIdle()
