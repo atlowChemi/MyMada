@@ -82,7 +82,7 @@ class SettingsAmpm : Fragment(), TimePickerDialog.OnTimeSetListener {
                                 isClickable = false; isFocusable = false
                                 importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
                             } }, update = { it.isChecked = selected })
-                            SettingsText(text, 16, Modifier.padding(start = 12.dp))
+                            SettingsText(text, 18, Modifier.padding(start = 20.dp))
                         }
                     }
                 }
