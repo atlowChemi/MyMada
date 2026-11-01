@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,7 +36,8 @@ import atlow.chemi.mymada.R
 internal fun ScreenToolbar(title: String, detecting: Boolean, onBack: () -> Unit,
     onDetection: () -> Unit, onSettings: () -> Unit) {
     val titleFont = remember { FontFamily(Typeface.create("sans-serif-medium", Typeface.NORMAL)) }
-    Row(Modifier.testTag("information-toolbar").shadow(4.dp).background(colorResource(R.color.ColorPrimary)).height(56.dp),
+    Row(Modifier.shadow(4.dp).background(colorResource(R.color.ColorPrimary)).statusBarsPadding()
+        .testTag("information-toolbar").height(56.dp),
         verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = onBack, modifier = Modifier.width(56.dp)) {
             Icon(painterResource(R.drawable.privacy_back),
