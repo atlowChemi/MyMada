@@ -36,6 +36,11 @@ restored form values/selection and literal preview (`full-form-compose-5980.log`
 Full combined release/API37/production visual and killed-process checks remain
 pending. Native SMS policy is still provisional; this conversion does not
 approve native/RN differences or claim whole #26 completion.
+API37 follow-up dispatch/team/picker/chat passed 9/9 in 24.504s
+(`full-form-chat-compose-final-5982.log`). The first run timed out inside
+Espresso's keyboard-dismiss helper after recreation; the form's Compose submit
+already dismisses its keyboard, so that redundant fixture action was removed.
+The original failed log is retained; this is not final combined-release evidence.
 
 ## Activation request and dialog Compose layer above #106
 

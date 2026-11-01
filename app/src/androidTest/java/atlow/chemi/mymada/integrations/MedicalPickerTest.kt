@@ -56,7 +56,6 @@ class MedicalPickerTest {
             scenario.recreate()
             compose.onNodeWithTag("form-field-0").assertTextContains("1234")
             compose.onNodeWithTag("form-field-6").assertTextContains("First")
-            androidx.test.espresso.Espresso.closeSoftKeyboard()
             compose.onNodeWithTag("form-send").performClick()
             instrumentation.waitForIdleSync()
             scenario.onActivity {
@@ -67,7 +66,6 @@ class MedicalPickerTest {
             instrumentation.waitForIdleSync()
             compose.onNodeWithTag("form-field-4").performScrollTo().performTextReplacement("")
             compose.onNodeWithTag("form-field-5").performScrollTo().performTextReplacement("")
-            androidx.test.espresso.Espresso.closeSoftKeyboard()
             compose.onNodeWithTag("form-send").performClick()
             instrumentation.waitForIdleSync()
             scenario.onActivity {
