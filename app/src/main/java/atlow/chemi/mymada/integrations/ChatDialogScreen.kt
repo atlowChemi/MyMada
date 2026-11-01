@@ -17,7 +17,9 @@ import atlow.chemi.mymada.R
 @Composable
 fun ChatDialogScreen(editingName: Boolean, draft: String, update: (String) -> Unit, invalid: Boolean, ready: Boolean, confirm: () -> Unit) {
     IntegrationDialog(stringResource(if (editingName) R.string.writeName else R.string.plsNote),
-        Modifier.testTag(if (editingName) "chat-name-dialog" else "chat-disclaimer-dialog"), buttons = {
+        Modifier.testTag(if (editingName) "chat-name-dialog" else "chat-disclaimer-dialog"),
+        // Published chat forces only its lone action to the physical right in both locales.
+        actionArrangement = Arrangement.Absolute.Right, buttons = {
             TextButton(onClick = confirm, enabled = !editingName || ready, modifier = Modifier.testTag("chat-dialog-confirm")) { Text(stringResource(R.string.ok)) }
         }) {
         if (editingName) IntegrationField(draft, update, label = stringResource(R.string.name),

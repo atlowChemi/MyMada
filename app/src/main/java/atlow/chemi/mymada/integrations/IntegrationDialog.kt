@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 /** Shared native-alert spacing for the fragment-hosted Compose dialogs. */
 @Composable
 internal fun IntegrationDialog(title: String, modifier: Modifier = Modifier,
+    actionArrangement: Arrangement.Horizontal = Arrangement.End,
     buttons: @Composable RowScope.() -> Unit, content: @Composable ColumnScope.() -> Unit) {
     val type = MaterialTheme.typography
     MaterialTheme(typography = type.copy(
@@ -27,7 +28,7 @@ internal fun IntegrationDialog(title: String, modifier: Modifier = Modifier,
                     modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 18.dp, bottom = 8.dp))
                 Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) { content() }
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.End, content = buttons)
+                    horizontalArrangement = actionArrangement, content = buttons)
             }
         }
     }
