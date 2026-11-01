@@ -21,6 +21,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.UtillitiesAndTools
+import atlow.chemi.mymada.waitForShellDrawer
 import atlow.chemi.mymada.fragments.DictionaryAdmin
 import atlow.chemi.mymada.helpers.LocalHelper
 import org.junit.Assert.*
@@ -115,9 +116,20 @@ class DictionaryScreenTest {
                 scenario.onActivity { model.retry(); source.emit(listOf(beta)) }
                 assertFalse(model.readError)
                 assertTrue(source.removals > 0)
+                androidx.test.espresso.Espresso.closeSoftKeyboard()
                 compose.onNodeWithTag("shell-navigation").performClick() // Collapse native SearchView.
+                compose.waitForIdle()
+                onView(withId(androidx.appcompat.R.id.search_src_text))
+                    .check(androidx.test.espresso.assertion.ViewAssertions.doesNotExist())
+                compose.waitUntil(5_000) {
+                    var focused = false
+                    scenario.onActivity { focused = it.hasWindowFocus() }
+                    focused
+                }
                 compose.onNodeWithTag("shell-navigation").performClick() // Open Compose drawer.
+                compose.waitForShellDrawer(open = true)
                 pressBack()
+                compose.waitForShellDrawer(open = false)
                 compose.onNodeWithTag("shell-destination-${R.id.dictionary}").assertIsNotDisplayed()
                 pressBackUnconditionally()
                 compose.waitUntil(5_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }

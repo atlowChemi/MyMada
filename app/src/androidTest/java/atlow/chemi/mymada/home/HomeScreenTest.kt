@@ -34,6 +34,7 @@ import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.UtillitiesAndTools
 import atlow.chemi.mymada.lockPage
+import atlow.chemi.mymada.waitForShellDrawer
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Rule
@@ -171,10 +172,12 @@ class HomeScreenTest {
                 compose.onNodeWithText(labels.getValue(R.string.title_activity_utills_and_tools)).performScrollTo().performClick()
             }) {
                 compose.onNodeWithTag("shell-navigation").performClick()
+                compose.waitForShellDrawer(open = true)
                 compose.onNodeWithTag("shell-destination-${R.id.oxygenCalc}").assertExists()
                 compose.onNodeWithTag("shell-destination-${R.id.apgarCalc}").assertDoesNotExist()
                 compose.onNodeWithTag("shell-destination-${R.id.metronome}").assertIsSelected()
                 compose.onNodeWithTag("shell-navigation").performClick()
+                compose.waitForShellDrawer(open = false)
             }
             visit(SettingsPage::class.java, { settings.performClick() })
             if (InstrumentationRegistry.getArguments().getString("dumpHeap") == "true") {
@@ -221,6 +224,11 @@ class HomeScreenTest {
                 focused
             }
             verify(activity!!)
+            compose.waitUntil(5_000) {
+                var focused = false
+                instrumentation.runOnMainSync { focused = activity.hasWindowFocus() }
+                focused
+            }
             // Use the destination's actual back behavior, rather than finishing it from the test.
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.waitUntil(5_000) { activity!!.isDestroyed }

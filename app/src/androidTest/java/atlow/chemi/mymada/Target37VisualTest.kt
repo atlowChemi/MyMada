@@ -47,8 +47,15 @@ class Target37VisualTest {
         for (language in listOf("en", "he")) {
             instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
             context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
-                .putString("lng", language).putStringSet("Tools", setOf("oxy")).commit()
+                .putBoolean("WasLangChanged", false).putString("lng", language).putStringSet("Tools", setOf("oxy")).commit()
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                // Compose installs the fragment host after Activity.onCreate. Rotate the
+                // rendered screen, not a host whose initial fragment is still queued.
+                compose.waitForIdle()
+                scenario.onActivity {
+                    assertTrue("Oxygen must be installed before visual rotation",
+                        it.supportFragmentManager.findFragmentById(R.id.frame) is atlow.chemi.mymada.fragments.OxyCalc)
+                }
                 for (landscape in listOf(false, true)) {
                     scenario.onActivity { it.requestedOrientation = if (landscape)
                         ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
@@ -63,14 +70,15 @@ class Target37VisualTest {
                         var laidOut = false
                         scenario.onActivity {
                             val result = it.findViewById<TextView>(R.id.txtOxyMin)
-                            laidOut = result != null && result.width > 0 && result.height > 0 &&
-                                result.text.toString() == "24"
+                            laidOut = result != null && result.width > 0 && result.height > 0
                         }
                         laidOut
                     }
                     var title = ""
                     var titleSize = 0f
                     scenario.onActivity { activity ->
+                        assertEquals("Fresh oxygen fixture ($language, landscape=$landscape)",
+                            "24", activity.findViewById<TextView>(R.id.txtOxyMin).text.toString())
                         title = activity.title.toString()
                         titleSize = activity.resources.getDimension(androidx.appcompat.R.dimen.abc_text_size_title_material_toolbar)
                         val spinner = activity.findViewById<Spinner>(R.id.OxyTypeS)
