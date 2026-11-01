@@ -58,7 +58,7 @@ class VitalsScreenTest {
             val reservedTop = fieldTop()
             scenario.onActivity { activity ->
                 val caption = activity.findViewById<android.widget.TextView>(com.google.android.material.R.id.textinput_error)
-                val font = android.graphics.Typeface.createFromAsset(activity.assets, "fonts/opensanshebrew.ttf")
+                val font = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL)
                 assertEquals("Final caption uses native font after appearance", font, caption.typeface)
                 val reference = android.widget.TextView(activity).apply {
                     typeface = font

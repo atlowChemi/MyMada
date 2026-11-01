@@ -108,6 +108,7 @@ private fun VitalInput(value: String, onChange: (String) -> Unit, label: Int, vi
             typeface = font
             addView(TextInputEditText(context).apply {
                 id = viewId; setHint(label); typeface = font
+                if (android.os.Build.VERSION.SDK_INT >= 35) setLocalePreferredLineHeightForMinimumUsed(false)
                 inputType = InputType.TYPE_CLASS_NUMBER
                 imeOptions = if (nextId == null) EditorInfo.IME_ACTION_DONE else EditorInfo.IME_ACTION_NEXT
                 nextId?.let { nextFocusForwardId = it; nextFocusDownId = it }
@@ -131,8 +132,8 @@ private fun VitalInput(value: String, onChange: (String) -> Unit, label: Int, vi
         if (viewId == R.id.pulsa && status == true) {
             layout.isErrorEnabled = true
             val caption = layout.findViewById<TextView>(com.google.android.material.R.id.textinput_error)
-            // Error appearance is applied after the TIL font; restore the native font last.
-            caption.typeface = layout.typeface
+            // Native error TextAppearance resolves named sans-serif, bypassing its global asset override.
+            caption.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
             ((caption.parent as? View)?.parent as? View)?.let { area ->
                 // Material 1.0 had no indicator top inset, including at large font scales.
                 area.setPaddingRelative(area.paddingStart, 0, area.paddingEnd, area.paddingBottom)
