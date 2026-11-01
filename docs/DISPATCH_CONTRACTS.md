@@ -88,6 +88,24 @@ to settle. Earlier test failure and zero-bound XML are retained. The RTL fix
 still requires its final combined/release matrix; earlier 17/17 evidence does
 not establish those new bytes.
 
+RTL source `2931c87b0d51527aa097c8ff6f07a44a5d3dc74b` subsequently passed
+unit/debug/test APK/release/both lints (2m16s), and 17/17 on API24 EN29.653s /
+HE29.454s and API37 EN39.772s / HE39.282s. Signed optimized APK SHA256:
+`9dab59fbf0830dee6b5a92ea896d8e85190ffde895aeb07170f25a507b071d71`.
+Pulled installed bytes matched on both devices. Actual background SIGKILL
+restored three form fields and an unsent chat draft on both APIs; chat used
+local offline fixture identity with original preferences restored afterward.
+Evidence: `rtl-accessibility-final/`; no fatal exception/signal matched the
+collected release form/chat logs.
+
+Direct gesture coverage added afterward FAILED on API24 EN: swipe gestures did
+not reliably change the expected logical page. Center/slow/lower-content and
+accessibility-idle attempts are retained as `swipe-*.log`, with the pending
+regression in `pending-swipe-regression.patch`. The passing 17-test matrix covers
+tab navigation, programmatic pager selection and recreation, not actual swipe
+acceptance. Root cause and API37 gesture verification remain open; this blocks
+host/RTL acceptance. No application bytes changed during these fixture trials.
+
 ## Activation request and dialog Compose layer above #106
 
 Tested source `3278850e`: request form, disclaimer/confirmation and request
