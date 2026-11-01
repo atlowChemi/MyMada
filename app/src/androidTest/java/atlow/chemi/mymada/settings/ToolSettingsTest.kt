@@ -47,6 +47,11 @@ class ToolSettingsTest {
                     }
                     compose.selectShellDestination(R.id.tools)
                     compose.onNodeWithText(labels.getValue("contrac")).assertIsOn().assertIsDisplayed()
+                    if (language == "en") onView(withText(labels.getValue("contrac"))).check { view, error ->
+                        if (error != null) throw error
+                        if (android.os.Build.VERSION.SDK_INT == 37 && view.resources.displayMetrics.density == 2.625f &&
+                            view.resources.configuration.fontScale == 1f) assertEquals(61, view.height)
+                    }
                     if (InstrumentationRegistry.getArguments().getString("capture") == "true") {
                         instrumentation.uiAutomation.waitForIdle(500, 5_000)
                         val bitmap = instrumentation.uiAutomation.takeScreenshot()
