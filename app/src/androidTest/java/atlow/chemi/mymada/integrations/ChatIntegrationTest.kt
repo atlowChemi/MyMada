@@ -143,7 +143,7 @@ class ChatIntegrationTest {
             ActivityScenario.launch<contactChatActivity>(intent).use { scenario ->
                 scenario.onActivity { assertEquals(it.getString(R.string.title_activity_contact), it.supportActionBar?.title.toString()) }
                 capture("disclaimer")
-                compose.onNodeWithTag("chat-dialog-confirm").performScrollTo().performClick()
+                compose.onNodeWithTag("chat-dialog-confirm").assertIsDisplayed().performClick()
                 main { backend.token.setResult("historical-token") }
                 capture("empty")
                 main {
@@ -178,10 +178,10 @@ class ChatIntegrationTest {
                 }
                 capture("name")
                 compose.onNodeWithTag("chat-name-draft").performScrollTo().performTextReplacement("123")
-                compose.onNodeWithTag("chat-dialog-confirm").performScrollTo().performClick()
+                compose.onNodeWithTag("chat-dialog-confirm").assertIsDisplayed().performClick()
                 compose.onNodeWithText(LocalHelper.onAttach(context).getString(R.string.chatNameNum)).assertIsDisplayed()
                 compose.onNodeWithTag("chat-name-draft").performScrollTo().performTextReplacement("Renamed Fixture")
-                compose.onNodeWithTag("chat-dialog-confirm").performScrollTo().performClick()
+                compose.onNodeWithTag("chat-dialog-confirm").assertIsDisplayed().performClick()
                 scenario.onActivity { assertEquals("Fixture Name", retained.name) }
                 scenario.recreate()
                 main { backend.rename.setResult(null) }
@@ -219,12 +219,12 @@ class ChatIntegrationTest {
                 assertOrder()
                 compose.onNodeWithTag("chat-name-draft").assertTextContains("First Fixture")
                 compose.onNode(hasTestTag("chat-dialog-confirm") and hasAnyAncestor(hasTestTag("chat-name-dialog")))
-                    .performScrollTo().performClick()
+                    .assertIsDisplayed().performClick()
                 main { backend.rename.setResult(null) }
                 compose.onNodeWithTag("chat-name-draft").assertDoesNotExist()
                 compose.onNodeWithTag("chat-disclaimer-dialog").assertIsDisplayed()
                 capture("first-open-disclaimer")
-                compose.onNodeWithTag("chat-dialog-confirm").performScrollTo().performClick()
+                compose.onNodeWithTag("chat-dialog-confirm").assertIsDisplayed().performClick()
                 compose.onNodeWithTag("chat-disclaimer-dialog").assertDoesNotExist()
                 scenario.recreate()
                 compose.onNodeWithTag("chat-name-draft").assertDoesNotExist()

@@ -36,6 +36,7 @@ class DispatchConfirmation : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isCancelable = false
+        setStyle(STYLE_NORMAL, R.style.AlertDialogStyle)
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val body = requireArguments().getString("body").orEmpty()
@@ -52,10 +53,7 @@ class DispatchConfirmation : DialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 IntegrationTheme {
-                    Surface {
-                        Column(Modifier.padding(24.dp)) {
-                            Text(getString(R.string.suc), fontSize = 20.sp)
-                            Text(text, modifier = Modifier.weight(1f, fill = false).padding(vertical = 16.dp).verticalScroll(rememberScrollState()).testTag("dispatch-summary"))
+                    IntegrationDialog(getString(R.string.suc), buttons = {
                             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                                     TextButton(onClick = { dismiss() }, modifier = Modifier.testTag("dispatch-cancel")) { Text(getString(R.string.ret), color = colorResource(R.color.OldPrimary)) }
@@ -66,7 +64,8 @@ class DispatchConfirmation : DialogFragment() {
                                     }, modifier = Modifier.testTag("dispatch-confirm")) { Text(getString(R.string.ok)) }
                                 }
                             }
-                        }
+                    }) {
+                        Text(text, modifier = Modifier.padding(horizontal = 24.dp).testTag("dispatch-summary"))
                     }
                 }
             }

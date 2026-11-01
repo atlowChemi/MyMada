@@ -43,15 +43,9 @@ internal fun TeamScreen(members: List<Volunteer>, onEdit: (Int) -> Unit, onDelet
     val error = stringResource(R.string.err_amb)
     ProvideTextStyle(TextStyle(letterSpacing = 0.sp)) {
     Column(Modifier.fillMaxSize().padding(16.dp)) {
-        Text(hint, color = if (invalid) Color.Red else accent, fontFamily = font, fontSize = 12.sp, lineHeight = 16.sp,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), textAlign = TextAlign.Start)
-        BasicTextField(ambulance, onValueChange = { if (it.length <= 4) { ambulance = it; invalid = false } },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp).heightIn(min = 28.dp).testTag("team-ambulance")
-                .semantics { contentDescription = hint; if (invalid) error(error) },
-            singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            textStyle = TextStyle(fontFamily = font, fontSize = 18.sp), cursorBrush = SolidColor(accent))
-        Spacer(Modifier.fillMaxWidth().padding(horizontal = 4.dp).height(2.dp).background(if (invalid) Color.Red else accent))
-        if (invalid) Text(error, color = Color.Red, fontSize = 12.sp)
+        IntegrationField(ambulance, { if (it.length <= 4) { ambulance = it; invalid = false } },
+            modifier = Modifier.fillMaxWidth().testTag("team-ambulance"), label = hint,
+            error = if (invalid) error else null, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
         if (members.isEmpty()) Text(stringResource(R.string.explain), fontFamily = font, fontSize = 16.sp, lineHeight = 20.sp,
             color = colorResource(R.color.DarkGrey), modifier = Modifier.testTag("team-empty"))
         // Published grid begins on the right in both app locales; each card's Hebrew role stays right-aligned.

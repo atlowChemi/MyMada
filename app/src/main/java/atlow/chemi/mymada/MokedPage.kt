@@ -13,10 +13,12 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -88,7 +90,7 @@ class MokedPage : AppCompatActivity() {
                 Column(Modifier.background(background)) {
                     Row(Modifier.fillMaxWidth().heightIn(min = 56.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                         IconButton(onClick = { finish() }) { Icon(painterResource(R.drawable.ic_back), contentDescription = getString(androidx.appcompat.R.string.abc_action_bar_up_description), tint = foreground) }
-                        Text(title.toString(), color = foreground, fontSize = 20.sp, modifier = Modifier.weight(1f))
+                        Text(title.toString(), color = foreground, fontSize = 20.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Medium, modifier = Modifier.weight(1f).padding(start = 24.dp))
                         IconButton(onClick = { DetectionControls.toggle(this@MokedPage, detection) }, modifier = Modifier.testTag("dispatch-detection")) {
                             Icon(painterResource(if (detecting) R.drawable.ic_detect_on else R.drawable.ic_detect_off), contentDescription = detection.title.toString(), tint = foreground)
                         }
@@ -97,10 +99,24 @@ class MokedPage : AppCompatActivity() {
                         }
                     }
                     @Suppress("DEPRECATION")
-                    TabRow(selectedTabIndex = selected, containerColor = background, contentColor = foreground) {
+                    TabRow(selectedTabIndex = selected, containerColor = background, contentColor = foreground,
+                        divider = {}, indicator = { positions ->
+                            Box(Modifier.tabIndicatorOffset(positions[selected]).fillMaxWidth().height(2.dp).background(foreground))
+                        }) {
                         listOf(R.string.button_a, R.string.button_b, R.string.button_i).forEachIndexed { index, labelId ->
-                            Tab(selected == index, onClick = { selectPage(index, true) }, modifier = Modifier.testTag("dispatch-tab-$index"),
-                                text = { Text(getString(labelId), fontSize = 14.sp) })
+                            var tabWidth by remember { mutableIntStateOf(0) }
+                            Tab(selected == index, onClick = { selectPage(index, true) }, modifier = Modifier.heightIn(min = 48.dp).onSizeChanged { tabWidth = it.width }.testTag("dispatch-tab-$index"),
+                                selectedContentColor = foreground, unselectedContentColor = foreground.copy(alpha = .7f)) {
+                                Box(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 12.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                                    val label = getString(labelId).uppercase()
+                                    val style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp, lineHeight = 18.sp)
+                                    val width = androidx.compose.ui.text.rememberTextMeasurer().measure(label, style).size.width
+                                    // TabLayout reduces a label from 14sp to 12sp when it would wrap.
+                                    val nativePadding = with(androidx.compose.ui.platform.LocalDensity.current) { 32.dp.roundToPx() }
+                                    Text(label, style = style, fontSize = if (tabWidth > 0 && width > tabWidth - nativePadding) 12.sp else 14.sp,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                                }
+                            }
                         }
                     }
                 }

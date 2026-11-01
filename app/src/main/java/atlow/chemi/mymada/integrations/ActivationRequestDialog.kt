@@ -20,9 +20,12 @@ import atlow.chemi.mymada.R
 
 @Composable
 fun ActivationRequestDialog(args: Bundle?, onCancel: () -> Unit, onConfirm: () -> Unit) {
-    Surface {
-        Column(Modifier.padding(24.dp)) {
-            Text(stringResource(if (args == null) R.string.plsNote else R.string.suc), fontSize = 20.sp)
+    IntegrationDialog(stringResource(if (args == null) R.string.plsNote else R.string.suc), buttons = {
+        if (args != null) TextButton(onClick = onCancel, modifier = Modifier.testTag("activation-request-cancel")) {
+            Text(stringResource(R.string.ret), color = colorResource(R.color.OldPrimary))
+        }
+        TextButton(onClick = if (args == null) onCancel else onConfirm, modifier = Modifier.testTag("activation-request-confirm")) { Text(stringResource(R.string.ok)) }
+    }) {
             val body = if (args == null) buildAnnotatedString { append(stringResource(R.string.plsNoteT)) }
             else buildAnnotatedString {
                 withStyle(SpanStyle(color = Color.Red)) { append(stringResource(R.string.emailAlert)); append("\n\n") }
@@ -31,14 +34,6 @@ fun ActivationRequestDialog(args: Bundle?, onCancel: () -> Unit, onConfirm: () -
                 withStyle(SpanStyle(color = Color(0xff238bad))) { append(stringResource(R.string.msg)) }
                 append("\n"); append(args.getString("reason").orEmpty())
             }
-            Text(body, modifier = Modifier.weight(1f, fill = false).padding(vertical = 16.dp)
-                .verticalScroll(rememberScrollState()).testTag("activation-request-summary"))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                if (args != null) TextButton(onClick = onCancel, modifier = Modifier.testTag("activation-request-cancel")) {
-                    Text(stringResource(R.string.ret), color = colorResource(R.color.OldPrimary))
-                }
-                TextButton(onClick = if (args == null) onCancel else onConfirm, modifier = Modifier.testTag("activation-request-confirm")) { Text(stringResource(R.string.ok)) }
-            }
-        }
+            Text(body, modifier = Modifier.padding(horizontal = 24.dp).testTag("activation-request-summary"))
     }
 }

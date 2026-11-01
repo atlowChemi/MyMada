@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import atlow.chemi.mymada.R
 
 @Composable
@@ -30,7 +31,7 @@ fun ActivationScreen(busy: Boolean, activate: (String) -> Unit) {
         Column(Modifier.fillMaxSize()) {
             Row(Modifier.fillMaxWidth().padding(top = 100.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 digits.forEachIndexed { index, digit ->
-                    TextField(digit, { value ->
+                    IntegrationField(digit, { value ->
                         if (value.length <= 1 && value.all { it in '0'..'9' }) {
                             digits = digits.toMutableList().also { it[index] = value }
                             focus.getOrNull(if (value.isEmpty()) index - 1 else index + 1)?.requestFocus()
@@ -44,7 +45,11 @@ fun ActivationScreen(busy: Boolean, activate: (String) -> Unit) {
             }
             Spacer(Modifier.weight(1f))
             TextButton(onClick = { activate(digits.joinToString("")) }, enabled = !busy,
-                modifier = Modifier.fillMaxWidth().testTag("activation-submit")) { Text(stringResource(R.string.succ)) }
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("activation-submit")) {
+                Text(stringResource(R.string.succ).uppercase(), fontSize = 20.sp,
+                    fontFamily = androidx.compose.ui.text.font.FontFamily(androidx.compose.ui.text.font.Font(R.font.opensans_hebrew)),
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Normal)
+            }
         }
     }
 }
