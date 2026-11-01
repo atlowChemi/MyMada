@@ -3,9 +3,47 @@
 Current status: all remaining UI layers are published in #113–116, Circular cleanup
 in #117 and component bridges in #118. The private/pending statements below are
 chronological evidence at each snapshot, not current implementation blockers.
-Final combined verification and outstanding decisions are reconciled in
-[the acceptance matrix](FINAL_KOTLIN_INVENTORY.md). Exact SMS policy below remains
-unapproved; final 17/17 EN/HE on both APIs does not approve it.
+Final combined verification and remaining acceptance are reconciled in
+[the acceptance matrix](FINAL_KOTLIN_INVENTORY.md). The maintainer subsequently
+approved the following SMS policy; earlier provisional-native results below are
+historical, not current expected payloads.
+
+## Approved SMS policy (follow-up above #119)
+
+- Form uses RN label punctuation and trims every body field except ambulance.
+  Optional visa/address are included when nonblank, including one-character values.
+  Required fields and paired billing validate trimmed/nonblank content; clearing
+  both billing fields still removes billing mode.
+- Medical codes retain **native catalog order**, not selection insertion order.
+- Team header always uses the full **Hebrew** region name, regardless of UI locale,
+  without a colon: `צוות אמבולנס ירושלים 1234`. Hebrew roles, member order, four cap,
+  recipient numbers and existing member-name handling are unchanged.
+- Call chain: `FormScreen → FormContract.body` / `MainActivity2 → TeamContract.body`
+  → `DispatchConfirmation.show` snapshots the region/body → `intent` retains the
+  literal `sms_body` extra. Custom messages also use confirmation but do not pass
+  through either formatter. No trimming is added to shared confirmation/custom text.
+- `DispatchContract` maps all 12 indices to the existing RN/native recipient list;
+  its Hebrew names supply team headers, with invalid indices falling back to Jerusalem.
+  `MedicalPickerDialog.checked()` filters the catalog in its original array order.
+
+Reference trace: RN `be72a163` FormDictation.onSend, TeamReport.onSend and
+DispatchService. The approved Hebrew-only team header and native ordering are
+explicit departures from RN's locale-sensitive header and insertion ordering.
+
+Local checks: exact JVM bodies under EN/HE default locales, every Hebrew regional
+name, one-character/blank optional fields, whitespace-only required/paired fields,
+all roles/cap/recipients. Updated real-picker regression selects5000 before2000 and
+expects2000,5000 through recreation and confirmation. Device execution is separately
+reported; compiling that regression does not count as a runtime pass. Evidence:
+`~/.local/share/opencode/evidence/m2-integration/approved-policy/`.
+
+This follow-up passed 20 JVM tests, debug/test/optimized unsigned release assembly
+and both lints (1m36s). The new exact EN/HE locale and all-region payload checks ran
+on JVM. Reverse-selection and updated UI confirmation assertions compile but were
+not executed: the current instruction prohibits ADB/device changes. Previously
+passing UI results describe the pre-policy artifact, not this new formatter.
+Unsigned release SHA256:
+`44b177410432fff12666413981402ba5631b4de06304d214a8569d2bb7855db4`.
 
 ## Approved accessibility policy
 
@@ -331,7 +369,7 @@ renders Add only when `teamMembers.size <= 3`. The earlier claim that RN is
 uncapped inspected the store but missed its rendering guard and is withdrawn.
 Keep all seven roles and add/edit/delete, ordered insertion and four-member limit.
 
-## Exact payload decisions still needed
+## Historical native/RN payload alternatives (decision now recorded above)
 
 For ambulance1234, visa12, addressרחוב א, form56, bill78, amount90,
 codes2000/5000, nameדן כהן, native emits:

@@ -27,14 +27,15 @@ or maintainer-accepted scope. GitHub issues/project remain the roadmap.
 
 - #19/#35 feature-specific production parity and approved-retirement disposition
   remain required. Android font scaling is approved; this is not pixel equality.
-- Native SMS punctuation/whitespace, optional-field thresholds, code ordering and
-  team header are preserved provisionally. Final product payload policy still
-  needs disposition; the four-person cap is settled and is not a blocker.
+- SMS policy is approved: RN form punctuation/trimming except ambulance, any
+  nonblank optional visa/address, native catalog order, and full Hebrew team-region
+  names independent of locale with no trailing colon. Four-person cap is settled.
 - Authorized nonproduction live FCM/backend/SDK delivery, real test-ad delivery
   and console configuration remain distinct from offline fixtures/source audits.
-- Production-signed in-place native/RN upgrades across all settings, activation,
-  chat identities, histories, widgets/grants and entry points remain a final #27
-  gate. Locally signed installed-byte checks do not establish signing continuity.
+- By explicit maintainer agreement, actual Play/production-signed native/RN upgrade
+  acceptance is **deferred to release readiness (#11)** while the account is locked;
+  it no longer blocks milestone2. Local migration verification remains in #27.
+  Locally signed installed-byte checks do not establish signing continuity.
 - OEM/physical-device audibility, prolonged idle/background reliability and
   unobserved/withdrawn notification gaps remain documented limitations. The
   inclusive45-second recovery policy is bounded recovery, not zero loss.
@@ -59,14 +60,14 @@ Earlier private snapshots remain historical; published successors are listed her
 | --- | --- | --- |
 | #15 local coverage | Final task set: debug/test/release, both lints, **19 JVM tests**, E/m2-integration/final-ui/build.log. Final ordered UI matrix **17/17 EN + HE on each API24/37**, E/integrations/combined-host-accessibility/fixed-sequence-*.log. Feature previews and focused checks are retained in source/owning PRs. | Existing broad preview/state and screenshot checkboxes are not satisfied by a 17-test subset; review per-feature evidence, not a coverage quota. CI #13 is subsequent. |
 | #21 Home/About/Privacy, navigation/onboarding/locale | #39/#53/#107 shell; #118 installed Privacy alias. E/tools-shell/ production/candidate EN/HE font/orientation comparisons; E/m2-integration/shell-above106/ combined checks. Home offline ad-context OOM resolved in #38 (issue35 comment6510666880); not an open heap blocker. | Maintainer visual review of existing comparisons. Native settings→overlay→privacy onboarding order versus RN privacy-first still needs disposition. Broad process/adaptive claims must stay scoped to recorded cases. |
-| #22 Settings / persisted data | #40–52, full Compose #112; C/history-upgrades/fixed/ actual local install-r, settings/history original backups. C/api37-owned-final/RESULTS.md resolves day/night input failure and external audio/picker-return checks. E/m2-integration/settings-combined/ verifies final Settings integration. | Review visual comparisons; production signing and full-family upgrade below. Volume writes only on OK is approved, not pending. Picker-process death is not established by app-process death. |
+| #22 Settings / persisted data | #40–52, full Compose #112; C/history-upgrades/fixed/ actual local install-r, settings/history original backups. C/api37-owned-final/RESULTS.md resolves day/night input failure and external audio/picker-return checks. E/m2-integration/settings-combined/ verifies final Settings integration. | Review visual comparisons and retain local final-candidate migration scope. Production signing deferred to #11. Volume writes only on OK is approved, not pending. Picker-process death is not established by app-process death. |
 | #23 calculators/timers/history | #46/49/51/54/58: APGAR, Pulse, Glasgow, Oxygen, contractions; #45 history compatibility. E/m2-integration/shell-above106/ final adapters and docs/OXYGEN.md; retained feature PR evidence. | Review feature-specific production comparisons; do not reopen approved native Oxygen truncation/bounds or contraction expiry after observed absence >20min. |
 | #23 vitals/dictionary/documents | #55–57 retain all three families; validated vitals ranges approved. Native PdfRenderer replaces obsolete PDF runtime. E/documents/acceptance/FOLLOW-UP.md proves actual API24 Android Storage downloads of BLS/ALS/Kuntres (137/290/30 pages), hashes, corrected 4× rendering; API37 actual-file offline checks. E/dictionary/EVIDENCE.md records matched empty/add dialogs and fixture rows. | Authorized Vitals/Firestore dictionary reads/edit acknowledgments and populated production dictionary/cache fixture. Production document cover loaded, but full interactive production paging/zoom comparison remains unverified; do not repeat proven candidate PDF downloads as a missing SDK gate. |
 | #24 calls/overlays/background | #59–75/#93/#102/#111/#118; target37, native listener aliases, shared permission UX, popup Compose and cleanup. E/metronome-call-compose/combined-c1e4213c/RESULTS.md and E/m2-integration/metro-above108/: **actual OS notification→automatic full popup with overlay granted**, source actions, restoration, 45s positive/negative recovery on both APIs. | Authorized physical/OEM audibility, screen-off/long idle/reboot and regrant reliability. Bounded ≤45,000ms recovery is approved; withdrawn/unobserved events and zero-loss recovery are not promised. Notification-tap fallback is not substituted for automatic-popup evidence. |
 | #25 metronome/widget/tile/audio | #62/64/68/#110 Compose/#118 receiver: notification/widget controls, process restart, cleanup and volume restoration in same combined evidence. Target37 prerequisites have executed local evidence; target33 hold and private-Compose claims are obsolete. | Physical tempo/audibility and representative audio contention on authorized hardware; local no-audio emulator checks cannot establish these. |
-| #26 activation/contact/dispatch | #87–96/#104–109/#113–116: all listed feature UI layers published. E/integrations/{rtl-accessibility-final,swipe-rootcause}/ records actual draft process restoration and release gestures; E/integrations/combined-host-accessibility/ proves final corrected test against frozen combined app bytes. | Exact SMS decision below; full-modal visual review and native/RN onboarding/button-direction differences require disposition. Pending backend-write process death and live identity/FCM delivery are not covered by saved unsent drafts. |
+| #26 activation/contact/dispatch | #87–96/#104–109/#113–116: all listed feature UI layers published. E/integrations/{rtl-accessibility-final,swipe-rootcause}/ records actual draft process restoration and release gestures; E/integrations/combined-host-accessibility/ proves final corrected test against frozen combined app bytes. Approved SMS follow-up above #119 is separately checked in E/m2-integration/approved-policy/. | Full-modal visual review and native/RN onboarding/button-direction differences require disposition. Pending backend-write process death and live identity/FCM delivery are not covered by saved unsent drafts. |
 | #26 SDKs | #90/#91; docs/SDK_VALIDATION.md, E/integrations/{sdk-test-ads,sdk-events}/: demo resources, event payloads, local crash identity, Performance integration. | Authorized live test ads and server-side event/crash/Performance/FCM receipt; no new consent or security redesign is implied. |
-| #27 final Kotlin / cleanup / platform | #117/#118: zero maintained Java/no RN runtime; retained aliases/XML are live compatibility, not debt to delete. Final app/test tree equals owner1070f877 excluding Markdown. Optimized installed-byte smoke both APIs: SHA256 `5d30d64f722fa64d10152191fff359a62e18145fabcb5bb3939d09ecab38ede3`. | Feature disposition, signed upgrade, live/physical and maintainer acceptance remain; no closure from implementation alone. API24/37 are the agreed local matrix; no newly invented API33–36 release gate. |
+| #27 final Kotlin / cleanup / platform | #117/#118: zero maintained Java/no RN runtime; retained aliases/XML are live compatibility, not debt to delete. At #118 app/test tree equals owner1070f877 excluding Markdown. That optimized installed-byte smoke both APIs: SHA256 `5d30d64f722fa64d10152191fff359a62e18145fabcb5bb3939d09ecab38ede3`; not the later payload-policy artifact. | Feature disposition, local final-candidate migration, live/physical and maintainer acceptance remain; production signing is deferred to #11. API24/37 are the agreed local matrix; no newly invented API33–36 release gate. |
 | #28 documentation | README now describes actual target37, Kotlin/Compose architecture, signing/configuration, exact executed local task set and scoped instrumentation. Existing AGENTS.md remains concise and operational. | Maintainer review of this docs draft. No duplicate roadmap or CI setup added. |
 | #35 published parity | Published native12822 supplied AAB SHA256 `9784d64714dcd284160390c242e153ee8bcd12c26c51e83906ec1f8ef16fec5b`; locally signed rendering APK `b08c3d812f4781cfc667edf4240c917350c8083ea91cdb95bc971e0524c09179`. Shell comparisons and C/settings-acceptance/, feature comparisons linked above. | Full inventory and maintainer per-screen review remain open. Matched screenshots are state-specific, not blanket acceptance; unavailable live content needs authorized fixtures. |
 
@@ -82,14 +83,15 @@ bounds: #116 queries the unique focused active application window, checks packag
 then the unchanged visible/nonempty bounds and real swipe/recreation assertions.
 No retry/tolerance/timeout relaxation. Original failures remain in final-ui/.
 
-### Exact outstanding product decision: #26 SMS bodies
+### Approved product decision: #26 SMS bodies
 
-[DISPATCH_CONTRACTS.md — exact payloads](DISPATCH_CONTRACTS.md#exact-payload-decisions-still-needed)
-contains literal native/RN examples and source references. Choose the contract in
-#26; proposal: **retain the published native body** and catalog order, consistently
-across EN/HE, with the already-fixed stale billing-mode bug excluded.
+[DISPATCH_CONTRACTS.md — approved policy](DISPATCH_CONTRACTS.md#approved-sms-policy-follow-up-above-119)
+records the implemented decision and caller trace. The table below retains the
+historical alternatives: choose **RN form punctuation/trimming and optional-field
+rules**, **native code order**, and **full Hebrew team header without a colon** in
+both UI locales. The stale billing-mode bug remains fixed.
 
-| Field | Native / current provisional | RN alternative |
+| Field | Historical native | Historical RN |
 | --- | --- | --- |
 | Ambulance / labels | `אמב' 1234`; `חולה נפגע 56`, `התחייבות 78`, `סכום 90`, `קוד 2000, 5000` | `אמב: 1234`; colon after each other label |
 | Whitespace / optional visa,address | Preserve whitespace; optional fields included only at length >1 | Trim values except ambulance; include any nonblank optional value |
@@ -98,10 +100,14 @@ across EN/HE, with the already-fixed stale billing-mode bug excluded.
 
 Roles stay Hebrew. Regional recipients, literal body extra, shared confirmation,
 161 catalog rows/149 IDs/12 sections, four-person cap and cleared-billing behavior
-are verified, not outstanding choices. Tests lock provisional formatting, not
-approval. No SMS needs sending to decide this policy.
+remain unchanged. Exact tests now lock the approved formatting. No SMS is sent.
 
-### Signing / upgrade: what is actually missing
+### Signing / upgrade: release deferral and retained local scope
+
+The maintainer explicitly defers actual Play/production-signed upgrade verification
+to release readiness (#11) because account access is locked. This is a scope
+decision, **not a passing signing test**, and must not be reintroduced as a milestone2
+blocker. Local migration correctness and final-candidate fixtures remain in #27.
 
 C/ACCEPTANCE-2026-10-30.md records real install-r intervals without clearing data:
 native UI-authored history and RN startup plus **seeded** 14 settings/epoch history.
@@ -121,7 +127,7 @@ no new release requirement is added here.
 
 ### User-dependent execution, not more offline reruns
 
-1. **Product / visual review:** approve or select SMS policy in #26; review matched
+1. **Product / visual review:** SMS policy is approved; review matched
    production/candidate comparisons in #35, including full modals, localized action
    direction and onboarding order. Approve actual differences explicitly; candidate
    captures alone cannot close these items.
@@ -137,10 +143,22 @@ no new release requirement is added here.
    notification/overlay/audio settings changes. Observe actual alert audibility,
    metronome tempo, concurrent alarm-volume restoration, screen-off/idle/reboot and
    listener regrant behavior. Preserve the known bounded recovery limitations.
-4. **Upgrade authorization:** provide the compatible signed distribution/test path
-   and installed baselines described above; then run the existing #27 upgrade scope.
+4. **Release readiness, deferred (#11):** provide the compatible signed distribution/
+   test path and installed baselines described above when account access returns.
+   Local final-candidate migration checks remain distinct; no physical-device or
+   ADB changes are authorized by the user's pending guided-versus-automated choice.
 
 ### This documentation-only reconciliation
+
+This section describes #119. The subsequent approved payload-policy implementation
+changes only FormContract and TeamContract in application source. Settings migration,
+history, component identities, recipients and picker ordering are byte-for-byte
+source unchanged from #119/#118. Existing migration evidence remains valid for its
+original scope; there is no new persistence migration to invent or rerun for this
+delta. The new build passes 20 JVM tests and both lints; changed picker/team UI
+assertions compile but await permitted emulator execution. No ADB command ran.
+Final-candidate local install-r/full-family acceptance is still unchecked in #27;
+the older scoped settings/history fixtures are not relabeled as that result.
 
 README's final task names/options were checked against final-ui/build.log and the
 retained invocation (JDK17, 6GiB, two workers, mapping upload excluded). Instrumentation

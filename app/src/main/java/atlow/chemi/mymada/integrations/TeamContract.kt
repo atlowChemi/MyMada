@@ -9,8 +9,7 @@ object TeamContract {
         require(ambulance.isNotBlank() && members.size in 1..LIMIT)
         require(members.all { it.name.isNotBlank() && it.job in roles.indices })
         val selected = DispatchContract.region(region)
-        val name = if (selected == 0) "י-ם" else DispatchContract.regions[selected]
-        // Native wording remains provisional pending the explicit RN/native payload decision.
-        return "צוות אמבולנס $name $ambulance:\n" + members.joinToString("\n") { "${roles[it.job]} - ${it.name}" }
+        val name = DispatchContract.regions[selected] // Full Hebrew name, independent of UI locale.
+        return "צוות אמבולנס $name $ambulance\n" + members.joinToString("\n") { "${roles[it.job]} - ${it.name}" }
     }
 }

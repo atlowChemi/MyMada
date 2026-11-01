@@ -39,10 +39,14 @@ class MedicalPickerTest {
                 image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
             }
             image.recycle()
-            compose.onNodeWithTag("medical-code-2000").performScrollTo().performClick()
             compose.onNodeWithTag("medical-query").performTextReplacement("5000")
             compose.onNodeWithTag("medical-query").performImeAction()
             compose.onNodeWithTag("medical-code-5000").performScrollTo().performClick().assertIsOn()
+            // Reverse selection order must still produce the native catalog order.
+            compose.onNodeWithTag("medical-query").performTextReplacement("2000")
+            compose.onNodeWithTag("medical-query").performImeAction()
+            compose.onNodeWithTag("medical-code-2000").performScrollTo().performClick().assertIsOn()
+            compose.onNodeWithTag("medical-query").performTextReplacement("5000")
             scenario.recreate()
             compose.onNodeWithTag("medical-query").assertTextContains("5000")
             compose.onNodeWithTag("medical-code-5000").assertIsOn()
@@ -61,7 +65,7 @@ class MedicalPickerTest {
             instrumentation.waitForIdleSync()
             scenario.onActivity {
                 val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
-                assertEquals("אמב' 1234\nחולה נפגע 56\nהתחייבות 78\nסכום 90\nקוד 2000, 5000\nשם: First Last", confirmation.requireArguments().getString("body"))
+                assertEquals("אמב: 1234\nחולה נפגע: 56\nהתחייבות: 78\nסכום: 90\nקוד: 2000, 5000\nשם: First Last", confirmation.requireArguments().getString("body"))
             }
             compose.onNodeWithTag("dispatch-cancel").performClick()
             instrumentation.waitForIdleSync()
@@ -71,7 +75,7 @@ class MedicalPickerTest {
             instrumentation.waitForIdleSync()
             scenario.onActivity {
                 val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
-                assertEquals("אמב' 1234\nחולה נפגע 56\nקוד 2000, 5000\nשם: First Last", confirmation.requireArguments().getString("body"))
+                assertEquals("אמב: 1234\nחולה נפגע: 56\nקוד: 2000, 5000\nשם: First Last", confirmation.requireArguments().getString("body"))
             }
             compose.onNodeWithTag("dispatch-cancel").performClick()
         }
