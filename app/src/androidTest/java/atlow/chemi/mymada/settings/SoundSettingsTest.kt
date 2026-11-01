@@ -6,22 +6,21 @@ import android.graphics.Bitmap
 import android.media.RingtoneManager
 import android.net.Uri
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.fragments.SettingsNotificationsSounds
 import atlow.chemi.mymada.helpers.LocalHelper
-import com.google.android.material.navigation.NavigationView
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import org.junit.Rule
 import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
 
 class SoundSettingsTest {
+    @get:Rule val compose = createEmptyComposeRule()
+    private fun clickRow(tag: String) = compose.onNodeWithTag(tag).performScrollTo().performClick()
     @Test fun permissionExplanationRestoresAndCancelChangesOnlyItsOwnGroup() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
@@ -36,12 +35,12 @@ class SoundSettingsTest {
         context.getSharedPreferences("permissionStatus", 0).edit().putBoolean(permission, true).commit()
         ActivityScenario.launch(SettingsPage::class.java).use { scenario ->
             scenario.onActivity {
-                it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.soundAndVib))
+                it.displayFragment(SettingsNotificationsSounds(), R.id.soundAndVib)
             }
-            onView(withId(R.id.NappT_pref)).perform(scrollTo(), click())
+            clickRow("Napp")
             scenario.recreate()
-            onView(withText(R.string.permDesSD)).inRoot(isDialog()).check(matches(isDisplayed()))
-            onView(withId(android.R.id.button2)).inRoot(isDialog()).perform(click())
+            compose.onNodeWithTag("dialog-cancel").assertExists()
+            clickRow("dialog-cancel")
             assertFalse(preferences.getBoolean("Napp", true))
             assertTrue(preferences.getBoolean("NappT4", false))
             assertEquals("content://original/tone", preferences.getString("NuRi", null))
@@ -52,12 +51,6 @@ class SoundSettingsTest {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
         val preferences = context.getSharedPreferences("Settings", 0)
-        val rows = listOf(
-            intArrayOf(R.id.NvibT_pref, R.id.NsouT_pref, R.id.NappT_pref, R.id.NrinT_pref),
-            intArrayOf(R.id.NvibT1_pref, R.id.NsouT1_pref, R.id.NappT1_pref, R.id.NrinT1_pref),
-            intArrayOf(R.id.NvibT2_pref, R.id.NsouT2_pref, R.id.NappT2_pref, R.id.NrinT2_pref),
-            intArrayOf(R.id.NvibT3_pref, R.id.NsouT3_pref, R.id.NappT3_pref, R.id.NrinT3_pref),
-            intArrayOf(R.id.NvibT4_pref, R.id.NsouT4_pref, R.id.NappT4_pref, R.id.NrinT4_pref))
         val languages = InstrumentationRegistry.getArguments().getString("language")?.let { listOf(it) } ?: listOf("en", "he")
         for (language in languages) for (cut in listOf(false, true)) {
             instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
@@ -73,9 +66,9 @@ class SoundSettingsTest {
             }.commit()
             ActivityScenario.launch(SettingsPage::class.java).use { scenario ->
                 scenario.onActivity {
-                    it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.soundAndVib))
+                    it.displayFragment(SettingsNotificationsSounds(), R.id.soundAndVib)
                 }
-                onView(withId(if (cut) R.id.findT1_pref else R.id.NvibT_pref)).check(matches(isDisplayed()))
+                compose.onNodeWithTag(if (cut) "callT1" else "Nvib").assertIsDisplayed()
                 capture("sounds-$language-$cut")
                 scenario.onActivity {
                     preferences.edit().apply {
@@ -85,12 +78,12 @@ class SoundSettingsTest {
                 scenario.recreate()
                 for (type in if (cut) listOf(1, 2, 3, 4) else listOf(0, 4)) {
                     val suffix = if (type == 0) "" else "T$type"
-                    onView(withId(rows[type][0])).perform(scrollTo(), click())
+                    clickRow("Nvib$suffix")
                     assertFalse(preferences.getBoolean("Nvib$suffix", true))
-                    onView(withId(rows[type][1])).perform(scrollTo(), click())
-                    onView(withId(rows[type][2])).check(matches(org.hamcrest.Matchers.not(isEnabled())))
-                    onView(withId(rows[type][3])).check(matches(org.hamcrest.Matchers.not(isEnabled())))
-                    onView(withId(rows[type][1])).perform(click())
+                    clickRow("Nsou$suffix")
+                    compose.onNodeWithTag("Napp$suffix").assertIsNotEnabled()
+                    compose.onNodeWithTag("NuRi$suffix").assertIsNotEnabled()
+                    clickRow("Nsou$suffix")
                     scenario.recreate()
                     scenario.onActivity {
                         val fragment = it.supportFragmentManager.findFragmentById(R.id.frame) as SettingsNotificationsSounds
@@ -105,19 +98,18 @@ class SoundSettingsTest {
                     assertEquals("content://selected/$type", preferences.getString("NuRi$suffix", null))
                     assertFalse(preferences.getBoolean("Napp$suffix", true))
                     scenario.recreate()
-                    onView(withId(rows[type][3])).check(matches(org.hamcrest.Matchers.not(isEnabled())))
+                    compose.onNodeWithTag("NuRi$suffix").assertIsNotEnabled()
                     if (type in 1..3) {
-                        val row = listOf(R.id.findT1_pref, R.id.findT2_pref, R.id.findT3_pref)[type - 1]
-                        onView(withId(row)).perform(scrollTo(), click())
-                        onView(withId(rows[type][0])).check(matches(withEffectiveVisibility(Visibility.GONE)))
-                        onView(withId(row)).perform(click())
+                        clickRow("callT$type")
+                        compose.onNodeWithTag("Nvib$suffix").assertDoesNotExist()
+                        clickRow("callT$type")
                     }
                 }
                 scenario.onActivity {
                     preferences.edit().putBoolean("callT4", false).putBoolean("callT6", false).commit()
                 }
                 scenario.recreate()
-                onView(withId(R.id.non_critical)).check(matches(withEffectiveVisibility(Visibility.GONE)))
+                compose.onNodeWithTag("NvibT4").assertDoesNotExist()
             }
         }
     }

@@ -13,13 +13,16 @@ import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.fragments.SettingsAmpm
 import atlow.chemi.mymada.helpers.LocalHelper
-import com.google.android.material.navigation.NavigationView
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import org.junit.Rule
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
 
 class DayNightSettingsTest {
+    @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
 
@@ -54,27 +57,28 @@ class DayNightSettingsTest {
                 var choices = emptyArray<String>()
                 scenario.onActivity {
                     choices = it.resources.getStringArray(R.array.ampm)
-                    it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.ampm))
+                    it.displayFragment(SettingsAmpm(), R.id.ampm)
                 }
-                onView(withId(R.id.sleepDay_pref)).check(matches(isDisplayed()))
+                compose.onNodeWithTag("sleepDay").assertIsDisplayed()
                 capture("settings-day-night-$language")
-                onView(withId(R.id.sleepDay_pref)).perform(scrollTo(), click())
-                onView(withText(choices[0])).inRoot(isDialog()).check(matches(isDisplayed()))
+                compose.onNodeWithTag("sleepDay").performScrollTo().performClick()
+                compose.onNodeWithTag("mode-0").assertIsDisplayed()
                 capture("settings-day-mode-$language")
                 scenario.recreate()
-                onView(withText(choices[1])).inRoot(isDialog()).perform(click())
-                onView(withId(R.id.sleepDay_Desc)).check(matches(withText(choices[1])))
+                compose.onNodeWithTag("mode-1").performScrollTo().performClick()
+                compose.onNodeWithTag("sleepDay").assertTextContains(choices[1])
                 assertEquals(3, preferences.getInt("sleep", -1))
                 // API37's disappearing system Dim Layer can drop this injected tap as
                 // "untrusted". Run instrumentation with --no-window-animation; keep
                 // click→recreate adjacent so this still checks dialog restoration.
-                onView(withId(R.id.sleepNight_pref)).perform(scrollTo(), click())
+                compose.onNodeWithTag("sleepNight").performScrollTo().performClick()
                 scenario.recreate()
-                onView(withText(choices[2])).inRoot(isDialog()).perform(click())
-                onView(withId(R.id.sleepNight_Desc)).check(matches(withText(choices[2])))
+                compose.onNodeWithTag("mode-2").performScrollTo().performClick()
+                compose.onNodeWithTag("sleepNight").assertTextContains(choices[2])
                 assertEquals(5, preferences.getInt("sleep", -1))
-                for ((id, key) in listOf(R.id.start_night_pref to "nightStart", R.id.end_night_pref to "nightEnd")) {
-                    onView(withId(id)).perform(scrollTo(), click())
+                for (key in listOf("nightStart", "nightEnd")) {
+                    compose.onNodeWithTag(key).performScrollTo().performClick()
+                    onView(withId(com.wdullaer.materialdatetimepicker.R.id.mdtp_ok)).inRoot(isDialog()).check(matches(isDisplayed()))
                     if (key == "nightStart") capture("settings-time-picker-$language")
                     scenario.onActivity {
                         val parent = it.supportFragmentManager.findFragmentById(R.id.frame) as SettingsAmpm
@@ -94,7 +98,7 @@ class DayNightSettingsTest {
                     assertEquals(19, preferences.getInt(key, -1))
                 }
                 scenario.recreate()
-                onView(withId(R.id.sleepNight_Desc)).check(matches(withText(choices[2])))
+                compose.onNodeWithTag("sleepNight").assertTextContains(choices[2])
             }
         }
     }

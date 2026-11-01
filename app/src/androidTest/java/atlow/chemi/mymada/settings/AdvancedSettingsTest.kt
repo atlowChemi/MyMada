@@ -13,13 +13,17 @@ import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.fragments.SettingsAdvanced
 import atlow.chemi.mymada.helpers.LocalHelper
-import com.google.android.material.navigation.NavigationView
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import org.junit.Rule
 import org.junit.Assert.*
 import org.junit.Test
 import android.graphics.Bitmap
 import java.io.File
 
 class AdvancedSettingsTest {
+    @get:Rule val compose = createEmptyComposeRule()
+    private fun clickRow(tag: String) = compose.onNodeWithTag(tag).performScrollTo().performClick()
     @Test fun bilingualTogglesAndDialogDraftsSurviveRecreationWithoutSavingOnCancel() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
@@ -31,46 +35,57 @@ class AdvancedSettingsTest {
                 .putString("timeK", "6").putBoolean("volumeApp", false).putInt("volumeAppNum", 2).commit()
             ActivityScenario.launch(SettingsPage::class.java).use { scenario ->
                 scenario.onActivity {
-                    it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.advanced))
+                    it.displayFragment(SettingsAdvanced(), R.id.advanced)
                 }
                 capture("advanced-$language")
-                for ((row, key) in listOf(R.id.not_pref to "not", R.id.newWin_pref to "win",
-                    R.id.ride_pref to "ride", R.id.loop_pref to "loop", R.id.shabat_pref to "killS")) {
+                for (key in listOf("not", "win", "ride", "loop", "killS")) {
                     val old = preferences.getBoolean(key, false)
-                    onView(withId(row)).perform(scrollTo(), click())
+                    clickRow(key)
                     assertEquals(!old, preferences.getBoolean(key, old))
                 }
                 scenario.recreate()
-                onView(withId(R.id.shabatTime_pref)).perform(scrollTo(), click())
+                clickRow("timeK")
+                compose.onNodeWithTag("dialog-cancel").assertIsDisplayed()
                 capture("advanced-delay-$language")
                 onView(withId(R.id.shabatT)).inRoot(isDialog()).perform(replaceText("999999999999"), closeSoftKeyboard())
-                onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
+                clickRow("dialog-confirm")
                 assertEquals("6", preferences.getString("timeK", null))
                 onView(withId(R.id.shabatT)).inRoot(isDialog()).perform(replaceText("12"), closeSoftKeyboard())
                 scenario.recreate()
                 onView(withId(R.id.shabatT)).inRoot(isDialog()).check(matches(withText("12")))
-                onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
+                clickRow("dialog-confirm")
                 assertEquals("12", preferences.getString("timeK", null))
                 for (confirm in listOf(false, true)) {
-                    onView(withId(R.id.volume_pref)).perform(scrollTo(), click())
+                    clickRow("timeK")
+                    onView(withId(R.id.shabatT)).inRoot(isDialog()).perform(replaceText("0"), closeSoftKeyboard())
+                    scenario.recreate()
+                    onView(withId(R.id.shabatT)).inRoot(isDialog()).check(matches(withText("0")))
+                    clickRow(if (confirm) "dialog-confirm" else "dialog-cancel")
+                    assertEquals(if (confirm) "0" else "12", preferences.getString("timeK", null))
+                }
+                for (confirm in listOf(false, true)) {
+                    clickRow("volume")
+                    compose.onNodeWithTag("dialog-cancel").assertIsDisplayed()
                     if (!confirm) capture("advanced-volume-$language")
                     assertFalse(preferences.getBoolean("volumeApp", true))
-                    onView(withId(R.id.volume_app_pref)).inRoot(isDialog()).perform(click())
+                    clickRow("volumeApp")
                     scenario.onActivity {
                         val parent = it.supportFragmentManager.findFragmentById(R.id.frame) as SettingsAdvanced
                         val dialog = (parent.childFragmentManager.findFragmentByTag("volume") as SettingsAdvanced.VolumeDialog)
                             .requireDialog() as AlertDialog
-                        dialog.findViewById<SeekBar>(R.id.VolumeSeekBar)!!.progress = 1
+                        val slider = dialog.findViewById<SeekBar>(R.id.VolumeSeekBar)!!
+                        slider.performAccessibilityAction(android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.id,
+                            android.os.Bundle().apply { putFloat(android.view.accessibility.AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE, 0f) })
                     }
                     scenario.recreate()
-                    onView(withId(R.id.volume_app)).inRoot(isDialog()).check(matches(isChecked()))
-                    onView(withId(if (confirm) android.R.id.button1 else android.R.id.button2)).inRoot(isDialog()).perform(click())
+                    compose.onNodeWithTag("volumeApp").assertIsOn()
+                    clickRow(if (confirm) "dialog-confirm" else "dialog-cancel")
                     assertEquals(confirm, preferences.getBoolean("volumeApp", false))
-                    assertEquals(if (confirm) 1 else 2, preferences.getInt("volumeAppNum", -1))
+                    assertEquals(if (confirm) 0 else 2, preferences.getInt("volumeAppNum", -1))
                 }
                 scenario.recreate()
-                onView(withId(R.id.ampm_card)).perform(scrollTo(), click())
-                onView(withId(R.id.sleepDay_pref)).check(matches(isDisplayed()))
+                clickRow("day-night-settings")
+                compose.onNodeWithTag("sleepDay").assertIsDisplayed()
             }
         }
     }
