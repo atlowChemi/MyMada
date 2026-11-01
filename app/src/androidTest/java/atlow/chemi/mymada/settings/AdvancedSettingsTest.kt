@@ -29,6 +29,27 @@ import java.io.File
 class AdvancedSettingsTest {
     @get:Rule val compose = createEmptyComposeRule()
     private fun clickRow(tag: String) = compose.onNodeWithTag(tag).performScrollTo().performClick()
+    @Test fun invalidDelayCaptionRetainsNativeSpacingAndCancel() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val preferences = context.getSharedPreferences("Settings", 0)
+        preferences.edit().putBoolean("Mapp", false).putString("timeK", "6").commit()
+        ActivityScenario.launch(SettingsPage::class.java).use { scenario ->
+            scenario.onActivity { it.displayFragment(SettingsAdvanced(), R.id.advanced) }
+            clickRow("timeK")
+            onView(withId(R.id.shabatT)).perform(replaceText(""), closeSoftKeyboard())
+            clickRow("dialog-confirm")
+            onView(withId(com.google.android.material.R.id.textinput_error)).check { view, error ->
+                if (error != null) throw error
+                val caption = view as android.widget.TextView
+                assertEquals(android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL), caption.typeface)
+                assertEquals(0, (caption.parent.parent as android.view.View).paddingTop)
+            }
+            capture("delay-invalid-caption")
+            clickRow("dialog-cancel")
+            assertEquals("6", preferences.getString("timeK", null))
+        }
+    }
+
     @Test fun volumeSliderRetainsActivityColorsAndDiscreteStyle() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
