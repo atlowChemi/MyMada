@@ -2,8 +2,11 @@
 
 ## Native Android development
 
-This branch restores the native source from `b36f4a9c` (`v3.5.7`) for
-incremental Kotlin/Compose modernization. See the [project](https://github.com/users/atlowChemi/projects/1)
+MyMada is an Android-only emergency-notification and field-tools app for MDA
+volunteers. The native restoration from `b36f4a9c` now has Kotlin application
+sources and Compose feature screens, published through draft #118; implementation
+is not release acceptance. See the [acceptance matrix](docs/FINAL_KOTLIN_INVENTORY.md),
+[project](https://github.com/users/atlowChemi/projects/1)
 and [baseline assessment](https://github.com/atlowChemi/MyMada/issues/19).
 
 ### Build and run locally
@@ -11,8 +14,8 @@ and [baseline assessment](https://github.com/atlowChemi/MyMada/issues/19).
 Requires JDK 17, Android SDK platform 37 (`platforms;android-37.0`), build-tools
 37.0.0 and platform-tools. Use the checked-in Gradle 9.6.0 wrapper with AGP 9.5.0
 and built-in Kotlin (compiler 2.4.21). Minimum Android is **API 24**, approved by
-the maintainer; target 33 remains a temporary development hold for #21/#24/#25,
-not Play-submission compatibility. Device/behavior verification is tracked in #27.
+the maintainer; compile and target SDK are **37**. Device/behavior and signed-upgrade
+acceptance remain tracked in #27; a target bump alone is not release readiness.
 Java bytecode targets 17; built-in Kotlin inherits that target, so no separate
 `jvmTarget` override is needed. JDK/bytecode versions do not set Android minSdk.
 AGP's [compatibility table](https://developer.android.com/build/releases/agp-9-5-0-release-notes)
@@ -20,10 +23,8 @@ selects Gradle 9.6.0 and JDK 17; [built-in Kotlin](https://developer.android.com
 replaces the old Kotlin Android plugin. Dependency versions live in the Gradle
 files; [#14](https://github.com/atlowChemi/MyMada/issues/14) holds the historical
 inventory and executed validation results.
-Legacy Java resource-ID switches require `nonFinalResIds=false` and
-`enableAppCompileTimeRClass=false`, with legacy resource shrinking
-(`android.r8.optimizedResourceShrinking=false`). Migrate those handlers before
-AGP 10 removes the final-ID compatibility option.
+Legacy resource compatibility flags remain in `gradle.properties`; their original
+Java-switch rationale is historical. Removing build flags is outside this docs slice.
 Set `JAVA_HOME` to JDK 17 and `ANDROID_HOME` to your SDK, or set `sdk.dir` in
 an untracked `local.properties`. Install/accept SDK packages with Android Studio
 or `sdkmanager` before building.
@@ -51,34 +52,43 @@ backend configuration.
 ### Validation and known limitations
 
 ```sh
-# Unsigned LOCAL validation only: skip network upload, never lint.
-sh ./gradlew clean :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug \
-  -x :app:uploadCrashlyticsMappingFileRelease --no-daemon
+# Exact final-ui task set: local unsigned release, no mapping upload.
+./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease \
+  :app:testDebugUnitTest :app:lintDebug :app:lintRelease \
+  -x :app:uploadCrashlyticsMappingFileRelease \
+  '-Dorg.gradle.jvmargs=-Xmx6g -XX:ActiveProcessorCount=2 -Dfile.encoding=UTF-8' --max-workers=2
 
 # Disposable, rootable API 24+ emulator only; block production SDK egress.
+export ANDROID_SERIAL=emulator-5962 # replace with your exclusively owned AVD
 adb root
 adb wait-for-device
 adb shell 'iptables -I OUTPUT ! -o lo -j REJECT; ip6tables -I OUTPUT ! -o lo -j REJECT'
 adb shell svc wifi disable
 adb shell svc data disable
-sh ./gradlew :app:connectedDebugAndroidTest --no-daemon
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+adb shell am instrument -w --no-window-animation \
+  -e class atlow.chemi.mymada.RemainingBridgeTest \
+  atlow.chemi.mymada.debug.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-Actual releases retain Crashlytics mapping uploads; omit the local `-x` flag for
-the release workflow. Kotlin instrumentation covers home/settings/navigation,
-oxygen calculation, metronome UI/notification controls and a DataStore native
-shared-counter round trip. On API 33+, it pre-grants notification permission;
-to check denied-permission UI start/stop separately, revoke POST_NOTIFICATIONS
-on the disposable test install and run `MetronomeNotificationTest` with runner
-argument `grantNotifications=false`. Neither mode verifies permission-request UX
-or audio tempo. `:app:testDebugUnitTest` runs the call parser/alert-decision tests;
-the [calls slice](app/src/main/java/atlow/chemi/mymada/calls/README.md) documents
-its offline integrated route checks and remaining lifecycle/permission gates.
+Actual release distribution/signing follows #11/#16; the above is local validation.
+The final task set passed with 19 JVM tests and both lints. Select focused classes
+with `-e class`, locales with `-e captureLanguage en` or `he`; preserve each suite's
+fixture requirements. `MonitorLifecycleTest` requires a listener grant. Shared
+notification permission tests exercise actual OS prompts separately; pregranted
+route smoke is not permission-UX evidence. API37 instrumentation uses standard
+`--no-window-animation` because a diagnosed system dim layer can drop injected taps.
+Retain failed logs rather than widening timeouts. For call fixtures see
+the [calls slice](app/src/main/java/atlow/chemi/mymada/calls/README.md), which documents
+offline integrated route checks and remaining lifecycle/permission gates.
 
 For native packaging, follow Android's
 [official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment):
 
 ```sh
+# Bundle inspection is separate from the final-ui task set above; used in #14/#56.
+./gradlew :app:bundleRelease -x :app:uploadCrashlyticsMappingFileRelease
 "$ANDROID_HOME/build-tools/37.0.0/zipalign" -c -P 16 4 app/build/outputs/apk/debug/app-debug.apk
 "$ANDROID_HOME/build-tools/37.0.0/zipalign" -c -P 16 4 app/build/outputs/apk/release/app-release-unsigned.apk
 unzip app/build/outputs/bundle/release/app-release.aab 'base/lib/*' -d /path/to/empty-inspection-directory
@@ -97,7 +107,37 @@ and startup reads (`settings/PreferenceMigration`). This is a
 development baseline, not a release-ready rollback. The RN build/deployment
 workflow is removed; native CI follows working local modernization in #13.
 
-Documentation will expand alongside implementation in #28.
+### Architecture and compatibility
+
+One app module contains feature packages (`home`, `about`, `privacy`, `settings`,
+`calls`, `integrations`) plus retained installed Activity/Fragment/service names.
+Compose owns screen content; Activities and Fragments own Android lifecycle and
+entry points. ViewModels/SavedStateHandle/saveable state retain screen drafts;
+real process-death evidence is distinct from Activity recreation.
+`ToolsWindow` hosts existing feature Fragments; MokedPage retains ViewPager for
+physical swipes and Fragment state, reversing physical page order in RTL.
+WebView policy content and platform/system pickers remain intentional interop.
+
+`settings/PreferenceMigration` normalizes native typed/RN string values before
+locale/startup reads. SharedPreferences and installed key/component spellings
+remain compatibility contracts. Calls route through OS-bound listeners and bounded
+reconnect recovery; metronome audio/service state is shared with widget/tile controls.
+SDK/platform work stays outside Compose content; activation requires backend
+acknowledgment and chat identity remains pinned across delivery-token changes.
+See [dispatch contracts](docs/DISPATCH_CONTRACTS.md),
+[shell architecture](docs/tools-shell-compose.md), and
+[SDK contracts](docs/SDK_VALIDATION.md).
+
+Live validation requires maintainer-provided **nonproduction** Firebase configuration,
+fixture accounts/data and console access; the checked-in configuration is not an
+authorization to use production. Request those through the maintainer, not in a PR.
+Debug demo-ad IDs are selected automatically; offline resource checks do not prove
+ad delivery. Release APKs are optimized but unsigned; locally re-signing with a
+debug key proves neither Play signing continuity nor an upgrade of a production-signed install.
+
+The slice notes below preserve earlier evidence scope. Current completion and
+superseding results are indexed in the acceptance matrix; historical caveats are
+not a fresh backlog.
 
 ### Privacy Compose slice (#21)
 
@@ -108,11 +148,11 @@ and Lifecycle **2.11.0** provide the UI, previews, and lifecycle integration.
 Instrumentation pins stable Espresso **3.7.0** for current-platform input
 injection compatibility. No Kotlin Android plugin is applied.
 
-The installed `atlow.chemi.mymada.PrivacyActivity` component remains a Java
+The installed `atlow.chemi.mymada.PrivacyActivity` component remains a Kotlin
 compatibility wrapper, so home, about and existing explicit intents still work.
 The Compose toolbar delegates detection/service/permission actions to the
-unchanged Java handler in `PrivacyDetectionActivity`; migrate this bridge with
-the shared detection work in #24. Settings navigation and both back actions
+shared Kotlin handler in `PrivacyDetectionActivity` and `DetectionControls`.
+Settings navigation and both back actions
 remain available. The hosted Hebrew/English policy documents and their links
 remain in a WebView, with the existing local offline error document. Policy
 language now follows the app's selected locale, including on API 24+.
@@ -155,10 +195,10 @@ toolbar. It reuses the original localized bitmap buttons, native rounded/shadowe
 cards and background drawables; the 50-dp navy banner area remains visible offline,
 matching the supplied production 12822 reference. At larger font settings, readable
 text labels supplement the bitmap text. `HomePage` keeps its installed launcher identity and native onboarding,
-locale-return and detection behavior; `home/HomeActions.java` temporarily retains
+locale-return and detection behavior; `home/HomeActions.kt` retains
 the original dispatch gate, test-call branches, contact/about ads and destinations.
 Tools still opens `UtillitiesAndTools`, preserving its selected-tool preferences.
-Banner/interstitial IDs and Firebase configuration are unchanged.
+Release ad IDs and Firebase configuration are retained; debug uses demo ad IDs.
 
 Pending Home banner/interstitial loads use application context; interstitials also use a weak bridge callback.
 The callback is created in a static scope so Java cannot implicitly capture the old
