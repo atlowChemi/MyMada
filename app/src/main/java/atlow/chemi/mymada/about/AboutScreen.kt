@@ -67,7 +67,7 @@ internal fun AboutScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(stringResource(R.string.TversionNumber, BuildConfig.VERSION_NAME), color = Color.Black,
-                style = TextStyle(fontFamily = font, fontSize = 18.sp, lineBreak = LineBreak.Paragraph, hyphens = Hyphens.Auto,
+                style = TextStyle(fontFamily = font, fontSize = 18.sp, lineBreak = LineBreak.Paragraph, hyphens = Hyphens.None,
                     platformStyle = PlatformTextStyle(includeFontPadding = true)))
             // Original 8dp text margin plus CardView's radius/elevation compatibility inset.
             Spacer(Modifier.height(22.dp))

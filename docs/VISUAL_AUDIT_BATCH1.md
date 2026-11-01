@@ -95,3 +95,46 @@ production. About's English hyphenation remains visible; version text is expecte
 Privacy error layout matches, excluding animated ECG phase and OS clock/icons.
 Corrected local-signed optimized installed SHA256:
 `2b7220417ad6624e94d7060f97c96af6796c9b390c39676d29d6a418998e33f6`.
+
+## Batch 2: About line breaking; Home attempt excluded
+
+Evidence root: `~/.local/share/opencode/evidence/m2-integration/visual-audit-batch2/`.
+About explicitly enabled `Hyphens.Auto`; disabling it restores production's
+English wrapping without changing font scaling or the shared toolbar inset.
+The About-only optimized APK installed on both owned emulators has SHA256
+`c3a58f316a4d8e6eaff9046c115ece038f032c0090515111946418f81ad842b5`.
+Debug/release builds and both lints passed in 1m44s (`about-final/build.log`).
+Previous business-logic and toolbar-inset checks are reused, not reported as rerun.
+
+Final-byte pairs actually opened:
+
+| Path relative to evidence root | Disposition |
+| --- | --- |
+| `about-final/pair-5960-en-about.png` | API37: English word wrapping and vertical placement match; expected development version string differs. |
+| `about-final/pair-5960-he-about.png` | API37: Hebrew content, placement and privacy artwork match; expected development version differs. |
+| `about-final/pair-5962-en-about.png` | API24: English wrapping and placement match; expected development version differs. |
+
+The production API24 captures named `he-*` actually rendered English. Those
+locale-mismatched pairs are excluded; matched API24 Hebrew comparison remains
+agent-owned fixture work. Raw screenshots/XML, installed APKs and hashes remain
+under `production12822/` and `about-final-candidate/`. Both external-traffic
+families remained rejected; captures are disposable visual fixtures, not upgrades.
+
+Home's two attempted corrections are retained under `home-about/` and
+`home-about-v2/`, and private commit `5bec8950` on
+`integration/home-about-parity`; neither is included in this published slice.
+All eight first-attempt pairs and six second-attempt matched-locale pairs were
+opened. API37's navy placeholder disappears, but API24 loses production's navy
+band. Production API24 XML has an ad view at `[0,1663][1080,1794]`; API37 has no
+visible ad node. Moving background ownership to the ad view alone does not
+resolve that difference. Its regression test fails against frozen #123 and
+passes both attempted implementations on API24/37 (EN normal/HE large), but
+those passing checks **do not establish visual parity**. Home remains unresolved.
+
+Other concrete agent-owned work remains: activation digit/send sizing,
+request/input/dialog geometry, dispatch tabs/fields/send positioning, and chat
+modal sequencing/banner/send styling. Historical chat opens name entry over the
+disclaimer for a blank name; current Kotlin defers it to disclaimer confirmation.
+No live-content authorization is needed to resolve these local states. The live
+backend, physical-device, onboarding-policy and deferred signing gaps above
+remain separate.
