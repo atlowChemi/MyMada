@@ -42,6 +42,14 @@ Espresso's keyboard-dismiss helper after recreation; the form's Compose submit
 already dismisses its keyboard, so that redundant fixture action was removed.
 The original failed log is retained; this is not final combined-release evidence.
 
+Private Moked host now uses Kotlin with Compose header, tab controls and region
+prompt; native ViewPager remains the swipe/Fragment saved-state bridge. The
+pre-R inset boundary is retained. Detection still calls DetectionControls with
+the existing menu model and observes async preference updates. API24 dispatch/
+team/picker passed 7/7 in 16.779s (`moked-host-compose-5980.log`), including
+tab/pager synchronization, selected-page recreation and prompt dismissal state.
+Final combined/API37/release and production parity remain pending.
+
 ## Activation request and dialog Compose layer above #106
 
 Tested source `3278850e`: request form, disclaimer/confirmation and request

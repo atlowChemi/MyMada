@@ -29,6 +29,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertIsSelected
 import java.io.File
 
 /** A blocking Instrumentation monitor intercepts approval: no SMS composer or transmission. */
@@ -36,6 +37,22 @@ class DispatchIntegrationTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
+    @Test fun hostTabsFollowPagerAndRetainSelectionAfterRecreation() {
+        context.getSharedPreferences("Settings", 0).edit().putBoolean("realM", true)
+            .putBoolean("pickedMoked", false).putBoolean("Mapp", false).commit()
+        instrumentation.runOnMainSync { LocalHelper.setLocale(context, InstrumentationRegistry.getArguments().getString("captureLanguage", "en")) }
+        ActivityScenario.launch(MokedPage::class.java).use { scenario ->
+            compose.onNodeWithTag("dispatch-region-skip").performClick()
+            compose.onNodeWithTag("dispatch-tab-1").assertIsSelected()
+            compose.onNodeWithTag("dispatch-tab-0").performClick()
+            scenario.onActivity { assertEquals(0, it.findViewById<ViewPager>(R.id.viewpager).currentItem) }
+            scenario.onActivity { it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(2, false) }
+            compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()
+            scenario.recreate()
+            compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()
+            compose.onNodeWithTag("dispatch-region-skip").assertDoesNotExist()
+        }
+    }
     @Test fun everyRecipientKeepsLiteralBodyOutsideUri() {
         val body = "  שם & #? +%\nSecond line  "
         DispatchContract.phones.forEachIndexed { region, phone ->

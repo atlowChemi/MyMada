@@ -13,20 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/dispatch_header"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabIndicatorColor="@color/White"
-            app:tabMode="fixed"
-            app:tabGravity="fill"/>
+            android:layout_height="wrap_content" />
         </com.google.android.material.appbar.AppBarLayout>
     <!--include layout="@layout/content_moked_page" /-->
     <androidx.viewpager.widget.ViewPager
