@@ -25,12 +25,22 @@ import atlow.chemi.mymada.helpers.MyFirebaseMessagingService
 import com.google.android.gms.tasks.TaskCompletionSource
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.Rule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 /** Run only on the owned offline emulator. All backend outcomes here are fixtures, not live delivery. */
 class ActivationIntegrationTest {
+    @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private val preferences = context.getSharedPreferences("Settings", 0)
@@ -150,16 +160,16 @@ class ActivationIntegrationTest {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         assertNotEquals(first, second)
         ActivityScenario.launch<codeC>(intent).use { scenario ->
-            onView(withText(R.string.codeNotExist)).check(matches(isDisplayed()))
+            compose.onNodeWithText(context.getString(R.string.codeNotExist)).assertIsDisplayed()
             assertFalse(preferences.getBoolean("realM", false))
             scenario.recreate()
-            onView(withText(R.string.codeNotExist)).check(matches(isDisplayed()))
+            compose.onNodeWithText(context.getString(R.string.codeNotExist)).assertIsDisplayed()
         }
         MyFirebaseMessagingService.publish(context, route)
         if (Build.VERSION.SDK_INT >= 26) assertNotNull(context.getSystemService(NotificationManager::class.java).getNotificationChannel("Push"))
         val malformed = Intent(context, codeC::class.java).putExtra("toCode", true).putExtra("code", "abcd")
         ActivityScenario.launch<codeC>(malformed).use {
-            onView(withText(R.string.codeBad)).check(matches(isDisplayed()))
+            compose.onNodeWithText(context.getString(R.string.codeBad)).assertIsDisplayed()
             assertFalse(preferences.getBoolean("realM", false))
         }
         val monitor = instrumentation.addMonitor(codeC::class.java.name, null, false)
@@ -188,35 +198,27 @@ class ActivationIntegrationTest {
         val language = InstrumentationRegistry.getArguments().getString("captureLanguage", "en")
         main { LocalHelper.setLocale(context, language) }
         ActivityScenario.launch(codeRequest::class.java).use { scenario ->
-            onView(withText(R.string.ok)).perform(click())
+            compose.onNodeWithText(context.getString(R.string.ok)).performClick()
             closeSoftKeyboard()
-            onView(withId(R.id.sendCR)).perform(click())
-            scenario.onActivity {
-                assertNotNull(it.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.codeATIL).error)
-                it.findViewById<EditText>(R.id.codeA).setText("fixture@example.org")
-                it.findViewById<EditText>(R.id.codeN).setText("Fixture Name")
-                it.findViewById<EditText>(R.id.codeT).setText("A&B#\nשלום")
-            }
+            compose.onNodeWithTag("activation-request-submit").performClick()
+            compose.onNodeWithText(context.getString(R.string.emailNone)).assertIsDisplayed()
+            compose.onNodeWithTag("activation-request-0").performScrollTo().performTextReplacement("fixture@example.org")
+            compose.onNodeWithTag("activation-request-1").performScrollTo().performTextReplacement("Fixture Name")
+            compose.onNodeWithTag("activation-request-2").performScrollTo().performTextReplacement("A&B#\nשלום")
             closeSoftKeyboard()
-            onView(withId(R.id.sendCR)).perform(click())
+            compose.onNodeWithTag("activation-request-submit").performClick()
             scenario.recreate()
-            scenario.onActivity {
-                val dialog = (it.supportFragmentManager.findFragmentByTag("confirm-request") as codeRequest.RequestDialog).requireDialog() as androidx.appcompat.app.AlertDialog
-                assertEquals(it.getColor(R.color.OldPrimary), dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).currentTextColor)
-                val text = dialog.findViewById<android.widget.TextView>(android.R.id.message)!!.text as android.text.Spanned
-                val label = text.toString().indexOf(it.getString(R.string.msg))
-                assertTrue(text.getSpans(label, label + it.getString(R.string.msg).length,
-                    android.text.style.ForegroundColorSpan::class.java).any { span -> span.foregroundColor == android.graphics.Color.rgb(35, 139, 173) })
-            }
+            val text = compose.onNodeWithTag("activation-request-summary").fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].single()
+            val label = text.text.indexOf(context.getString(R.string.msg))
+            assertTrue(text.spanStyles.any { it.start == label && it.item.color == androidx.compose.ui.graphics.Color(0xff238bad) })
+            assertTrue(text.text.contains("A&B#\nשלום"))
             instrumentation.uiAutomation.waitForIdle(500, 5000)
             val image = instrumentation.uiAutomation.takeScreenshot()
             val directory = File(context.getExternalFilesDir(null), "integrations").apply { mkdirs() }
             File(directory, "confirmation-$language.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
             image.recycle()
-            onView(withText(R.string.ret)).check(matches(isDisplayed())).perform(click())
-            scenario.onActivity {
-                assertEquals("A&B#\nשלום", it.findViewById<EditText>(R.id.codeT).text.toString())
-            }
+            compose.onNodeWithText(context.getString(R.string.ret)).assertIsDisplayed().performClick()
+            compose.onNodeWithTag("activation-request-2").assertTextContains("A&B#\nשלום")
             assertFalse(preferences.contains(ActivationContract.KEY))
         }
     }
@@ -237,7 +239,7 @@ class ActivationIntegrationTest {
         ActivityScenario.launch(codeC::class.java).use { capture("activation") }
         ActivityScenario.launch(codeRequest::class.java).use {
             capture("disclaimer")
-            onView(withText(R.string.ok)).perform(click())
+            compose.onNodeWithText(context.getString(R.string.ok)).performClick()
             capture("request")
             closeSoftKeyboard()
             capture("request-full")
