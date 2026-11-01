@@ -66,6 +66,12 @@ one compile failure and was corrected. Focused medical/chat reruns passed 5/5
 on both APIs (12.751s / 19.95s). Logs are `ui-parity-*.log`; font scales were
 restored afterward. These checks are not landscape or final production-parity
 acceptance and do not replace final combined installed-release verification.
+Follow-up chat landscape checks at 2× Hebrew font passed 3/3 on API24 (5.785s)
+and API37 (6.986s); captured name-dialog images are 1920×1080. Evidence is under
+`ui-parity-large/chat-landscape-*`. Other integration activities retain their
+existing manifest portrait lock. Original font/rotation settings were restored;
+API24's originally absent user_rotation required deleting the temporary setting
+after a rejected attempt to write the literal `null` value.
 
 ## Activation request and dialog Compose layer above #106
 
