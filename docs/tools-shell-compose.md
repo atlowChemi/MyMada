@@ -146,11 +146,59 @@ Tools. Captures are in `release24/` and `release37/`.
 
 ### Acceptance and publication status
 
+#### Integrated adapter investigation
+
+The focused follow-up runs against exact integrated `ecba346c` plus the
+`878d1520` diagnostics patch (private replay `b391e4ed`, tree-identical to
+coordinator `eaa918c7`). Application sources remain identical to `4850b46a`.
+Evidence is retained under
+`~/.local/share/opencode/evidence/tools-shell/focused-integrated/`:
+
+- `run1-{24,37}.txt`: the exact coordinator artifacts reproduced Home EN/HE
+  failures after test-call Back. Dictionary passed both APIs; title passed API37
+  and failed API24. Earlier coordinator `focused*-ecba346c.txt` failures remain
+  retained separately, including intermittent drawer-close failures.
+- `home-focus24.txt`, `home-focus24.png`, and `run1-*-diagnostics.tar`: Home was
+  resumed, but an earlier **DetectionControls listener-permission prompt** owned
+  focus. Setting `Mapp=true` without OS listener access does not represent enabled
+  detection in the integrated grant-aware implementation. The test-call dialog
+  did close on Back, exposing the earlier noncancelable prompt. The fixture now
+  grants notification posting permission and explicitly declines missing listener
+  access immediately after the detection check; actual Back remains unchanged.
+- `run2-{24,37}.txt`: Home EN/HE passed both APIs after that correction. API24
+  title still failed; no calculator logic or title-size change was made.
+- `title-metrics24.txt`: at 52.5px portrait title size, bare Paint measured 418px,
+  antialiased Paint 415px, subpixel Paint 416px, and Compose 415px. At 36.75px
+  landscape title size those widths were 285/291/287/291px. Native Toolbar paint
+  flags were 1281 (antialiasing enabled, subpixel positioning disabled). Therefore
+  the oracle uses antialiased TextPaint, the same medium typeface and exact size,
+  with the existing 1px tolerance. Full intrinsic width avoids conflating glyph
+  metrics with ellipsizing; the original failing lines were not ellipsized.
+- Drawer synchronization now checks Material's Dismiss semantics in addition to
+  rendered bounds. Material exposes Dismiss only when `DrawerState.isOpen`, the
+  same state consumed by the shell BackHandler; nearly full animated bounds alone
+  do not establish that state. The test still dispatches actual Back and requires
+  both Dismiss removal and invisible drawer content before proceeding. Installed
+  Material bytecode evidence is in `drawer-dismiss-bytecode.txt`.
+- Final `run3-24.txt` and `run3-37.txt`: **4/4 passed on each API** (Home EN,
+  Home HE/font1.5, title/layout matrix, Dictionary EN/HE). API24 took 40.656s;
+  API37 took 50.912s. The fixture change and drawer-state synchronization retain
+  real Back dispatch and destroyed-Activity assertions. No timeout or glyph
+  tolerance was increased. `build3.txt` records the successful test-APK build.
+- AVD ownership was checked as `tools-shell-api24`/`tools-shell-api37` on
+  `5640`/`5642`; Wi-Fi/data were off and both IPv4/IPv6 OUTPUT rejected non-loopback
+  traffic. No coordinator devices, physical phones or live data were used.
+- Installed-byte hashes matched both devices (`installed-run3-*.sha256`): app
+  `38020c09670efcbd3ce6ebba6e0bf54d3381a5d2d0761fd888c2627ff9bbdc38`;
+  final test APK `test-run3.apk`
+  `be7e542f7bb747a2f4d9158eec2a6f76d8b2b40db1580380fdb1f9ca8cf0b169`.
+
 The two dedicated shell suites pass. The authorized follow-up adapts PlatformSmoke,
 Target37Visual, Documents, Oxygen, Home, Pulse, APGAR, Glasgow and Dictionary tests
 to shell semantics, preserving their feature assertions. Only tests and this
-document change; the coordinator owns the combined test-APK build and affected
-runtime checks, whose results are not claimed by this private adapter commit.
+document change. The coordinator owns combined verification and publication;
+the delegated focused runtime results above are verified against the integrated
+source tree, rather than the earlier standalone shell baseline.
 The font-scaling policy is approved; the precise title comparison above documents
 an existing test expectation. Integration acceptance belongs to the coordinator.
 Append only in the

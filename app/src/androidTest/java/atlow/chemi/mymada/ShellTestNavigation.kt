@@ -49,13 +49,21 @@ fun ComposeTestRule.waitForShellDrawer(open: Boolean) {
     val home = onNodeWithTag("shell-destination-${R.id.homeDrawer}")
     val width = InstrumentationRegistry.getInstrumentation().targetContext.resources
         .getDimension(R.dimen.navigation_drawer_width)
+    // Material exposes Dismiss only when DrawerState.isOpen, the same state the
+    // shell BackHandler consumes. Nearly-full animated bounds alone are too early.
+    val dismissibleDrawer = onAllNodes(
+        SemanticsMatcher.keyIsDefined(androidx.compose.ui.semantics.SemanticsActions.Dismiss) and
+            hasAnyDescendant(hasTestTag("shell-destination-${R.id.homeDrawer}")),
+        useUnmergedTree = true,
+    )
     var lastBounds = ""
     try {
         waitForShellCondition("drawer-$open") {
             val node = home.fetchSemanticsNode()
-            lastBounds = "window=${node.boundsInWindow} root=${node.boundsInRoot} size=${node.size} expectedWidth=$width displayed=${home.isDisplayed()}"
-            if (open) home.isDisplayed() && node.boundsInWindow.width >= width - 1f
-            else !home.isDisplayed()
+            val dismissible = dismissibleDrawer.fetchSemanticsNodes().isNotEmpty()
+            lastBounds = "window=${node.boundsInWindow} root=${node.boundsInRoot} size=${node.size} expectedWidth=$width displayed=${home.isDisplayed()} dismissible=$dismissible"
+            if (open) dismissible && home.isDisplayed() && node.boundsInWindow.width >= width - 1f
+            else !dismissible && !home.isDisplayed()
         }
     } catch (failure: Throwable) {
         android.util.Log.e("ShellFailure", "drawer open=$open $lastBounds")

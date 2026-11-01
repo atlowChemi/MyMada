@@ -59,6 +59,9 @@ class HomeScreenTest {
         // API 24 restarts its launcher on font changes; let that transition finish before launching Home.
         instrumentation.uiAutomation.waitForIdle(500, 5_000)
         shell("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow")
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            shell("pm grant ${context.packageName} android.permission.POST_NOTIFICATIONS")
+        }
         instrumentation.runOnMainSync {
             atlow.chemi.mymada.helpers.LocalHelper.setLocale(context, language)
         }
@@ -153,11 +156,16 @@ class HomeScreenTest {
                 settings.fetchSemanticsNode().boundsInRoot.center.x)
             assertTrue(settings.fetchSemanticsNode().boundsInRoot.top >= topInset)
 
-            // The resume hook refreshes the MenuItem too: clicking must turn detection OFF, not start a service.
+            // A stale enabled preference without listener access requests permission;
+            // decline that request here instead of leaving it beneath later dialogs.
             scenario.moveToState(Lifecycle.State.CREATED)
             preferences.edit().putBoolean("Mapp", true).commit()
             scenario.moveToState(Lifecycle.State.RESUMED)
             detection.assertIsOn().performClick().assertIsOff()
+            if (atlow.chemi.mymada.calls.ListenerAccess.selected(context) == null) {
+                onView(withText(R.string.dialog_no)).inRoot(isDialog()).perform(click())
+                waitForHomeFocus(scenario)
+            }
             assertFalse(preferences.getBoolean("Mapp", true))
 
             for (id in listOf(R.string.title_activity_utills_and_tools, R.string.title_activity_moked_page,

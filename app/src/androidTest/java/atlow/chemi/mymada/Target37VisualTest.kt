@@ -94,9 +94,10 @@ class Target37VisualTest {
                     val layouts = mutableListOf<TextLayoutResult>()
                     compose.onNode(hasText(title) and !hasTestTag("shell-destination-${R.id.oxygenCalc}"))
                         .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
-                    // TextView enables subpixel positioning; bare Paint does not. Compare
-                    // full shaped text, not a line shortened by toolbar ellipsizing.
-                    val expectedTitle = android.text.TextPaint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG).apply {
+                    // Native text and Compose both enable antialiasing. Bare Paint changes
+                    // hinted glyph advances on API24; subpixel positioning changes them too.
+                    // Compare full shaped text, not an ellipsized toolbar line.
+                    val expectedTitle = android.text.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                         textSize = titleSize
                         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
                     }
