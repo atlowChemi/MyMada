@@ -12,7 +12,7 @@ import atlow.chemi.mymada.HomePage
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.helpers.LocalHelper
-import com.google.android.material.navigation.NavigationView
+import atlow.chemi.mymada.selectShellDestination
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -111,10 +111,8 @@ class SettingsChoiceTest {
     }
 
     private fun open(item: Int) {
-        assertTrue(withSettings {
-            val menu = it.findViewById<NavigationView>(R.id.navigation).menu
-            it.onNavigationItemSelected(menu.findItem(item))
-        })
+        assertTrue(withSettings { })
+        compose.selectShellDestination(item)
     }
 
     private fun awaitDialog() {

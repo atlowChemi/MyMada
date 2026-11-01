@@ -17,7 +17,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.helpers.LocalHelper
-import com.google.android.material.navigation.NavigationView
+import atlow.chemi.mymada.selectShellDestination
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -44,8 +44,8 @@ class ToolSettingsTest {
                     scenario.onActivity {
                         toolOptions.forEach { (key, label) -> labels[key] = it.getString(label) }
                         warning = it.getString(R.string.NoPicked)
-                        it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.tools))
                     }
+                    compose.selectShellDestination(R.id.tools)
                     compose.onNodeWithText(labels.getValue("contrac")).assertIsOn().assertIsDisplayed()
                     if (InstrumentationRegistry.getArguments().getString("capture") == "true") {
                         instrumentation.uiAutomation.waitForIdle(500, 5_000)
