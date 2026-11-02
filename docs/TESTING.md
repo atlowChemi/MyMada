@@ -1,0 +1,237 @@
+# Build and verify locally
+
+Use the [README toolchain](../README.md#development). These commands describe
+reproduction, not a claim that every task or fixture has run on the current tree.
+Keep build success, executed runtime checks, visual inspection and live-service
+evidence distinct. Historical receipts remain in owning GitHub issues/PRs and
+external archives; this guide does not duplicate their run chronology.
+
+## Build and lint
+
+```sh
+JAVA_HOME="<JDK17>" ANDROID_HOME="<SDK37>" ./gradlew \
+  :app:assembleDebug :app:assembleDebugAndroidTest \
+  --max-workers=2 '-Dorg.gradle.jvmargs=-Xmx3g'
+
+./gradlew :app:testDebugUnitTest :app:lintDebug :app:lintRelease \
+  --max-workers=2 '-Dorg.gradle.jvmargs=-Xmx3g'
+
+# Local optimized outputs; exclude the network mapping-upload task.
+./gradlew :app:assembleRelease :app:bundleRelease \
+  -x :app:uploadCrashlyticsMappingFileRelease \
+  --max-workers=2 '-Dorg.gradle.jvmargs=-Xmx4g'
+```
+
+Export the same `JAVA_HOME`/`ANDROID_HOME` for subsequent commands. A larger local
+R8 heap can be supplied without changing project configuration. Release APKs are
+unsigned; externally debug-signing a copy permits disposable-device smoke only.
+It proves neither Play signing continuity nor production upgrade compatibility.
+
+Tests use JUnit4.13.2, AndroidX runner1.7.0/ext-junit1.3.0, Espresso3.7.0,
+Compose BOM2026.09.00 `ui-test-junit4`/debug `ui-test-manifest`, and test DataStore1.1.7.
+
+## Isolate an owned emulator and select a test
+
+Use an exclusively owned disposable rootable API24+ emulator. Establish host-side
+network isolation before starting it and retain that protection over guest restarts.
+Reject both guest IP families before any app launch; Wi-Fi/data toggles alone do
+not reliably block SDK traffic. No production writes, SMS approval or actual FCM
+sends are part of these local checks.
+
+```sh
+export SERIAL="<owned-emulator-serial>"
+adb -s "$SERIAL" root
+adb -s "$SERIAL" wait-for-device
+adb -s "$SERIAL" shell 'iptables -I OUTPUT ! -o lo -j REJECT; ip6tables -I OUTPUT ! -o lo -j REJECT'
+adb -s "$SERIAL" shell svc wifi disable
+adb -s "$SERIAL" shell svc data disable
+adb -s "$SERIAL" shell iptables -S OUTPUT
+adb -s "$SERIAL" shell ip6tables -S OUTPUT
+adb -s "$SERIAL" install -r app/build/outputs/apk/debug/app-debug.apk
+adb -s "$SERIAL" install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+
+adb -s "$SERIAL" shell am instrument -w -r --no-window-animation \
+  -e class atlow.chemi.mymada.ToolsBackNavigationTest,atlow.chemi.mymada.settings.SettingsNavigationTest \
+  atlow.chemi.mymada.debug.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+Use a fully qualified class or `Class#method`, not the full connected suite to
+select one check. Shell suites exercise drawer/navigation; child tests entering
+`displayFragment` are not equivalent. Shell tags are `shell-navigation`,
+`shell-detection`, `shell-destination-<resource ID>` and `shell-action-<resource ID>`.
+`--no-window-animation` avoids known API37 invisible Dim Layer touch interference;
+it does not establish animated-window visual acceptance. Do not compensate with
+application sleeps or relaxed assertions. Use each suite's own locale/fixture args.
+
+For launch-only smoke after isolation/install:
+
+```sh
+adb -s "$SERIAL" shell am start -W -n atlow.chemi.mymada.debug/atlow.chemi.mymada.HomePage
+```
+
+Record source/artifact identity and restore original APKs, app data, permissions,
+locale, font/animation settings and isolation after shared-fixture use. Keep failed
+attempts distinct. Existing SHA-verified hardlinked archives are immutable: write
+fresh filenames or atomically replace new working outputs, never edit archive
+inodes in place. Avoid full AVD copies and remove transient rollback snapshots
+after verified restoration.
+
+## Local client fixtures and their limits
+
+Existing injection seams drive real client models; no Firebase Emulator Suite,
+new dependencies or release mock toggle is required. Install mocks **before** the
+operation. Keep host/guest isolation even when callbacks are fake.
+
+| Production boundary | Existing local substitute |
+| --- | --- |
+| Database activation/code writes | `ActivationBackend`, controlled token/request/activation Tasks |
+| Database chat/listeners/writes | `ChatBackend`, controlled identity/listener/send/name Tasks |
+| Firestore dictionary | `DictionarySource` snapshot/submission callbacks |
+| Database Vitals | `remoteVitalRange` parsing and `VitalsScreen` range-state input; SDK listener mapping is separate |
+| Storage documents | `DocumentStore.load(download=...)`, local actual PDFs and retained authorized download evidence |
+| FCM | Fake token Tasks and local Intent/routing checks, not push delivery |
+| Ads | `HomeActions` initialization/load function parameters and fake interstitial callbacks; SDK defaults remain unchanged |
+
+There are no repository Firebase emulator/security-rule files. Fake completion
+does not establish server acknowledgment, deployed rules, token provisioning,
+persistence across queued-write process death, authorization, moderation or FCM
+delivery. Pinned chat identity does not prove token-to-conversation server mapping.
+Backend messages/SeenByAdmin are not a local unread counter to seed.
+
+`FirebaseClientLocalAcceptanceTest` uses TaskCompletionSource for token failure/
+retry, acknowledgment-gated identity, typed user/admin/WhatsApp/seen events,
+malformed-event rejection, pending duplicate suppression/recreation, rejected-send
+draft retention, retry acknowledgment and listener cleanup. Existing
+`ActivationContractTest`/`ActivationIntegrationTest` and
+`ChatContractTest`/`ChatIntegrationTest` cover related deferred-Task protocols.
+
+**Chat visual limitation:** passing client state/semantics does not prove that
+the error window disappeared. An independent ADB capture and WindowManager dump
+confirmed a visible API24 **EXITING dialog surface**, not a cached bitmap, at the
+retry acknowledgment frame. Those images are excluded from visual-dismissal
+acceptance. The originating lifecycle/window-removal cause remains unproved;
+the proposed wait-before-recreation hypothesis is not a verified fix. State PASS
+remains valid within its scope. No further patch/rerun is implied by this guide.
+
+Medical local fixtures distinguish Vitals parsing/rebinding from actual SDK
+delivery, and Dictionary fake pending/rejection/retry/success from backend outcomes.
+Test-ad IDs and local navigation callbacks do not prove ad delivery, impressions
+or uploaded Analytics/Crashlytics/Performance events. End-to-end checks require
+separately authorized nonproduction services/accounts; checked-in configuration
+does not authorize production use or require a new manual-phone matrix.
+
+## Privacy and document content
+
+Synthetic `PrivacyScreenTest#localLoadedPolicyScrollsAndNavigatesWithinTheRealHost`
+has **no external-file prerequisite**. It exercises real PrivacyActivity/WebView
+scrolling, local navigation, offline error and recreation using synthetic HTML.
+
+Authentic `retainedAuthenticPoliciesRenderAndScrollInBothLocales` requires exact
+retained EN/HE HTML; its SHA checks reject substitutes. Obtain the authorized
+`policy-en.html` and `policy-he.html` from the retained authentic-content fixture,
+not a newly fetched or edited substitute. Keep the emulator externally REJECTed:
+
+```sh
+export POLICY_FIXTURES="<directory-with-retained-exact-policy-files>"
+adb -s "$SERIAL" shell mkdir -p /sdcard/Android/data/atlow.chemi.mymada.debug/files/
+adb -s "$SERIAL" push "$POLICY_FIXTURES/policy-en.html" /sdcard/Android/data/atlow.chemi.mymada.debug/files/policy-en.html
+adb -s "$SERIAL" push "$POLICY_FIXTURES/policy-he.html" /sdcard/Android/data/atlow.chemi.mymada.debug/files/policy-he.html
+adb -s "$SERIAL" shell am instrument -w -r \
+  -e class atlow.chemi.mymada.privacy.PrivacyScreenTest#retainedAuthenticPoliciesRenderAndScrollInBothLocales \
+  atlow.chemi.mymada.debug.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+The retained content has successful host HTTP200/exact-byte evidence and actual
+offline WebView EN/HE rendering/scrolling. This is distinct from device-online
+transport and third-party CSS/font delivery. Build success alone proves neither.
+The accepted historical Privacy/communications reference gaps stay disposed;
+unknown old loading behavior does not invalidate the current indicator or reopen
+completed fixes.
+
+`DocumentsTest` actual-object checks require read-only actual files under
+`/sdcard/Android/data/atlow.chemi.mymada.debug/files/live-documents/` and fail if
+absent. Retained BLS/ALS/Kuntres files have 137/290/30 pages and cover first/middle/
+last, offline rendering and zoom/pan; authorized actual Android Storage download
+evidence is separate and need not be repeated merely because docs move. Do not
+commit PDFs, tokens or authenticated responses. Rendering compatibility is not
+live SDK transport. The deferred viewer difference and public image remain in
+[compatibility](COMPATIBILITY.md#deferred-viewer-presentation--issue-145).
+
+## Focused fixture requirements
+
+| Area | Selectors and nonobvious prerequisites |
+| --- | --- |
+| Home/memory | `HomeScreenTest` covers onboarding/locale/navigation; `HomeMemoryTest` checks Activity collection after the real sequence on the stock API24 heap. Optional `dumpHeap=true` is diagnostic, not normal pass/fail (it forces GC). An isolated About launch is insufficient. |
+| Offline ads | `AdsLocalAcceptanceTest` injects initialization/loading before invoking real callbacks and checks banner-slot layout. API24 requires class-matching blocking destination monitors; an overridden no-argument monitor does not reliably intercept launches. This does not prove real SDK loading or fullscreen presentation. |
+| Settings/upgrade startup | `StartupUpgradeTest`: separate `startupFixture=seed` and `startupFixture=verify` invocations with force-stop/new process between; reject IPv4/IPv6 before both. |
+| Audio settings | `SoundSettingsTest` permission route starts denied; revoking permission during instrumentation kills the process. `ExternalAudioDispatchTest` uses `externalAudio=true` after selecting/granting a >1s MediaStore file; dispatch is not speaker audibility. |
+| Permission | `NotificationPermissionTest` uses `permissionRoute=grant\|deny\|dismiss\|settings`, initially ungranted, no adb grant. Listener Settings route separately pregrants notifications but starts without listener access. `CallRouteTest` pregrants notifications and is not permission-UX proof. |
+| Overlay/listener | `OverlayLifecycleTest` needs SYSTEM_ALERT_WINDOW except `deniedOverlayStopsWithoutWindows`; `MonitorLifecycleTest` needs listener grant. Interactive-window/node visibility limitations must not become empty passing assertions. |
+| Recovery | `RecoveryWindowTest`/`CallRecoveryTest` cover freshness/persisted epochs; real OS reconnect requires the call-source fixture below, not direct callbacks alone. |
+| Dictionary/Vitals | `DictionaryContractTest`/`DictionaryScreenTest` use in-memory source, optional `language=en\|he`, `capture=true`. `VitalsTest`/`VitalsScreenTest`/`MedicalLocalAcceptanceTest` distinguish parser/rendered binding from SDK traffic. |
+| Calculators/history | APGAR/Glasgow scoring checks exhaust combinations. `PulseStateTest`/`PulseScreenTest` cover deadline continuation/no replay. `ContractionHistoryTest`, `ContractionRecoveryTest`, `ContractionNavigationTest` cover import/policy/navigation. |
+| Dispatch/chat | Use blocking ACTION_VIEW/sms instrumentation monitor; never approve a real composer. Hide IME before each real pager swipe and use the unique active/focused app accessibility window. Native editor IME actions require real View input, not Compose-only semantics. |
+| Metronome/popup | `MetronomeControlTest`, `MetronomeNotificationTest`, `MetronomePermissionTest`, `CallRouteTest`, `CallPopupComposeTest`. Wait for both playback and notification before Stop. `MetronomeCallVisualTest`: `screen=metro\|call`, `language=en\|he`, `landscape=true\|false`; set font scale externally. AudioTrack writes do not prove physical sound/tempo. |
+
+For the standalone contraction policy check, compile
+`:app:compileDebugUnitTestKotlin`, then run
+`atlow.chemi.mymada.contractions.ContractionPolicyCheck` with debug/test compiled
+classes and Kotlin stdlib on the JVM classpath.
+
+Build the offline notification source fixture:
+
+```sh
+./gradlew -p app/src/androidTest/fixtures/call-source assembleDebug
+```
+
+Its package `atlow.mymadaadmin` has no INTERNET permission. `SummaryNotificationTest`
+uses `listeners=<full-component[:full-component]>`, source notification permission
+on API33+, target overlay grant and initially cleared listener grants. Grant after
+instrumentation starts and revoke before teardown; force-stopping a pending API24
+bind can leave stale system_server registration. Native-only, RN-only and both
+grants are distinct cases.
+
+## Packaging, upgrades and acceptance boundaries
+
+Use Android's [official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment).
+No NDK is needed to compile app-owned code; inspection of packaged libraries is separate:
+
+```sh
+"$ANDROID_HOME/build-tools/37.0.0/zipalign" -c -P 16 4 app/build/outputs/apk/debug/app-debug.apk
+"$ANDROID_HOME/build-tools/37.0.0/zipalign" -c -P 16 4 app/build/outputs/apk/release/app-release-unsigned.apk
+unzip app/build/outputs/bundle/release/app-release.aab 'base/lib/*' -d "<empty-inspection-directory>"
+# Repeat for each arm64-v8a/x86_64 library: every LOAD alignment >= 2**14.
+"$ANDROID_HOME/ndk/28.2.13676358/toolchains/llvm/prebuilt/<host>/bin/llvm-objdump" -p "<library.so>" | grep LOAD
+adb -s "$SERIAL" shell getprop ro.build.version.sdk
+adb -s "$SERIAL" shell getconf PAGE_SIZE
+```
+
+Inspect libraries from both APKs (`lib/*`) too. A 16KB runtime claim requires
+actual `PAGE_SIZE=16384`, not merely targetSdk37 or packaging success. API24 may
+lack `getconf`; do not label it a verified 16KB device. Agreed local coverage uses
+API24 and API37; a new API33–36 matrix is not implied. If a newly created private
+API37 AVD incorrectly records `target=android-0`, correct only its own ini target
+to android-37 rather than resetting shared ADB/emulators.
+
+For local upgrades, use known baseline provenance and the **same local signer**.
+Reset/uninstall only before baseline setup; measured `install -r` intervals must
+retain UID, data, listener grant and actual widget binding. Compare pulled installed
+bytes, settings/original backups/history/reopen, activation/name/chat identity,
+ringtone/region/tools and explicit entry-point/widget actions. Identify seeded RN
+fixtures separately from UI-authored history. Never fabricate backend unread data.
+Actual Play/production-signed upgrade remains deferred to release readiness #11.
+
+Activity recreation, SavedStateHandle rehydration, actual process death and reboot
+are separate checks. Unsent draft restoration does not prove pending-write recovery;
+app-process death does not prove picker-process recovery. Match visual comparisons
+by source/artifact, state, locale, IME, orientation and effective font scale. Open
+the images: semantics/bounds alone do not prove painting or window removal.
+Native API24 Hebrew references may require actual system Hebrew; changing `lng`
+alone can leave English strings. Respect approved scaling/rounding policy and
+scoped results; candidate-only images are not production parity.
+
+Hardware audibility/tempo, TalkBack with OEM keyboard, audio contention and prolonged
+idle/screen-off/reboot/regrant behavior require separately authorized physical
+checks. Live-service receipt, rules, token rotation and queue recovery need their
+own nonproduction fixtures. These boundaries preserve evidence scope, not a new
+roadmap or blanket implementation pause.
