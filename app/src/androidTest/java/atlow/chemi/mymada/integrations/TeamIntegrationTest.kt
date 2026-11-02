@@ -26,7 +26,19 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import java.io.File
+import kotlin.math.roundToInt
 
 class TeamIntegrationTest {
     @get:Rule val compose = createEmptyComposeRule()
@@ -63,16 +75,38 @@ class TeamIntegrationTest {
             compose.onNodeWithTag("team-add").performClick()
             scenario.onActivity { team(it).childFragmentManager.executePendingTransactions() }
             instrumentation.waitForIdleSync()
+            fun assertNativeFont(text: String): TextLayoutResult {
+                val layouts = mutableListOf<TextLayoutResult>()
+                compose.onNode(hasText(text) and hasAnyAncestor(hasTestTag("member-dialog")), useUnmergedTree = true)
+                    .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+                assertEquals(FontFamily(Font(R.font.opensans_hebrew)), layouts.single().layoutInput.style.fontFamily)
+                return layouts.single().also {
+                    android.util.Log.i("TeamTypography", "$text size=${it.size} baseline=${it.firstBaseline} style=${it.layoutInput.style}")
+                }
+            }
+            val title = assertNativeFont(LocalHelper.onAttach(context).getString(R.string.Nteam))
+            val nativeTitlePx = android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP,
+                20f, context.resources.displayMetrics).roundToInt().toFloat()
+            assertEquals(nativeTitlePx, with(title.layoutInput.density) { title.layoutInput.style.fontSize.toPx() }, 0.01f)
+            if (context.resources.configuration.fontScale == 1f) {
+                val nameBounds = compose.onNodeWithTag("member-name").getUnclippedBoundsInRoot()
+                val roleBounds = compose.onNodeWithTag("member-role").getUnclippedBoundsInRoot()
+                assertTrue("Native name/role share a row", nameBounds.right <= roleBounds.left)
+                assertEquals(nameBounds.top.value, roleBounds.top.value, 1f)
+            }
             capture("add", language)
             compose.onNodeWithTag("member-save").performClick()
             compose.onNodeWithText(LocalHelper.onAttach(context).getString(R.string.emailNameNone)).assertIsDisplayed()
             compose.onNodeWithTag("member-name").performTextReplacement("Fixture Member")
-            compose.onNodeWithTag("member-role").performClick()
-            compose.onNodeWithTag("member-role-2").performClick()
+            compose.onNodeWithTag("member-role").performTouchInput { click() }
+            androidx.test.espresso.Espresso.onData(org.hamcrest.Matchers.equalTo(TeamContract.roles[2]))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isPlatformPopup()).perform(androidx.test.espresso.action.ViewActions.click())
             scenario.recreate()
             android.util.Log.i("TeamFixture", "Restored draft")
             compose.onNodeWithTag("member-name").assertTextContains("Fixture Member")
-            compose.onNodeWithTag("member-role").assertTextContains(TeamContract.roles[2])
+            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withClassName(org.hamcrest.Matchers.endsWith("AppCompatSpinner")))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.withSpinnerText(TeamContract.roles[2])))
             compose.onNodeWithTag("member-save").performClick()
             instrumentation.waitForIdleSync()
             androidx.test.espresso.Espresso.closeSoftKeyboard()
@@ -84,8 +118,9 @@ class TeamIntegrationTest {
             scenario.onActivity { team(it).childFragmentManager.executePendingTransactions() }
             compose.onNodeWithTag("member-name").assertTextContains("Fixture Member")
             compose.onNodeWithTag("member-name").performTextReplacement("Edited Member")
-            compose.onNodeWithTag("member-role").performClick()
-            compose.onNodeWithTag("member-role-6").performClick()
+            compose.onNodeWithTag("member-role").performTouchInput { click() }
+            androidx.test.espresso.Espresso.onData(org.hamcrest.Matchers.equalTo(TeamContract.roles[6]))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isPlatformPopup()).perform(androidx.test.espresso.action.ViewActions.click())
             compose.onNodeWithTag("member-save").performClick()
             scenario.onActivity {
                 val model = ViewModelProvider(team(it))[TeamModel::class.java]
@@ -112,6 +147,15 @@ class TeamIntegrationTest {
                 repeat(model.members.size) { model.delete(0) }
             }
             compose.onNodeWithTag("team-empty").assertExists()
+            compose.onNodeWithTag("team-send").performClick()
+            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withText(
+                LocalHelper.onAttach(context).getString(R.string.SendNoNames)))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.isDisplayed()))
+            capture("empty-error", language)
+            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button2))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                .perform(androidx.test.espresso.action.ViewActions.click())
         }
     }
     private fun capture(name: String, language: String) {

@@ -39,10 +39,9 @@ class MainActivity2 : Fragment() {
                         DispatchConfirmation.show(this@MainActivity2, TeamContract.body(ambulance, region, members))
                     }
                 })
-                if (emptyError) androidx.compose.material3.AlertDialog(onDismissRequest = { emptyError = false },
-                    title = { androidx.compose.material3.Text(getString(R.string.err)) },
-                    text = { androidx.compose.material3.Text(getString(R.string.SendNoNames)) },
-                    confirmButton = { androidx.compose.material3.TextButton(onClick = { emptyError = false }) { androidx.compose.material3.Text(getString(R.string.ok)) } })
+                if (emptyError) atlow.chemi.mymada.integrations.IntegrationErrorDialog(getString(R.string.SendNoNames)) {
+                    emptyError = false
+                }
             } }
         }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,6 +59,7 @@ class MainActivity2 : Fragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             isCancelable = false
+            setStyle(STYLE_NORMAL, R.style.AlertDialogStyle)
             val model = ViewModelProvider(requireParentFragment())[TeamModel::class.java]
             val index = requireArguments().getInt("index", -1)
             val member = model.members.getOrNull(index)
