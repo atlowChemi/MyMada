@@ -106,7 +106,7 @@ class SummaryNotificationTest {
                 source("title-only-summary")
                 await { received.size == 6 && text(popup()) == "תקלה" }
                 source("expanded-summary")
-                await { received.size == 7 && text(popup()) == "תקלה" }
+                await { received.size == 7 && text(popup()) == "הודעת צוות מורחבת" }
 
                 source("clear")
                 SystemClock.sleep(700)
