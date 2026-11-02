@@ -136,7 +136,7 @@ internal fun IntegrationField(value: String, update: (String) -> Unit, modifier:
                         editRevision++
                     }
                 }
-                setOnEditorActionListener { _, action, _ ->
+                setOnEditorActionListener { view, action, _ ->
                     val callback = when (action) {
                         EditorInfo.IME_ACTION_NEXT -> actions.onNext
                         EditorInfo.IME_ACTION_DONE -> actions.onDone
@@ -145,7 +145,8 @@ internal fun IntegrationField(value: String, update: (String) -> Unit, modifier:
                     if (callback != null) {
                         callback.invoke(object : KeyboardActionScope {
                             override fun defaultKeyboardAction(imeAction: ImeAction) {
-                                if (imeAction == ImeAction.Next) focusSearch(android.view.View.FOCUS_FORWARD)?.requestFocus()
+                                if (imeAction == ImeAction.Next) (view.parent as android.view.ViewGroup)
+                                    .focusSearch(view, android.view.View.FOCUS_FORWARD)?.requestFocus()
                                 else (context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager)
                                     .hideSoftInputFromWindow(windowToken, 0)
                             }

@@ -131,6 +131,27 @@ class IntegrationFieldErrorTest {
         onView(withHint("Fixture")).check(matches(withText("bad")))
     }
 
+    @Test fun nativeNextDefaultActionMovesFocusForward() {
+        compose.setContent {
+            val context = androidx.appcompat.view.ContextThemeWrapper(LocalContext.current, R.style.AppTheme)
+            CompositionLocalProvider(LocalContext provides context) {
+                IntegrationTheme { androidx.compose.foundation.layout.Column {
+                    IntegrationField("", {}, label = "First",
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                            imeAction = androidx.compose.ui.text.input.ImeAction.Next),
+                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onNext = {
+                            defaultKeyboardAction(androidx.compose.ui.text.input.ImeAction.Next)
+                        }))
+                    IntegrationField("", {}, label = "Second")
+                } }
+            }
+        }
+        onView(withHint("First")).perform(androidx.test.espresso.action.ViewActions.click(),
+            androidx.test.espresso.action.ViewActions.pressImeActionButton())
+        onView(withHint("Second")).check(matches(hasFocus()))
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+    }
+
     @Test fun formErrorsAndReadOnlyCodesKeepValidationAndClearBillingContract() {
         var fields by mutableStateOf(List(9) { "" })
         var previews = 0
