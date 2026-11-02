@@ -32,6 +32,71 @@ class PrivacyScreenTest {
     @Test fun englishPolicyNavigationAndState() = verifyScreen("en", "Privacy policy", "unable to connect")
     @Test fun hebrewPolicyNavigationAndState() = verifyScreen("he", "מדיניות פרטיות", "לא ניתן להתחבר")
 
+    @Test fun retainedAuthenticPoliciesRenderAndScrollInBothLocales() {
+        for ((language, hash) in mapOf(
+            "en" to "9efca8dbd6eb632fc6f0027ca1da03f113b41130bad9f9dbbcdcb636b901e9ac",
+            "he" to "c9d22a2aa8313cf46451c36f56680e5b79b9b05fd6c00037e85a868f1c286a46")) {
+            val bytes = java.io.File(instrumentation.targetContext.getExternalFilesDir(null), "policy-$language.html").readBytes()
+            assertEquals(hash, java.security.MessageDigest.getInstance("SHA-256").digest(bytes)
+                .joinToString("") { "%02x".format(it) })
+            instrumentation.runOnMainSync {
+                atlow.chemi.mymada.helpers.LocalHelper.setLocale(instrumentation.targetContext, language)
+            }
+            preferences.edit().putBoolean("Mapp", false).commit()
+            ActivityScenario.launch(PrivacyActivity::class.java).use { scenario ->
+                waitForBody(scenario, if (language == "en") "unable to connect" else "לא ניתן להתחבר")
+                scenario.onActivity {
+                    webView(it.window.decorView)!!.loadDataWithBaseURL("file:///android_asset/policy-$language.html",
+                        bytes.toString(Charsets.UTF_8), "text/html", "UTF-8", null)
+                }
+                waitForBody(scenario, if (language == "en") "MADA reports" else "דיווחי מגן דוד אדום")
+                val ready = AtomicReference("")
+                compose.waitUntil(15_000) {
+                    scenario.onActivity {
+                        webView(it.window.decorView)!!.evaluateJavascript(
+                            "document.readyState==='complete' && document.fonts.status==='loaded'", ready::set)
+                    }
+                    ready.get() == "true"
+                }
+                fun capture(phase: String) {
+                    val painted = java.util.concurrent.atomic.AtomicBoolean(false)
+                    scenario.onActivity {
+                        webView(it.window.decorView)!!.postVisualStateCallback(0, object : WebView.VisualStateCallback() {
+                            override fun onComplete(requestId: Long) { painted.set(true) }
+                        })
+                    }
+                    compose.waitUntil(5_000) { painted.get() }
+                    instrumentation.uiAutomation.waitForIdle(500, 5000)
+                    val image = instrumentation.uiAutomation.takeScreenshot()
+                    java.io.File(instrumentation.targetContext.getExternalFilesDir(null), "authentic-policy-$language-$phase.png")
+                        .outputStream().use { image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+                    image.recycle()
+                }
+                capture("top")
+                androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(WebView::class.java))
+                    .perform(androidx.test.espresso.action.ViewActions.swipeUp())
+                compose.waitUntil(5_000) {
+                    var scrolled = false
+                    scenario.onActivity { scrolled = webView(it.window.decorView)!!.scrollY > 0 }
+                    scrolled
+                }
+                val bottom = AtomicReference("")
+                compose.waitUntil(5_000) {
+                    scenario.onActivity {
+                        webView(it.window.decorView)!!.evaluateJavascript(
+                            "window.scrollTo(0,document.body.scrollHeight);" +
+                                "(()=>{const e=document.querySelector('a[href=\"mailto:atlowapps@gmail.com\"]');" +
+                                "const r=e.getBoundingClientRect();return e.innerText==='atlowapps@gmail.com'&&r.top>=0&&r.bottom<=innerHeight})()",
+                            bottom::set)
+                    }
+                    bottom.get() == "true"
+                }
+                waitForBody(scenario, if (language == "en") "Contact Us" else "יצירת קשר")
+                capture("bottom")
+            }
+        }
+    }
+
     @Test fun localLoadedPolicyScrollsAndNavigatesWithinTheRealHost() {
         instrumentation.runOnMainSync {
             atlow.chemi.mymada.helpers.LocalHelper.setLocale(instrumentation.targetContext, "en")
