@@ -143,7 +143,7 @@
     <string name="Mcode">קודים רפואיים</string>
     <string name="langSwitched">השינוי יכנס לתוקף בכניסה הבאה לאפליקציה.</string>
     <string name="err">תקלה</string>
-    <string name="activationCodeIncomplete">לא הזנת את הקוד במלואו!</string>
+    <string name="activationCodeIncomplete" translatable="false">לא הזנת את הקוד במלואו!</string>
     <string name="ok">אישור</string>
     <string name="apply">החל</string>
     <string name="codeGood">קוד הפעלה נקלט בהצלחה!\nהאפליקציה תופעל כעת!</string>
