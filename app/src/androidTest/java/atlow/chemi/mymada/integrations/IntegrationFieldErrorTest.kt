@@ -104,6 +104,33 @@ class IntegrationFieldErrorTest {
         compose.onNodeWithText("Required").assertDoesNotExist()
     }
 
+    @Test fun nativeTypingIsNotReplayedFromAnOlderComposition() {
+        var value by mutableStateOf("")
+        compose.setContent {
+            val context = androidx.appcompat.view.ContextThemeWrapper(LocalContext.current, R.style.AppTheme)
+            CompositionLocalProvider(LocalContext provides context) {
+                IntegrationTheme { IntegrationField(value, { value = it }, label = "Fixture") }
+            }
+        }
+        var editor: android.widget.EditText? = null
+        onView(withHint("Fixture")).check { view, _ -> editor = view as android.widget.EditText }
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        compose.mainClock.autoAdvance = false
+        try {
+            for (letter in "bad") {
+                instrumentation.runOnMainSync { editor!!.append(letter.toString()) }
+                instrumentation.waitForIdleSync()
+                instrumentation.runOnMainSync { assertEquals(value, editor!!.text.toString()) }
+                compose.mainClock.advanceTimeByFrame()
+            }
+        } finally {
+            compose.mainClock.autoAdvance = true
+        }
+        compose.waitForIdle()
+        assertEquals("bad", value)
+        onView(withHint("Fixture")).check(matches(withText("bad")))
+    }
+
     @Test fun formErrorsAndReadOnlyCodesKeepValidationAndClearBillingContract() {
         var fields by mutableStateOf(List(9) { "" })
         var previews = 0

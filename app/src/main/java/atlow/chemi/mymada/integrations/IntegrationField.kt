@@ -77,6 +77,8 @@ internal fun IntegrationField(value: String, update: (String) -> Unit, modifier:
     val currentValue by rememberUpdatedState(value)
     var editor by remember { mutableStateOf<TextInputEditText?>(null) }
     var editRevision by remember { mutableIntStateOf(0) }
+    // Recompose before reconciling: observing edits only in AndroidView.update can replay stale value.
+    val revision = editRevision
     AndroidView(modifier = modifier.semantics {
         if (label != null) contentDescription = label
         this[SemanticsProperties.Text] = listOfNotNull(label, error).map(::AnnotatedString)
@@ -155,7 +157,7 @@ internal fun IntegrationField(value: String, update: (String) -> Unit, modifier:
             })
         }
     }, update = { layout ->
-        @Suppress("UNUSED_VARIABLE") val revision = editRevision
+        @Suppress("UNUSED_VARIABLE") val appliedRevision = revision
         layout.isHintEnabled = label != null
         layout.hint = label
         layout.isExpandedHintEnabled = error == null
