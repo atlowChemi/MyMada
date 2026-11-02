@@ -104,6 +104,22 @@ class OverlayLifecycleTest {
                 AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
         }
         fun bounds(id: String) = Rect().also { requireNotNull(node(id)) { "Missing overlay node $id" }.getBoundsInScreen(it) }
+        fun assertTargetContained(label: String) {
+            // Accessibility can clip an off-root child; inspect its actual layout as well.
+            if (android.os.Build.VERSION.SDK_INT >= 29) instrumentation.runOnMainSync {
+                val target = android.view.inspector.WindowInspector.getGlobalWindowViews()
+                    .firstNotNullOf { it.findViewById<android.view.View>(atlow.chemi.mymada.R.id.remove_relativelayout) }
+                val icon = target.findViewById<android.view.View>(atlow.chemi.mymada.R.id.remove_img)
+                assertTrue("$label: target must contain the entire removal icon",
+                    icon.left >= 0 && icon.top >= 0 && icon.right <= target.width && icon.bottom <= target.height)
+            }
+            val directory = java.io.File(context.getExternalFilesDir(null), "overlay-rtl").apply { mkdirs() }
+            val image = instrumentation.uiAutomation.takeScreenshot()
+            java.io.File(directory, "$label.png").outputStream().use {
+                image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+            }
+            image.recycle()
+        }
         var down = 0L
         fun touch(action: Int, x: Float, y: Float) {
             if (action == MotionEvent.ACTION_DOWN) down = SystemClock.uptimeMillis()
@@ -123,6 +139,7 @@ class OverlayLifecycleTest {
                 await { node("remove_img") != null }
                 val normal = bounds("remove_img")
                 val normalWindow = bounds("remove_relativelayout")
+                assertTargetContained("normal")
                 val x = normal.exactCenterX()
                 val y = normal.exactCenterY()
                 touch(MotionEvent.ACTION_MOVE, x, y)
@@ -130,9 +147,11 @@ class OverlayLifecycleTest {
                 val enlarged = bounds("remove_img")
                 assertEquals((normal.height() * 1.5).toInt(), enlarged.height())
                 val enlargedWindow = bounds("remove_relativelayout")
+                assertTargetContained("highlighted")
                 assertEquals("The window must grow, not just a scaled child",
                     normalWindow.width() + enlarged.width() - normal.width(), enlargedWindow.width())
                 assertEquals(normalWindow.height() + enlarged.height() - normal.height(), enlargedWindow.height())
+                await { bounds("root_container").centerY() >= normal.top }
                 val bubble = bounds("root_container")
                 touch(MotionEvent.ACTION_MOVE, x, y)
                 assertEquals("Repeated MOVE must not shift the snapped bubble", bubble, bounds("root_container"))
