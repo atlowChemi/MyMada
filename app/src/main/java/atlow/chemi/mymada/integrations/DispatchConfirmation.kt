@@ -65,7 +65,8 @@ class DispatchConfirmation : DialogFragment() {
                                 }
                             }
                     }) {
-                        Text(text, modifier = Modifier.padding(horizontal = 24.dp).testTag("dispatch-summary"))
+                        Text(text, style = LocalTextStyle.current.copy(textDirection = androidx.compose.ui.text.style.TextDirection.Content),
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).testTag("dispatch-summary"))
                     }
                 }
             }
