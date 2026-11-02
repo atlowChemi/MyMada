@@ -24,6 +24,8 @@ class contactChatActivity : AppCompatActivity() {
     override fun attachBaseContext(base: Context) = super.attachBaseContext(LocalHelper.onAttach(base))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Resize the weighted conversation above the IME instead of panning the toolbar away.
+        window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         setContentView(R.layout.activity_contact_chat)
         setTitle(R.string.title_activity_contact)
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
