@@ -25,6 +25,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.LayoutDirection
@@ -42,6 +45,7 @@ class MedicalPickerDialog : DialogFragment() {
     private lateinit var codes: List<mCodeKid>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AlertDialogStyle)
         val args = requireArguments()
         val names = requireNotNull(args.getCharSequenceArray("names"))
         val ids = requireNotNull(args.getCharSequenceArray("ids"))
@@ -59,11 +63,12 @@ class MedicalPickerDialog : DialogFragment() {
                 IntegrationTheme {
                     val keyboard = LocalSoftwareKeyboardController.current
                     Surface {
-                        Column(Modifier.fillMaxWidth().heightIn(max = (LocalConfiguration.current.screenHeightDp - 120).dp).padding(16.dp)) {
-                            Text("בחר קודים רפואיים", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
-                            TextField(query, { query = it }, label = { Text(stringResource(R.string.search)) },
+                        Column(Modifier.fillMaxWidth().heightIn(max = (LocalConfiguration.current.screenHeightDp - 48).dp)) {
+                            Text("בחר קודים רפואיים", style = TextStyle(fontSize = 20.sp, lineHeight = 22.sp),
+                                modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 18.dp, bottom = 16.dp))
+                            IntegrationField(query, { query = it }, label = stringResource(R.string.search),
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { keyboard?.hide() }),
-                                singleLine = true, modifier = Modifier.fillMaxWidth().testTag("medical-query"))
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp).testTag("medical-query"))
                             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                                 LazyColumn(Modifier.weight(1f).testTag("medical-catalog")) {
                                     items(codes.filter { query.isEmpty() || it.name.contains(query, true) || it.id.contains(query, true) || (query.contains("לבבי") && it.category == "vasc") }, key = { it.order }) { code ->
@@ -81,23 +86,27 @@ class MedicalPickerDialog : DialogFragment() {
                                             else -> "#6b7177"
                                         }))
                                         if (code.id == "sep") Surface(color = color) {
-                                            Text(code.name, fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(vertical = 17.dp))
+                                            Text(code.name, style = TextStyle(fontSize = 14.sp, lineHeight = 18.sp,
+                                                platformStyle = PlatformTextStyle(includeFontPadding = true)), textAlign = TextAlign.Center,
+                                                modifier = Modifier.fillMaxWidth().padding(vertical = 17.dp))
                                         } else Row(Modifier.fillMaxWidth().testTag("medical-code-${code.id}").toggleable(code.id in selected, role = Role.Checkbox) {
                                             selected = if (it) selected + code.id else selected - code.id
                                             publish()
                                         }.padding(vertical = 12.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                                            Checkbox(code.id in selected, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = color, uncheckedColor = color))
-                                            Text(code.name, fontFamily = FontFamily(Font(R.font.opensans_hebrew)), fontSize = 14.sp, letterSpacing = 0.sp)
+                                            Checkbox(code.id in selected, onCheckedChange = null, modifier = Modifier.padding(horizontal = 6.dp).size(18.dp),
+                                                colors = CheckboxDefaults.colors(checkedColor = color, uncheckedColor = color))
+                                            Text(code.name, style = TextStyle(fontFamily = FontFamily(Font(R.font.opensans_hebrew)), fontSize = 14.sp,
+                                                lineHeight = 18.sp, platformStyle = PlatformTextStyle(includeFontPadding = true)))
                                         }
                                         HorizontalDivider(color = Color(0xffd0d0d0))
                                     }
                                 }
                             }
-                            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                    TextButton(onClick = { publish(); dismiss() }, modifier = Modifier.testTag("medical-done")) { Text(stringResource(R.string.ok)) }
+                                Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), horizontalArrangement = Arrangement.End) {
+                                    TextButton(onClick = { publish(); dismiss() }, modifier = Modifier.testTag("medical-done")) {
+                                        Text(stringResource(R.string.ok), fontWeight = FontWeight.Normal)
+                                    }
                                 }
-                            }
                         }
                     }
                 }
@@ -105,7 +114,6 @@ class MedicalPickerDialog : DialogFragment() {
         }
     override fun onStart() {
         super.onStart()
-        requireDialog().window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         requireDialog().window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
     private fun publish() {
