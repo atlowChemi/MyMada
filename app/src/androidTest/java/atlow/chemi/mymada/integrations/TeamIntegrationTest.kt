@@ -97,13 +97,16 @@ class TeamIntegrationTest {
             capture("add", language)
             compose.onNodeWithTag("member-save").performClick()
             compose.onNodeWithText(LocalHelper.onAttach(context).getString(R.string.emailNameNone)).assertIsDisplayed()
+            capture("blank-member", language)
             compose.onNodeWithTag("member-name").performTextReplacement("Fixture Member")
             compose.onNodeWithTag("member-role").performTouchInput { click() }
+            capture("roles-open", language)
             androidx.test.espresso.Espresso.onData(org.hamcrest.Matchers.equalTo(TeamContract.roles[2]))
                 .inRoot(androidx.test.espresso.matcher.RootMatchers.isPlatformPopup()).perform(androidx.test.espresso.action.ViewActions.click())
             scenario.recreate()
             android.util.Log.i("TeamFixture", "Restored draft")
             compose.onNodeWithTag("member-name").assertTextContains("Fixture Member")
+            capture("restored-draft", language)
             androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withClassName(org.hamcrest.Matchers.endsWith("AppCompatSpinner")))
                 .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
                 .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.withSpinnerText(TeamContract.roles[2])))
@@ -118,6 +121,8 @@ class TeamIntegrationTest {
             scenario.onActivity { team(it).childFragmentManager.executePendingTransactions() }
             compose.onNodeWithTag("member-name").assertTextContains("Fixture Member")
             compose.onNodeWithTag("member-name").performTextReplacement("Edited Member")
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            capture("edit", language)
             compose.onNodeWithTag("member-role").performTouchInput { click() }
             androidx.test.espresso.Espresso.onData(org.hamcrest.Matchers.equalTo(TeamContract.roles[6]))
                 .inRoot(androidx.test.espresso.matcher.RootMatchers.isPlatformPopup()).perform(androidx.test.espresso.action.ViewActions.click())
