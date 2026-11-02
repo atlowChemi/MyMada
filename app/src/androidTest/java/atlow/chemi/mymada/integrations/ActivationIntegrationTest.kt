@@ -207,7 +207,7 @@ class ActivationIntegrationTest {
             compose.onNodeWithTag("activation-request-confirm").performClick()
             closeSoftKeyboard()
             compose.onNodeWithTag("activation-request-submit").performClick()
-            compose.onNodeWithText(LocalHelper.onAttach(context).getString(R.string.emailNone)).assertIsDisplayed()
+            onView(withText(LocalHelper.onAttach(context).getString(R.string.emailNone))).check(matches(isDisplayed()))
             compose.onNodeWithTag("activation-request-0").performScrollTo().performTextReplacement("fixture@example.org")
             compose.onNodeWithTag("activation-request-1").performScrollTo().performTextReplacement("Fixture Name")
             compose.onNodeWithTag("activation-request-2").performScrollTo().performTextReplacement("A&B#\nשלום")
