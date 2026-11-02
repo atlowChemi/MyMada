@@ -7,6 +7,15 @@ saveable details/editor state and dialog lifetime. Native AppCompat dialogs and
 Hebrew button/title wording (including in English). The replaced Java adapter,
 model and Fragment and unused list layouts are removed.
 
+Editable text retains platform fallback spacing: native API37 fields are108/340px
+when empty and113/345px when populated at420dpi/font1.0. Do not apply the static
+spinner-label fitting policy to editors. API35 locale minimum metrics are disabled
+locally. Error captions use named system sans-serif, as the
+native error appearance did, while fields/title/buttons retain the bundled font.
+Dialog button minima use legacy screen-height qualifiers and both minimum-height
+properties. `validationCaptionMetrics` checks native empty-editor/caption heights,
+populated editable metrics and required/unchanged validation without backend writes.
+
 ## Remote contract / ownership
 
 - Firestore `dictionary`, query `approved == true`; document ID is authoritative.
