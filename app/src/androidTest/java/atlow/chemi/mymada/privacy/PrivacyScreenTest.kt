@@ -32,6 +32,55 @@ class PrivacyScreenTest {
     @Test fun englishPolicyNavigationAndState() = verifyScreen("en", "Privacy policy", "unable to connect")
     @Test fun hebrewPolicyNavigationAndState() = verifyScreen("he", "מדיניות פרטיות", "לא ניתן להתחבר")
 
+    @Test fun localLoadedPolicyScrollsAndNavigatesWithinTheRealHost() {
+        instrumentation.runOnMainSync {
+            atlow.chemi.mymada.helpers.LocalHelper.setLocale(instrumentation.targetContext, "en")
+        }
+        preferences.edit().putBoolean("Mapp", false).commit()
+        ActivityScenario.launch(PrivacyActivity::class.java).use { scenario ->
+            waitForBody(scenario, "unable to connect")
+            // Synthetic content proves client behavior, not the authenticity of the remote policy.
+            val html = "<html><meta name='viewport' content='width=device-width,initial-scale=1'><body>" +
+                "<h1>Synthetic local policy</h1>" +
+                (1..60).joinToString("") { "<p>Local policy fixture paragraph $it. Scroll acceptance content.</p>" } +
+                "<a id='end' href='err.html?lng=en'>End of local policy</a></body></html>"
+            scenario.onActivity {
+                webView(it.window.decorView)!!.loadDataWithBaseURL("file:///android_asset/local-policy.html",
+                    html, "text/html", "UTF-8", null)
+            }
+            waitForBody(scenario, "Synthetic local policy")
+            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(WebView::class.java))
+                .perform(androidx.test.espresso.action.ViewActions.swipeUp())
+            compose.waitUntil(5_000) {
+                var scrolled = false
+                scenario.onActivity { scrolled = webView(it.window.decorView)!!.scrollY > 0 }
+                scrolled
+            }
+            val bottom = AtomicReference("")
+            scenario.onActivity {
+                webView(it.window.decorView)!!.evaluateJavascript("window.scrollTo(0,document.body.scrollHeight)", null)
+            }
+            compose.waitUntil(5_000) {
+                scenario.onActivity {
+                    webView(it.window.decorView)!!.evaluateJavascript(
+                        "document.getElementById('end').getBoundingClientRect().bottom <= innerHeight", bottom::set)
+                }
+                bottom.get() == "true"
+            }
+            instrumentation.uiAutomation.waitForIdle(500, 5000)
+            val image = instrumentation.uiAutomation.takeScreenshot()
+            java.io.File(instrumentation.targetContext.getExternalFilesDir(null), "privacy-local-loaded-bottom.png")
+                .outputStream().use { image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+            image.recycle()
+            scenario.onActivity {
+                webView(it.window.decorView)!!.evaluateJavascript("document.getElementById('end').click()", null)
+            }
+            waitForBody(scenario, "unable to connect")
+            scenario.recreate()
+            waitForBody(scenario, "unable to connect")
+        }
+    }
+
     private fun verifyScreen(language: String, title: String, error: String) {
         instrumentation.runOnMainSync {
             atlow.chemi.mymada.helpers.LocalHelper.setLocale(instrumentation.targetContext, language)
