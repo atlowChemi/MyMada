@@ -58,7 +58,7 @@ class ContracTimer : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 revision
-                ContractionScreen(session.entries, session.reactNative, dialog, onToggle = {
+                ContractionScreen(session.entries, dialog, onToggle = {
                     session.toggle(System.currentTimeMillis())
                     revision++
                     persist()

@@ -44,7 +44,7 @@ import kotlin.math.roundToInt
 import atlow.chemi.mymada.R
 
 @Composable
-fun ContractionScreen(entries: List<ContractionEntry>, showActiveRow: Boolean, dialog: Int, onToggle: () -> Unit, onDialog: (Boolean) -> Unit) {
+fun ContractionScreen(entries: List<ContractionEntry>, dialog: Int, onToggle: () -> Unit, onDialog: (Boolean) -> Unit) {
     val assets = LocalContext.current.assets
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -63,9 +63,9 @@ fun ContractionScreen(entries: List<ContractionEntry>, showActiveRow: Boolean, d
                 val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
                 val history: @Composable (Modifier) -> Unit = { modifier ->
                     LazyColumn(modifier.testTag("contraction-history"), state = scroll, contentPadding = PaddingValues(horizontal = 9.dp)) {
-                        items(entries.filter { showActiveRow || it.end != null }.asReversed(), key = { it.number }) { entry ->
+                        items(entries.asReversed(), key = { it.number }) { entry ->
                             Box(Modifier.padding(top = if (entry == entries.first()) 9.dp else 5.dp, bottom = (5 + 4f / 9).dp)
-                                .fillMaxWidth()
+                                .fillMaxWidth().testTag("contraction-row-${entry.number}")
                                 .shadow(4.dp, RoundedCornerShape(6.dp)).clip(RoundedCornerShape(6.dp))
                                 .background(colorResource(R.color.White))) {
                                 Column(Modifier.fillMaxWidth().padding(start = 50.dp).padding(8.dp)) {
