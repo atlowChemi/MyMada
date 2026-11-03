@@ -140,7 +140,8 @@ class CallRouteTest {
         }
         notifications(0)
         settings.edit().putBoolean("callT3", true).commit()
-        instrumentation.runOnMainSync { post(null, null, title = null) }
+        // A new malformed identity still falls back; the filtered valid source above is a different key.
+        instrumentation.runOnMainSync { post(null, null, id = 9, title = null) }
         assertEquals("תקלה", notifications(1).single().extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
         settings.edit().putBoolean("Mapp", false).commit()
         instrumentation.runOnMainSync { post("הודעת צוות בדיקה", pending(4)) }
@@ -251,6 +252,9 @@ class CallRouteTest {
             .putBoolean("NsouT1", true).putBoolean("NvibT1", true).putBoolean("volumeApp", false).commit()
         val delivered = java.util.concurrent.CopyOnWriteArrayList<Int>()
         val tapWindows = java.util.concurrent.CopyOnWriteArrayList<Boolean>()
+        val destroyedTaps = java.util.concurrent.atomic.AtomicInteger()
+        var incomingPlaybackRequested = false
+        var incomingVibrationInitialized = false
         val action = "${context.packageName}.SHADE_SOURCE_FIXTURE"
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) { delivered += intent.getIntExtra("source", -1) }
@@ -258,8 +262,16 @@ class CallRouteTest {
         fun field(activity: smsRes, name: String): Any? = smsRes::class.java.getDeclaredField(name)
             .apply { isAccessible = true }.get(activity)
         val lifecycle = ActivityLifecycleCallback { activity, stage ->
+            if (activity is smsRes && stage == Stage.STARTED && CallEvent.from(activity.intent).text == "התראה חדשה") {
+                // Observe initialization before an emulator audio-device error can release the player.
+                incomingPlaybackRequested = field(activity, "player") != null
+                incomingVibrationInitialized = field(activity, "vibrator") != null
+            }
             if (activity is smsRes && stage == Stage.RESUMED && CallEvent.from(activity.intent).text == "בדיקת לחיצה") {
                 tapWindows += listOf("player", "audio", "vibrator").all { field(activity, it) == null }
+            }
+            if (activity is smsRes && stage == Stage.DESTROYED && CallEvent.from(activity.intent).text == "בדיקת לחיצה") {
+                destroyedTaps.incrementAndGet()
             }
         }
         val blocked = object : ContextWrapper(context) {
@@ -276,9 +288,10 @@ class CallRouteTest {
             assertEquals(source, alert.actions.last().actionIntent)
             alert.contentIntent.send()
             val deadline = SystemClock.uptimeMillis() + 3000
-            while (delivered.size < id && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
+            while ((delivered.size < id || destroyedTaps.get() < id) && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
             instrumentation.waitForIdleSync()
             assertEquals((1..id).toList(), delivered.toList())
+            assertEquals("Successful source handoff must finish its silent owner", id, destroyedTaps.get())
             assertEquals(id, tapWindows.size)
             assertTrue("Shade entry must not initialize alert audio/vibration", tapWindows.all { it })
             notifications(0)
@@ -289,8 +302,8 @@ class CallRouteTest {
             tap(1)
             ActivityScenario.launch<smsRes>(CallEvent(1, "התראה חדשה", null).popupIntent(context, -1, false)).use { scenario ->
                 scenario.onActivity {
-                    assertNotNull("New incoming alerts still start playback", field(it, "player"))
-                    assertNotNull("New incoming alerts retain vibration", field(it, "vibrator"))
+                    assertTrue("New incoming alerts still request playback", incomingPlaybackRequested)
+                    assertTrue("New incoming alerts retain vibration", incomingVibrationInitialized)
                 }
                 tap(2) // Existing singleTop popup receives onNewIntent, rather than a second audible alert.
             }
