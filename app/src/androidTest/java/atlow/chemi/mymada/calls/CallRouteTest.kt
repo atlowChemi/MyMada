@@ -216,7 +216,7 @@ class CallRouteTest {
         assertEquals(4, notifications(6).count { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString() == "תקלה" })
     }
 
-    @Test fun blockedPopupLeavesPerCallTapFallbackUntilPopupActuallyOpens() {
+    @Test fun blockedPopupRetainsNotificationUntilExplicitShadeTap() {
         settings.edit().putBoolean("win", true).putBoolean("NsouT1", false).putBoolean("NvibT1", false).commit()
         var attempts = 0
         val blocked = object : ContextWrapper(context) {
@@ -245,6 +245,64 @@ class CallRouteTest {
         settings.edit().putBoolean("not", false).commit()
         instrumentation.runOnMainSync { GrobootRec().onReceive(blocked, Intent("MADA_APP").putExtra("text", "מושבת")) }
         notifications(0) // Explicit notification opt-out is still respected.
+    }
+
+    @Test fun automaticPopupCloseAndTimeoutRetainNotificationsUntilExplicitActions() {
+        settings.edit().putBoolean("win", true).putBoolean("NsouT1", false).putBoolean("NvibT1", false).commit()
+        val launches = mutableListOf<Intent>()
+        val blocked = object : ContextWrapper(context) {
+            override fun startActivity(intent: Intent) { launches += intent }
+        }
+        val received = java.util.concurrent.CopyOnWriteArrayList<Int>()
+        val action = "${context.packageName}.RETAINED_SOURCE_FIXTURE"
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) { received += intent.getIntExtra("source", -1) }
+        }
+        ContextCompat.registerReceiver(context, receiver, IntentFilter(action), ContextCompat.RECEIVER_NOT_EXPORTED)
+        try {
+            for (id in 1..3) {
+                val source = PendingIntentCompat.getBroadcast(context, 950 + id,
+                    Intent(action).setPackage(context.packageName).putExtra("source", id), PendingIntent.FLAG_UPDATE_CURRENT, false)
+                instrumentation.runOnMainSync {
+                    GrobootRec().onReceive(blocked, Intent("MADA_APP").putExtra("callT", 1)
+                        .putExtra("text", "מקרה שמור $id").putExtra("sourceIntent", source))
+                }
+                notifications(id)
+            }
+            manager.notify(7999, NotificationCompat.Builder(context, "notWithWin")
+                .setSmallIcon(R.drawable.ic_siren).setContentTitle("Unrelated control").setGroup("Other").build())
+            notifications(4)
+            // Use the exact automatic launch Intent emitted after notify, without the shade flag.
+            ActivityScenario.launch<smsRes>(launches[0]).use { scenario ->
+                scenario.onActivity { assertEquals("מקרה שמור 1", it.findViewById<TextView>(R.id.Address).text.toString()) }
+                notifications(4)
+                scenario.recreate()
+                notifications(4)
+            }
+            notifications(4) // Ordinary close is not notification acknowledgment.
+            settings.edit().putBoolean("killS", true).putString("timeK", "1").commit()
+            ActivityScenario.launch<smsRes>(launches[1]).use { scenario ->
+                val deadline = SystemClock.uptimeMillis() + 3000
+                while (scenario.state != androidx.lifecycle.Lifecycle.State.DESTROYED && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
+                assertEquals(androidx.lifecycle.Lifecycle.State.DESTROYED, scenario.state)
+            }
+            notifications(4) // Auto-stop closes the popup only.
+            settings.edit().putBoolean("killS", false).commit()
+            ActivityScenario.launch<smsRes>(launches[0]).use { scenario ->
+                scenario.onActivity { it.findViewById<Button>(R.id.buttonI).performClick() }
+            }
+            notifications(3)
+            assertEquals(listOf(1), received.toList())
+            assertFalse(manager.activeNotifications.any { it.id == launches[0].getIntExtra("notNum", -1) })
+            val second = manager.activeNotifications.single { it.id == launches[1].getIntExtra("notNum", -1) }
+            second.notification.contentIntent.send()
+            val deadline = SystemClock.uptimeMillis() + 3000
+            while (received.size < 2 && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
+            assertEquals(listOf(1, 2), received.toList())
+            val remaining = notifications(2)
+            assertTrue(remaining.any { it.group == "Other" })
+            assertEquals("מקרה שמור 3", remaining.single { it.group == "Calls" }.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
+        } finally { context.unregisterReceiver(receiver) }
     }
 
     @Test fun shadeTapSendsEachSourceOnceWithoutRestartingAlertColdAndWarm() {

@@ -128,7 +128,9 @@ decisions. [Testing](TESTING.md) distinguishes local behavior from live delivery
   enablement uses T4 audio. Unsplit calls use general audio. Inclusive night bounds
   and combined sleep remain; popup/overlay `statVib` predicates are not identical.
 - Post notification fallback before attempted background popup launch when allowed;
-  opening clears only that fallback. A shade tap opens the original source once
+  automatic popup opening, closing, recreation and timeout retain it. Explicit
+  shade/source-details taps clear only the matching Calls notification; user swipe
+  and existing Calls-only replacement remain available. A shade tap opens the original source once
   through the existing Activity without restarting alert playback/vibration.
   Missing/canceled source actions leave readable, silent call details; automatic
   incoming alerts retain their normal alert behavior. This grants no automatic-launch

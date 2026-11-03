@@ -48,10 +48,9 @@ class smsRes : AppCompatActivity() {
             isAppearanceLightNavigationBars = false
         }
         val event = CallEvent.from(intent)
-        // Android may reject an automatic background launch. Keep its fallback until this UI opens.
-        dismissNotification()
         sourceAttempted = savedInstanceState?.getBoolean("sourceAttempted") ?: false
         if (intent.getBooleanExtra("openSource", false)) {
+            dismissNotification()
             if (sourceAttempted) showCall(event)
             return
         }
@@ -113,6 +112,7 @@ class smsRes : AppCompatActivity() {
     }
 
     private fun openDetails(event: CallEvent) {
+        dismissNotification()
         sendSource(event)
         finish()
     }
