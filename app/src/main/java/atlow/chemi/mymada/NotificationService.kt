@@ -16,6 +16,8 @@ import atlow.chemi.mymada.calls.CallRecovery
 
 /** Keep the installed native listener identity. */
 open class NotificationService : NotificationListenerService() {
+    // Active source identities only; never borrow content or suppress valid repeat deliveries.
+    private val validSources = linkedSetOf<String>()
     protected open val listenerClass: Class<out NotificationService> get() = NotificationService::class.java
     override fun onNotificationPosted(posted: StatusBarNotification?) {
         deliver(posted, false)
@@ -43,6 +45,7 @@ open class NotificationService : NotificationListenerService() {
         val body = extras?.getCharSequence(Notification.EXTRA_TEXT)?.takeIf { it.isNotEmpty() }
             ?: extras?.getCharSequence(Notification.EXTRA_BIG_TEXT)
             ?: extras?.getCharSequence(Notification.EXTRA_TEXT)
+        if (body.isNullOrBlank() && posted.key in validSources) return
         val call = CallParser.parse(getSharedPreferences("Settings", 0).getBoolean("Mapp", false),
             posted.packageName, title, body) ?: return
         val event = Intent("MADA_APP")
@@ -53,17 +56,25 @@ open class NotificationService : NotificationListenerService() {
             .putExtra("callT", call.type).putExtra("time", call.time)
             .putExtra("sourceIntent", notification.contentIntent)
         if (!CallRecovery.track(this, posted, title, body, event, recovered)) return
+        if (!body.isNullOrBlank()) {
+            validSources.remove(posted.key)
+            validSources.add(posted.key)
+            // ponytail: bounded in-process protection; evicted/disconnected keys use fresh-event policy.
+            if (validSources.size > 1024) validSources.remove(validSources.first())
+        }
         DetectionStatus.refresh(this)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(event)
     }
 
     override fun onNotificationRemoved(posted: StatusBarNotification?) {
+        validSources.remove(posted?.key)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || posted?.packageName != packageName) return
         val channel = posted.notification?.channelId ?: return
         if (channel.contains("generated")) getSystemService(NotificationManager::class.java)?.deleteNotificationChannel(channel)
     }
 
     override fun onListenerConnected() {
+        validSources.clear()
         DetectionStatus.refresh(this)
         if (ListenerAccess.selected(this) != ComponentName(this, listenerClass)) return
         try {
@@ -74,6 +85,7 @@ open class NotificationService : NotificationListenerService() {
     }
 
     override fun onListenerDisconnected() {
+        validSources.clear()
         CallRecovery.disconnected(ComponentName(this, listenerClass))
         ListenerAccess.stopIfRevoked(this)
         ListenerAccess.rebind(this)

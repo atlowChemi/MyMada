@@ -25,6 +25,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.test.core.app.ActivityScenario
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
+import androidx.test.runner.lifecycle.ActivityLifecycleCallback
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.MokedPage
 import atlow.chemi.mymada.NotificationService
@@ -80,15 +81,18 @@ class CallRouteTest {
         Intent(context, MokedPage::class.java).putExtra("fixture", id), PendingIntent.FLAG_UPDATE_CURRENT, false))
 
     private fun post(text: CharSequence?, source: PendingIntent?, id: Int = 1, title: CharSequence? = "*אירוע חדש*",
-                     expanded: CharSequence? = null, summary: Boolean = false) {
+                     expanded: CharSequence? = null, summary: Boolean = false, tag: String? = null,
+                     pack: String = "com.groboot.mdaemergency"): StatusBarNotification {
         val notification = NotificationCompat.Builder(context, "source-fixture").setSmallIcon(R.drawable.ic_siren)
             .setContentTitle(title).setContentText(text).setContentIntent(source)
             .apply {
                 if (expanded != null) setStyle(NotificationCompat.BigTextStyle().bigText(expanded))
                 if (summary) setGroup("source-calls").setGroupSummary(true)
             }.build()
-        listener.onNotificationPosted(StatusBarNotification("com.groboot.mdaemergency", "com.groboot.mdaemergency",
-            id, null, Process.myUid(), Process.myPid(), 0, notification, Process.myUserHandle(), System.currentTimeMillis()))
+        val posted = StatusBarNotification(pack, pack,
+            id, tag, Process.myUid(), Process.myPid(), 0, notification, Process.myUserHandle(), System.currentTimeMillis())
+        listener.onNotificationPosted(posted)
+        return posted
     }
 
     private fun notifications(count: Int): List<Notification> {
@@ -183,16 +187,43 @@ class CallRouteTest {
         assertEquals("הודעת צוות סיכום", notifications(1).single().extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
     }
 
+    @Test fun malformedUpdatesPreserveOnlyTheirActiveSourceAndValidRepeatsStillAlert() {
+        val original = pending(46)
+        lateinit var posted: StatusBarNotification
+        instrumentation.runOnMainSync { posted = post("הודעת צוות מקורית", original, 46) }
+        val first = notifications(1).single()
+        for (body in listOf(null, "", "  ")) {
+            instrumentation.runOnMainSync { post(body, pending(47), 46) }
+            val retained = notifications(1).single()
+            assertEquals("הודעת צוות מקורית", retained.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
+            assertEquals(original, retained.actions.last().actionIntent)
+            assertEquals(first.contentIntent, retained.contentIntent)
+        }
+        // Neither another id, another tag nor another package may inherit this call's protection/content.
+        instrumentation.runOnMainSync { post(null, null, 47) }
+        assertEquals(1, notifications(2).count { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString() == "תקלה" })
+        instrumentation.runOnMainSync { post(null, null, 46, tag = "other") }
+        notifications(3)
+        instrumentation.runOnMainSync { post(null, null, 46, pack = "com.mda.health") }
+        notifications(4)
+        instrumentation.runOnMainSync { post("הודעת צוות מקורית", original, 46) }
+        assertEquals(2, notifications(5).count { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString() == "הודעת צוות מקורית" })
+        instrumentation.runOnMainSync {
+            listener.onNotificationRemoved(posted)
+            post(null, null, 46)
+        }
+        assertEquals(4, notifications(6).count { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString() == "תקלה" })
+    }
+
     @Test fun blockedPopupLeavesPerCallTapFallbackUntilPopupActuallyOpens() {
         settings.edit().putBoolean("win", true).putBoolean("NsouT1", false).putBoolean("NvibT1", false).commit()
         var attempts = 0
         val blocked = object : ContextWrapper(context) {
             override fun startActivity(intent: Intent) { attempts++ } // Android BAL returns without launching or throwing.
         }
-        val source = pending(85)
         instrumentation.runOnMainSync {
             GrobootRec().onReceive(blocked, Intent("MADA_APP").putExtra("callT", 1)
-                .putExtra("text", "בדיקת רקע").putExtra("sourceIntent", source))
+                .putExtra("text", "בדיקת רקע"))
         }
         assertEquals(1, attempts)
         val fallback = notifications(1).single()
@@ -203,7 +234,7 @@ class CallRouteTest {
             while (!opened && SystemClock.uptimeMillis() < deadline) {
                 scenario.onActivity {
                     opened = CallEvent.from(it.intent).text == "בדיקת רקע"
-                    if (opened) assertEquals(source, CallEvent.from(it.intent).source)
+                    if (opened) assertNull(CallEvent.from(it.intent).source)
                 }
                 if (!opened) SystemClock.sleep(20)
             }
@@ -213,6 +244,86 @@ class CallRouteTest {
         settings.edit().putBoolean("not", false).commit()
         instrumentation.runOnMainSync { GrobootRec().onReceive(blocked, Intent("MADA_APP").putExtra("text", "מושבת")) }
         notifications(0) // Explicit notification opt-out is still respected.
+    }
+
+    @Test fun shadeTapSendsEachSourceOnceWithoutRestartingAlertColdAndWarm() {
+        settings.edit().putBoolean("win", true).putBoolean("Nsou", true).putBoolean("Nvib", true)
+            .putBoolean("NsouT1", true).putBoolean("NvibT1", true).putBoolean("volumeApp", false).commit()
+        val delivered = java.util.concurrent.CopyOnWriteArrayList<Int>()
+        val tapWindows = java.util.concurrent.CopyOnWriteArrayList<Boolean>()
+        val action = "${context.packageName}.SHADE_SOURCE_FIXTURE"
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) { delivered += intent.getIntExtra("source", -1) }
+        }
+        fun field(activity: smsRes, name: String): Any? = smsRes::class.java.getDeclaredField(name)
+            .apply { isAccessible = true }.get(activity)
+        val lifecycle = ActivityLifecycleCallback { activity, stage ->
+            if (activity is smsRes && stage == Stage.RESUMED && CallEvent.from(activity.intent).text == "בדיקת לחיצה") {
+                tapWindows += listOf("player", "audio", "vibrator").all { field(activity, it) == null }
+            }
+        }
+        val blocked = object : ContextWrapper(context) {
+            override fun startActivity(intent: Intent) {} // Retain shade fallback when automatic launch is blocked.
+        }
+        fun tap(id: Int) {
+            val source = PendingIntentCompat.getBroadcast(context, 900 + id,
+                Intent(action).setPackage(context.packageName).putExtra("source", id), PendingIntent.FLAG_UPDATE_CURRENT, false)
+            instrumentation.runOnMainSync {
+                GrobootRec().onReceive(blocked, Intent("MADA_APP").putExtra("callT", 1)
+                    .putExtra("text", "בדיקת לחיצה").putExtra("sourceIntent", source))
+            }
+            val alert = notifications(1).single()
+            assertEquals(source, alert.actions.last().actionIntent)
+            alert.contentIntent.send()
+            val deadline = SystemClock.uptimeMillis() + 3000
+            while (delivered.size < id && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
+            instrumentation.waitForIdleSync()
+            assertEquals((1..id).toList(), delivered.toList())
+            assertEquals(id, tapWindows.size)
+            assertTrue("Shade entry must not initialize alert audio/vibration", tapWindows.all { it })
+            notifications(0)
+        }
+        ContextCompat.registerReceiver(context, receiver, IntentFilter(action), ContextCompat.RECEIVER_NOT_EXPORTED)
+        ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(lifecycle)
+        try {
+            tap(1)
+            ActivityScenario.launch<smsRes>(CallEvent(1, "התראה חדשה", null).popupIntent(context, -1, false)).use { scenario ->
+                scenario.onActivity {
+                    assertNotNull("New incoming alerts still start playback", field(it, "player"))
+                    assertNotNull("New incoming alerts retain vibration", field(it, "vibrator"))
+                }
+                tap(2) // Existing singleTop popup receives onNewIntent, rather than a second audible alert.
+            }
+        } finally {
+            ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(lifecycle)
+            context.unregisterReceiver(receiver)
+        }
+    }
+
+    @Test fun unavailableShadeSourcesStayReadableAndSilentAcrossRecreation() {
+        settings.edit().putBoolean("win", true).putBoolean("NsouT1", true).putBoolean("NvibT1", true)
+            .putBoolean("Nsou", true).putBoolean("Nvib", true).commit()
+        val canceled = pending(92).apply { cancel() }
+        for (source in listOf(null, canceled)) for (warm in listOf(false, true)) {
+            val tap = CallEvent(1, "פרטי מקרה שמורים", source).popupIntent(context, -1, false).putExtra("openSource", true)
+            val launch = if (warm) CallEvent(1, "מקרה קודם", null).popupIntent(context, -1, false) else tap
+            ActivityScenario.launch<smsRes>(launch).use { scenario ->
+                if (warm) {
+                    scenario.onActivity { it.startActivity(tap) }
+                    instrumentation.waitForIdleSync()
+                }
+                repeat(2) {
+                    scenario.onActivity { activity ->
+                        assertEquals("פרטי מקרה שמורים", activity.findViewById<TextView>(R.id.Address).text.toString())
+                        for (name in listOf("player", "audio", "vibrator")) {
+                            assertNull(name, smsRes::class.java.getDeclaredField(name).apply { isAccessible = true }.get(activity))
+                        }
+                        assertTrue(smsRes::class.java.getDeclaredField("sourceAttempted").apply { isAccessible = true }.getBoolean(activity))
+                    }
+                    if (it == 0) scenario.recreate()
+                }
+            }
+        }
     }
 
     @Test fun popupColdWarmRecreationAndDetailsUsePerCallState() {
