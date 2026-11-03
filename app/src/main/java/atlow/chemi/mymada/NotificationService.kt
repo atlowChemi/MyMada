@@ -36,17 +36,19 @@ open class NotificationService : NotificationListenerService() {
         }
         val notification = posted?.notification ?: return
         val extras = notification.extras
-        // OS auto-group headers are navigation, not new calls. Be conservative: any
-        // content/custom extra, ticker, action or custom view keeps the existing parser policy.
+        // OS auto-group headers carry metadata and a navigation PI, neither is call content.
+        // Keep renderable summaries on the normal parser path, regardless of their identity.
         if (notification.flags and Notification.FLAG_GROUP_SUMMARY != 0 &&
             notification.tickerText.isNullOrEmpty() && notification.actions.isNullOrEmpty() &&
             notification.fullScreenIntent == null && notification.contentView == null &&
             notification.bigContentView == null && notification.headsUpContentView == null &&
-            extras?.keySet().orEmpty().all {
-                it == "android.appInfo" || it == "android.originatingUserId" ||
-                    it == "android.reduced.images" || it == Notification.EXTRA_SHOW_WHEN ||
-                    it == Notification.EXTRA_SMALL_ICON
-            }) {
+            listOf(Notification.EXTRA_TITLE, Notification.EXTRA_TITLE_BIG, Notification.EXTRA_TEXT,
+                Notification.EXTRA_BIG_TEXT, Notification.EXTRA_SUB_TEXT, Notification.EXTRA_SUMMARY_TEXT,
+                Notification.EXTRA_INFO_TEXT).none { !extras?.getCharSequence(it).isNullOrEmpty() } &&
+            extras?.getCharSequenceArray(Notification.EXTRA_TEXT_LINES).orEmpty().none { !it.isNullOrEmpty() } &&
+            extras?.getParcelableArray(Notification.EXTRA_MESSAGES).isNullOrEmpty() &&
+            extras?.getParcelableArray(Notification.EXTRA_HISTORIC_MESSAGES).isNullOrEmpty() &&
+            extras?.get(Notification.EXTRA_PICTURE) == null && extras?.get("android.pictureIcon") == null) {
             if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "guard", "decision=empty_summary")
             return
         }
