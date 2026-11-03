@@ -9,7 +9,7 @@ import android.service.quicksettings.TileService
 import android.util.Log
 import androidx.core.content.ContextCompat
 
-/** Native installed component; RN's installed component below uses the same state. */
+/** Native installed Quick Settings component. */
 open class MyTileService : TileService() {
     private var listening = false
     private val updates = object : BroadcastReceiver() {
@@ -49,5 +49,3 @@ open class MyTileService : TileService() {
         }
     }
 }
-
-class MetronomeTileService : MyTileService()

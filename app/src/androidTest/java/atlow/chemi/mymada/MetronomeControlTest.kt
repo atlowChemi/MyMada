@@ -1,7 +1,6 @@
 package atlow.chemi.mymada
 
 import android.app.NotificationManager
-import android.content.ComponentName
 import android.content.Intent
 import android.media.AudioManager
 import android.os.SystemClock
@@ -121,11 +120,27 @@ class MetronomeControlTest {
                 await("Widget start") { MetroService.running }
                 context.sendBroadcast(Intent(context, ActionReceiver::class.java).putExtra("action", "widget"))
                 await("Widget Stop while bound") { !MetroService.running }
-                val packageManager = context.packageManager
-                listOf(MyTileService::class.java, MetronomeTileService::class.java).forEach {
-                    val info = packageManager.getServiceInfo(ComponentName(context, it), 0)
-                    assertEquals("android.permission.BIND_QUICK_SETTINGS_TILE", info.permission)
-                }
+            } finally { stop() }
+        }
+    }
+
+    @Test fun onlyNativeTileIsDiscoverableAndItsClicksTogglePlayback() {
+        val services = context.packageManager.queryIntentServices(
+            Intent(android.service.quicksettings.TileService.ACTION_QS_TILE).setPackage(context.packageName), 0)
+        assertEquals(listOf(MyTileService::class.java.name), services.map { it.serviceInfo.name })
+        val info = services.single().serviceInfo
+        assertTrue(info.enabled && info.exported)
+        assertEquals("android.permission.BIND_QUICK_SETTINGS_TILE", info.permission)
+        val tile = object : MyTileService() {
+            fun attach() = attachBaseContext(context)
+        }
+        scenario().use {
+            try {
+                stop()
+                instrumentation.runOnMainSync { tile.attach(); tile.onClick() }
+                await("Native tile starts playback") { MetroService.running }
+                instrumentation.runOnMainSync { tile.onClick() }
+                await("Native tile stops playback") { !MetroService.running }
             } finally { stop() }
         }
     }

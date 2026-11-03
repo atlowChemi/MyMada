@@ -190,19 +190,6 @@
                 android:value="false" />
         </service>
 
-        <service
-            android:name=".recieversAndServices.MetronomeTileService"
-            android:enabled="@bool/tile"
-            android:icon="@drawable/ic_metronome_tile"
-            android:label="@string/button_d"
-            android:exported="true"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-            <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="false" />
-        </service>
-
         <receiver
             android:name=".recieversAndServices.BootCompleteReceiver"
             android:enabled="true"
