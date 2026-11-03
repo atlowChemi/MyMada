@@ -117,14 +117,22 @@ decisions. [Testing](TESTING.md) distinguishes local behavior from live delivery
 - Parse nonempty notification `EXTRA_TEXT` first, then `EXTRA_BIG_TEXT`, then the
   original short value. Expanded-only updates must not discard a valid call body;
   this does not suppress repeated events or change title-only error fallback.
+- After a valid parsed delivery, a missing/blank-body update for the same source
+  notification key does not replace the retained alert. Different keys and valid
+  repeats remain independent. Protection is in-process, bounded to 1024 active
+  keys, and cleared on removal/reconnect/disconnect; eviction or process restart
+  returns to fresh-event behavior. No notification borrows another's content.
 - Classification retains substring families `mdaemergency`/`mda.health`, exact
   `atlow.mymadaadmin`, native service/admin/on-call/group/shift/legacy precedence and
   admin-title legacy override. Legacy=T3, on-call=T1, group=T2, shift=T3; service T6
   enablement uses T4 audio. Unsplit calls use general audio. Inclusive night bounds
   and combined sleep remain; popup/overlay `statVib` predicates are not identical.
 - Post notification fallback before attempted background popup launch when allowed;
-  opening clears only that fallback. This grants no automatic-launch exemption.
-  Explicit source-details user action uses API34 sender BAL opt-in and API36
+  opening clears only that fallback. A shade tap opens the original source once
+  through the existing Activity without restarting alert playback/vibration.
+  Missing/canceled source actions leave readable, silent call details; automatic
+  incoming alerts retain their normal alert behavior. This grants no automatic-launch
+  exemption. Explicit source actions use API34 sender BAL opt-in and API36
   visible-only behavior. Replacement/close/error release audio, overridden volume,
   vibration, timers and windows without releasing a newer player.
 - Popup preserves address scrolling, code spans, admin blink/color, timeout and
