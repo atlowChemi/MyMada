@@ -1,5 +1,7 @@
 package atlow.chemi.mymada
 
+import android.os.Build
+
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -104,7 +106,13 @@ class smsRes : AppCompatActivity() {
         }
         findViewById<Button>(R.id.button).setOnClickListener { finish() }
         findViewById<Button>(R.id.buttonI).setOnClickListener {
-            try { event.source?.send() } catch (error: PendingIntent.CanceledException) { Log.w("smsRes", "Source action canceled", error) }
+            // Explicit user click: modern targets must opt in to lending the visible sender's BAL privilege.
+            val options = if (Build.VERSION.SDK_INT >= 34) android.app.ActivityOptions.makeBasic()
+                .setPendingIntentBackgroundActivityStartMode(if (Build.VERSION.SDK_INT >= 36)
+                    android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOW_IF_VISIBLE
+                else android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED).toBundle() else null
+            try { event.source?.send(this, 0, null, null, null, null, options) }
+            catch (error: PendingIntent.CanceledException) { Log.w("smsRes", "Source action canceled", error) }
             finish()
         }
         for (id in intArrayOf(R.id.button, R.id.buttonI)) touchFeedback(findViewById(id))

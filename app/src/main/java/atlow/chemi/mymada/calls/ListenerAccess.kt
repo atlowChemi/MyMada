@@ -15,14 +15,16 @@ object ListenerAccess {
         ComponentName(context, atlow.chemi.mymada.recieversAndServices.NotificationService::class.java),
     )
 
-    @JvmStatic fun selected(context: Context): ComponentName? {
+    @JvmStatic fun selected(context: Context): ComponentName? = granted(context).firstOrNull()
+
+    fun granted(context: Context): List<ComponentName> {
         if (Build.VERSION.SDK_INT >= 27) {
             val manager = context.getSystemService(NotificationManager::class.java)
-            return components(context).firstOrNull(manager::isNotificationListenerAccessGranted)
+            return components(context).filter(manager::isNotificationListenerAccessGranted)
         }
         val enabled = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
             ?.split(':')?.mapNotNull(ComponentName::unflattenFromString).orEmpty()
-        return components(context).firstOrNull { it in enabled }
+        return components(context).filter { it in enabled }
     }
 
     @JvmStatic fun rebind(context: Context) {

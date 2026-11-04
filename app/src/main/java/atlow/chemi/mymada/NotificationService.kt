@@ -12,11 +12,16 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import atlow.chemi.mymada.calls.CallParser
 import atlow.chemi.mymada.calls.ListenerAccess
 import atlow.chemi.mymada.calls.DetectionStatus
+import atlow.chemi.mymada.calls.CallRecovery
 
 /** Keep the installed native listener identity. */
 open class NotificationService : NotificationListenerService() {
     protected open val listenerClass: Class<out NotificationService> get() = NotificationService::class.java
     override fun onNotificationPosted(posted: StatusBarNotification?) {
+        deliver(posted, false)
+    }
+
+    private fun deliver(posted: StatusBarNotification?, recovered: Boolean) {
         // Both grants may survive an upgrade. Select a component, never deduplicate call content.
         val selected = ListenerAccess.selected(this)
         if (selected != null && selected != ComponentName(this, listenerClass)) return
@@ -34,16 +39,19 @@ open class NotificationService : NotificationListenerService() {
                     it == Notification.EXTRA_SMALL_ICON
             }) return
         val title = extras?.getCharSequence(Notification.EXTRA_TITLE)
+        val body = extras?.getCharSequence(Notification.EXTRA_TEXT)
         val call = CallParser.parse(getSharedPreferences("Settings", 0).getBoolean("Mapp", false),
-            posted.packageName, title, extras?.getCharSequence(Notification.EXTRA_TEXT)) ?: return
-        DetectionStatus.refresh(this)
-        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(Intent("MADA_APP")
+            posted.packageName, title, body) ?: return
+        val event = Intent("MADA_APP")
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             .putExtra("pack", posted.packageName)
             .putExtra("ticker", notification.tickerText?.toString() ?: "")
             .putExtra("title", title?.toString()).putExtra("text", call.text)
             .putExtra("callT", call.type).putExtra("time", call.time)
-            .putExtra("sourceIntent", notification.contentIntent))
+            .putExtra("sourceIntent", notification.contentIntent)
+        if (!CallRecovery.track(this, posted, title, body, event, recovered)) return
+        DetectionStatus.refresh(this)
+        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(event)
     }
 
     override fun onNotificationRemoved(posted: StatusBarNotification?) {
@@ -54,17 +62,22 @@ open class NotificationService : NotificationListenerService() {
 
     override fun onListenerConnected() {
         DetectionStatus.refresh(this)
-        try { activeNotifications } catch (error: Exception) {
-            Log.e("NotificationService", "Cannot read active notifications", error)
+        if (ListenerAccess.selected(this) != ComponentName(this, listenerClass)) return
+        try {
+            if (CallRecovery.connected(this)) activeNotifications.sortedBy { it.postTime }.forEach { deliver(it, true) }
+        } catch (error: Exception) {
+            Log.e("NotificationService", "Cannot reconcile active notifications", error)
         }
     }
 
     override fun onListenerDisconnected() {
+        CallRecovery.disconnected(ComponentName(this, listenerClass))
         ListenerAccess.stopIfRevoked(this)
         ListenerAccess.rebind(this)
     }
 
     override fun onDestroy() {
+        CallRecovery.disconnected(ComponentName(this, listenerClass))
         ListenerAccess.stopIfRevoked(this)
         super.onDestroy()
     }

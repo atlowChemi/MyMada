@@ -95,6 +95,7 @@ object DetectionControls {
         if (!NotificationPermission.granted(activity) || ListenerAccess.selected(activity) == null) return
         val preferences = activity.getSharedPreferences("Settings", 0)
         preferences.edit().putBoolean("Mapp", true).apply()
+        atlow.chemi.mymada.calls.CallRecovery.enable(activity)
         ListenerAccess.rebind(activity)
         DetectionStatus.refresh(activity)
         activity.invalidateOptionsMenu()
