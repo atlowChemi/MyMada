@@ -8,7 +8,6 @@ import androidx.datastore.core.Serializer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -39,20 +38,16 @@ class PlatformSmokeTest {
             }
         }
         ActivityScenario.launch(SettingsPage::class.java).use { screen ->
+            compose.selectShellDestination(R.id.tools)
+            compose.waitForIdle()
             screen.onActivity {
-                val menu = it.findViewById<NavigationView>(R.id.navigation).menu
-                assertTrue(it.onNavigationItemSelected(menu.findItem(R.id.tools)))
                 it.supportFragmentManager.executePendingTransactions()
                 assertTrue(it.supportFragmentManager.findFragmentById(R.id.frame)?.view
                     is androidx.compose.ui.platform.ComposeView)
             }
         }
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { screen ->
-            screen.onActivity {
-                val menu = it.findViewById<NavigationView>(R.id.navigation).menu
-                assertTrue(it.onNavigationItemSelected(menu.findItem(R.id.oxygenCalc)))
-                it.supportFragmentManager.executePendingTransactions()
-            }
+            compose.selectShellDestination(R.id.oxygenCalc)
             compose.waitForIdle()
             screen.onActivity {
                 val pressure = it.findViewById<EditText>(R.id.ATM)

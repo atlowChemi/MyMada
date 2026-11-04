@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -33,7 +34,8 @@ import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.UtillitiesAndTools
 import atlow.chemi.mymada.lockPage
-import com.google.android.material.navigation.NavigationView
+import atlow.chemi.mymada.waitForShellDrawer
+import atlow.chemi.mymada.waitForShellCondition
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Rule
@@ -57,6 +59,9 @@ class HomeScreenTest {
         // API 24 restarts its launcher on font changes; let that transition finish before launching Home.
         instrumentation.uiAutomation.waitForIdle(500, 5_000)
         shell("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow")
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            shell("pm grant ${context.packageName} android.permission.POST_NOTIFICATIONS")
+        }
         instrumentation.runOnMainSync {
             atlow.chemi.mymada.helpers.LocalHelper.setLocale(context, language)
         }
@@ -151,11 +156,16 @@ class HomeScreenTest {
                 settings.fetchSemanticsNode().boundsInRoot.center.x)
             assertTrue(settings.fetchSemanticsNode().boundsInRoot.top >= topInset)
 
-            // The resume hook refreshes the MenuItem too: clicking must turn detection OFF, not start a service.
+            // A stale enabled preference without listener access requests permission;
+            // decline that request here instead of leaving it beneath later dialogs.
             scenario.moveToState(Lifecycle.State.CREATED)
             preferences.edit().putBoolean("Mapp", true).commit()
             scenario.moveToState(Lifecycle.State.RESUMED)
             detection.assertIsOn().performClick().assertIsOff()
+            if (atlow.chemi.mymada.calls.ListenerAccess.selected(context) == null) {
+                onView(withText(R.string.dialog_no)).inRoot(isDialog()).perform(click())
+                waitForHomeFocus(scenario)
+            }
             assertFalse(preferences.getBoolean("Mapp", true))
 
             for (id in listOf(R.string.title_activity_utills_and_tools, R.string.title_activity_moked_page,
@@ -169,11 +179,14 @@ class HomeScreenTest {
 
             visit(UtillitiesAndTools::class.java, {
                 compose.onNodeWithText(labels.getValue(R.string.title_activity_utills_and_tools)).performScrollTo().performClick()
-            }) { activity ->
-                val menu = activity.findViewById<NavigationView>(R.id.navigation).menu
-                assertNotNull(menu.findItem(R.id.oxygenCalc))
-                assertNull(menu.findItem(R.id.apgarCalc))
-                assertTrue(menu.findItem(R.id.metronome).isChecked)
+            }) {
+                compose.onNodeWithTag("shell-navigation").performClick()
+                compose.waitForShellDrawer(open = true)
+                compose.onNodeWithTag("shell-destination-${R.id.oxygenCalc}").assertExists()
+                compose.onNodeWithTag("shell-destination-${R.id.apgarCalc}").assertDoesNotExist()
+                compose.onNodeWithTag("shell-destination-${R.id.metronome}").assertIsSelected()
+                compose.onNodeWithTag("shell-navigation").performClick()
+                compose.waitForShellDrawer(open = false)
             }
             visit(SettingsPage::class.java, { settings.performClick() })
             if (InstrumentationRegistry.getArguments().getString("dumpHeap") == "true") {
@@ -187,10 +200,12 @@ class HomeScreenTest {
             assertFalse(preferences.getBoolean("realM", true))
             compose.onNodeWithText(labels.getValue(R.string.test_beep)).performScrollTo().performClick()
             onView(withText(labels.getValue(R.string.TestCallMsg))).inRoot(isDialog()).check(matches(isDisplayed()))
+            waitForPromptFocus(scenario)
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             waitForHomeFocus(scenario)
             compose.onNodeWithText(labels.getValue(R.string.title_activity_contact)).performScrollTo().performClick()
             onView(withText(labels.getValue(R.string.plsNoteCon))).inRoot(isDialog()).check(matches(isDisplayed()))
+            waitForPromptFocus(scenario)
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.onNodeWithText(labels.getValue(R.string.app_name)).assertIsDisplayed()
             assertEquals(setOf("metro", "oxy"), preferences.getStringSet("Tools", emptySet()))
@@ -201,9 +216,21 @@ class HomeScreenTest {
     }
 
     private fun waitForHomeFocus(scenario: ActivityScenario<HomePage>) {
-        compose.waitUntil(5_000) {
+        compose.waitForShellCondition("home-focus") {
             var focused = false
             scenario.onActivity { focused = it.hasWindowFocus() }
+            focused
+        }
+    }
+
+    private fun waitForPromptFocus(scenario: ActivityScenario<HomePage>) {
+        compose.waitForShellCondition("home-prompt-focus") {
+            var focused = false
+            scenario.onActivity { activity ->
+                focused = activity.supportFragmentManager.fragments
+                    .filterIsInstance<androidx.fragment.app.DialogFragment>()
+                    .any { it.dialog?.window?.decorView?.hasWindowFocus() == true }
+            }
             focused
         }
     }
@@ -219,7 +246,12 @@ class HomeScreenTest {
                 instrumentation.runOnMainSync { focused = activity!!.hasWindowFocus() }
                 focused
             }
-            instrumentation.runOnMainSync { verify(activity!!) }
+            verify(activity!!)
+            compose.waitUntil(5_000) {
+                var focused = false
+                instrumentation.runOnMainSync { focused = activity.hasWindowFocus() }
+                focused
+            }
             // Use the destination's actual back behavior, rather than finishing it from the test.
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.waitUntil(5_000) { activity!!.isDestroyed }
