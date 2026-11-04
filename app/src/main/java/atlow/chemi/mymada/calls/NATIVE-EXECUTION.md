@@ -24,5 +24,5 @@ starting the disabled pre19 implementation was not a functioning fallback.
 CallRouteTest starts without the call channel, exercises actual Application
 registration/listener callbacks and verifies call replacement retains an unrelated
 control notification. This is not production-signed/reboot/latest-target evidence.
-Shared ActionReceiver remains a Java bridge because its metronome actions are
-owned by #25; its owned runInBG branch was fixed in #67.
+Shared ActionReceiver is now Kotlin, preserving the metronome action contracts
+owned by #25 and the runInBG detection-stop behavior fixed in #67.
