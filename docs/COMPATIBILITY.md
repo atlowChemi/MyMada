@@ -238,12 +238,8 @@ repeat it. This is neither exactly-once nor force-stop recovery.
 
 ### Deferred viewer presentation — issue #145
 
-![Native12822 and historical Kotlin BLS cover comparison](assets/issue-145/f3-bls-native12822-candidate3f7644b1.png)
-
-Left is native12822; right is historical Kotlin `3f7644b1`, not the current release.
 Refresh/page/zoom rows lower the cover and clip its bottom. Viewer chrome/viewport
 work remains deferred under [#145](https://github.com/atlowChemi/MyMada/issues/145).
-This retained image documents the difference, not a fix or interaction equivalence.
 
 ## Activation, chat and dispatch
 
