@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     buildFeatures {
@@ -80,6 +81,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-inappmessaging-display'
     implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-perf'
     implementation 'com.google.android.gms:play-services-ads:25.5.0'
     implementation 'androidx.appcompat:appcompat:1.8.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
