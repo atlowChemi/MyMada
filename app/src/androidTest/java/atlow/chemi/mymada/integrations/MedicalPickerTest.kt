@@ -58,8 +58,8 @@ class MedicalPickerTest {
             scenario.onActivity {
                 val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
                 assertEquals("אמב' 1234\nחולה נפגע 56\nהתחייבות 78\nסכום 90\nקוד 2000, 5000\nשם: First Last", confirmation.requireArguments().getString("body"))
-                (confirmation.requireDialog() as androidx.appcompat.app.AlertDialog).getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).performClick()
             }
+            compose.onNodeWithTag("dispatch-cancel").performClick()
             instrumentation.waitForIdleSync()
             scenario.onActivity {
                 it.findViewById<android.widget.EditText>(R.id.M1txt3).setText("")
@@ -70,8 +70,8 @@ class MedicalPickerTest {
             scenario.onActivity {
                 val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
                 assertEquals("אמב' 1234\nחולה נפגע 56\nקוד 2000, 5000\nשם: First Last", confirmation.requireArguments().getString("body"))
-                (confirmation.requireDialog() as androidx.appcompat.app.AlertDialog).getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).performClick()
             }
+            compose.onNodeWithTag("dispatch-cancel").performClick()
         }
     }
     @Test fun filteredSelectionAndRecycledHeadersKeepCatalogIdentity() {
