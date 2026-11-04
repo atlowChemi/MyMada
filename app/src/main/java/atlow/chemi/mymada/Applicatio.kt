@@ -3,6 +3,10 @@ package atlow.chemi.mymada
 import android.app.Application
 import android.content.Context
 import android.content.IntentFilter
+import android.database.ContentObserver
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import atlow.chemi.mymada.calls.ListenerAccess
@@ -22,6 +26,10 @@ class Applicatio : Application() {
     override fun onCreate() {
         super.onCreate()
         registerActivityLifecycleCallbacks(LocaleRefresh)
+        contentResolver.registerContentObserver(Settings.Secure.getUriFor("enabled_notification_listeners"), false,
+            object : ContentObserver(Handler(Looper.getMainLooper())) {
+                override fun onChange(selfChange: Boolean) { ListenerAccess.stopIfRevoked(this@Applicatio) }
+            })
         for (family in listOf("DEFAULT", "MONOSPACE", "SERIF", "SANS_SERIF"))
             FontsOverride.setDefaultFont(this, family, "fonts/opensanshebrew.ttf")
         LocalBroadcastManager.getInstance(this).registerReceiver(GrobootRec(), IntentFilter("MADA_APP").apply {
