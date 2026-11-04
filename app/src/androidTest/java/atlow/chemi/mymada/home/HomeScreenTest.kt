@@ -151,6 +151,19 @@ class HomeScreenTest {
             val settings = compose.onNodeWithContentDescription(labels.getValue(R.string.action_settings))
             val detection = compose.onNodeWithContentDescription(labels.getValue(R.string.pref_title_enable))
             compose.onNodeWithTag("homeBanner").assertIsDisplayed().assertHeightIsEqualTo(50.dp)
+            val banner = compose.onNodeWithTag("homeBanner").fetchSemanticsNode().boundsInWindow
+            // Approved offline policy, intentionally different from production12822 on API24.
+            // Run with external IPv4/IPv6 traffic rejected; never accept navy based on ad height.
+            compose.waitUntil(5_000) {
+                val bitmap = instrumentation.uiAutomation.takeScreenshot()
+                try {
+                    listOf(0.1f, 0.5f, 0.9f).all { fraction ->
+                        val color = bitmap.getPixel((banner.left + banner.width * fraction).toInt(), banner.center.y.toInt())
+                        android.graphics.Color.red(color) > 100 &&
+                            kotlin.math.abs(android.graphics.Color.blue(color) - android.graphics.Color.red(color)) < 5
+                    }
+                } finally { bitmap.recycle() }
+            }
             detection.assertIsOff()
             assertEquals(language == "en", detection.fetchSemanticsNode().boundsInRoot.center.x <
                 settings.fetchSemanticsNode().boundsInRoot.center.x)

@@ -170,9 +170,9 @@ internal fun HomeScreen(
                         }
                     }
                 }
-                // The published 12822 screen reserves the banner band even when an offline ad cannot load.
+                // Approved empty-ad policy: reserve space, exposing the artwork when no ad loads.
                 Box(Modifier.fillMaxWidth().heightIn(min = 50.dp)
-                    .background(colorResource(R.color.ColorPrimary)).testTag("homeBanner")) { banner() }
+                    .testTag("homeBanner")) { banner() }
             }
         }
     }
