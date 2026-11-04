@@ -22,6 +22,17 @@ open class NotificationService : NotificationListenerService() {
         if (selected != null && selected != ComponentName(this, listenerClass)) return
         val notification = posted?.notification ?: return
         val extras = notification.extras
+        // OS auto-group headers are navigation, not new calls. Be conservative: any
+        // content/custom extra, ticker, action or custom view keeps the existing parser policy.
+        if (notification.flags and Notification.FLAG_GROUP_SUMMARY != 0 &&
+            notification.tickerText.isNullOrEmpty() && notification.actions.isNullOrEmpty() &&
+            notification.fullScreenIntent == null && notification.contentView == null &&
+            notification.bigContentView == null && notification.headsUpContentView == null &&
+            extras?.keySet().orEmpty().all {
+                it == "android.appInfo" || it == "android.originatingUserId" ||
+                    it == "android.reduced.images" || it == Notification.EXTRA_SHOW_WHEN ||
+                    it == Notification.EXTRA_SMALL_ICON
+            }) return
         val title = extras?.getCharSequence(Notification.EXTRA_TITLE)
         val call = CallParser.parse(getSharedPreferences("Settings", 0).getBoolean("Mapp", false),
             posted.packageName, title, extras?.getCharSequence(Notification.EXTRA_TEXT)) ?: return
