@@ -43,9 +43,9 @@ fun FormScreen(values: List<String>, update: (Int, String) -> Unit, pickCodes: (
                     modifier = Modifier.fillMaxWidth().testTag("form-field-$index"))
             }
             IntegrationField(values[8], {}, label = stringResource(R.string.pickC),
+                error = if (submitted && errors[8] != 0) stringResource(errors[8]) else null,
                 onClick = { keyboard?.hide(); pickCodes() },
                 modifier = Modifier.fillMaxWidth().testTag("form-codes"))
-            if (submitted && errors[8] != 0) Text(stringResource(errors[8]), color = MaterialTheme.colorScheme.error)
         }
         Button(onClick = {
             submitted = true

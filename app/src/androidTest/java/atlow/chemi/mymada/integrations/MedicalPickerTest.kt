@@ -59,6 +59,12 @@ class MedicalPickerTest {
                 image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
             }
             image.recycle()
+            fun finishSearch() {
+                androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(
+                    com.google.android.material.textfield.TextInputEditText::class.java))
+                    .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                    .perform(androidx.test.espresso.action.ViewActions.pressImeActionButton())
+            }
             fun capture(state: String) {
                 instrumentation.uiAutomation.waitForIdle(500, 5000)
                 val screenshot = instrumentation.uiAutomation.takeScreenshot()
@@ -68,16 +74,16 @@ class MedicalPickerTest {
                 screenshot.recycle()
             }
             compose.onNodeWithTag("medical-query").performTextReplacement("2000")
-            compose.onNodeWithTag("medical-query").performImeAction()
+            finishSearch()
             capture("search-2000")
             compose.onNodeWithTag("medical-code-2000").performClick().assertIsOn()
             capture("selected-2000")
             compose.onNodeWithTag("medical-query").performTextClearance()
-            compose.onNodeWithTag("medical-query").performImeAction()
+            finishSearch()
             compose.onNodeWithTag("medical-code-2000").assertIsOn()
             capture("cleared-selected")
             compose.onNodeWithTag("medical-query").performTextReplacement("no-such-medical-code")
-            compose.onNodeWithTag("medical-query").performImeAction()
+            finishSearch()
             compose.onNodeWithTag("medical-code-2000").assertDoesNotExist()
             compose.onNodeWithTag("medical-done").assertIsDisplayed()
             capture("no-match")
@@ -88,11 +94,11 @@ class MedicalPickerTest {
             compose.onNodeWithTag("medical-query").performTextReplacement("2000")
             compose.onNodeWithTag("medical-code-2000").performClick().assertIsOff()
             compose.onNodeWithTag("medical-query").performTextReplacement("5000")
-            compose.onNodeWithTag("medical-query").performImeAction()
+            finishSearch()
             compose.onNodeWithTag("medical-code-5000").performScrollTo().performClick().assertIsOn()
             // Reverse selection order must still produce the native catalog order.
             compose.onNodeWithTag("medical-query").performTextReplacement("2000")
-            compose.onNodeWithTag("medical-query").performImeAction()
+            finishSearch()
             compose.onNodeWithTag("medical-code-2000").performScrollTo().performClick().assertIsOn()
             compose.onNodeWithTag("medical-query").performTextReplacement("5000")
             scenario.recreate()
