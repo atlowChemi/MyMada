@@ -24,7 +24,8 @@ fun ChatDialogScreen(editingName: Boolean, draft: String, update: (String) -> Un
         }) {
         if (editingName) IntegrationField(draft, update, label = stringResource(R.string.name),
             error = if (invalid) stringResource(if (draft.trim().isEmpty()) R.string.emailNameNone else R.string.chatNameNum) else null,
-            modifier = Modifier.padding(top = 2.dp, bottom = 14.dp).testTag("chat-name-draft"),
+            modifier = Modifier.fillMaxWidth().padding(top = 2.dp, bottom = 14.dp).testTag("chat-name-draft"),
+            inputMinHeight = 48.dp,
             textStyle = androidx.compose.ui.text.TextStyle(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif))
         else Text(stringResource(R.string.contactMsg), modifier = Modifier.padding(horizontal = 24.dp))
     }
