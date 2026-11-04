@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     app:statusBarBackground="?attr/colorPrimary"
-    android:id="@+id/contactP"
-    tools:context="atlow.chemi.mymada.MokedPage">
+    android:id="@+id/contactP">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,108 +18,9 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </com.google.android.material.appbar.AppBarLayout>
-    <RelativeLayout
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/activation_request_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_horizontal_margin"
-        android:paddingBottom="@dimen/activity_horizontal_margin">
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layoutDirection="ltr"
-            android:layout_alignParentTop="true"
-            android:layout_above="@+id/code_req_send_card_view"
-            android:layout_marginBottom="8dp"
-            android:id="@+id/scM">
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-                android:id="@+id/cont"
-                android:layout_height="wrap_content"
-                tools:context="atlow.chemi.mymada.contactActivity">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/codeNote"
-                    android:textSize="18sp"
-                    android:textColor="@color/materialGrey600"
-                    android:gravity="center|top"
-                    android:layout_marginBottom="10dp"
-                    android:id="@+id/declare"/>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/codeATIL"
-                    android:layout_below="@+id/declare"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <atlow.chemi.mymada.helpers.FixedTextInputEditText
-                        android:id="@+id/codeA"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:gravity="start"
-                        android:nextFocusDown="@+id/codeN"
-                        android:nextFocusForward="@+id/codeN"
-                        android:inputType="textEmailAddress"
-                        android:hint="@string/from" />
-                </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/codeNTIL"
-                    android:layout_below="@+id/codeATIL"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <atlow.chemi.mymada.helpers.FixedTextInputEditText
-                        android:id="@+id/codeN"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:gravity="start"
-                        android:nextFocusDown="@+id/codeT"
-                        android:nextFocusForward="@+id/codeT"
-                        android:inputType="textAutoComplete"
-                        android:hint="@string/name" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/codeTTIL"
-                    android:layout_below="@+id/codeNTIL"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <atlow.chemi.mymada.helpers.FixedTextInputEditText
-                        android:id="@+id/codeT"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:lines="11"
-                        android:inputType="textMultiLine"
-                        android:hint="@string/note2"
-                        android:gravity="top" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </RelativeLayout>
-        </ScrollView>
-        <androidx.cardview.widget.CardView
-            android:id="@+id/code_req_send_card_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="@dimen/activity_vertical_margin"
-            android:layout_marginEnd="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="4dp"
-            app:cardUseCompatPadding="true"
-            app:cardBackgroundColor="@color/ColorNice"
-            app:cardCornerRadius="15dp"
-            app:cardElevation="4dp">
-        <Button
-            android:id="@+id/sendCR"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/btns_new"
-            android:gravity="center|center_horizontal|center_vertical"
-            android:paddingStart="@dimen/activity_horizontal_margin"
-            android:paddingEnd="@dimen/activity_horizontal_margin"
-            android:text="@string/succ"
-            android:textColor="#FFF"
-            android:textSize="20sp" />
-        </androidx.cardview.widget.CardView>
-    </RelativeLayout>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
