@@ -22,10 +22,17 @@ import atlow.chemi.mymada.helpers.LocalHelper
 import com.google.android.material.textfield.TextInputLayout
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.Rule
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.assertTextEquals
 import java.io.File
 
 /** A blocking Instrumentation monitor intercepts approval: no SMS composer or transmission. */
 class DispatchIntegrationTest {
+    @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     @Test fun everyRecipientKeepsLiteralBodyOutsideUri() {
@@ -50,15 +57,16 @@ class DispatchIntegrationTest {
         try {
             ActivityScenario.launch(MokedPage::class.java).use { scenario ->
                 scenario.onActivity { it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(2, false) }
-                capture("custom", language)
-                onView(withId(R.id.yourMsgBtnNew)).perform(click())
-                val body = "  Fixture & #? +%\nשלום  "
-                scenario.onActivity {
-                    assertNotNull(it.findViewById<TextInputLayout>(R.id.freeMsg).error)
-                    it.findViewById<EditText>(R.id.yourMsg).setText(body)
-                }
+                compose.waitForIdle()
                 closeSoftKeyboard()
-                onView(withId(R.id.yourMsgBtnNew)).perform(click())
+                capture("custom", language)
+                compose.onNodeWithTag("custom-send").performClick()
+                val body = "  Fixture & #? +%\nשלום  "
+                compose.onNodeWithTag("custom-error").assertExists()
+                compose.onNodeWithTag("custom-body").performTextReplacement(body)
+                closeSoftKeyboard()
+                compose.onNodeWithTag("custom-send").performClick()
+                scenario.onActivity { it.supportFragmentManager.executePendingTransactions() }
                 assertEquals(0, monitor.hits)
                 preferences.edit().putInt("merhav", 0).commit()
                 scenario.recreate()
@@ -73,9 +81,11 @@ class DispatchIntegrationTest {
                 }
                 capture("confirmation", language)
                 onView(withText(R.string.ret)).perform(click())
+                scenario.onActivity { it.supportFragmentManager.executePendingTransactions() }
                 assertEquals(0, monitor.hits)
-                scenario.onActivity { assertEquals(body, it.findViewById<EditText>(R.id.yourMsg).text.toString()) }
-                onView(withId(R.id.yourMsgBtnNew)).perform(click())
+                compose.onNodeWithTag("custom-body").assertTextEquals(body)
+                compose.onNodeWithTag("custom-send").performClick()
+                scenario.onActivity { it.supportFragmentManager.executePendingTransactions() }
                 onView(withText(R.string.ok)).perform(click())
                 assertEquals(1, monitor.hits)
             }
