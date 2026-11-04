@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.PendingIntent
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -58,6 +59,11 @@ class smsRes : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
         val event = CallEvent.from(intent)
+        // Android may reject an automatic background launch. Keep its fallback until this UI opens.
+        val notifications = getSystemService(NotificationManager::class.java)
+        val notificationId = intent.getIntExtra("notNum", -1)
+        notifications.activeNotifications.filter { it.id == notificationId && it.notification.group == "Calls" }
+            .forEach { notifications.cancel(it.tag, it.id) }
         val preferences = getSharedPreferences("Settings", 0)
         val now = Calendar.getInstance()
         audio = getSystemService(AudioManager::class.java)
