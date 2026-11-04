@@ -125,12 +125,14 @@ and entry-point results. Do not request private signing keys in chat or re-sign 
 production install with the local debug key. Signing access is tracked in #11;
 no new release requirement is added here.
 
-### User-dependent execution, not more offline reruns
+### Agent-owned visual audit and specific external dependencies
 
-1. **Product / visual review:** SMS policy is approved; review matched
-   production/candidate comparisons in #35, including full modals, localized action
-   direction and onboarding order. Approve actual differences explicitly; candidate
-   captures alone cannot close these items.
+1. **Agent-owned visual audit:** inspect matched production/candidate images in
+   #35, including full modals, localized action direction and onboarding order;
+   capture missing states and fix unintended differences. [Batch 1](VISUAL_AUDIT_BATCH1.md)
+   indexes actual inspected evidence and remaining states. Only concrete deliberate
+   differences need maintainer decisions; visual auditing is not broadly user-blocked.
+   SMS policy is already approved. Candidate-only images cannot establish parity.
 2. **Nonproduction backend authorization:** provide project configuration and scoped
    test data/accounts for codes/activation acknowledgement, chats/name/unread/token
    identity, cold/warm FCM, Vitals and dictionary. For remaining production document
