@@ -33,6 +33,9 @@ class PrivacyScreenTest {
     @Test fun hebrewPolicyNavigationAndState() = verifyScreen("he", "מדיניות פרטיות", "לא ניתן להתחבר")
 
     private fun verifyScreen(language: String, title: String, error: String) {
+        instrumentation.runOnMainSync {
+            atlow.chemi.mymada.helpers.LocalHelper.setLocale(instrumentation.targetContext, language)
+        }
         preferences.edit().putString("lng", language).putBoolean("privacy", false)
             .putBoolean("Mapp", true).commit()
         assertTrue(policyUrl(language).contains(if (language == "en") "/privacy-en.html?" else "/privacy.html?"))
@@ -93,6 +96,11 @@ class PrivacyScreenTest {
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
         ActivityScenario.launch(PrivacyActivity::class.java).use { scenario ->
+            compose.waitUntil(5_000) {
+                var focused = false
+                scenario.onActivity { focused = it.window.decorView.hasWindowFocus() }
+                focused
+            }
             instrumentation.sendKeyDownUpSync(android.view.KeyEvent.KEYCODE_BACK)
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
