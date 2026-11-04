@@ -27,6 +27,9 @@ class ActivationContractTest {
         assertNull(PushRoute.parse(mapOf("code" to "abcd")))
         assertNull(PushRoute.parse(mapOf("code" to "0012", "key" to "a/b")))
         assertEquals(PushRoute.Kind.CHAT, PushRoute.parse(mapOf("type" to "newChat"))?.kind)
+        assertEquals(PushRoute.Kind.CHAT, PushRoute.parse(mapOf("target" to "ContactUs"))?.kind)
+        assertEquals("retained-key", PushRoute.parse(mapOf("target" to "ActivateCode", "code" to "0012", "firebaseKey" to "retained-key"))?.key)
+        assertNull(PushRoute.parse(mapOf("target" to "ActivateCode", "code" to "0012", "firebaseKey" to "bad/key")))
         assertEquals(PushRoute.Kind.REQUEST, PushRoute.parse(mapOf("type" to "newC", "code" to "0012"))?.kind)
         assertEquals(PushRoute.Kind.GENERIC, PushRoute.parse(mapOf("title" to "title", "msg" to "A&B#\nשלום"))?.kind)
         for (type in listOf("codeApproval", "old-sender")) {

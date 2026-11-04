@@ -39,11 +39,14 @@ reported; compiling that regression does not count as a runtime pass. Evidence:
 
 This follow-up passed 20 JVM tests, debug/test/optimized unsigned release assembly
 and both lints (1m36s). The new exact EN/HE locale and all-region payload checks ran
-on JVM. Reverse-selection and updated UI confirmation assertions compile but were
-not executed: the current instruction prohibits ADB/device changes. Previously
-passing UI results describe the pre-policy artifact, not this new formatter.
+on JVM. The user clarified that owned disposable emulators remain authorized.
+Reverse-selection and updated UI confirmation assertions then passed **4/4 each**:
+API24 EN12.879s/HE12.908s; API37 EN14.757s/HE14.256s. These use the frozen #120
+debug/test APKs, with real picker/recreation/confirmation and no SMS approval.
 Unsigned release SHA256:
 `44b177410432fff12666413981402ba5631b4de06304d214a8569d2bb7855db4`.
+The subsequent local-upgrade check found missing RN activity identities; its
+correction/evidence is documented in [local upgrades](LOCAL_UPGRADE_VERIFICATION.md).
 
 ## Approved accessibility policy
 
