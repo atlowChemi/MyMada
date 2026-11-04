@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import atlow.chemi.mymada.calls.CallParser
 import atlow.chemi.mymada.calls.ListenerAccess
+import atlow.chemi.mymada.calls.DetectionStatus
 
 /** Keep the installed native listener identity. */
 open class NotificationService : NotificationListenerService() {
@@ -24,6 +25,7 @@ open class NotificationService : NotificationListenerService() {
         val title = extras?.getCharSequence(Notification.EXTRA_TITLE)
         val call = CallParser.parse(getSharedPreferences("Settings", 0).getBoolean("Mapp", false),
             posted.packageName, title, extras?.getCharSequence(Notification.EXTRA_TEXT)) ?: return
+        DetectionStatus.refresh(this)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(Intent("MADA_APP")
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             .putExtra("pack", posted.packageName)
@@ -40,6 +42,7 @@ open class NotificationService : NotificationListenerService() {
     }
 
     override fun onListenerConnected() {
+        DetectionStatus.refresh(this)
         try { activeNotifications } catch (error: Exception) {
             Log.e("NotificationService", "Cannot read active notifications", error)
         }

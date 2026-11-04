@@ -54,6 +54,17 @@ class ListenerAccessTest {
                 instrumentation.uiAutomation.waitForIdle(300, 5000)
                 assertEquals("One delivery per source callback, even with both grants", index + 1, count.get())
             }
+            DetectionStatus.stop(context)
+            context.sendBroadcast(android.content.Intent().setComponent(android.content.ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
+                .putExtra("id", 412))
+            android.os.SystemClock.sleep(500)
+            assertEquals("Stopped detection ignores source callbacks without revoking access", 2, count.get())
+            assertEquals(selected, ListenerAccess.selected(context))
+            preferences.edit().putBoolean("Mapp", true).commit()
+            ListenerAccess.rebind(context)
+            context.sendBroadcast(android.content.Intent().setComponent(android.content.ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
+                .putExtra("id", 412))
+            await { count.get() == 3 }
         } finally {
             broadcasts.unregisterReceiver(receiver)
             preferences.edit().putBoolean("Mapp", false).commit()

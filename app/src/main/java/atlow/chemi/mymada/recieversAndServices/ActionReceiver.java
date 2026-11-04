@@ -17,8 +17,7 @@ public class ActionReceiver extends BroadcastReceiver {
                     android.util.Log.w("MetroWidget", "Control unavailable", e);
                 }
             } else if(action.equals("runInBG")) {
-                context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false).apply();
-                context.stopService(new Intent(context, SMSMonitorService.class));
+                atlow.chemi.mymada.calls.DetectionStatus.stop(context);
             } else if(action.equals("widget") || action.equals("stopM")) {
                 MetroService.stop(context);
             }
