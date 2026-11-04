@@ -1,5 +1,5 @@
 package atlow.chemi.mymada.helpers
 @FunctionalInterface
-interface MetronomeEventCallback {
+fun interface MetronomeEventCallback {
     fun metronomeEventHandler(timestamp : Long)
 }
