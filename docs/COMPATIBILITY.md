@@ -160,7 +160,8 @@ repeat it. This is neither exactly-once nor force-stop recovery.
   share bounds, with the 64%/36% landscape split. No cross-tool session promise.
 - **Contractions:** new intervals are previous-start → start; imported `previous`
   and `oldEnd` remain exact. `Settings/contractions.session.v1` immediately persists
-  active-only rows. Expire only after **more than 20 minutes observed absence**
+  active-only rows. The unfinished row stays visible for fresh, native and RN
+  sessions. Expire only after **more than 20 minutes observed absence**
   (pause/background/navigation), not contraction time. Configuration change clears
   transient pause. Same-boot elapsed time measures absence; cross-boot wall clock
   is rollback-clamped. Foreground death without departure and first import recover
