@@ -15,7 +15,7 @@ import atlow.chemi.mymada.integrations.TeamModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.material3.MaterialTheme
+import atlow.chemi.mymada.integrations.IntegrationTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import atlow.chemi.mymada.classes.Volunteer
@@ -26,9 +26,8 @@ class MainActivity2 : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View =
         ComposeView(requireContext()).apply {
             id = R.id.recycler_view
-            if (SettingsPage.isRTL()) rotationY = 180f
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent { MaterialTheme {
+            setContent { IntegrationTheme {
                 var emptyError by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
                 TeamScreen(members, onEdit = { index ->
                     if (childFragmentManager.findFragmentByTag("team-member") == null)
@@ -71,7 +70,7 @@ class MainActivity2 : Fragment() {
             ComposeView(requireContext()).apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-                    MaterialTheme {
+                    IntegrationTheme {
                         atlow.chemi.mymada.integrations.TeamMemberScreen(name, { name = it; if (it.isNotBlank()) invalid = false },
                             role, { role = it }, invalid, onCancel = { dismiss() }, onSave = {
                             invalid = name.isBlank()

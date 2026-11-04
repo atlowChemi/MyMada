@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.testTag
@@ -22,6 +25,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -52,11 +56,13 @@ class MedicalPickerDialog : DialogFragment() {
             id = R.id.userListView
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MaterialTheme(colorScheme = lightColorScheme(primary = colorResource(R.color.ColorNice), surface = Color.White, background = Color.White)) {
+                IntegrationTheme {
+                    val keyboard = LocalSoftwareKeyboardController.current
                     Surface {
                         Column(Modifier.fillMaxWidth().heightIn(max = (LocalConfiguration.current.screenHeightDp - 120).dp).padding(16.dp)) {
                             Text("בחר קודים רפואיים", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
                             TextField(query, { query = it }, label = { Text(stringResource(R.string.search)) },
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { keyboard?.hide() }),
                                 singleLine = true, modifier = Modifier.fillMaxWidth().testTag("medical-query"))
                             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                                 LazyColumn(Modifier.weight(1f).testTag("medical-catalog")) {
@@ -75,7 +81,7 @@ class MedicalPickerDialog : DialogFragment() {
                                             else -> "#6b7177"
                                         }))
                                         if (code.id == "sep") Surface(color = color) {
-                                            Text(code.name, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(vertical = 17.dp))
+                                            Text(code.name, fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(vertical = 17.dp))
                                         } else Row(Modifier.fillMaxWidth().testTag("medical-code-${code.id}").toggleable(code.id in selected, role = Role.Checkbox) {
                                             selected = if (it) selected + code.id else selected - code.id
                                             publish()
@@ -83,11 +89,14 @@ class MedicalPickerDialog : DialogFragment() {
                                             Checkbox(code.id in selected, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = color, uncheckedColor = color))
                                             Text(code.name, fontFamily = FontFamily(Font(R.font.opensans_hebrew)), fontSize = 14.sp, letterSpacing = 0.sp)
                                         }
+                                        HorizontalDivider(color = Color(0xffd0d0d0))
                                     }
                                 }
                             }
                             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                                TextButton(onClick = { publish(); dismiss() }, modifier = Modifier.testTag("medical-done")) { Text(stringResource(R.string.ok)) }
+                                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                                    TextButton(onClick = { publish(); dismiss() }, modifier = Modifier.testTag("medical-done")) { Text(stringResource(R.string.ok)) }
+                                }
                             }
                         }
                     }
