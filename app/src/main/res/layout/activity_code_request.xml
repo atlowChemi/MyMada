@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    app:statusBarBackground="?attr/colorPrimary"
     android:id="@+id/contactP"
     tools:context="atlow.chemi.mymada.MokedPage">
     <com.google.android.material.appbar.AppBarLayout

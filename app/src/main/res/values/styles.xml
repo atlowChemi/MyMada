@@ -32,7 +32,8 @@
         <item name="android:itemBackground">@color/materialGrey300</item>
         <item name="android:textColorSecondary">@color/ColorRedDark</item>
         <item name="android:windowBackground">@drawable/ic_bgg</item>
-        <item name="android:typeface">monospace</item>
+        <item name="fontFamily">@font/opensans_hebrew</item>
+        <item name="android:fontFamily">@font/opensans_hebrew</item>
 
         <item name="android:textColorHint">@color/ColorAqua</item>
         <item name="colorControlNormal">@color/ColorBlue</item>
@@ -95,7 +96,8 @@
         <item name="android:alertDialogTheme">@style/Theme.Preferences.Dialog</item>
         <item name="android:alertDialogStyle">@style/Theme.Preferences.Dialog</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="android:typeface">monospace</item>
+        <item name="fontFamily">@font/opensans_hebrew</item>
+        <item name="android:fontFamily">@font/opensans_hebrew</item>
 
     </style>
 
@@ -115,7 +117,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="fontFamily">@null</item>
+        <item name="android:fontFamily">@null</item>
+    </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
@@ -127,7 +132,8 @@
 
     <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!-- Used for the buttons -->
-        <item name="android:typeface">monospace</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="colorAccent">@color/ColorAqua</item>
         <item name="colorControlNormal">@color/Ocean</item>
         <item name="colorControlActivated">@color/ColorAqua</item>
