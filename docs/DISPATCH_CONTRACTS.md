@@ -1,5 +1,35 @@
 # Remaining dispatch contracts (#19 / #26)
 
+## Activation request and dialog Compose layer above #106
+
+Tested source `3278850e`: request form, disclaimer/confirmation and request
+progress/result dialogs now Compose; activation-code progress/result dialogs
+also use Compose. Native toolbar/menu and DetectionControls are retained.
+Request fields save across recreation, preserve multiline text, validate email/
+required fields, and trim only at the existing confirmation boundary. Confirmed
+requests still use ActivationModel acknowledgement; no backend contract change.
+
+Evidence: `~/.local/share/opencode/evidence/integrations/activation-request-compose-final/`.
+Full unit/debug/test APK/release/both lint build passed in 5m4s. Seven activation
+checks passed per run: API24 EN27.191s / HE21.072s; API37 EN43.114s / HE36.379s.
+The preceding API24 Hebrew run failed because the fixture resolved `OK` from
+an English context; stable action tags and explicitly localized assertions
+correct that test. Prior artifacts/logs remain in `activation-request-compose/`.
+
+Optimized APK SHA256:
+`0e84f54010f67e079d0de8d4be6f3069c4b50fe40a7812c0e73884d470269464`.
+Both pulled installations match exact signed bytes. Optimized disclaimer/form
+launches and candidate EN/HE captures are retained. Actual background SIGKILL
+restored request draft `fixture@example.org` on API24 (20866→21100) and API37
+(6922→7603), with before/after UI XML and process logs. No submit/production
+write occurred. Confirmation recreation is tested separately with fixture text.
+
+Production visual parity is unaccepted; Compose default field/dialog styling
+still differs from the native reference. Pending-write process-death recovery,
+live backend/SDK acceptance, host/shared confirmation/team dialog/full form/chat
+Compose remain open. This layer does not add ToolsWindow callers or change
+SettingsPage/permission interfaces.
+
 ## Activation-code Compose slice above #105
 
 Tested source `45848422`: activation's four masked numeric cells and submit
