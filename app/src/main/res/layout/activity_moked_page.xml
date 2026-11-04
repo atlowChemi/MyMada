@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
+    app:statusBarBackground="?attr/colorPrimary"
     android:id="@+id/mokedP"
     tools:context="atlow.chemi.mymada.MokedPage">
     <com.google.android.material.appbar.AppBarLayout
