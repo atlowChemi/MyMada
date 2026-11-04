@@ -30,8 +30,8 @@ owned disposable emulator for development.
 
 ## Maintainer references
 
-- [Compatibility contracts](docs/COMPATIBILITY.md): installed components, stored
-  data, approved behavior, backend protocols and platform boundaries.
+- [Historical migration decisions](https://github.com/atlowChemi/MyMada/issues/19#issuecomment-6624636403)
+  are archived in the closed assessment issue; current behavior lives in code and tests.
 - [Testing guide](docs/TESTING.md): build/lint, isolated fixtures, mocked-client
   limits, packaging, upgrades and visual verification.
 - [GitHub project](https://github.com/users/atlowChemi/projects/1): execution order
