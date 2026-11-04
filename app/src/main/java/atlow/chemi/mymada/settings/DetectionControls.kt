@@ -74,7 +74,7 @@ object DetectionControls {
         ContextCompat.startForegroundService(activity, monitor)
         val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
         if (intent.resolveActivity(activity.packageManager) != null) {
-            if (activity.packageName !in NotificationManagerCompat.getEnabledListenerPackages(activity))
+            if (atlow.chemi.mymada.calls.ListenerAccess.selected(activity) == null)
                 Prompt.show(activity, R.string.dialog_help, intent, style = style)
         } else {
             activity.stopService(Intent(activity, NotificationService::class.java))

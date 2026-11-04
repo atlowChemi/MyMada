@@ -55,19 +55,7 @@ public class Applicatio extends Application {
         makeRec();
     }
     public static void tryConnectService(Context mContext) {
-        toggleNotificationListenerService(mContext);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ComponentName componentName = new ComponentName(mContext, NotificationService.class);
-            requestRebind(componentName);
-        }
-    }
-    public static void toggleNotificationListenerService(Context mContext) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            PackageManager pm = mContext.getPackageManager();
-            ComponentName componentName = new ComponentName(mContext, NotificationService.class);
-            pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-            pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-        }
+        atlow.chemi.mymada.calls.ListenerAccess.rebind(mContext);
     }
     private void makeRec() {
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
