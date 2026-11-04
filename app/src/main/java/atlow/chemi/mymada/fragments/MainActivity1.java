@@ -9,8 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,17 +30,11 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.content.SharedPreferences;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
 
-import java.util.ArrayList;
-import java.util.Locale;
 
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.SettingsPage;
-import atlow.chemi.mymada.adapters.mCodeAdapt;
-import atlow.chemi.mymada.classes.mCodeKid;
 
 public class MainActivity1 extends Fragment {
     private boolean bool, isMove = false, yishuv = true;
@@ -88,9 +80,7 @@ public class MainActivity1 extends Fragment {
             "pish","pish","pish","pish","pish","pish","pish","pish","pish","pish","pish","pish",
             "clali","clali","clali","clali","clali","clali","clali","clali","clali","clali","clali","clali","clali","clali","clali","clali","clali"
     };
-    private mCodeAdapt codeAdapter;
     private TextInputLayout ambulance, hn, ht, first, last, sum, code;
-    private Dialog dialog;
     private EditText edit1, editv, edita, edit2,edit3, edit4, edit5, edit6, sp;
     private String kodR = "", txt;
     private SharedPreferences sp2;
@@ -113,16 +103,15 @@ public class MainActivity1 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState != null) kodR = savedInstanceState.getString("medical-selection", "");
         Context context = MainActivity1.this.getContext();
         sp2 = context.getSharedPreferences("Settings", 0);
-        ArrayList<mCodeKid> arrayOfMediCode = new ArrayList<>();
-        boolean[] sep = new boolean[_options.length];
-        for (int i = 0; i < _options.length; i++) {
-            arrayOfMediCode.add(new mCodeKid(_options[i] + "",_optionsNum[i] + "",_optionsCat[i], i));
-            sep[i] = _optionsNum[i].equals("sep");
-        }
-        codeAdapter = new mCodeAdapt(getContext(), arrayOfMediCode);
         sp = view.findViewById(R.id.M1button2);
+        sp.setText(kodR);
+        getChildFragmentManager().setFragmentResultListener("medical-selection", getViewLifecycleOwner(), (key, result) -> {
+            kodR = result.getString("selected", "");
+            sp.setText(kodR);
+        });
         final Button newSendButton = view.findViewById(R.id.M1btnN);
         final EditText family = view.findViewById(R.id.M1txt5);
         assert family != null;
@@ -153,44 +142,7 @@ public class MainActivity1 extends Fragment {
             return false;
         });
         //sp.setHint(getResources().getString(R.string.pickC));
-        sp.setOnClickListener(v -> {
-            //kodR = getResources().getString(R.string.pickC);
-            //showDialog(0);
-            LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view12 = inflater.inflate(R.layout.list_medical, null);
-            ListView lv = view12.findViewById(R.id.userListView);
-            assert lv != null;
-            codeAdapter.filter("");
-            lv.setAdapter(codeAdapter);
-            lv.setOnItemClickListener((parent, view1, position, id) -> {
-                if (!codeAdapter.getId(position).equals("sep")) {
-                    CheckBox cb = view1.findViewById(R.id.mcName);
-                    cb.setChecked(!cb.isChecked());
-                    String ret = codeAdapter.getChecked();
-                    kodR = ret;
-                    sp.setText(ret);
-                }
-            });
-            EditText search = view12.findViewById(R.id.userSearch);
-            assert search != null;
-            search.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    String cs = s.toString().toLowerCase(Locale.getDefault());
-                    codeAdapter.filter(cs);
-                }
-                @Override
-                public void afterTextChanged(Editable s) {}
-            });
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
-            alertDialog.setTitle("בחר קודים רפואיים");
-            alertDialog.setView(view12);
-            alertDialog.setPositiveButton(getActivity().getResources().getString(R.string.ok), (dialog, which) -> dialog.dismiss());
-            dialog = alertDialog.create();
-            dialog.show();
-        });
+        sp.setOnClickListener(v -> atlow.chemi.mymada.integrations.MedicalPickerDialog.show(this, _options, _optionsNum, _optionsCat, kodR));
         newSendButton.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_MOVE:
@@ -297,8 +249,8 @@ public class MainActivity1 extends Fragment {
             }else   {
                 code.setErrorEnabled(false);
             }
-            if (edit6.getText().toString().length() > 0 || edit3.getText().toString().length() > 0) {
-                yishuv = false;
+            yishuv = edit6.getText().length() == 0 && edit3.getText().length() == 0;
+            if (!yishuv) {
                 if (edit3.getText().toString().length() < 1) {
                     ht.setError(getString(R.string.err_ht));
                     bool = false;
@@ -391,5 +343,10 @@ public class MainActivity1 extends Fragment {
     }
     private void sms(final String msg)   {
         atlow.chemi.mymada.integrations.DispatchConfirmation.show(this, msg);
+    }
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString("medical-selection", kodR);
+        super.onSaveInstanceState(outState);
     }
 }
