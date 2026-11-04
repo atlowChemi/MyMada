@@ -47,6 +47,11 @@ class MedicalPickerTest {
                     .single().childFragmentManager.executePendingTransactions()
             }
             compose.onNodeWithTag("medical-catalog").assertExists()
+            compose.onNodeWithTag("medical-done").assertIsDisplayed()
+            val rowBounds = compose.onNodeWithTag("medical-code-2000").getUnclippedBoundsInRoot()
+            assertTrue("Native row retains at least 42dp of content", (rowBounds.bottom - rowBounds.top).value >= 42f)
+            assertTrue("Catalog and action must not overlap", compose.onNodeWithTag("medical-catalog")
+                .getUnclippedBoundsInRoot().bottom <= compose.onNodeWithTag("medical-done").getUnclippedBoundsInRoot().top)
             instrumentation.uiAutomation.waitForIdle(500, 5000)
             val image = instrumentation.uiAutomation.takeScreenshot()
             val directory = java.io.File(context.getExternalFilesDir(null), "medical-picker").apply { mkdirs() }
@@ -54,6 +59,34 @@ class MedicalPickerTest {
                 image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
             }
             image.recycle()
+            fun capture(state: String) {
+                instrumentation.uiAutomation.waitForIdle(500, 5000)
+                val screenshot = instrumentation.uiAutomation.takeScreenshot()
+                java.io.File(directory, "$state-$language.png").outputStream().use {
+                    screenshot.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+                }
+                screenshot.recycle()
+            }
+            compose.onNodeWithTag("medical-query").performTextReplacement("2000")
+            compose.onNodeWithTag("medical-query").performImeAction()
+            capture("search-2000")
+            compose.onNodeWithTag("medical-code-2000").performClick().assertIsOn()
+            capture("selected-2000")
+            compose.onNodeWithTag("medical-query").performTextClearance()
+            compose.onNodeWithTag("medical-query").performImeAction()
+            compose.onNodeWithTag("medical-code-2000").assertIsOn()
+            capture("cleared-selected")
+            compose.onNodeWithTag("medical-query").performTextReplacement("no-such-medical-code")
+            compose.onNodeWithTag("medical-query").performImeAction()
+            compose.onNodeWithTag("medical-code-2000").assertDoesNotExist()
+            compose.onNodeWithTag("medical-done").assertIsDisplayed()
+            capture("no-match")
+            compose.onNodeWithTag("medical-done").performClick()
+            compose.onNodeWithTag("form-codes").assertTextContains("2000")
+            capture("returned-selection")
+            compose.onNodeWithTag("form-codes").performScrollTo().performClick()
+            compose.onNodeWithTag("medical-query").performTextReplacement("2000")
+            compose.onNodeWithTag("medical-code-2000").performClick().assertIsOff()
             compose.onNodeWithTag("medical-query").performTextReplacement("5000")
             compose.onNodeWithTag("medical-query").performImeAction()
             compose.onNodeWithTag("medical-code-5000").performScrollTo().performClick().assertIsOn()
