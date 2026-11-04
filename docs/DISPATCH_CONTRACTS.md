@@ -1,5 +1,37 @@
 # Remaining dispatch contracts (#19 / #26)
 
+## Activation-code Compose slice above #105
+
+Tested source `45848422`: activation's four masked numeric cells and submit
+button now Compose. Digits use saveable state, retain leading zeroes, advance
+focus on entry and move back on deletion. Validation, queued push entry,
+backend acknowledgement and local-access grant remain in ActivationModel.
+The native toolbar and progress/result dialogs remain pending; request screen
+and its confirmation are not converted by this slice.
+
+Evidence: `~/.local/share/opencode/evidence/integrations/activation-compose/`.
+Full unit/debug/test APK/release/both lint build passed in 5m31s. Final fixture
+APK adds keyboard dismissal before tapping the native request button; app
+bytes are unchanged by that fixture-only follow-up. Seven activation checks
+pass per run: API24 EN32.258s / HE38.568s, API37 EN94.287s / HE29.532s.
+Tests cover masked digit restoration/leading-zero submission, no local grant
+before acknowledgement, retained work across rotation, cold/malformed push
+entry, token identity preservation and native request confirmation restoration.
+
+Initial masked-value assertion inspected displayed bullets instead of InputText;
+the corrected assertion inspects underlying semantics. An earlier Hebrew
+request test attempted to tap behind the keyboard; explicit dismissal fixes
+that fixture. A combined shell timeout interrupted the last API37 HE run;
+the owned package was stopped, logcat retained, and that full seven-test run
+passed independently. All failures remain beside final evidence.
+
+Optimized APK SHA256:
+`2d0e371d958474769fc9ef2040f9154cbff39ed2b12357f176d61d18e000d63b`.
+Both installed APKs match exact signed bytes; optimized launches/UI XML/screenshots
+captured on both APIs. Actual process-death restoration and production visual
+parity for activation remain open, as do live backend/SDK and request/dialog
+Compose acceptance. Tests use fixture acknowledgements, not production writes.
+
 ## Medical dialog Compose layer above #104
 
 Tested app source `cab184b1` replaces the medical dialog's native search/list/
