@@ -32,6 +32,7 @@ import atlow.chemi.mymada.R
 import atlow.chemi.mymada.smsRes
 import atlow.chemi.mymada.home.HomeActions
 import atlow.chemi.mymada.recieversAndServices.GrobootRec
+import atlow.chemi.mymada.recieversAndServices.FloatingWidgetService
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -69,6 +70,10 @@ class CallRouteTest {
     @After fun cleanup() {
         settings.edit().putBoolean("Mapp", false).commit()
         manager.cancelAll()
+        // Non-popup notifications also start overlays when the device grants that permission.
+        // Drain their starts, then destroy their player before the next fixture changes volume.
+        instrumentation.runOnMainSync { context.stopService(Intent(context, FloatingWidgetService::class.java)) }
+        instrumentation.waitForIdleSync()
     }
 
     private fun pending(id: Int): PendingIntent = requireNotNull(PendingIntentCompat.getActivity(context, id,
@@ -186,7 +191,7 @@ class CallRouteTest {
                 while (!replaced && SystemClock.uptimeMillis() < deadline) {
                     instrumentation.runOnMainSync {
                         replaced = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-                            .filterIsInstance<smsRes>().any { it.findViewById<TextView>(R.id.Address).text.toString() == "בדיקה שנייה" }
+                            .filterIsInstance<smsRes>().any { it.findViewById<TextView>(R.id.Address)?.text?.toString() == "בדיקה שנייה" }
                     }
                     if (!replaced) SystemClock.sleep(20)
                 }
