@@ -1,5 +1,12 @@
 # Remaining dispatch contracts (#19 / #26)
 
+Current status: all remaining UI layers are published in #113–116, Circular cleanup
+in #117 and component bridges in #118. The private/pending statements below are
+chronological evidence at each snapshot, not current implementation blockers.
+Final combined verification and outstanding decisions are reconciled in
+[the acceptance matrix](FINAL_KOTLIN_INVENTORY.md). Exact SMS policy below remains
+unapproved; final 17/17 EN/HE on both APIs does not approve it.
+
 ## Approved accessibility policy
 
 Maintainer approved Android font scaling across migrated screens instead of
