@@ -19,6 +19,8 @@ import androidx.core.app.PendingIntentCompat
 import androidx.core.content.IntentCompat
 import atlow.chemi.mymada.MokedPage
 import atlow.chemi.mymada.R
+import atlow.chemi.mymada.BuildConfig
+import atlow.chemi.mymada.calls.CallDiagnostics
 import atlow.chemi.mymada.calls.CallAlerts
 import atlow.chemi.mymada.calls.CallEvent
 import atlow.chemi.mymada.calls.CallRecovery
@@ -32,7 +34,10 @@ class GrobootRec : BroadcastReceiver() {
     @SuppressLint("MissingPermission") // Current OS grant is checked immediately before notify.
     override fun onReceive(context: Context, intent: Intent?) {
         if (intent == null) return
+        val trace = if (BuildConfig.DEBUG) intent.getLongExtra(CallDiagnostics.EXTRA, 0).takeIf { it != 0L } ?: CallDiagnostics.next() else 0L
+        if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "receive", "correlated=${intent.hasExtra(CallDiagnostics.EXTRA)}")
         if (!CallRecovery.allow(context, intent)) {
+            if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "guard", "decision=receiver_recovery_rejected")
             CallRecovery.handled(context, intent)
             return
         }
@@ -41,6 +46,7 @@ class GrobootRec : BroadcastReceiver() {
             IntentCompat.getParcelableExtra(intent, "sourceIntent", PendingIntent::class.java))
         val audio = context.getSystemService(AudioManager::class.java)
         val decision = CallAlerts.decide(preferences.all, event.type, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), audio?.ringerMode ?: -1, false)
+        if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "classify", "type=${event.type} bodyLen=${event.text.length} enabled=${decision.enabled} sourcePI=${event.source != null} popup=${preferences.getBoolean("win", true)} notification=${preferences.getBoolean("not", true)} replace=${preferences.getBoolean("ride", false)}")
         if (!decision.enabled) {
             CallRecovery.handled(context, intent)
             return
@@ -66,16 +72,24 @@ class GrobootRec : BroadcastReceiver() {
             if (NotificationPermission.granted(context)) {
                 if (preferences.getBoolean("ride", false)) {
                     // Replace calls only: metronome and background-control notifications are unrelated.
-                    manager.activeNotifications.filter { it.notification.group == "Calls" }.forEach { manager.cancel(it.tag, it.id) }
+                    manager.activeNotifications.filter { it.notification.group == "Calls" }.forEach {
+                        manager.cancel(it.tag, it.id)
+                        if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "cancel", "ourId=${it.id} reason=replacement")
+                    }
                 } else {
                     nextNotificationId = maxOf(nextNotificationId, manager.activeNotifications
                         .filter { it.notification.group == "Calls" }.maxOfOrNull { it.id } ?: 0) + 1
                     notificationId = nextNotificationId
                 }
                 notification.setContentIntent(PendingIntentCompat.getActivity(context, notificationId,
-                    event.popupIntent(context, notificationId, loop).putExtra("openSource", true),
+                    event.popupIntent(context, notificationId, loop).putExtra("openSource", true).apply {
+                        if (BuildConfig.DEBUG) putExtra(CallDiagnostics.EXTRA, trace)
+                    },
                     PendingIntent.FLAG_UPDATE_CURRENT, false))
                 manager.notify(notificationId, notification.build())
+                if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "notify", "ourId=$notificationId channelImportance=${if (Build.VERSION.SDK_INT >= 26) manager.getNotificationChannel("notWithWin")?.importance else -1} sourcePI=${event.source != null}")
+            } else {
+                if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "notify_skipped", "reason=permission")
             }
             if (!popup && Settings.canDrawOverlays(context)) {
                 val overlay = Intent(context, FloatingWidgetService::class.java)
@@ -87,7 +101,12 @@ class GrobootRec : BroadcastReceiver() {
                 catch (error: SecurityException) { Log.w("GrobootRec", "Cannot start call overlay", error) }
             }
         }
-        if (popup) context.startActivity(event.popupIntent(context, notificationId, loop))
+        if (popup) {
+            if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "popup_request", "ourId=$notificationId automatic=true")
+            context.startActivity(event.popupIntent(context, notificationId, loop).apply {
+                if (BuildConfig.DEBUG) putExtra(CallDiagnostics.EXTRA, trace)
+            })
+        }
         CallRecovery.handled(context, intent, dispatched = true)
     }
 

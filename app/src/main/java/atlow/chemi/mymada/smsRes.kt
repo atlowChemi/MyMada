@@ -23,6 +23,7 @@ import atlow.chemi.mymada.calls.CallAlerts
 import atlow.chemi.mymada.calls.CallEvent
 import atlow.chemi.mymada.calls.CallText
 import atlow.chemi.mymada.calls.CallPopupScreen
+import atlow.chemi.mymada.calls.CallDiagnostics
 import atlow.chemi.mymada.helpers.LocalHelper
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -48,6 +49,8 @@ class smsRes : AppCompatActivity() {
             isAppearanceLightNavigationBars = false
         }
         val event = CallEvent.from(intent)
+        if (BuildConfig.DEBUG) CallDiagnostics.record(intent.getLongExtra(CallDiagnostics.EXTRA, 0), "popup_create",
+            "ourId=${intent.getIntExtra("notNum", -1)} sourceTap=${intent.getBooleanExtra("openSource", false)} restored=${savedInstanceState != null} sourcePI=${event.source != null} bodyLen=${event.text.length}")
         sourceAttempted = savedInstanceState?.getBoolean("sourceAttempted") ?: false
         if (intent.getBooleanExtra("openSource", false)) {
             dismissNotification()
@@ -81,7 +84,10 @@ class smsRes : AppCompatActivity() {
         val notifications = getSystemService(NotificationManager::class.java)
         val notificationId = intent.getIntExtra("notNum", -1)
         notifications.activeNotifications.filter { it.id == notificationId && it.notification.group == "Calls" }
-            .forEach { notifications.cancel(it.tag, it.id) }
+            .forEach {
+                notifications.cancel(it.tag, it.id)
+                if (BuildConfig.DEBUG) CallDiagnostics.record(intent.getLongExtra(CallDiagnostics.EXTRA, 0), "cancel", "ourId=${it.id} reason=explicit_source_action")
+            }
     }
 
     override fun onPostResume() {
@@ -99,13 +105,18 @@ class smsRes : AppCompatActivity() {
     }
 
     private fun sendSource(event: CallEvent): Boolean {
+        if (BuildConfig.DEBUG) CallDiagnostics.record(intent.getLongExtra(CallDiagnostics.EXTRA, 0), "source_send", "ourId=${intent.getIntExtra("notNum", -1)} sourcePI=${event.source != null}")
         val source = event.source ?: return false
         // Explicit user click: modern targets must opt in to lending the visible sender's BAL privilege.
         val options = if (Build.VERSION.SDK_INT >= 34) android.app.ActivityOptions.makeBasic()
             .setPendingIntentBackgroundActivityStartMode(if (Build.VERSION.SDK_INT >= 36)
                 android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOW_IF_VISIBLE
             else android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED).toBundle() else null
-        try { source.send(this, 0, null, null, null, null, options); return true }
+        try {
+            source.send(this, 0, null, null, null, null, options)
+            if (BuildConfig.DEBUG) CallDiagnostics.record(intent.getLongExtra(CallDiagnostics.EXTRA, 0), "source_send_returned", "result=returned_not_launch_proof")
+            return true
+        }
         catch (error: PendingIntent.CanceledException) { Log.w("smsRes", "Source action canceled", error) }
         catch (error: SecurityException) { Log.w("smsRes", "Source action unavailable", error) }
         return false
@@ -153,6 +164,7 @@ class smsRes : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if (BuildConfig.DEBUG) CallDiagnostics.record(intent.getLongExtra(CallDiagnostics.EXTRA, 0), "popup_new_intent", "ourId=${intent.getIntExtra("notNum", -1)} sourceTap=${intent.getBooleanExtra("openSource", false)}")
         sourceAttempted = false
         if (intent.getBooleanExtra("openSource", false)) {
             // A singleTop tap resumes this owner before any scheduled recreation.
