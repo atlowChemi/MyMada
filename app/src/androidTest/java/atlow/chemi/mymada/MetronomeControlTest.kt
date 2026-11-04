@@ -14,6 +14,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import atlow.chemi.mymada.recieversAndServices.*
 import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
@@ -27,8 +29,11 @@ class MetronomeControlTest {
 
     private fun await(message: String, condition: () -> Boolean) {
         val deadline = SystemClock.elapsedRealtime() + 8000
-        while (!condition() && SystemClock.elapsedRealtime() < deadline) Thread.sleep(25)
-        assertTrue(message, condition())
+        while (SystemClock.elapsedRealtime() < deadline) {
+            if (condition()) return
+            Thread.sleep(25)
+        }
+        fail(message)
     }
     private fun scenario(): ActivityScenario<UtillitiesAndTools> {
         context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false).commit()
@@ -47,6 +52,18 @@ class MetronomeControlTest {
             screen.onActivity { activity = it }
             try {
                 instrumentation.runOnMainSync { activity.findViewById<View>(R.id.bpmW).performClick() }
+                await("Permission prompt or playback") {
+                    var ready = MetroService.running
+                    instrumentation.runOnMainSync {
+                        val prompt = activity.supportFragmentManager.findFragmentByTag("notification-permission") as? DialogFragment
+                        val dialog = prompt?.dialog as? AlertDialog
+                        if (dialog != null) {
+                            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick()
+                            ready = true
+                        }
+                    }
+                    ready
+                }
                 await("Running") { MetroService.running }
                 val prefs = context.getSharedPreferences("metronome", 0)
                 val start = prefs.getLong("start", 0)
