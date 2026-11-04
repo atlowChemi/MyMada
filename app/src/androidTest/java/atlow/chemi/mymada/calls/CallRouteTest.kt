@@ -79,9 +79,14 @@ class CallRouteTest {
     private fun pending(id: Int): PendingIntent = requireNotNull(PendingIntentCompat.getActivity(context, id,
         Intent(context, MokedPage::class.java).putExtra("fixture", id), PendingIntent.FLAG_UPDATE_CURRENT, false))
 
-    private fun post(text: CharSequence?, source: PendingIntent?, id: Int = 1, title: CharSequence? = "*אירוע חדש*") {
+    private fun post(text: CharSequence?, source: PendingIntent?, id: Int = 1, title: CharSequence? = "*אירוע חדש*",
+                     expanded: CharSequence? = null, summary: Boolean = false) {
         val notification = NotificationCompat.Builder(context, "source-fixture").setSmallIcon(R.drawable.ic_siren)
-            .setContentTitle(title).setContentText(text).setContentIntent(source).build()
+            .setContentTitle(title).setContentText(text).setContentIntent(source)
+            .apply {
+                if (expanded != null) setStyle(NotificationCompat.BigTextStyle().bigText(expanded))
+                if (summary) setGroup("source-calls").setGroupSummary(true)
+            }.build()
         listener.onNotificationPosted(StatusBarNotification("com.groboot.mdaemergency", "com.groboot.mdaemergency",
             id, null, Process.myUid(), Process.myPid(), 0, notification, Process.myUserHandle(), System.currentTimeMillis()))
     }
@@ -136,6 +141,46 @@ class CallRouteTest {
         settings.edit().putBoolean("Mapp", false).commit()
         instrumentation.runOnMainSync { post("הודעת צוות בדיקה", pending(4)) }
         notifications(1)
+    }
+
+    @Test fun expandedUpdatesAndSummariesKeepTheirBodyAndLiveRepeats() {
+        settings.edit().putBoolean("ride", true).commit()
+        val original = pending(40)
+        val updated = pending(41)
+        fun delivered(text: String, source: PendingIntent, count: Int = 1) {
+            val calls = notifications(count)
+            assertTrue("Expected $text; received ${calls.map { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) }}", calls.any {
+                it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() == text &&
+                    it.actions.last().actionIntent == source
+            })
+        }
+        instrumentation.runOnMainSync { post("הודעת צוות ראשונה", original, 40) }
+        delivered("הודעת צוות ראשונה", original)
+        // Same source key, now BigTextStyle only: this is content, not a malformed event.
+        instrumentation.runOnMainSync { post(null, updated, 40, expanded = "הודעת צוות מורחבת") }
+        delivered("הודעת צוות מורחבת", updated)
+        instrumentation.runOnMainSync { post("", updated, 40, expanded = "הודעת צוות עדכון") }
+        delivered("הודעת צוות עדכון", updated)
+        // Preserve the existing nonempty short-body precedence when both fields exist.
+        instrumentation.runOnMainSync { post("הודעת צוות קצרה", original, 40, expanded = "טקסט מורחב") }
+        delivered("הודעת צוות קצרה", original)
+        instrumentation.runOnMainSync { post(null, updated, 42, title = null, expanded = "הודעת צוות סיכום", summary = true) }
+        delivered("הודעת צוות סיכום", updated)
+        // Meaningful summaries and identical live key/body callbacks must still alert each time.
+        settings.edit().putBoolean("ride", false).commit()
+        repeat(2) { index ->
+            instrumentation.runOnMainSync { post(null, updated, 42, title = null, expanded = "הודעת צוות סיכום", summary = true) }
+            delivered("הודעת צוות סיכום", updated, index + 2)
+        }
+        settings.edit().putBoolean("ride", true).commit()
+        // No blanket title-only/summary suppression: the existing malformed fallback remains.
+        instrumentation.runOnMainSync { post(null, original, 43, summary = true) }
+        delivered("תקלה", original)
+    }
+
+    @Test fun expandedSummaryKeepsBodyInsteadOfMalformedFallback() {
+        instrumentation.runOnMainSync { post(null, pending(44), 44, title = null, expanded = "הודעת צוות סיכום", summary = true) }
+        assertEquals("הודעת צוות סיכום", notifications(1).single().extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
     }
 
     @Test fun blockedPopupLeavesPerCallTapFallbackUntilPopupActuallyOpens() {

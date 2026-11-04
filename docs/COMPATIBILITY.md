@@ -114,6 +114,9 @@ decisions. [Testing](TESTING.md) distinguishes local behavior from live delivery
   beyond active Calls after restart. Filter only contentless GROUP_SUMMARY events:
   ticker/actions/custom views/other content remain parsable; contentIntent alone
   is not content. Flagless malformed events retain fallback handling.
+- Parse nonempty notification `EXTRA_TEXT` first, then `EXTRA_BIG_TEXT`, then the
+  original short value. Expanded-only updates must not discard a valid call body;
+  this does not suppress repeated events or change title-only error fallback.
 - Classification retains substring families `mdaemergency`/`mda.health`, exact
   `atlow.mymadaadmin`, native service/admin/on-call/group/shift/legacy precedence and
   admin-title legacy override. Legacy=T3, on-call=T1, group=T2, shift=T3; service T6
