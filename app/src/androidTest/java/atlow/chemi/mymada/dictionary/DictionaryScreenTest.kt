@@ -34,7 +34,10 @@ class DictionaryScreenTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
 
-    @Test fun fixtureSearchEditAddRecoveryAndFailures() {
+    @Test fun fixtureSearchEditAddRecoveryAndFailures() = verifyFixture(false)
+    @Test fun validationCaptionMetrics() = verifyFixture(true)
+
+    private fun verifyFixture(captionsOnly: Boolean) {
         val languages = InstrumentationRegistry.getArguments().getString("language")?.let { listOf(it) } ?: listOf("en", "he")
         for (language in languages) {
             instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
@@ -57,13 +60,33 @@ class DictionaryScreenTest {
                 }
                 compose.waitForIdle()
                 assertTrue(model.loading)
-                capture("loading-$language")
+                if (!captionsOnly) {
+                    capture("loading-$language")
+                    scenario.onActivity { source.emit(listOf(alpha)); source.error() }
+                    capture("read-error-isolated-$language")
+                    scenario.onActivity { model.retry() }
+                }
                 scenario.onActivity { source.emit(emptyList()) }
-                capture("empty-$language")
+                if (!captionsOnly) capture("empty-$language")
                 compose.onNodeWithTag("shell-action-${R.id.app_bar_word_add}").performClick()
                 capture("add-$language")
                 onView(withId(android.R.id.button1)).perform(click())
                 assertEquals(0, source.writes.size)
+                assertCaptionMetrics()
+                capture("required-$language")
+                if (captionsOnly) {
+                    onView(withId(android.R.id.button2)).perform(click())
+                    scenario.onActivity { source.emit(listOf(alpha)) }
+                    compose.onNodeWithText("Alpha").performClick()
+                    compose.waitForIdle()
+                    onView(withId(android.R.id.button1)).perform(click())
+                    compose.waitForIdle()
+                    onView(withId(android.R.id.button1)).perform(click())
+                    assertEquals("Validation never submits", 0, source.writes.size)
+                    assertCaptionMetrics()
+                    capture("unchanged-edit-$language")
+                    return@use
+                }
                 onView(withId(R.id.wordName)).perform(replaceText("  New term  "))
                 onView(withId(R.id.wordDefinition)).perform(replaceText("  New meaning  "), closeSoftKeyboard())
                 scenario.recreate()
@@ -102,6 +125,8 @@ class DictionaryScreenTest {
                 capture("edit-$language")
                 onView(withId(android.R.id.button1)).perform(click())
                 assertEquals(2, source.writes.size) // unchanged edit is rejected
+                assertCaptionMetrics()
+                capture("unchanged-edit-$language")
                 onView(withId(R.id.wordName)).perform(replaceText("Changed"), closeSoftKeyboard())
                 onView(withId(android.R.id.button1)).perform(click())
                 assertEquals(Write("a", true, mapOf("newName" to "Changed")), source.writes.last())
@@ -152,6 +177,42 @@ class DictionaryScreenTest {
             source.emit(emptyList())
             assertTrue(model.entries.isEmpty())
             model.stop()
+        }
+    }
+
+    private fun assertCaptionMetrics() {
+        compose.waitForIdle()
+        for (id in listOf(R.id.nameTil, R.id.definitionTil)) onView(withId(id)).check { view, error ->
+            if (error != null) throw error
+            val edit = (view as com.google.android.material.textfield.TextInputLayout).editText!!
+            if (android.os.Build.VERSION.SDK_INT >= 35) {
+                assertFalse("Native editor minimum metrics", edit.isLocalePreferredLineHeightForMinimumUsed)
+                if (edit.text.isEmpty() && view.resources.configuration.fontScale == 1f &&
+                    view.resources.displayMetrics.densityDpi == 420) {
+                    assertEquals("Retained native empty-editor height", if (id == R.id.nameTil) 108 else 340, edit.height)
+                }
+                if (id == R.id.nameTil && edit.text.toString() == "Alpha" &&
+                    view.resources.configuration.fontScale == 1f && view.resources.displayMetrics.densityDpi == 420)
+                    assertEquals("Native populated editable text retains fallback height", 113, edit.height)
+            }
+            val caption = view.findViewById<android.widget.TextView>(com.google.android.material.R.id.textinput_error)
+            val font = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL)
+            assertEquals("Final error font must survive TextAppearance", font, caption.typeface)
+            val area = caption.parent.parent as android.view.View
+            assertEquals("Native indicator has no top inset", 0, area.paddingTop)
+            val reference = android.widget.TextView(view.context).apply {
+                text = caption.text
+                typeface = font
+                setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, caption.textSize)
+                if (android.os.Build.VERSION.SDK_INT >= 35) setLocalePreferredLineHeightForMinimumUsed(false)
+            }
+            reference.measure(android.view.View.MeasureSpec.makeMeasureSpec(caption.width, android.view.View.MeasureSpec.EXACTLY),
+                android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED))
+            assertEquals("Native caption metrics ${caption.paint.fontMetricsInt}; min=${caption.minHeight}/${caption.minimumHeight}",
+                reference.measuredHeight, caption.height)
+            if (android.os.Build.VERSION.SDK_INT == 24 && view.resources.configuration.fontScale == 1f &&
+                view.resources.displayMetrics.densityDpi == 420)
+                assertEquals("Retained native API24 required/unchanged caption reference", 43, caption.height)
         }
     }
 

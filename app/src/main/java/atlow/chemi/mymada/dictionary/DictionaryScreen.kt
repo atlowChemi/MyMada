@@ -113,6 +113,7 @@ private fun DictionaryDetails(name: String, definition: String, edit: () -> Unit
             .setNeutralButton("סגור") { _, _ -> dismiss() }.create()
         dialog.setOnCancelListener { dismiss() }
         dialog.show()
+        dialog.nativeDictionaryTitleAndButtons()
         dialog.findViewById<TextView>(android.R.id.message)?.typeface = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
         onDispose { dialog.dismiss() }
     }
@@ -134,6 +135,16 @@ private fun DictionaryEditor(edit: Boolean, name: String, definition: String, or
         val meaning = content.findViewById<EditText>(R.id.wordDefinition)
         val termLayout = content.findViewById<TextInputLayout>(R.id.nameTil)
         val meaningLayout = content.findViewById<TextInputLayout>(R.id.definitionTil)
+        // Native FontsOverride replaced DEFAULT/MONOSPACE with this asset globally.
+        val font = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
+        term.typeface = font
+        meaning.typeface = font
+        if (android.os.Build.VERSION.SDK_INT >= 35) {
+            term.setLocalePreferredLineHeightForMinimumUsed(false)
+            meaning.setLocalePreferredLineHeightForMinimumUsed(false)
+        }
+        termLayout.typeface = font
+        meaningLayout.typeface = font
         term.setText(name); meaning.setText(definition)
         term.doAfterTextChanged { onName(it.toString()) }
         meaning.doAfterTextChanged { onDefinition(it.toString()) }
@@ -143,11 +154,23 @@ private fun DictionaryEditor(edit: Boolean, name: String, definition: String, or
             .setPositiveButton(if (edit) "שמור" else "הוסף", null).create()
         alert.setOnCancelListener { currentDismiss() }
         alert.show()
+        alert.nativeDictionaryTitleAndButtons()
         alert.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
             val n = term.text.toString().trim(); val d = meaning.text.toString().trim()
             val unchanged = edit && n == originalName && d == originalDefinition
             termLayout.error = when { n.isEmpty() -> "לא כתבת מונח"; unchanged -> "לא שינית את שם המונח"; else -> null }
             meaningLayout.error = when { d.isEmpty() -> "לא כתבת הגדרה למונח!"; unchanged -> "לא שינית את ההגדרה למונח!"; else -> null }
+            for (layout in listOf(termLayout, meaningLayout)) {
+                layout.isErrorEnabled = layout.error != null
+                // Material's new caption top inset was absent from the published dialog.
+                val caption = layout.findViewById<TextView>(com.google.android.material.R.id.textinput_error)
+                // Native error TextAppearance uses named sans-serif, not the globally replaced defaults.
+                caption?.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+                layout.isExpandedHintEnabled = layout.error == null
+                ((caption?.parent as? android.view.View)?.parent as? android.view.View)?.let { area ->
+                    area.setPaddingRelative(area.paddingStart, 0, area.paddingEnd, area.paddingBottom)
+                }
+            }
             if (n.isNotEmpty() && d.isNotEmpty() && !unchanged) currentSubmit()
         }
         dialog = alert
@@ -163,4 +186,29 @@ private fun DictionaryEditor(edit: Boolean, name: String, definition: String, or
             else -> null
         }
     }
+}
+
+private fun AlertDialog.nativeDictionaryTitleAndButtons() {
+    // Keep the historical dialog typeface local; shared dialogs have separate acceptance.
+    val font = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
+    findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.typeface = font
+    // Reuse the Contractions correction: target35's screen-height qualifiers include system bars.
+    val legacyMinimum = if (android.os.Build.VERSION.SDK_INT >= 35) {
+        val metrics = context.getSystemService(android.view.WindowManager::class.java).currentWindowMetrics
+        val bars = metrics.windowInsets.getInsetsIgnoringVisibility(
+            android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout())
+        val legacy = android.content.res.Configuration(context.resources.configuration).apply {
+            screenHeightDp = ((metrics.bounds.height() - bars.top - bars.bottom) / context.resources.displayMetrics.density).toInt()
+        }
+        val theme = androidx.appcompat.view.ContextThemeWrapper(context.createConfigurationContext(legacy), R.style.AlertDialogStyle)
+        val attributes = theme.obtainStyledAttributes(null, intArrayOf(android.R.attr.minHeight), androidx.appcompat.R.attr.buttonBarButtonStyle, 0)
+        val minimum = attributes.getDimensionPixelSize(0, getButton(DialogInterface.BUTTON_POSITIVE).minHeight)
+        attributes.recycle()
+        minimum
+    } else null
+    for (button in listOf(DialogInterface.BUTTON_POSITIVE, DialogInterface.BUTTON_NEGATIVE, DialogInterface.BUTTON_NEUTRAL))
+        getButton(button)?.apply {
+            typeface = font
+            legacyMinimum?.let { minHeight = it; minimumHeight = it }
+        }
 }
