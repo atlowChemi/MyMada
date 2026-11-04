@@ -152,6 +152,36 @@ results and raw swipe failures remain intact. This follow-up resolves the direct
 swipe acceptance blocker only; other production/live acceptance gates and the
 serialized publication queue remain unchanged.
 
+### #27: obsolete Circular Java widgets (private)
+
+Whole-tree tracked source/resource/XML/test/build-rule searches at `d77d1083`
+found no callers of `CircularProgressButton`, `CircularAnimatedDrawable`, or
+`CircularRevealAnimatedDrawable` outside their own implementations and the
+button's unused styleable declaration. The two drawables were instantiated only
+by the button; its package-private interfaces had no other implementations or
+callers. All five custom attributes were used only by that button. No reflective
+class lookup exists in app sources; the test-only dynamic resource lookup in
+HomeMemoryTest selects unrelated home navigation IDs/strings. Documentation
+mentions describe historical bridge inventories rather than runtime callers.
+
+Remove the three obsolete Java files and their exclusive `values/attrs.xml` as
+part of #27's all-app Kotlin migration. Activation and request screens already
+own busy, result, retry and confirmation UI in Compose, driven by ActivationModel;
+the backend acknowledgement and saved-state paths are unaffected. Shared helpers
+and other owners' Java files are outside this deletion. Before/after searches,
+Java inventory and validation logs are retained in `integrations/circular-retirement/`.
+This is a private follow-up above the validated UI chain, not a rewrite of it or
+an assertion that the combined #27 migration is complete.
+Post-removal runtime/reference search has zero matches. Unit/debug/test APK/
+release/both lint validation passed in 2m42s. Existing activation/request suites
+passed 7/7 on API24 EN11.052s / HE11.219s and API37 EN19.478s / HE18.669s,
+including token/acknowledgement, retry, confirmation and recreation coverage.
+Optimized request/code entry launches succeeded on both APIs; installed bytes
+match signed APK SHA256
+`827df0192e5cde416c906a0913af50182b77df88d01970801355e6ee9e403d6b`.
+The three remaining Java files on this private branch are the separately owned
+Tools host, Privacy alias and ActionReceiver; none is changed by this slice.
+
 ## Activation request and dialog Compose layer above #106
 
 Tested source `3278850e`: request form, disclaimer/confirmation and request
