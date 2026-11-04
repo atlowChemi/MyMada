@@ -40,6 +40,7 @@
             android:fitsSystemWindows="true"
             app:itemBackground="@drawable/nav_item_background"
             app:itemTextColor="@drawable/nav_item_text"
+            app:itemTextAppearanceActiveBoldEnabled="false"
             app:itemIconTint="@drawable/nav_item_text"
             android:id="@+id/navigation"/>
     </atlow.chemi.mymada.helpers.MyDrawerLayout>

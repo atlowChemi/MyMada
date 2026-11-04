@@ -74,8 +74,8 @@ the published native AlertDialog style and restoring via FragmentManager. Both
 languages are bundled (language splits disabled), so changing language works offline
 without a Play download or an Activity-retaining split listener. `LocaleRefresh`
 refreshes existing back-stack Activities when they resume in an outdated locale;
-it retains no Activity reference. `SettingsPage` still owns the Java navigation and
-detection bridge. `SettingsChoiceTest` changes both languages,
+it retains no Activity reference. Kotlin `SettingsPage` preserves its installed
+component identity and delegates detection to `DetectionControls`. `SettingsChoiceTest` changes both languages,
 checks Home return, restores region selection and supports `capture=true` screenshots.
 
 The Tools settings section is now Kotlin/Compose. Its saved Fragment identity remains
@@ -162,3 +162,13 @@ revoking an existing grant inside the test would terminate the test process.
 Actual API33+ permission UI, external custom-file playback, and final API37 checks
 remain acceptance work. Native result request codes preserve destination routing
 through recreation; broader service/permission modernization remains #24.
+
+`SettingsPage` saves the selected destination while FragmentManager restores its
+content/dialogs. The shared drawer explicitly disables Material's active-item bold
+default to retain published typography (checked by `SettingsNavigationTest`). It
+no longer caches separate stale Fragment instances. Drawer Back
+closes the drawer before leaving, using OnBackPressedDispatcher. Home exits without
+an extra replacement transaction. `SettingsNavigationTest` covers every destination,
+both locales, recreation, drawer/system Back, and stale detection-menu state. The
+existing notification-listener/accessibility fallback and overlay entry points are
+retained; current-target permissions/services are still #24.
