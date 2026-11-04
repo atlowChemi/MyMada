@@ -33,6 +33,7 @@ internal fun IntegrationField(value: String, update: (String) -> Unit, modifier:
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     textStyle: TextStyle = TextStyle(),
+    inputMinHeight: androidx.compose.ui.unit.Dp = 41.dp,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
@@ -51,7 +52,7 @@ internal fun IntegrationField(value: String, update: (String) -> Unit, modifier:
         Box(Modifier.fillMaxWidth()) {
             Spacer(Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 4.dp)
                 .padding(bottom = 8.dp).height(if (focused) 2.dp else 1.dp).background(color))
-            Box(Modifier.fillMaxWidth().heightIn(min = 41.dp).padding(horizontal = 4.dp, vertical = 8.dp)) {
+            Box(Modifier.fillMaxWidth().heightIn(min = inputMinHeight).padding(horizontal = 4.dp, vertical = 8.dp)) {
                 if (value.isEmpty() && !focused && label != null) Text(label, style = style, color = accent)
                 field()
             }

@@ -46,8 +46,12 @@ fun ChatScreen(state: ChatModel.State, name: String, changeName: () -> Unit, sen
     Column(Modifier.fillMaxSize().padding(8.dp)) {
         LazyColumn(state = list, modifier = Modifier.weight(1f).testTag("chat-messages"), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             item(key = "change-name") {
-                Surface(Modifier.fillMaxWidth().clickable(onClick = changeName), color = colorResource(R.color.White)) {
-                    Text(stringResource(R.string.changeName), fontFamily = font, modifier = Modifier.padding(10.dp))
+                Surface(Modifier.fillMaxWidth().padding(8.dp).clickable(onClick = changeName),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp), shadowElevation = 4.dp,
+                    color = colorResource(R.color.White)) {
+                    Text(stringResource(R.string.changeName), fontFamily = font, fontSize = 19.sp,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Right,
+                        modifier = Modifier.padding(10.dp))
                 }
             }
             items(state.messages, key = { it.key }) { message ->
@@ -71,11 +75,17 @@ fun ChatScreen(state: ChatModel.State, name: String, changeName: () -> Unit, sen
         Text(state.seen?.let { stringResource(if (it) R.string.msgSeen else R.string.msgNotSeen) }.orEmpty(),
             fontFamily = font, color = colorResource(R.color.DarkGrey), modifier = Modifier.testTag("chat-seen"))
         Row(Modifier.fillMaxWidth(), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-            TextField(draft, { draft = it }, enabled = !state.busy, singleLine = true,
-                label = { Text(stringResource(R.string.mailBT), fontFamily = font) },
+            IntegrationField(draft, { draft = it }, enabled = !state.busy, singleLine = true,
+                label = stringResource(R.string.mailBT), inputMinHeight = 72.dp,
                 modifier = Modifier.weight(1f).testTag("chat-draft"))
-            IconButton(onClick = { send(draft) }, enabled = state.ready && !state.busy, modifier = Modifier.size(60.dp).testTag("chat-send")) {
-                Icon(painterResource(R.drawable.ic_send), contentDescription = stringResource(R.string.send), tint = colorResource(R.color.ColorNice))
+            Surface(Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(15.dp), shadowElevation = 4.dp,
+                color = colorResource(R.color.ColorNice)) {
+                IconButton(onClick = { send(draft) }, enabled = state.ready && !state.busy,
+                    modifier = Modifier.width(56.dp).heightIn(min = 60.dp).testTag("chat-send")) {
+                    Icon(painterResource(R.drawable.ic_send), contentDescription = stringResource(R.string.send),
+                        modifier = Modifier.size(24.dp), tint = androidx.compose.ui.graphics.Color.White)
+                }
             }
         }
     }
