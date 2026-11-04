@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,11 +34,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.Dialog
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlin.math.roundToInt
 import atlow.chemi.mymada.R
@@ -44,6 +46,11 @@ import atlow.chemi.mymada.R
 @Composable
 fun ContractionScreen(entries: List<ContractionEntry>, showActiveRow: Boolean, dialog: Int, onToggle: () -> Unit, onDialog: (Boolean) -> Unit) {
     val assets = LocalContext.current.assets
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current.density
+    val negativeColor = colorResource(R.color.OldPrimary).toArgb()
+    val currentOnDialog = rememberUpdatedState(onDialog)
     val font = remember(assets) { FontFamily(Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")) }
     val active = entries.lastOrNull()?.end == null && entries.isNotEmpty()
     val buttonTextSize = with(LocalDensity.current) { 30.sp.toPx().roundToInt().toSp() }
@@ -99,23 +106,43 @@ fun ContractionScreen(entries: List<ContractionEntry>, showActiveRow: Boolean, d
                     control(Modifier.fillMaxWidth())
                 }
             }
-            if (dialog != 0) Dialog(onDismissRequest = {},
-                properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)) {
-                Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(2.dp), color = Color(0xffececec), shadowElevation = 24.dp) {
-                    Column {
-                        Text(stringResource(dialog), Modifier.padding(start = 24.dp, end = 24.dp, top = 18.dp, bottom = 16.dp),
-                            fontSize = 16.sp, fontFamily = font, color = Color.Black)
-                        Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, bottom = 4.dp), horizontalArrangement = Arrangement.End) {
-                            if (dialog != R.string.ContracDeleteEmpty) TextButton(onClick = { onDialog(false) }, Modifier.widthIn(min = 64.dp)) {
-                                Text(stringResource(R.string.dialog_no).uppercase(LocalConfiguration.current.locales[0]),
-                                    color = colorResource(R.color.OldPrimary), fontFamily = font, fontSize = 14.sp)
-                            }
-                            TextButton(onClick = { onDialog(true) }, Modifier.widthIn(min = 64.dp)) {
-                                Text(stringResource(R.string.ok), color = colorResource(R.color.ColorAqua), fontFamily = FontFamily.Monospace, fontSize = 14.sp)
-                            }
+            if (dialog != 0) DisposableEffect(context, configuration, dialog, negativeColor) {
+                // All three states used the native alert host; Compose's default window is narrower.
+                val builder = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+                    .setMessage(dialog).setCancelable(false)
+                    .setPositiveButton(R.string.ok) { _, _ -> currentOnDialog.value(true) }
+                if (dialog != R.string.ContracDeleteEmpty) {
+                    builder.setNegativeButton(R.string.dialog_no) { _, _ -> currentOnDialog.value(false) }
+                }
+                val alert = builder.create()
+                alert.setOnShowListener {
+                    // Target35 includes system bars in screenHeightDp, changing AppCompat's h720dp button size.
+                    if (android.os.Build.VERSION.SDK_INT >= 35) {
+                        val metrics = context.getSystemService(android.view.WindowManager::class.java).currentWindowMetrics
+                        val bars = metrics.windowInsets.getInsetsIgnoringVisibility(android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout())
+                        val legacy = Configuration(configuration).apply {
+                            screenHeightDp = ((metrics.bounds.height() - bars.top - bars.bottom) / density).toInt()
+                        }
+                        val theme = androidx.appcompat.view.ContextThemeWrapper(context.createConfigurationContext(legacy), R.style.AlertDialogStyle)
+                        val attributes = theme.obtainStyledAttributes(null, intArrayOf(android.R.attr.minHeight), androidx.appcompat.R.attr.buttonBarButtonStyle, 0)
+                        val minimum = attributes.getDimensionPixelSize(0, alert.getButton(AlertDialog.BUTTON_POSITIVE).minHeight)
+                        attributes.recycle()
+                        alert.getButton(AlertDialog.BUTTON_POSITIVE).minHeight = minimum
+                        alert.getButton(AlertDialog.BUTTON_POSITIVE).minimumHeight = minimum
+                        alert.getButton(AlertDialog.BUTTON_NEGATIVE)?.minHeight = minimum
+                        alert.getButton(AlertDialog.BUTTON_NEGATIVE)?.minimumHeight = minimum
+                    }
+                    if (dialog != R.string.ContracDeleteEmpty) {
+                        val typeface = Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")
+                        alert.findViewById<android.widget.TextView>(android.R.id.message)?.typeface = typeface
+                        alert.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
+                            this.typeface = typeface
+                            setTextColor(negativeColor)
                         }
                     }
                 }
+                alert.show()
+                onDispose { alert.dismiss() }
             }
         }
     }
