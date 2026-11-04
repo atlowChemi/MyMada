@@ -70,7 +70,10 @@ internal fun VitalsScreen(ranges: List<VitalRanges> = nativeVitals) {
                 Row(Modifier.fillMaxWidth()) {
                     VitalInput(sys, { sys = it; interacted = true }, R.string.systolic, R.id.systolic, pressure.first,
                         R.id.diastolic, interacted, Modifier.weight(.95f))
-                    AndroidView(factory = { TextView(it).apply { text = "/"; textSize = 40f } }, modifier = Modifier.weight(.1f))
+                    AndroidView(factory = { TextView(it).apply {
+                        text = "/"; textSize = 40f
+                        typeface = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
+                    } }, modifier = Modifier.weight(.1f))
                     VitalInput(dia, { dia = it; interacted = true }, R.string.diastolic, R.id.diastolic, pressure.second,
                         null, interacted, Modifier.weight(.95f))
                 }
@@ -105,6 +108,9 @@ private fun VitalInput(value: String, onChange: (String) -> Unit, label: Int, vi
             typeface = font
             addView(TextInputEditText(context).apply {
                 id = viewId; setHint(label); typeface = font
+                // Numeric single-line content needs legacy fitting-text metrics, even after clearing.
+                if (android.os.Build.VERSION.SDK_INT >= 28) setFallbackLineSpacing(false)
+                if (android.os.Build.VERSION.SDK_INT >= 35) setLocalePreferredLineHeightForMinimumUsed(false)
                 inputType = InputType.TYPE_CLASS_NUMBER
                 imeOptions = if (nextId == null) EditorInfo.IME_ACTION_DONE else EditorInfo.IME_ACTION_NEXT
                 nextId?.let { nextFocusForwardId = it; nextFocusDownId = it }
@@ -124,10 +130,21 @@ private fun VitalInput(value: String, onChange: (String) -> Unit, label: Int, vi
     }, update = { layout ->
         val edit = layout.editText!!
         if (edit.text.toString() != value) { edit.setText(value); edit.setSelection(value.length) }
+        // Native calc reserves an empty caption on the first valid pulse, then keeps it.
+        if (viewId == R.id.pulsa && status == true) {
+            layout.isErrorEnabled = true
+            val caption = layout.findViewById<TextView>(com.google.android.material.R.id.textinput_error)
+            // Native error TextAppearance resolves named sans-serif, bypassing its global asset override.
+            caption.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+            ((caption.parent as? View)?.parent as? View)?.let { area ->
+                // Material 1.0 had no indicator top inset, including at large font scales.
+                area.setPaddingRelative(area.paddingStart, 0, area.paddingEnd, area.paddingBottom)
+            }
+        }
         val color = when (status) { true -> Color.rgb(70,178,58); false -> Color.rgb(191,21,22); null -> Color.rgb(50,167,195) }
         edit.setTextColor(color)
         // Published initial underlines use theme state colors until the first calculation.
-        edit.backgroundTintList = if (!interacted) null else ColorStateList.valueOf(color)
+        if (interacted) androidx.core.view.ViewCompat.setBackgroundTintList(edit, ColorStateList.valueOf(color))
         layout.defaultHintTextColor = ColorStateList.valueOf(color)
         edit.contentDescription = layout.context.getString(label) + when(status) {
             true -> ": " + layout.context.getString(R.string.vitalsTakin)
