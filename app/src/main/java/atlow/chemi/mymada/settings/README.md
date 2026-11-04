@@ -124,3 +124,19 @@ tool selection, preservation and repeated/interrupted-between-file migration.
 then run with `startupFixture=verify` in a new process. It checks the actual Application
 startup path and RN AppCompat locale storage on API24/platform locales on API33+.
 Use only a disposable emulator with IPv4/IPv6 egress blocked before either invocation.
+## Advanced settings
+
+`SettingsAdvanced` retains the published XML controls and native preference
+defaults. View-scoped listeners no longer retain destroyed views or write defaults
+while rendering. Volume changes are drafts until confirmation; Cancel leaves both
+keys untouched, and rotation retains the draft. The slider uses the device alarm
+stream maximum before restoring its value. Delay input is bounded to the same
+nonnegative integer-second range as the preference bridge, preventing overflow in
+the existing consumers' `seconds * 1000` expression.
+
+RN `Advanced.tsx` required positive delay values and treated zero volume as the
+device maximum; native allowed zero for both. This layer retains native zero
+behavior rather than silently choosing a new alert policy. That product difference
+remains for #24/#27 acceptance. `AdvancedSettingsTest` checks bilingual toggles,
+delay validation/draft recreation, volume cancel/confirm/recreation, and day/night
+navigation. Published-production visual parity and API37 rerun remain outstanding.
