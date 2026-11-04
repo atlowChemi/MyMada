@@ -65,7 +65,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 
-/** Compose owns presentation; HomePage/HomeActions temporarily retain native platform behavior. */
+/** Compose presentation backed by the Kotlin launcher and native platform actions. */
 object HomeContent {
     @JvmStatic fun install(activity: HomePage) {
         activity.enableEdgeToEdge(
