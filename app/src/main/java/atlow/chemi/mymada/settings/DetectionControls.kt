@@ -23,7 +23,7 @@ import atlow.chemi.mymada.calls.ListenerAccess
 import atlow.chemi.mymada.permissions.NotificationPermission
 import atlow.chemi.mymada.NotificationService
 import atlow.chemi.mymada.R
-import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
+import atlow.chemi.mymada.calls.DetectionStatus
 
 /** Existing detection contract; current-target permission/service behavior remains #24. */
 object DetectionControls {
@@ -36,8 +36,7 @@ object DetectionControls {
         val preferences = activity.getSharedPreferences("Settings", 0)
         val enabled = !(preferences.getBoolean("Mapp", false) && NotificationPermission.granted(activity) && ListenerAccess.selected(activity) != null)
         if (enabled) {
-            preferences.edit().putBoolean("Mapp", false).apply()
-            activity.stopService(Intent(activity, SMSMonitorService::class.java))
+            DetectionStatus.stop(activity)
             render(item, false)
             if (activity.supportFragmentManager.findFragmentByTag("enable-detection") == null) {
                 activity.supportFragmentManager.beginTransaction().add(Enable().apply {
@@ -45,8 +44,7 @@ object DetectionControls {
                 }, "enable-detection").commit()
             }
         } else {
-            activity.stopService(Intent(activity, SMSMonitorService::class.java))
-            preferences.edit().putBoolean("Mapp", false).apply()
+            DetectionStatus.stop(activity)
             render(item, false)
         }
     }
@@ -97,7 +95,8 @@ object DetectionControls {
         if (!NotificationPermission.granted(activity) || ListenerAccess.selected(activity) == null) return
         val preferences = activity.getSharedPreferences("Settings", 0)
         preferences.edit().putBoolean("Mapp", true).apply()
-        SMSMonitorService.start(activity)
+        ListenerAccess.rebind(activity)
+        DetectionStatus.refresh(activity)
         activity.invalidateOptionsMenu()
         activity.findViewById<com.google.android.material.navigation.NavigationView>(R.id.navigation)
             ?.menu?.findItem(R.id.detect)?.let { render(it, true) }

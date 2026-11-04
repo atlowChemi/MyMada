@@ -59,6 +59,7 @@ class CallRouteTest {
             .putBoolean("win", false).putBoolean("Nsou", false).putBoolean("Nvib", false)
             .putBoolean("cut", true).commit()
         context.stopService(Intent(context, SMSMonitorService::class.java))
+        context.getSystemService(NotificationManager::class.java).cancel(78)
         manager.cancelAll()
         if (Build.VERSION.SDK_INT >= 26) manager.deleteNotificationChannel("notWithWin")
         notifications(0)
@@ -83,9 +84,11 @@ class CallRouteTest {
     private fun notifications(count: Int): List<Notification> {
         instrumentation.waitForIdleSync()
         val deadline = SystemClock.uptimeMillis() + 3000
-        while (manager.activeNotifications.size != count && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
-        assertEquals(count, manager.activeNotifications.size)
-        return manager.activeNotifications.map { it.notification }
+        // Status78 now refreshes on real source delivery/resume; its controls have a separate suite.
+        fun alerts() = manager.activeNotifications.filter { it.id != 78 }
+        while (alerts().size != count && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
+        assertEquals(count, alerts().size)
+        return alerts().map { it.notification }
     }
 
     @Test fun queuedRepeatCallsKeepTheirOwnSourceActionsAndReplacementSetting() {
