@@ -9,8 +9,12 @@ import atlow.chemi.mymada.adapters.mCodeAdapt
 import atlow.chemi.mymada.classes.mCodeKid
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.Rule
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 
 class MedicalPickerTest {
+    @get:Rule val compose = createEmptyComposeRule()
     @Test fun realFormOpensCatalogAndRetainsSelectionAcrossSearch() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
@@ -25,12 +29,7 @@ class MedicalPickerTest {
                 it.supportFragmentManager.fragments.filterIsInstance<atlow.chemi.mymada.fragments.MainActivity1>()
                     .single().childFragmentManager.executePendingTransactions()
             }
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.userListView))
-                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
-                .check { view, error ->
-                    if (error != null) throw error
-                    assertEquals(161, (view as android.widget.ListView).adapter.count)
-                }
+            compose.onNodeWithTag("medical-catalog").assertExists()
             instrumentation.uiAutomation.waitForIdle(500, 5000)
             val image = instrumentation.uiAutomation.takeScreenshot()
             val directory = java.io.File(context.getExternalFilesDir(null), "medical-picker").apply { mkdirs() }
@@ -38,19 +37,15 @@ class MedicalPickerTest {
                 image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
             }
             image.recycle()
-            androidx.test.espresso.Espresso.onView(org.hamcrest.Matchers.allOf(androidx.test.espresso.matcher.ViewMatchers.withText("2000 גוף זר באוזניים"), androidx.test.espresso.matcher.ViewMatchers.withId(R.id.mcName)))
-                .perform(androidx.test.espresso.action.ViewActions.click())
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.userSearch))
-                .perform(androidx.test.espresso.action.ViewActions.replaceText("5000"))
-            androidx.test.espresso.Espresso.onView(org.hamcrest.Matchers.allOf(androidx.test.espresso.matcher.ViewMatchers.withText("5000 בצקת ריאות / החמרה באי ספיקת לב"), androidx.test.espresso.matcher.ViewMatchers.withId(R.id.mcName)))
-                .perform(androidx.test.espresso.action.ViewActions.click())
+            compose.onNodeWithTag("medical-code-2000").performScrollTo().performClick()
+            compose.onNodeWithTag("medical-query").performTextReplacement("5000")
+            compose.onNodeWithTag("medical-code-5000").performClick()
             scenario.recreate()
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.userSearch))
-                .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.withText("5000")))
-            androidx.test.espresso.Espresso.onView(org.hamcrest.Matchers.allOf(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.mcName), androidx.test.espresso.matcher.ViewMatchers.isDisplayed()))
-                .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.isChecked()))
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withText(R.string.ok))
-                .perform(androidx.test.espresso.action.ViewActions.click())
+            compose.onNodeWithTag("medical-query").assertTextContains("5000")
+            compose.onNodeWithTag("medical-code-5000").assertIsOn()
+            compose.onNodeWithTag("medical-query").performTextReplacement("לבבי")
+            compose.onAllNodesWithTag("medical-code-5000").assertCountEquals(1)
+            compose.onNodeWithTag("medical-done").performClick()
             scenario.recreate()
             scenario.onActivity {
                 assertEquals("2000, 5000", it.findViewById<android.widget.EditText>(R.id.M1button2).text.toString())

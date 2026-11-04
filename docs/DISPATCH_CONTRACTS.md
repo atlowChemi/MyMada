@@ -1,5 +1,37 @@
 # Remaining dispatch contracts (#19 / #26)
 
+## Medical dialog Compose layer above #104
+
+Tested app source `cab184b1` replaces the medical dialog's native search/list/
+buttons with Compose, retaining the owning DialogFragment, argument catalog,
+catalog-order results, nonselectable section headers, category colors, cardiac
+alias, and saved query/selection. Parent form remains native. Adapter-specific
+regression coverage remains alongside the actual Compose dialog test.
+
+Evidence: `~/.local/share/opencode/evidence/integrations/medical-compose/`.
+Full unit/debug/test APK/release/lintDebug/lintRelease build passed in 8m33s
+after the first build hit its 300s shell limit (raw logs retained). Combined
+dispatch/team/picker tests passed 6/6 each: API24 EN17.214s / HE19.828s,
+API37 EN45.45s / HE49.14s. Tests cover search, selection, cardiac alias without
+duplicate rows, recreation, parent payload and cleared billing-mode behavior.
+The first fixture incorrectly used a launching Compose rule; its ComponentActivity
+timed out before dialog testing. Switching to the existing empty-rule pattern
+resolved that setup failure. The hung owned package was explicitly stopped.
+
+Optimized APK SHA256:
+`01814691cbbec1b1fdf41abb670fec87ccbbbd033b8887ac61fd9d064e4f3359`.
+Pulled installed bytes match on both APIs. Actual background SIGKILL while the
+medical dialog was open restored query `5000`, its checked selection and the
+dialog itself: API24 PID16871→17165; API37 PID14038→14844. Before/after UI XML,
+hashes and per-PID logs (no fatal exception) are retained. Initial automation
+failed because the native form's medical field was below the viewport; the
+successful attempt scrolled to the real field before opening the dialog.
+
+Production EN/HE visual parity is still unaccepted; candidate screenshots are
+keyboard-visible. Full-form, team-member/confirmation dialogs, host, activation
+and chat Compose work and authorized live acceptance remain separate gates.
+No SMS, backend write or permission-contract change is part of this layer.
+
 ## Team Compose layer above #103
 
 Exact tested source: `4c5875dc87ae381dc9876bf59250628b2995dd22`, descending
