@@ -52,12 +52,11 @@ class CallRouteTest {
             ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
                 "pm grant ${context.packageName} ${Manifest.permission.POST_NOTIFICATIONS}")).use { it.readBytes() }
         }
-        if (Build.VERSION.SDK_INT >= 26) manager.createNotificationChannel(
-            NotificationChannel("notWithWin", "Calls test", NotificationManager.IMPORTANCE_LOW))
         settings.edit().clear().putBoolean("Mapp", true).putBoolean("not", true)
             .putBoolean("win", false).putBoolean("Nsou", false).putBoolean("Nvib", false)
             .putBoolean("cut", true).commit()
         manager.cancelAll()
+        if (Build.VERSION.SDK_INT >= 26) manager.deleteNotificationChannel("notWithWin")
         listener.attach(context)
     }
 
@@ -97,9 +96,14 @@ class CallRouteTest {
         // Re-posting the same source key/body still alerts, preserving native repeat behavior.
         instrumentation.runOnMainSync { post("הודעת צוות בדיקה ב", second, 2) }
         notifications(3)
+        manager.notify(7999, NotificationCompat.Builder(context, "notWithWin")
+            .setSmallIcon(R.drawable.ic_siren).setContentTitle("Unrelated control").setGroup("Other").build())
+        notifications(4)
         settings.edit().putBoolean("ride", true).commit()
         instrumentation.runOnMainSync { post("הודעת צוות בדיקה ג", null, 3) }
-        val replacement = notifications(1).single()
+        val remaining = notifications(2)
+        assertTrue(remaining.any { it.extras.getCharSequence(Notification.EXTRA_TITLE)?.toString() == "Unrelated control" })
+        val replacement = remaining.single { it.group == "Calls" }
         assertEquals("הודעת צוות בדיקה ג", replacement.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
         assertEquals(1, replacement.actions.size) // dictation only; no stale details action
         assertNotNull(replacement.contentIntent)

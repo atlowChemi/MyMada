@@ -50,7 +50,6 @@ import atlow.chemi.mymada.fragments.PulseCalc;
 import atlow.chemi.mymada.fragments.VitalsChecker;
 import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.helpers.MyDrawerLayout;
-import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 public class UtillitiesAndTools extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {

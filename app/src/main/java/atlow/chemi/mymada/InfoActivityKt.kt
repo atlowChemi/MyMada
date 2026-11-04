@@ -23,7 +23,6 @@ import atlow.chemi.mymada.about.AboutScreen
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import atlow.chemi.mymada.helpers.LocalHelper
-import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
