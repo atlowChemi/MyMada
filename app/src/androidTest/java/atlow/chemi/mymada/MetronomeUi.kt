@@ -13,6 +13,8 @@ internal fun clickMetronome(running: Boolean = false) {
         .getString(if (running) R.string.MetroStop else R.string.startT)
     fun find(node: AccessibilityNodeInfo?): AccessibilityNodeInfo? {
         if (node == null) return null
+        // Nested Compose hosts can reuse virtual IDs across screens; don't act on cached nodes.
+        if (!node.refresh()) return null
         if (node.contentDescription?.toString() == label) {
             // Compose exposes the label as a virtual child when native text leaves are present.
             var action: AccessibilityNodeInfo? = node
