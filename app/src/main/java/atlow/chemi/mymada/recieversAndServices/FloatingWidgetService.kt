@@ -57,6 +57,8 @@ class FloatingWidgetService : Service() {
         try {
             val inflater = LayoutInflater.from(this)
             removal = inflater.inflate(R.layout.remove_floating_widget_layout, null).apply {
+                // This directionless target must measure its wrap-content children from the left.
+                layoutDirection = View.LAYOUT_DIRECTION_LTR
                 visibility = View.GONE
                 windows.addView(this, params(Gravity.TOP or Gravity.END, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS))
