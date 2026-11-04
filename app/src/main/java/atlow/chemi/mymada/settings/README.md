@@ -9,6 +9,13 @@ This keeps AppCompat's locale-directed button panels aligned after warm language
 changes. `SettingsChoiceTest` checks the actual language-choice path, application
 and default locales, and a fresh themed dialog without per-dialog direction fixes.
 
+External audio acceptance: select a >1s external MediaStore file in combined-event
+Sound settings after granting the actual OS permission, then run instrumentation
+with `-e externalAudio true -e class atlow.chemi.mymada.settings.ExternalAudioDispatchTest`.
+It checks external read access, decoding, advancing playback and (API26+) an active
+audio configuration using the legacy consumers' alarm-stream MediaPlayer sequence.
+This verifies dispatch, not speaker audibility or end-to-end incoming-alert routing.
+
 ## API37 day/night instrumentation
 
 The API37/16KB image can reject a tap immediately after a dialog closes:
@@ -49,7 +56,7 @@ values commit together; no original is removed before its recovery copy is recor
 | Tools | native string set or RN `[metro, oxy]`; absent means all, `[]` means none |
 | timeK | integer text seconds, bounded to prevent millisecond integer overflow; 6 |
 | firebaseGenratedKey, fcm, UserName, NuRi / NuRiT1–4 | strings retained verbatim, including spelling and URI |
-| contractList | raw native Date JSON or RN epoch JSON retained verbatim; parser migration still required |
+| contractList | native Date JSON or RN epoch JSON; provenance-preserving parser below |
 | lng / first_time_migration | strings; RN application locale supersedes stale lng on first native startup |
 | permissionStatus: android.permission.* | boolean/string; false; not an OS permission grant |
 | rate_app: dontshowagain, launch_count, date_first_launch | boolean / nonnegative long / nonnegative long; false / 0 / 0 |
@@ -58,17 +65,17 @@ values commit together; no original is removed before its recovery copy is recor
 Each changed key keeps its exact original typed value at `migration.original.<key>`.
 Malformed recognized values use the existing consumer default; unknown keys remain
 untouched. Backups are never overwritten. Migration does not invent a day/night
-precedence rule or rewrite the combined sleep value (#24). Contract JSON/unfinished
-session recovery and settings UI remain #22 work; this scalar bridge alone is not
-complete RN upgrade compatibility. Real production-signed upgrades remain #11/#27.
+precedence rule or rewrite the combined sleep value (#24). The scalar bridge alone
+does not establish complete RN upgrade compatibility. Real production-signed
+upgrades remain #11/#27.
 
 Language and region choice dialogs now live in Kotlin `SettingsChoiceDialog`, using
 the published native AlertDialog style and restoring via FragmentManager. Both
 languages are bundled (language splits disabled), so changing language works offline
 without a Play download or an Activity-retaining split listener. `LocaleRefresh`
 refreshes existing back-stack Activities when they resume in an outdated locale;
-it retains no Activity reference. The remaining Settings sections still use native
-Java/XML and are migrated separately. `SettingsChoiceTest` changes both languages,
+it retains no Activity reference. `SettingsPage` still owns the Java navigation and
+detection bridge. `SettingsChoiceTest` changes both languages,
 checks Home return, restores region selection and supports `capture=true` screenshots.
 
 The Tools settings section is now Kotlin/Compose. Its saved Fragment identity remains
@@ -140,3 +147,18 @@ behavior rather than silently choosing a new alert policy. That product differen
 remains for #24/#27 acceptance. `AdvancedSettingsTest` checks bilingual toggles,
 delay validation/draft recreation, volume cancel/confirm/recreation, and day/night
 navigation. Published-production visual parity and API37 rerun remain outstanding.
+
+## Sound and vibration
+
+Kotlin view-scoped listeners retain all five groups, keys/defaults, visibility and
+published XML. Rendering no longer writes defaults. Canceled or empty picker results
+retain the selected URI; empty/denied permission results disable only their own
+custom-sound group. The permission explanation restores through FragmentManager.
+API24–32 requests storage access; API33+ requests audio access. Permission history
+is not treated as an OS grant. `SoundSettingsTest` covers both layouts/languages,
+recreation, all group results, hidden/disabled controls, and explanation cancellation.
+Run its permission test with audio/storage access denied before instrumentation;
+revoking an existing grant inside the test would terminate the test process.
+Actual API33+ permission UI, external custom-file playback, and final API37 checks
+remain acceptance work. Native result request codes preserve destination routing
+through recreation; broader service/permission modernization remains #24.
