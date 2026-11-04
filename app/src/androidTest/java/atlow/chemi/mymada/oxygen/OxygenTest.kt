@@ -9,7 +9,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.UtillitiesAndTools
-import com.google.android.material.navigation.NavigationView
+import atlow.chemi.mymada.selectShellDestination
 import com.google.android.material.textfield.TextInputLayout
 import org.junit.Assert.*
 import org.junit.Test
@@ -57,11 +57,7 @@ class OxygenTest {
         context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
             .putBoolean("WasLangChanged", false).putStringSet("Tools", setOf("metro", "oxy")).commit()
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
-            scenario.onActivity {
-                val menu = it.findViewById<NavigationView>(R.id.navigation).menu
-                it.onNavigationItemSelected(menu.findItem(R.id.oxygenCalc))
-                it.supportFragmentManager.executePendingTransactions()
-            }
+            compose.selectShellDestination(R.id.oxygenCalc)
             compose.waitForIdle()
             instrumentation.uiAutomation.takeScreenshot().let { bitmap ->
                 File(context.getExternalFilesDir(null), "oxygen-${language}-default.png").outputStream().use {
@@ -122,10 +118,7 @@ class OxygenTest {
         context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
             .putBoolean("WasLangChanged", false).putStringSet("Tools", setOf("metro", "oxy")).commit()
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
-            scenario.onActivity {
-                it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.oxygenCalc))
-                it.supportFragmentManager.executePendingTransactions()
-            }
+            compose.selectShellDestination(R.id.oxygenCalc)
             compose.waitForIdle()
             fun check(atm: String, psi: String, minutes: String) {
                 scenario.onActivity {

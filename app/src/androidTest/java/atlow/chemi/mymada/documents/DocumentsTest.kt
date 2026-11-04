@@ -13,7 +13,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.UtillitiesAndTools
 import atlow.chemi.mymada.helpers.LocalHelper
-import com.google.android.material.navigation.NavigationView
+import atlow.chemi.mymada.selectShellDestination
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
@@ -94,6 +94,7 @@ class DocumentsTest {
         val file = File(context.cacheDir, "documents-ui.pdf").also { fixture(it) }
         var calls = 0
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            compose.waitForIdle()
             scenario.onActivity { activity ->
                 activity.setContent {
                     DocumentsScreen(DocumentKind.BLS) {
@@ -132,9 +133,7 @@ class DocumentsTest {
             prepare(language)
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
                 for ((index, route) in listOf(R.id.bls, R.id.als, R.id.death).withIndex()) {
-                    scenario.onActivity {
-                        it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(route))
-                    }
+                    compose.selectShellDestination(route)
                     val label = if (language == "en") "Page 1 of ${3 + index}" else "עמוד 1 מתוך ${3 + index}"
                     compose.waitUntil(10_000) { compose.onAllNodesWithContentDescription(label).fetchSemanticsNodes().isNotEmpty() }
                     screenshot("fixture-$language-${DocumentKind.entries[index]}")
@@ -196,9 +195,7 @@ class DocumentsTest {
         }
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
             for ((index, route) in listOf(R.id.bls, R.id.als, R.id.death).withIndex()) {
-                scenario.onActivity {
-                    it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(route))
-                }
+                compose.selectShellDestination(route)
                 val label = "Page 1 of ${counts[index]}"
                 compose.waitUntil(30_000) { compose.onAllNodesWithContentDescription(label).fetchSemanticsNodes().isNotEmpty() }
                 screenshot("actual-${DocumentKind.entries[index]}-offline")
@@ -213,6 +210,7 @@ class DocumentsTest {
             assertTrue("Actual document required", file.isFile)
             val count = pageCount(file)
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                compose.waitForIdle()
                 scenario.onActivity { activity ->
                     activity.setContent { DocumentsScreen(kind) { StoredDocument(file, count, true) } }
                 }
@@ -277,9 +275,7 @@ class DocumentsTest {
         for (language in listOf("en", "he")) {
             prepare(language)
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
-                scenario.onActivity {
-                    it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.bls))
-                }
+                compose.selectShellDestination(R.id.bls)
                 compose.waitUntil(60_000) { compose.onAllNodesWithTag("documentError").fetchSemanticsNodes().isNotEmpty() }
                 // Wait for the local asset to render before capturing the production comparison.
                 val painted = java.util.concurrent.atomic.AtomicBoolean(false)

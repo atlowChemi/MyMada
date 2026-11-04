@@ -9,6 +9,9 @@ import android.graphics.Typeface
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.test.core.app.ActivityScenario
@@ -29,6 +32,7 @@ class Target37VisualTest {
     @Test fun activationLayoutsKeepToolbarBelowStatusBar() {
         for (layout in listOf(R.layout.activity_not_mada, R.layout.activity_code_c, R.layout.activity_code_request)) {
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                compose.waitForIdle()
                 scenario.onActivity { it.setContentView(layout) }
                 compose.waitForIdle()
                 capture(scenario, "activation-layout-$layout")
@@ -43,8 +47,15 @@ class Target37VisualTest {
         for (language in listOf("en", "he")) {
             instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
             context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false)
-                .putString("lng", language).putStringSet("Tools", setOf("oxy")).commit()
+                .putBoolean("WasLangChanged", false).putString("lng", language).putStringSet("Tools", setOf("oxy")).commit()
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                // Compose installs the fragment host after Activity.onCreate. Rotate the
+                // rendered screen, not a host whose initial fragment is still queued.
+                compose.waitForIdle()
+                scenario.onActivity {
+                    assertTrue("Oxygen must be installed before visual rotation",
+                        it.supportFragmentManager.findFragmentById(R.id.frame) is atlow.chemi.mymada.fragments.OxyCalc)
+                }
                 for (landscape in listOf(false, true)) {
                     scenario.onActivity { it.requestedOrientation = if (landscape)
                         ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
@@ -59,20 +70,17 @@ class Target37VisualTest {
                         var laidOut = false
                         scenario.onActivity {
                             val result = it.findViewById<TextView>(R.id.txtOxyMin)
-                            laidOut = result != null && result.width > 0 && result.height > 0 &&
-                                result.text.toString() == "24"
+                            laidOut = result != null && result.width > 0 && result.height > 0
                         }
                         laidOut
                     }
+                    var title = ""
+                    var titleSize = 0f
                     scenario.onActivity { activity ->
-                        val toolbar = activity.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-                        val title = (0 until toolbar.childCount).map { toolbar.getChildAt(it) }
-                            .filterIsInstance<TextView>().first { it.text == toolbar.title }
-                        val expectedTitle = Paint(title.paint).apply {
-                            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-                        }
-                        assertEquals(expectedTitle.measureText(title.text.toString()),
-                            title.paint.measureText(title.text.toString()), .01f)
+                        assertEquals("Fresh oxygen fixture ($language, landscape=$landscape)",
+                            "24", activity.findViewById<TextView>(R.id.txtOxyMin).text.toString())
+                        title = activity.title.toString()
+                        titleSize = activity.resources.getDimension(androidx.appcompat.R.dimen.abc_text_size_title_material_toolbar)
                         val spinner = activity.findViewById<Spinner>(R.id.OxyTypeS)
                         val selected = spinner.selectedView as TextView
                         val dropdown = spinner.adapter.getDropDownView(0, null, spinner) as TextView
@@ -83,6 +91,20 @@ class Target37VisualTest {
                                 view.paint.measureText(sample), .01f)
                         }
                     }
+                    val layouts = mutableListOf<TextLayoutResult>()
+                    compose.onNode(hasText(title) and !hasTestTag("shell-destination-${R.id.oxygenCalc}"))
+                        .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+                    // Native text and Compose both enable antialiasing. Bare Paint changes
+                    // hinted glyph advances on API24; subpixel positioning changes them too.
+                    // Compare full shaped text, not an ellipsized toolbar line.
+                    val expectedTitle = android.text.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                        textSize = titleSize
+                        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                    }
+                    val layout = layouts.single()
+                    assertEquals("Compose title keeps native medium glyph metrics ($language, landscape=$landscape, ellipsized=${layout.isLineEllipsized(0)})",
+                        android.text.Layout.getDesiredWidth(title, expectedTitle),
+                        layout.multiParagraph.intrinsics.maxIntrinsicWidth, 1f)
                     capture(scenario, "oxygen-$language-${if (landscape) "landscape" else "portrait"}")
                     if (!landscape) {
                         lateinit var dialog: androidx.appcompat.app.AlertDialog
@@ -128,17 +150,25 @@ class Target37VisualTest {
         val drawn = CountDownLatch(1)
         var top = 0
         var color = 0
+        var composeToolbar = false
         scenario.onActivity { activity ->
             top = ViewCompat.getRootWindowInsets(activity.window.decorView)!!
                 .getInsets(WindowInsetsCompat.Type.statusBars()).top
             color = activity.getColor(R.color.ColorPrimary)
             val toolbar = activity.findViewById<android.view.View>(R.id.toolbar)
-            val location = IntArray(2)
-            toolbar.getLocationOnScreen(location)
-            assertTrue("Toolbar remains below status inset", location[1] >= top)
+            composeToolbar = toolbar == null
+            if (toolbar != null) {
+                val location = IntArray(2)
+                toolbar.getLocationOnScreen(location)
+                assertTrue("Toolbar remains below status inset", location[1] >= top)
+            }
             activity.window.decorView.postOnAnimation {
                 activity.window.decorView.postOnAnimation { drawn.countDown() }
             }
+        }
+        if (composeToolbar) {
+            assertTrue("Compose navigation remains below status inset",
+                compose.onNodeWithTag("shell-navigation").fetchSemanticsNode().boundsInWindow.top >= top)
         }
         assertTrue(drawn.await(5, TimeUnit.SECONDS))
         val image = instrumentation.uiAutomation.takeScreenshot()!!
