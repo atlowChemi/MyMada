@@ -153,7 +153,7 @@
         <item name="android:fontFamily">@font/opensans_hebrew</item>
     </style>
 
-    <style name="SettingsVolumeSliderTheme" parent="AlertDialogStyle">
+    <style name="SettingsVolumeSliderTheme" parent="">
         <item name="seekBarStyle">@style/Widget.AppCompat.SeekBar.Discrete</item>
     </style>
 

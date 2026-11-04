@@ -133,7 +133,8 @@ class SettingsAdvanced : Fragment() {
                     }
                     SettingsText(stringResource(R.string.pref_title_volume_pick), 14, Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp))
                     AndroidView(factory = { context ->
-                        AppCompatSeekBar(ContextThemeWrapper(context, R.style.SettingsVolumeSliderTheme)).apply {
+                        // Native volume_dialog is inflated with the activity theme, before the alert.
+                        AppCompatSeekBar(ContextThemeWrapper(requireActivity(), R.style.SettingsVolumeSliderTheme)).apply {
                             id = R.id.VolumeSeekBar
                             max = (context.getSystemService(Context.AUDIO_SERVICE) as AudioManager).getStreamMaxVolume(AudioManager.STREAM_ALARM)
                             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

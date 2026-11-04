@@ -29,6 +29,40 @@ import java.io.File
 class AdvancedSettingsTest {
     @get:Rule val compose = createEmptyComposeRule()
     private fun clickRow(tag: String) = compose.onNodeWithTag(tag).performScrollTo().performClick()
+    @Test fun volumeSliderRetainsActivityColorsAndDiscreteStyle() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        instrumentation.runOnMainSync { LocalHelper.setLocale(context, "en") }
+        val preferences = context.getSharedPreferences("Settings", 0)
+        preferences.edit().putBoolean("Mapp", false).putBoolean("volumeApp", false).putInt("volumeAppNum", 2).commit()
+        ActivityScenario.launch(SettingsPage::class.java).use { scenario ->
+            scenario.onActivity { it.displayFragment(SettingsAdvanced(), R.id.advanced) }
+            clickRow("volume")
+            scenario.onActivity { activity ->
+                val owner = activity.supportFragmentManager.findFragmentById(R.id.frame) as SettingsAdvanced
+                val dialog = (owner.childFragmentManager.findFragmentByTag("volume") as SettingsAdvanced.VolumeDialog).requireDialog()
+                val slider = dialog.findViewById<SeekBar>(R.id.VolumeSeekBar)
+                val native = activity.layoutInflater.inflate(R.layout.volume_dialog, null).findViewById<SeekBar>(R.id.VolumeSeekBar)
+                for (attribute in intArrayOf(androidx.appcompat.R.attr.colorControlNormal,
+                        androidx.appcompat.R.attr.colorControlActivated, androidx.appcompat.R.attr.colorAccent)) {
+                    val expected = native.context.obtainStyledAttributes(intArrayOf(attribute))
+                    val actual = slider.context.obtainStyledAttributes(intArrayOf(attribute))
+                    assertEquals(expected.getColor(0, 0), actual.getColor(0, 0))
+                    expected.recycle(); actual.recycle()
+                }
+                val style = slider.context.obtainStyledAttributes(intArrayOf(androidx.appcompat.R.attr.seekBarStyle))
+                assertEquals(androidx.appcompat.R.style.Widget_AppCompat_SeekBar_Discrete, style.getResourceId(0, 0))
+                style.recycle()
+                assertEquals(2, slider.progress)
+            }
+            capture("volume-activity-theme-en")
+            clickRow("volumeApp")
+            clickRow("dialog-cancel")
+            assertFalse(preferences.getBoolean("volumeApp", true))
+            assertEquals(2, preferences.getInt("volumeAppNum", -1))
+        }
+    }
+
     @Test fun bilingualTogglesAndDialogDraftsSurviveRecreationWithoutSavingOnCancel() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
