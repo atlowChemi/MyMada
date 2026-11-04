@@ -1,0 +1,7 @@
+<resources>
+    <item name="oxygen_compose" type="id" />
+    <item name="ATM" type="id" />
+    <item name="PSI" type="id" />
+    <item name="OxyTypeS" type="id" />
+    <item name="txtOxyMin" type="id" />
+</resources>
