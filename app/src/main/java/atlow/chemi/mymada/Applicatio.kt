@@ -26,6 +26,9 @@ class Applicatio : Application() {
         super.onCreate()
         registerActivityLifecycleCallbacks(LocaleRefresh)
         registerActivityLifecycleCallbacks(DetectionStatus)
+        registerActivityLifecycleCallbacks(atlow.chemi.mymada.integrations.SdkAnalytics { name, parameters ->
+            com.google.firebase.analytics.FirebaseAnalytics.getInstance(this).logEvent(name, parameters)
+        })
         contentResolver.registerContentObserver(Settings.Secure.getUriFor("enabled_notification_listeners"), false,
             object : ContentObserver(Handler(Looper.getMainLooper())) {
                 override fun onChange(selfChange: Boolean) { ListenerAccess.stopIfRevoked(this@Applicatio) }
