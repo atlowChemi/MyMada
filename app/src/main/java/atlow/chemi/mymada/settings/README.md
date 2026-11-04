@@ -9,6 +9,27 @@ This keeps AppCompat's locale-directed button panels aligned after warm language
 changes. `SettingsChoiceTest` checks the actual language-choice path, application
 and default locales, and a fresh themed dialog without per-dialog direction fixes.
 
+## API37 day/night instrumentation
+
+The API37/16KB image can reject a tap immediately after a dialog closes:
+InputDispatcher logs `Dropping untrusted touch event due to /1000`, identifying
+an alpha=0 system `Dim Layer for - Task` as the obscurer. The failing night tap
+never creates a ModeDialog; this is not lost FragmentManager saved state.
+Keep the click→recreate regression unchanged and use the runner's standard
+window-animation control (no app delays, retries or synchronization):
+
+```sh
+adb -s emulator-5580 shell am instrument --no-window-animation -w -r \
+  -e rounds 20 -e class atlow.chemi.mymada.settings.DayNightSettingsTest \
+  atlow.chemi.mymada.debug.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+2026-10-30: original animated run reproduced in round5/English; controlled
+font1.5 run passed all20 bilingual rounds plus Advanced/Sound/navigation (6 tests,
+207.999s). Raw input/lifecycle traces are in owned evidence `api37-owned-final/`.
+This diagnoses the emulator input failure; it does not fix the system image's
+animation bug or claim every animated device is unaffected.
+
 Keep SharedPreferences for the existing installed data and Java consumers. Migration
 runs in Application.attachBaseContext, before locale attachment, providers and services.
 No separate database or global completed marker is needed: each file is independently
@@ -89,6 +110,13 @@ boundary, malformed data and original-backup retention.
 `ContractionRecoveryTest` also covers an active-only RN session: cancel deletion
 keeps the running state, confirmed deletion clears it across recreation while
 retaining the original raw backup.
+
+Day/night controls use Kotlin with the published XML and hour-only dial. Choice
+dialogs are child DialogFragments; restored time pickers rebind their callback and
+use stable `nightStart`/`nightEnd` tags rather than a transient boolean destination.
+The receiver's existing nine-state `sleep` code is `sleepDay * 3 + sleepNight`,
+persisted atomically with the changed selection. `DayNightSettingsTest` checks all
+nine combinations in both edit orders and bilingual mode/hour dialog recreation.
 
 `PreferenceMigrationTest` covers typed/RN/malformed/missing values, overflow, empty
 tool selection, preservation and repeated/interrupted-between-file migration.
