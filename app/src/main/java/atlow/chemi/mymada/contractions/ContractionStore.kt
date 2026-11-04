@@ -32,7 +32,7 @@ class ContractionStore(private val preferences: SharedPreferences) {
         check(legacy.writable) { "Could not back up legacy contractions" }
         val saved = Saved(imported?.let { value ->
             (value.completed + listOfNotNull(value.active)).map {
-                ContractionEntry(it.number, it.start.time, it.end?.time, it.oldEnd?.time)
+                ContractionEntry(it.number, it.start!!.time, it.end?.time, it.oldEnd?.time)
             }
         }.orEmpty(), legacy.reactNative)
         // Legacy native completion time cannot establish time away. Preserve on first import.
