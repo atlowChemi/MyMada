@@ -34,7 +34,6 @@ import atlow.chemi.mymada.fragments.MainActivity1;
 import atlow.chemi.mymada.fragments.MainActivity2;
 import atlow.chemi.mymada.fragments.MainActivity3;
 import atlow.chemi.mymada.helpers.LocalHelper;
-import atlow.chemi.mymada.recieversAndServices.NotificationServiceOld;
 import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 public class MokedPage extends AppCompatActivity {
