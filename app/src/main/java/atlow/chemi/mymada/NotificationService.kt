@@ -39,7 +39,10 @@ open class NotificationService : NotificationListenerService() {
                     it == Notification.EXTRA_SMALL_ICON
             }) return
         val title = extras?.getCharSequence(Notification.EXTRA_TITLE)
-        val body = extras?.getCharSequence(Notification.EXTRA_TEXT)
+        // BigTextStyle updates/summaries can carry the call only in the expanded body.
+        val body = extras?.getCharSequence(Notification.EXTRA_TEXT)?.takeIf { it.isNotEmpty() }
+            ?: extras?.getCharSequence(Notification.EXTRA_BIG_TEXT)
+            ?: extras?.getCharSequence(Notification.EXTRA_TEXT)
         val call = CallParser.parse(getSharedPreferences("Settings", 0).getBoolean("Mapp", false),
             posted.packageName, title, body) ?: return
         val event = Intent("MADA_APP")
