@@ -26,6 +26,7 @@ class MedicalPickerTest {
                     .single().childFragmentManager.executePendingTransactions()
             }
             androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.userListView))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
                 .check { view, error ->
                     if (error != null) throw error
                     assertEquals(161, (view as android.widget.ListView).adapter.count)
