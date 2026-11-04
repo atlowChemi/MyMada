@@ -21,6 +21,7 @@
     <string name="ret">ביטול</string>
     <string name="action_settings">הגדרות</string>
     <string name="send">שלח</string>
+    <string name="smsAppUnavailable">לא נמצאה אפליקציה לכתיבת הודעות SMS.</string>
     <string name="Mrec">אשר קבלה</string>
     <string name="Mrec2">חזור</string>
     <string name="Minf">פרטי מקרה</string>
