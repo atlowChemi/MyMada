@@ -145,8 +145,8 @@ no new release requirement is added here.
    listener regrant behavior. Preserve the known bounded recovery limitations.
 4. **Release readiness, deferred (#11):** provide the compatible signed distribution/
    test path and installed baselines described above when account access returns.
-   Local final-candidate migration checks remain distinct; no physical-device or
-   ADB changes are authorized by the user's pending guided-versus-automated choice.
+   Local final-candidate migration checks remain distinct. Owned disposable emulator
+   checks are authorized; physical-phone actions await guided coordination.
 
 ### This documentation-only reconciliation
 
@@ -155,10 +155,18 @@ changes only FormContract and TeamContract in application source. Settings migra
 history, component identities, recipients and picker ordering are byte-for-byte
 source unchanged from #119/#118. Existing migration evidence remains valid for its
 original scope; there is no new persistence migration to invent or rerun for this
-delta. The new build passes 20 JVM tests and both lints; changed picker/team UI
-assertions compile but await permitted emulator execution. No ADB command ran.
-Final-candidate local install-r/full-family acceptance is still unchecked in #27;
-the older scoped settings/history fixtures are not relabeled as that result.
+delta. The policy build passes 20 JVM tests and both lints; changed picker/team UI
+assertions subsequently passed4/4 in EN/HE on each owned API24/37 emulator.
+New final-candidate install-r checks exposed missing RN activity identities, now
+addressed in the [local-upgrade follow-up](LOCAL_UPGRADE_VERIFICATION.md). Its exact
+artifact/runtime scope is distinct from the older settings/history fixtures.
+Native/RN→final optimized candidate now passes on both API24/37 (four install-r
+intervals), including locally persisted activation/name/conversation identity,
+all seeded settings, exact history/backups/reopen, actual retained widget controls
+and OS listener grants. Actual retained RN notification targets pass on both APIs.
+No locally executable upgrade blocker remains in this recorded scope; remote
+chat receipts/authorization remain the explicit live-service gate, not fabricated
+local unread data. Production signing remains deferred to release readiness.
 
 README's final task names/options were checked against final-ui/build.log and the
 retained invocation (JDK17, 6GiB, two workers, mapping upload excluded). Instrumentation

@@ -88,7 +88,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val data = intent.extras?.keySet()?.mapNotNull { key ->
                 (intent.extras?.get(key) as? String)?.let { key to it }
             }?.toMap().orEmpty()
-            val target = PushRoute.parse(data)?.let { destination(context, it) } ?: return false
+            // RN notification PendingIntents retain route names across install-r.
+            val target = when (data["target"]) {
+                "Dispatch" -> Intent(context, atlow.chemi.mymada.MokedPage::class.java)
+                    .putExtra("msg", data["page"] == "Form")
+                "MetronomeActivity" -> Intent(context, atlow.chemi.mymada.UtillitiesAndTools::class.java)
+                    .putExtra("running", true)
+                else -> PushRoute.parse(data)?.let { destination(context, it) }
+            } ?: return false
+            target.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             context.startActivity(target)
             return true
         }
