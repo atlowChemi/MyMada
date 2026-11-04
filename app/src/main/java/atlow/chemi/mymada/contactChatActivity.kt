@@ -1,37 +1,26 @@
 package atlow.chemi.mymada
 
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
-import android.graphics.Typeface
 import android.os.Bundle
-import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import atlow.chemi.mymada.adapters.ChatAdapter
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.integrations.ChatModel
 import atlow.chemi.mymada.settings.DetectionControls
-import com.google.android.material.textfield.TextInputLayout
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 
 class contactChatActivity : AppCompatActivity() {
     private lateinit var model: ChatModel
     private var detection: MenuItem? = null
-    private var error: AlertDialog? = null
-    private var sent = 0L
     override fun attachBaseContext(base: Context) = super.attachBaseContext(LocalHelper.onAttach(base))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,51 +29,29 @@ class contactChatActivity : AppCompatActivity() {
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         model = ViewModelProvider(this)[ChatModel::class.java]
-        sent = savedInstanceState?.getLong("sent") ?: model.state.value!!.sent
-        val adapter = ChatAdapter({ model.name }, { askForName(true) })
-        val list = findViewById<RecyclerView>(R.id.chatMsg)
-        list.layoutManager = LinearLayoutManager(this)
-        list.adapter = adapter
-        list.itemAnimator = DefaultItemAnimator().apply { addDuration = 1000; removeDuration = 1000 }
-        val spacing = (4 * resources.displayMetrics.density + .5f).toInt()
-        list.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(out: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-                out.set(spacing, if (parent.getChildAdapterPosition(view) == 0) spacing else 0, spacing, spacing / 9)
-            }
-        })
-        val input = findViewById<EditText>(R.id.chatT)
-        val send = findViewById<Button>(R.id.sendChat)
-        val font = Typeface.createFromAsset(assets, "fonts/opensanshebrew.ttf")
-        input.typeface = font
-        findViewById<TextInputLayout>(R.id.chatTil).typeface = font
-        send.typeface = font
-        send.contentDescription = getString(R.string.send)
-        send.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_send, 0)
-        send.setOnClickListener {
-            when {
-                model.name.isBlank() -> askForName(false)
-                input.text.toString().isBlank() -> AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                    .setTitle(R.string.err).setMessage(R.string.emailMsgNone).setNegativeButton(R.string.ok, null).show()
-                else -> model.send(input.text.toString())
+        val ui = androidx.compose.runtime.mutableStateOf(model.state.value!!)
+        findViewById<androidx.compose.ui.platform.ComposeView>(R.id.chat_content).setContent {
+            androidx.compose.material3.MaterialTheme {
+                var emptyMessage by rememberSaveable { mutableStateOf(false) }
+                atlow.chemi.mymada.integrations.ChatScreen(ui.value, model.name, { askForName(true) }) { text ->
+                    when {
+                        model.name.isBlank() -> askForName(false)
+                        text.isBlank() -> emptyMessage = true
+                        else -> model.send(text)
+                    }
+                }
+                if (emptyMessage) androidx.compose.material3.AlertDialog(onDismissRequest = { emptyMessage = false },
+                    title = { androidx.compose.material3.Text(getString(R.string.err)) },
+                    text = { androidx.compose.material3.Text(getString(R.string.emailMsgNone)) },
+                    confirmButton = { androidx.compose.material3.TextButton(onClick = { emptyMessage = false }) { androidx.compose.material3.Text(getString(R.string.ok)) } })
+                if (ui.value.error) androidx.compose.material3.AlertDialog(onDismissRequest = {},
+                    text = { androidx.compose.material3.Text(getString(R.string.emailBad)) }, confirmButton = {
+                        androidx.compose.material3.TextButton(onClick = { model.dismissError(); model.connect() }) { androidx.compose.material3.Text(getString(R.string.ok)) }
+                    })
             }
         }
         model.state.observe(this) { state ->
-            send.isEnabled = state.ready && !state.busy
-            input.isEnabled = !state.busy
-            if (sent != state.sent) { input.setText(""); sent = state.sent }
-            val grew = state.messages.size > adapter.messages.size
-            adapter.messages = state.messages
-            adapter.notifyDataSetChanged()
-            if (grew) list.smoothScrollToPosition(adapter.itemCount - 1)
-            findViewById<TextView>(R.id.msgSeen).text = state.seen?.let {
-                getString(if (it) R.string.msgSeen else R.string.msgNotSeen)
-            }.orEmpty()
-            if (state.error && error == null) {
-                error = AlertDialog.Builder(this, R.style.AlertDialogStyle).setMessage(R.string.emailBad)
-                    .setCancelable(false).setPositiveButton(R.string.ok) { _, _ ->
-                        error = null; model.dismissError(); model.connect()
-                    }.show()
-            }
+            ui.value = state
         }
         if (savedInstanceState == null) ChatDialog().show(supportFragmentManager, "chat-disclaimer")
         model.connect()
@@ -94,8 +61,6 @@ class contactChatActivity : AppCompatActivity() {
         ChatDialog().apply { arguments = Bundle().apply { putBoolean("name", true); putBoolean("cancelable", cancelable) } }
             .show(supportFragmentManager, "chat-name")
     }
-    override fun onSaveInstanceState(out: Bundle) { out.putLong("sent", sent); super.onSaveInstanceState(out) }
-    override fun onDestroy() { error?.dismiss(); super.onDestroy() }
     override fun onResume() {
         super.onResume()
         detection?.let { DetectionControls.render(it, getSharedPreferences("Settings", 0).getBoolean("Mapp", false)) }
@@ -116,56 +81,44 @@ class contactChatActivity : AppCompatActivity() {
     }
     class ChatDialog : DialogFragment() {
         private var submitted: String? = null
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        private var draft by mutableStateOf("")
+        private var invalid by mutableStateOf(false)
+        private var state by mutableStateOf(ChatModel.State())
+        private lateinit var model: ChatModel
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
             submitted = savedInstanceState?.getString("submitted")
             isCancelable = arguments?.getBoolean("cancelable") == true
-            val model = ViewModelProvider(requireActivity())[ChatModel::class.java]
-            val builder = AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
-            if (arguments?.getBoolean("name") != true) return builder.setTitle(R.string.plsNote)
-                .setMessage(R.string.contactMsg).setNegativeButton(R.string.ok) { _, _ ->
-                    if (model.name.isBlank()) (requireActivity() as contactChatActivity).askForName(false)
-                }.create()
-            val view = layoutInflater.inflate(R.layout.shabat_t, null)
-            val field = view.findViewById<EditText>(R.id.shabatT)
-            val til = view.findViewById<TextInputLayout>(R.id.shabatTil)
-            til.hint = getString(R.string.name)
-            field.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PERSON_NAME
-            field.setText(savedInstanceState?.getString("draft") ?: model.name)
-            return builder.setTitle(R.string.writeName).setView(view).setPositiveButton(R.string.ok, null).create().apply {
-                setOnShowListener {
-                    getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                        val name = field.text.toString().trim()
-                        til.error = when {
-                            name.isEmpty() -> getString(R.string.emailNameNone)
-                            name.all(Char::isDigit) -> getString(R.string.chatNameNum)
-                            else -> null
+            model = ViewModelProvider(requireActivity())[ChatModel::class.java]
+            draft = savedInstanceState?.getString("draft") ?: model.name
+            model.state.observe(this) {
+                state = it
+                if (!it.busy && !it.error && submitted != null && model.name == submitted) dismiss()
+            }
+        }
+        override fun onCreateView(inflater: android.view.LayoutInflater, container: android.view.ViewGroup?, savedInstanceState: Bundle?): View =
+            androidx.compose.ui.platform.ComposeView(requireContext()).apply {
+                setViewCompositionStrategy(androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    androidx.compose.material3.MaterialTheme {
+                        atlow.chemi.mymada.integrations.ChatDialogScreen(arguments?.getBoolean("name") == true,
+                            draft, { draft = it }, invalid, state.ready && !state.busy) {
+                            if (arguments?.getBoolean("name") != true) {
+                                if (model.name.isBlank()) (requireActivity() as contactChatActivity).askForName(false)
+                                dismiss()
+                            } else {
+                                val name = draft.trim()
+                                invalid = name.isEmpty() || name.all(Char::isDigit)
+                                if (!invalid && state.ready && !state.busy) { submitted = name; model.changeName(name) }
+                            }
                         }
-                        if (til.error == null && model.state.value!!.ready && !model.state.value!!.busy) {
-                            submitted = name
-                            model.changeName(name)
-                        }
-                    }
-                    model.state.observe(this@ChatDialog) { state ->
-                        getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = state.ready && !state.busy
-                        if (!state.busy && !state.error && submitted != null && model.name == submitted) dismiss()
                     }
                 }
             }
-        }
         override fun onSaveInstanceState(out: Bundle) {
             out.putString("submitted", submitted)
-            out.putString("draft", dialog?.findViewById<EditText>(R.id.shabatT)?.text?.toString())
+            out.putString("draft", draft)
             super.onSaveInstanceState(out)
-        }
-        override fun onStart() {
-            super.onStart()
-            val alert = requireDialog() as AlertDialog
-            val font = Typeface.createFromAsset(requireContext().assets, "fonts/opensanshebrew.ttf")
-            alert.findViewById<TextView>(android.R.id.message)?.typeface = font
-            alert.findViewById<TextView>(android.R.id.title)?.typeface = font
-            alert.getButton(AlertDialog.BUTTON_NEGATIVE).typeface = font
-            // Published12822 keeps the lone action at the right in both locales.
-            (alert.getButton(AlertDialog.BUTTON_POSITIVE).parent as View).layoutDirection = View.LAYOUT_DIRECTION_LTR
         }
     }
 }
