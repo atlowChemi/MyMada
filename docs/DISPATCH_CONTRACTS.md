@@ -25,6 +25,23 @@ literal recipient/body snapshots, action ordering, and blocked SMS approval.
 Final combined/release/API37 and production visual verification remain pending.
 These private layers do not reserve an append window or modify shared shell APIs.
 
+The private full-form layer replaces MainActivity1.java with Kotlin/Compose and
+an explicit native payload contract. All 161 catalog names/IDs/categories were
+compared against the pre-conversion arrays and match exactly in original order
+(`form-catalog-before.json`, `form-catalog-parity.txt`). An initial transcription
+omitted a word in code8006; the comparison caught it before build and it was
+corrected. Unit checks cover optional length>1, whitespace, paired billing and
+cleared billing mode. API24 dispatch/team/picker passed 6/6 in 14.977s, including
+restored form values/selection and literal preview (`full-form-compose-5980.log`).
+Full combined release/API37/production visual and killed-process checks remain
+pending. Native SMS policy is still provisional; this conversion does not
+approve native/RN differences or claim whole #26 completion.
+API37 follow-up dispatch/team/picker/chat passed 9/9 in 24.504s
+(`full-form-chat-compose-final-5982.log`). The first run timed out inside
+Espresso's keyboard-dismiss helper after recreation; the form's Compose submit
+already dismisses its keyboard, so that redundant fixture action was removed.
+The original failed log is retained; this is not final combined-release evidence.
+
 ## Activation request and dialog Compose layer above #106
 
 Tested source `3278850e`: request form, disclaimer/confirmation and request
