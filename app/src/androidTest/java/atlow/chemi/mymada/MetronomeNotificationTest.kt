@@ -15,7 +15,6 @@ import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
-import atlow.chemi.mymada.fragments.MetroActivity
 import atlow.chemi.mymada.recieversAndServices.MetroService
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -28,6 +27,8 @@ class MetronomeNotificationTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private val notifications = context.getSystemService(NotificationManager::class.java)
+    private fun toolsResumed() = ActivityLifecycleMonitorRegistry.getInstance()
+        .getActivitiesInStage(Stage.RESUMED).any { it is UtillitiesAndTools }
 
     // Observe asynchronous service/lifecycle changes on their owning main thread.
     private fun awaitState(description: String, condition: () -> Boolean) {
@@ -59,7 +60,7 @@ class MetronomeNotificationTest {
         val service = Intent(context, MetroService::class.java)
         try {
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { screen ->
-                awaitState("metronome binding") { MetroActivity.bound }
+                awaitState("metronome visible") { toolsResumed() }
                 lateinit var toggle: View
                 screen.onActivity { toggle = it.findViewById(R.id.bpmW) }
                 // ActivityScenario.onActivity waits for idle; the running clock never idles.
@@ -79,7 +80,7 @@ class MetronomeNotificationTest {
                 instrumentation.runOnMainSync { toggle.performClick() }
                 awaitState("UI stop") { !MetroService.running }
 
-                awaitState("rebound metronome") { MetroActivity.bound }
+                awaitState("metronome visible") { toolsResumed() }
                 instrumentation.runOnMainSync { toggle.performClick() }
                 awaitState("restart notification") {
                     MetroService.running && notifications.activeNotifications.any { it.id == 13 }
@@ -91,14 +92,13 @@ class MetronomeNotificationTest {
                 }
 
                 assertTrue(instrumentation.uiAutomation.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME))
-                awaitState("background playback") { !MetroActivity.bound && MetroService.running }
+                awaitState("background playback") { !toolsResumed() && MetroService.running }
                 notification.contentIntent.send()
                 awaitState("notification returns to tools") {
-                    MetroActivity.bound && ActivityLifecycleMonitorRegistry.getInstance()
-                        .getActivitiesInStage(Stage.RESUMED).any { it is UtillitiesAndTools }
+                    toolsResumed()
                 }
                 assertTrue(instrumentation.uiAutomation.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME))
-                awaitState("unbound notification stop") { !MetroActivity.bound }
+                awaitState("background notification stop") { !toolsResumed() }
                 notification.actions.single().actionIntent.send()
                 awaitState("notification action stops service") {
                     !MetroService.running && notifications.activeNotifications.none { it.id == 13 }
