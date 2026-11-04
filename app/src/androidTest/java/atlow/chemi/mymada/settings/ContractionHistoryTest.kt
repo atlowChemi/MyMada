@@ -22,10 +22,10 @@ class ContractionHistoryTest {
         assertTrue(history.eligible(now))
         assertTrue(history.reactNative)
         assertEquals(2, saved.number)
-        assertEquals(now - 70000, saved.completed.last().end.time)
-        assertEquals(now - 180000, saved.completed.last().oldEnd.time) // RN start-to-start retained.
+        assertEquals(now - 70000, saved.completed.last().end!!.time)
+        assertEquals(now - 180000, saved.completed.last().oldEnd!!.time) // RN start-to-start retained.
         assertEquals(3, saved.active!!.number)
-        assertEquals(now - 10000, saved.active.start.time)
+        assertEquals(now - 10000, saved.active.start!!.time)
         history.save(saved.completed, saved.active.start, saved.number, now)
         val reopened = ContractionHistory(preferences).read()!!
         assertEquals(saved.active.start, reopened.active!!.start)
@@ -39,7 +39,7 @@ class ContractionHistoryTest {
         assertNull(completed.active)
         assertEquals(listOf(1, 2, 3), completed.completed.map { it.number })
         assertEquals(3, completed.number)
-        assertEquals(now + 5000, completed.completed.last().end.time)
+        assertEquals(now + 5000, completed.completed.last().end!!.time)
         assertEquals(raw, preferences.getString("migration.original.contractList", null))
     }
 
@@ -67,14 +67,14 @@ class ContractionHistoryTest {
         preferences.edit().clear().putString("contractList", raw).putLong("contractLong", preciseEnd).commit()
         val history = ContractionHistory(preferences)
         val saved = history.read()!!
-        assertEquals(preciseEnd, saved.completed.last().end.time)
+        assertEquals(preciseEnd, saved.completed.last().end!!.time)
         history.save(saved.completed, null, saved.number, now)
         assertEquals(preciseEnd, preferences.getLong("contractLong", 0))
         assertEquals(raw, preferences.getString("contractList", null))
-        assertEquals(preciseEnd, ContractionHistory(preferences).read()!!.completed.last().end.time)
+        assertEquals(preciseEnd, ContractionHistory(preferences).read()!!.completed.last().end!!.time)
         // A stale/mismatched timestamp must not rewrite a different record's end.
         preferences.edit().putLong("contractLong", preciseEnd + 10_000).commit()
-        assertEquals(preciseEnd / 1000 * 1000, ContractionHistory(preferences).read()!!.completed.last().end.time)
+        assertEquals(preciseEnd / 1000 * 1000, ContractionHistory(preferences).read()!!.completed.last().end!!.time)
     }
 
     @Test fun expirationAndMalformedDataKeepOriginalBeforeAnyReplacement() {

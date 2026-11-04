@@ -61,7 +61,7 @@ class ContractionHistory(private val preferences: SharedPreferences) {
             }
             if (!reactNative && completed.isNotEmpty()) {
                 // Native Gson dates lose milliseconds; contractLong retains the last completion.
-                val end = completed.last().end
+                val end = completed.last().end!!
                 val preciseEnd = preferences.getLong("contractLong", 0)
                 if (end.time % 1000 == 0L && preciseEnd / 1000 == end.time / 1000) end.time = preciseEnd
             }
@@ -105,11 +105,11 @@ class ContractionHistory(private val preferences: SharedPreferences) {
                     end?.let { addProperty("end", it.time) }
                 })
             }
-            completed.forEach { append(it.number, it.start, it.end) }
+            completed.forEach { append(it.number, it.start!!, it.end) }
             activeStart?.let { append(number + 1, it, null) }
             array.toString()
         } else gson.toJson(completed)
         preferences.edit().putString("contractList", json).putInt("contarctNum", number)
-            .putLong("contractLong", if (reactNative) now else completed.last().end.time).apply()
+            .putLong("contractLong", if (reactNative) now else completed.last().end!!.time).apply()
     }
 }
