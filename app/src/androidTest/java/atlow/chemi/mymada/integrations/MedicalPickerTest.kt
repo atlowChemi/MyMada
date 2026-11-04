@@ -41,7 +41,7 @@ class MedicalPickerTest {
                 scrolled.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
             }
             scrolled.recycle()
-            codes.performClick()
+            codes.performTouchInput { click() }
             scenario.onActivity {
                 it.supportFragmentManager.fragments.filterIsInstance<atlow.chemi.mymada.fragments.MainActivity1>()
                     .single().childFragmentManager.executePendingTransactions()

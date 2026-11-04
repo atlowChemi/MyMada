@@ -119,3 +119,38 @@ These are matched bottom-of-scroll access comparisons, not equal pixel offsets
 or a claim that the initial viewport is fully visible. Font scale was restored
 to 1.0 on both owned emulators after capture; firewall records accompany each
 capture directory.
+
+## Picker presentation correction above #129
+
+#129 resolved scroll access only. Its centered outlined pill, smaller text and
+rounded border were **not approved production appearance**. Production uses the
+same start-aligned underlined field presentation and pitch as the form inputs.
+The follow-up reuses `IntegrationField` for the picker, retaining its 18sp text,
+41dp input minimum, label allowance and RTL-aware start alignment. The field is
+read-only and exposes an activation semantics action; a released touch opens the
+existing catalog without editing text or opening an input keyboard. Other shared
+field callers retain editable behavior.
+
+The existing full-bounds/Send-separation check now performs a real touch click
+instead of semantic-only activation. Search, reverse-order selection, recreation,
+approved SMS preview and cleared billing assertions remain in the same test.
+The current run also includes the shared geometry test at both font scales to
+check the other field consumers. Verification results and optimized comparisons
+are recorded below.
+
+- Debug/test/release builds, both lints and 20 JVM tests passed (build 1m54s).
+- 16/16 focused instrumentation checks passed: picker actual-touch/selection and
+  shared geometry, API24/37 × EN/HE × font1.0/1.5. Full picker bounds remain above Send.
+- Opened all eight optimized production/candidate comparisons in
+  `/Users/chemiatlow/.local/share/opencode/evidence/m2-integration/geometry/form-presentation/pair-{5960,5962}-{en,he}-{1.0,1.5}.png`.
+  The picker now matches the surrounding underlined fields, start alignment and
+  normal-font pitch/type size. Bottom-scroll offsets differ; these are not
+  pixel-identical whole-screen captures. Large-font differences retain the
+  already approved Android font-scaling policy (production API24 ignores it).
+- Evidence root above retains `build.log`, `*-test.txt`, eight instrumentation
+  image folders, `tested-source.patch`, `sha256.txt` and frozen APKs. Optimized APK
+  SHA256: `9365007583a7bd3b89a604dcc7f49294b63d1244c11128de7e98e68d10d78ab2`.
+- Initial optimized API24 Hebrew locale-selection failure is retained in shell
+  `sh_19704d7a3001qWXyzefDb8GIC6`; successful normal-font retry is in sibling
+  `form-presentation-candidate-he24-retry`. Other optimized captures are in
+  `form-presentation-candidate-{1.0,1.5}`. Both devices restored to font1.0.

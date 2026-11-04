@@ -42,9 +42,9 @@ fun FormScreen(values: List<String>, update: (Int, String) -> Unit, pickCodes: (
                     }), keyboardActions = if (index == 7) KeyboardActions(onNext = { keyboard?.hide(); pickCodes() }) else KeyboardActions.Default,
                     modifier = Modifier.fillMaxWidth().testTag("form-field-$index"))
             }
-            OutlinedButton(onClick = { keyboard?.hide(); pickCodes() }, modifier = Modifier.fillMaxWidth().testTag("form-codes")) {
-                Text(values[8].ifEmpty { stringResource(R.string.pickC) }, fontFamily = font)
-            }
+            IntegrationField(values[8], {}, label = stringResource(R.string.pickC),
+                onClick = { keyboard?.hide(); pickCodes() },
+                modifier = Modifier.fillMaxWidth().testTag("form-codes"))
             if (submitted && errors[8] != 0) Text(stringResource(errors[8]), color = MaterialTheme.colorScheme.error)
         }
         Button(onClick = {
