@@ -187,6 +187,13 @@ overlay, privacy) is retained pending a decision versus RN's privacy-first order
 Dialog/process restoration, full settings/tools migration and current-target
 permission/service behavior remain #21/#24/#27 work.
 
+Home onboarding/platform prompts now use `home/HomePrompt`, a Kotlin DialogFragment
+with saved destination arguments and the existing native dialog style. Recreation
+restores an open prompt once; a dismissed prompt stays dismissed for that Activity
+instance. Fresh launches retain the existing settings → overlay → privacy order.
+`HomeScreenTest` checks open/dismissed restoration in English and Hebrew; OS process
+death and the action dialogs in `HomeActions` remain separate acceptance work.
+
 Production-matched screenshots and current validation results are in #34/#35;
 visual approval remains required. Local release validation uses
 `-Dorg.gradle.jvmargs=-Xmx4g` and skips only `:app:uploadCrashlyticsMappingFileRelease`.

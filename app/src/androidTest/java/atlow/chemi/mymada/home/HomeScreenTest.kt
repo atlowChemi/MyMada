@@ -21,8 +21,10 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.HomePage
 import atlow.chemi.mymada.InfoActivityKt
@@ -55,6 +57,9 @@ class HomeScreenTest {
         // API 24 restarts its launcher on font changes; let that transition finish before launching Home.
         instrumentation.uiAutomation.waitForIdle(500, 5_000)
         shell("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow")
+        instrumentation.runOnMainSync {
+            atlow.chemi.mymada.helpers.LocalHelper.setLocale(context, language)
+        }
         preferences.edit().putString("lng", language).putBoolean("oldU", true)
             .putBoolean("privacy", true).putBoolean("Mapp", false)
             .putBoolean("WasLangChanged", false).putBoolean("realM", false)
@@ -67,6 +72,34 @@ class HomeScreenTest {
 
     @Test fun englishNavigationBackAndRecreation() = verifyHome("en", 1f)
     @Test fun hebrewRtlLargeTextNavigationBackAndRecreation() = verifyHome("he", 1.5f)
+
+    @Test fun repeatedTestCallThenContactDialogTargetsFocusedWindow() {
+        for (language in listOf("en", "he")) {
+            prepare(language)
+            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+                val labels = mutableMapOf<Int, String>()
+                scenario.onActivity { activity ->
+                    listOf(R.string.test_beep, R.string.TestCallMsg, R.string.title_activity_contact,
+                        R.string.plsNoteCon).forEach { labels[it] = activity.getString(it) }
+                }
+                repeat(20) { round ->
+                    for ((action, message) in listOf(R.string.test_beep to R.string.TestCallMsg,
+                        R.string.title_activity_contact to R.string.plsNoteCon)) {
+                        compose.onNodeWithText(labels.getValue(action)).performScrollTo().performClick()
+                        onView(withText(labels.getValue(message))).inRoot(isDialog()).check { view, failure ->
+                            if (failure != null) throw failure
+                            val params = view.rootView.layoutParams as android.view.WindowManager.LayoutParams
+                            assertTrue(view.hasWindowFocus())
+                            assertEquals(android.view.WindowManager.LayoutParams.TYPE_APPLICATION, params.type)
+                        }
+                        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                        waitForHomeFocus(scenario)
+                    }
+                    if (round % 5 == 4) scenario.recreate()
+                }
+            }
+        }
+    }
 
     private fun verifyHome(language: String, scale: Float) {
         prepare(language, scale)
@@ -129,23 +162,28 @@ class HomeScreenTest {
                 compose.onNodeWithText(labels.getValue(R.string.title_activity_info)).performScrollTo().performClick()
             })
             compose.onNodeWithText(labels.getValue(R.string.title_activity_moked_page)).performScrollTo().performClick()
-            visit(lockPage::class.java, { onView(withText("עמוד חסימה")).perform(click()) })
+            visit(lockPage::class.java, { onView(withText("עמוד חסימה")).inRoot(isDialog()).perform(click()) })
             assertFalse(preferences.getBoolean("realM", true))
             compose.onNodeWithText(labels.getValue(R.string.test_beep)).performScrollTo().performClick()
-            onView(withText(labels.getValue(R.string.TestCallMsg))).check(matches(isDisplayed()))
+            onView(withText(labels.getValue(R.string.TestCallMsg))).inRoot(isDialog()).check(matches(isDisplayed()))
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            waitForHomeFocus(scenario)
             compose.onNodeWithText(labels.getValue(R.string.title_activity_contact)).performScrollTo().performClick()
-            onView(withText(labels.getValue(R.string.plsNoteCon))).check(matches(isDisplayed()))
+            onView(withText(labels.getValue(R.string.plsNoteCon))).inRoot(isDialog()).check(matches(isDisplayed()))
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.onNodeWithText(labels.getValue(R.string.app_name)).assertIsDisplayed()
             assertEquals(setOf("metro", "oxy"), preferences.getStringSet("Tools", emptySet()))
-            compose.waitUntil(5_000) {
-                var focused = false
-                scenario.onActivity { focused = it.hasWindowFocus() }
-                focused
-            }
+            waitForHomeFocus(scenario)
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             compose.waitUntil(5_000) { scenario.state != Lifecycle.State.RESUMED }
+        }
+    }
+
+    private fun waitForHomeFocus(scenario: ActivityScenario<HomePage>) {
+        compose.waitUntil(5_000) {
+            var focused = false
+            scenario.onActivity { focused = it.hasWindowFocus() }
+            focused
         }
     }
 
@@ -168,14 +206,87 @@ class HomeScreenTest {
         } finally { instrumentation.removeMonitor(monitor) }
     }
 
+    @Test fun onboardingPromptRestoresOnceAndStaysDismissedAcrossRecreation() {
+        for (language in listOf("en", "he")) {
+            prepare(language)
+            preferences.edit().putBoolean("oldU", false).commit()
+            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+                var message = ""
+                var cancel = ""
+                scenario.onActivity {
+                    message = it.getString(R.string.newSettings)
+                    cancel = it.getString(R.string.dialog_no)
+                }
+                scenario.recreate()
+                compose.waitUntil(5_000) {
+                    var focused = false
+                    scenario.onActivity {
+                        focused = it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>()
+                            .singleOrNull()?.dialog?.window?.decorView?.hasWindowFocus() == true
+                    }
+                    focused
+                }
+                onView(withText(message)).inRoot(isDialog()).check(matches(isDisplayed()))
+                scenario.onActivity {
+                    assertEquals(1, it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>().size)
+                }
+                onView(withText(cancel)).inRoot(isDialog()).perform(click())
+                scenario.recreate()
+                onView(withText(message)).check(doesNotExist())
+            }
+        }
+    }
+
+    @Test fun multiplePromptsRestoreInOrderUsingTheNewLocale() {
+        prepare("en")
+        preferences.edit().putBoolean("oldU", false).commit()
+        ActivityScenario.launch(HomePage::class.java).use { scenario ->
+            // Home can show onboarding and channel-importance prompts in one creation.
+            // Exercise both saved dialogs without enabling a detection service or modifying OS channels.
+            scenario.onActivity {
+                HomePrompt.show(it, R.string.importanceMsg, 0, R.string.importance,
+                    android.content.Intent(it, SettingsPage::class.java), false, 0)
+                it.supportFragmentManager.executePendingTransactions()
+            }
+            preferences.edit().putString("lng", "he").commit()
+            scenario.recreate()
+            var importance = ""
+            var onboarding = ""
+            var cancel = ""
+            scenario.onActivity {
+                importance = it.getString(R.string.importanceMsg)
+                onboarding = it.getString(R.string.newSettings)
+                cancel = it.getString(R.string.dialog_no)
+                val prompts = it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>()
+                assertEquals(2, prompts.size)
+                assertEquals(listOf(onboarding, importance), prompts.map { prompt ->
+                    prompt.requireDialog().findViewById<android.widget.TextView>(android.R.id.message).text.toString()
+                })
+            }
+            compose.waitUntil(5_000) {
+                var focused = false
+                scenario.onActivity {
+                    focused = it.supportFragmentManager.fragments.filterIsInstance<HomePrompt>().last()
+                        .requireDialog().window!!.decorView.hasWindowFocus()
+                }
+                focused
+            }
+            onView(withText(importance)).inRoot(isDialog()).check(matches(isDisplayed()))
+            onView(withText(cancel)).inRoot(isDialog()).perform(click())
+            onView(withText(onboarding)).inRoot(isDialog()).check(matches(isDisplayed()))
+            onView(withText(cancel)).inRoot(isDialog()).perform(click())
+        }
+    }
+
     @Test fun onboardingDestinationsAndLocaleReturn() {
         prepare("en")
         preferences.edit().putBoolean("oldU", false).commit()
         ActivityScenario.launch(HomePage::class.java).use { scenario ->
-            onView(withText(R.string.newSettings)).check(matches(isDisplayed()))
-            visit(SettingsPage::class.java, { onView(withText(R.string.title_activity_settings)).perform(click()) })
+            onView(withText(R.string.newSettings)).inRoot(isDialog()).check(matches(isDisplayed()))
+            visit(SettingsPage::class.java, { onView(withText(R.string.title_activity_settings)).inRoot(isDialog()).perform(click()) })
             // Settings' locale contract: Home recreates on return using the persisted selection.
             scenario.moveToState(Lifecycle.State.CREATED)
+            instrumentation.runOnMainSync { atlow.chemi.mymada.helpers.LocalHelper.setLocale(context, "he") }
             preferences.edit().putString("lng", "he").putBoolean("WasLangChanged", true).commit()
             scenario.moveToState(Lifecycle.State.RESUMED)
             compose.onNodeWithText("ניסוי דיווחי מד\"א").assertIsDisplayed()
@@ -184,8 +295,8 @@ class HomeScreenTest {
         prepare("en")
         preferences.edit().putBoolean("privacy", false).commit()
         ActivityScenario.launch(HomePage::class.java).use {
-            onView(withText(R.string.privacyMsg)).check(matches(isDisplayed()))
-            visit(PrivacyActivity::class.java, { onView(withText(R.string.title_activity_privacy)).perform(click()) })
+            onView(withText(R.string.privacyMsg)).inRoot(isDialog()).check(matches(isDisplayed()))
+            visit(PrivacyActivity::class.java, { onView(withText(R.string.title_activity_privacy)).inRoot(isDialog()).perform(click()) })
         }
     }
 }

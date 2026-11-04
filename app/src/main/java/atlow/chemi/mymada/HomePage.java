@@ -6,22 +6,17 @@ import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -29,6 +24,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import atlow.chemi.mymada.home.HomeContent;
+import atlow.chemi.mymada.home.HomePrompt;
 import atlow.chemi.mymada.helpers.LocalHelper;
 import atlow.chemi.mymada.helpers.MyFirebaseMessagingService;
 import atlow.chemi.mymada.helpers.rateUs;
@@ -38,7 +34,6 @@ import atlow.chemi.mymada.recieversAndServices.SMSMonitorService;
 
 /** Installed launcher identity and temporary native onboarding/detection bridge for the Compose home. */
 public class HomePage extends AppCompatActivity {
-    private Typeface myTypeface;
     public NotificationManager manager;
     private final int OVERLAY_PER_REQ = 345;
     public final String Grp2 = "grpOthers", Grp3 = "grpTog", CnlBg = "runInBg", CnlWin = "notWithWin";
@@ -53,7 +48,6 @@ public class HomePage extends AppCompatActivity {
         MyFirebaseMessagingService.getToken(getApplicationContext());
         String token = getSharedPreferences("Settings", 0).getString("fcm", "empty");
 //        Crashlytics.setUserIdentifier(token);
-        myTypeface = Typeface.createFromAsset(getAssets(), "fonts/opensanshebrew.ttf");
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", 0);
         boolean Mapp = sharedPreferences.getBoolean("Mapp", false);
         try {
@@ -68,25 +62,25 @@ public class HomePage extends AppCompatActivity {
         boolean Privacy = sharedPreferences.getBoolean("privacy", false);
         boolean oldU = sharedPreferences.getBoolean("oldU", false);
         //If the user wasn't in settings ever, ask him to go there
-        if (!oldU)
-            ShowDialog(getString(R.string.newSettings),
-                    getString(R.string.title_activity_settings),
+        if (savedInstanceState == null && !oldU)
+            ShowDialog(R.string.newSettings,
+                    R.string.title_activity_settings,
                     new Intent(getApplicationContext(), SettingsPage.class));
 
         //If the user is android M or above, make sure he permitted app overlay.
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this))
-            ShowDialog(getString(R.string.permDesOverlay),
-                    getString(R.string.permTitle),
-                    getString(R.string.permYes),
+        else if (savedInstanceState == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this))
+            ShowDialog(R.string.permDesOverlay,
+                    R.string.permTitle,
+                    R.string.permYes,
                     new Intent(getApplicationContext(), SettingsPage.class),
                     true, OVERLAY_PER_REQ);
         //If user was never in privacy page, ask him to visit there.
-        else if (!Privacy)
-            ShowDialog(getString(R.string.privacyMsg),
-                    getString(R.string.title_activity_privacy),
+        else if (savedInstanceState == null && !Privacy)
+            ShowDialog(R.string.privacyMsg,
+                    R.string.title_activity_privacy,
                     new Intent(HomePage.this, PrivacyActivity.class));
 
-        if(Mapp && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if(savedInstanceState == null && Mapp && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             manager = context.getSystemService(NotificationManager.class);
             int importance = 1;
             if (manager != null) {
@@ -98,7 +92,7 @@ public class HomePage extends AppCompatActivity {
                 Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
                 intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
                 intent.putExtra(Settings.EXTRA_CHANNEL_ID, CnlBg);
-                ShowDialog(getString(R.string.importanceMsg), getString(R.string.importance), intent);
+                ShowDialog(R.string.importanceMsg, R.string.importance, intent);
             }
         }
     }
@@ -228,8 +222,8 @@ public class HomePage extends AppCompatActivity {
                 if (activityExists) {
                     try {
                         if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                            ShowDialog(getString(R.string.dialog_help),
-                                    getString(R.string.dialog_yes),
+                            ShowDialog(R.string.dialog_help,
+                                    R.string.dialog_yes,
                                     new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
                         }
                         s.putBoolean("Mapp", true);
@@ -240,9 +234,9 @@ public class HomePage extends AppCompatActivity {
                         stopService(intent);
                         startService(old);
                         if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                            ShowDialog(getString(R.string.dialog_help),
-                                    null,
-                                    getString(R.string.dialog_yes),
+                            ShowDialog(R.string.dialog_help,
+                                    0,
+                                    R.string.dialog_yes,
                                     new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
                                     true, REQUEST_PERMISSION_SETTING);
                         }
@@ -255,9 +249,9 @@ public class HomePage extends AppCompatActivity {
                     stopService(intent);
                     startService(old);
                     if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext())) {
-                        ShowDialog(getString(R.string.dialog_help),
-                                null,
-                                getString(R.string.dialog_yes),
+                        ShowDialog(R.string.dialog_help,
+                                0,
+                                R.string.dialog_yes,
                                 new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
                                 true, REQUEST_PERMISSION_SETTING);
                     }
@@ -284,9 +278,9 @@ public class HomePage extends AppCompatActivity {
                 resultCode != RESULT_OK &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 !Settings.canDrawOverlays(this))
-                ShowDialog(getString(R.string.permDesOverlay),
-                        getString(R.string.permTitle),
-                        getString(R.string.permYes),
+                ShowDialog(R.string.permDesOverlay,
+                        R.string.permTitle,
+                        R.string.permYes,
                         new Intent(getApplicationContext(), SettingsPage.class),
                         true, OVERLAY_PER_REQ);
     }
@@ -297,8 +291,8 @@ public class HomePage extends AppCompatActivity {
      * @param btnPos string for positive button.
      * @param intent Intent to open up when positive button clicked.
      */
-    private void ShowDialog(String msg, String btnPos, Intent intent) {
-        ShowDialog(msg, null , btnPos, intent, false, 0);
+    private void ShowDialog(int msg, int btnPos, Intent intent) {
+        ShowDialog(msg, 0, btnPos, intent, false, 0);
     }
 
     /***
@@ -310,35 +304,7 @@ public class HomePage extends AppCompatActivity {
      * @param resultActivity is the activity a result activity or not
      * @param result result of intent
      */
-    private void ShowDialog(String msg, String title, String btnPos, Intent intent, boolean resultActivity, int result) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-        builder.setMessage(msg).setCancelable(false)
-                .setPositiveButton(btnPos, (dialog, id) ->
-                {
-                    if (resultActivity)
-                        startActivityForResult(intent, result);
-                    else
-                        startActivity(intent);
-                })
-                .setNegativeButton(getResources().getString(R.string.dialog_no), (dialog, id) -> dialog.cancel());
-        if (title != null)
-            builder.setTitle(title);
-        final AlertDialog alert = builder.create();
-        alert.setOnShowListener(dialogInterface -> DialogOnShowListener(alert));
-        alert.show();
-    }
-
-    private void DialogOnShowListener(AlertDialog alert) {
-        TextView textView = alert.findViewById(android.R.id.message);
-        if (textView != null)
-            textView.setTypeface(myTypeface);
-        textView = alert.findViewById(android.R.id.title);
-        if (textView != null)
-            textView.setTypeface(myTypeface);
-        Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        Button ok = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-        ok.setTypeface(myTypeface);
-        cancelButton.setTypeface(myTypeface);
-        cancelButton.setTextColor(getResources().getColor(R.color.OldPrimary));
+    private void ShowDialog(int msg, int title, int btnPos, Intent intent, boolean resultActivity, int result) {
+        HomePrompt.show(this, msg, title, btnPos, intent, resultActivity, result);
     }
 }
