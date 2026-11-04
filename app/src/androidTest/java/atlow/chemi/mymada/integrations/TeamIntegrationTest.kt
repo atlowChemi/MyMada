@@ -104,7 +104,7 @@ class TeamIntegrationTest {
             instrumentation.waitForIdleSync()
             scenario.onActivity {
                 val confirmation = it.supportFragmentManager.findFragmentByTag("dispatch-confirmation") as DispatchConfirmation
-                assertEquals("צוות אמבולנס י-ם 1234:\nשירות לאומי - Edited Member\nחובש - Member1\nפראמדיק - Member2", confirmation.requireArguments().getString("body"))
+                assertEquals("צוות אמבולנס ירושלים 1234\nשירות לאומי - Edited Member\nחובש - Member1\nפראמדיק - Member2", confirmation.requireArguments().getString("body"))
             }
             compose.onNodeWithTag("dispatch-cancel").performClick()
             scenario.onActivity {
