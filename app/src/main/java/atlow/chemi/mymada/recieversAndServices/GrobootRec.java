@@ -134,7 +134,12 @@ public class GrobootRec extends BroadcastReceiver {
                     service.putExtra("uri", app ? uri.toString() : url.toString());
                     service.putExtra("timeK", sp.getString("timeK", "6"));
                     service.putExtra("ShabbatM", ShabbatM);
-                    context.startService(service);
+                    try {
+                        context.startService(service);
+                    } catch (IllegalStateException | SecurityException error) {
+                        // Keep the posted call notification when the OS rejects a background overlay.
+                        Log.w("GrobootRec", "Cannot start call overlay", error);
+                    }
                 }
             }
             /**/
