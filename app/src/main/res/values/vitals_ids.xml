@@ -1,0 +1,10 @@
+<resources>
+    <item type="id" name="vitalsResult" />
+    <item type="id" name="old" />
+    <item type="id" name="kid" />
+    <item type="id" name="baby" />
+    <item type="id" name="pulsa" />
+    <item type="id" name="breathing" />
+    <item type="id" name="systolic" />
+    <item type="id" name="diastolic" />
+</resources>
