@@ -56,7 +56,7 @@ class GrobootRec : BroadcastReceiver() {
             val message = event.type == 4 || event.type == 6
             val notification = NotificationCompat.Builder(context, "notWithWin")
                 .setContentTitle(if (message) "הודעה חדשה באפליקציה!" else "אירוע חדש באפליקציה!")
-                .setContentText(if (popup) context.getString(R.string.call_open_alert) else "לחץ כאן בכדי להכתיב טפסים.").setSmallIcon(R.drawable.ic_siren)
+                    .setContentText(context.getString(R.string.call_open_alert)).setSmallIcon(R.drawable.ic_siren)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
                 .setVibrate(LongArray(9)).setSound(null).setContentIntent(dictation).setAutoCancel(true)
                 .addAction(R.drawable.ic_edit, "הכתב", dictation)
@@ -72,8 +72,9 @@ class GrobootRec : BroadcastReceiver() {
                         .filter { it.notification.group == "Calls" }.maxOfOrNull { it.id } ?: 0) + 1
                     notificationId = nextNotificationId
                 }
-                if (popup) notification.setContentIntent(PendingIntentCompat.getActivity(context, notificationId,
-                    event.popupIntent(context, notificationId, loop), PendingIntent.FLAG_UPDATE_CURRENT, false))
+                notification.setContentIntent(PendingIntentCompat.getActivity(context, notificationId,
+                    event.popupIntent(context, notificationId, loop).putExtra("openSource", true),
+                    PendingIntent.FLAG_UPDATE_CURRENT, false))
                 manager.notify(notificationId, notification.build())
             }
             if (!popup && Settings.canDrawOverlays(context)) {
