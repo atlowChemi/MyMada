@@ -125,7 +125,6 @@ class MetroService : Service() {
     private fun publishState() {
         MetroWidget.refresh(this)
         TileService.requestListeningState(this, ComponentName(this, MyTileService::class.java))
-        TileService.requestListeningState(this, ComponentName(this, MetronomeTileService::class.java))
         sendBroadcast(Intent(STATE_CHANGED).setPackage(packageName))
     }
 
