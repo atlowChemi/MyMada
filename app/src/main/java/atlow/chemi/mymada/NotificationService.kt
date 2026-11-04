@@ -10,10 +10,15 @@ import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import atlow.chemi.mymada.calls.CallParser
+import atlow.chemi.mymada.calls.ListenerAccess
 
 /** Keep the installed native listener identity. */
 open class NotificationService : NotificationListenerService() {
+    protected open val listenerClass: Class<out NotificationService> get() = NotificationService::class.java
     override fun onNotificationPosted(posted: StatusBarNotification?) {
+        // Both grants may survive an upgrade. Select a component, never deduplicate call content.
+        val selected = ListenerAccess.selected(this)
+        if (selected != null && selected != ComponentName(this, listenerClass)) return
         val notification = posted?.notification ?: return
         val extras = notification.extras
         val title = extras?.getCharSequence(Notification.EXTRA_TITLE)
@@ -34,11 +39,6 @@ open class NotificationService : NotificationListenerService() {
         if (channel.contains("generated")) getSystemService(NotificationManager::class.java)?.deleteNotificationChannel(channel)
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent != null) Applicatio.tryConnectService(applicationContext)
-        return START_STICKY
-    }
-
     override fun onListenerConnected() {
         try { activeNotifications } catch (error: Exception) {
             Log.e("NotificationService", "Cannot read active notifications", error)
@@ -46,6 +46,6 @@ open class NotificationService : NotificationListenerService() {
     }
 
     override fun onListenerDisconnected() {
-        requestRebind(ComponentName(this, javaClass))
+        ListenerAccess.rebind(this)
     }
 }
