@@ -223,6 +223,48 @@ class ContractionRecoveryTest {
         assertTrue(ContractionStore(preferences).read().entries.isEmpty())
     }
 
+    @Test fun freshActiveRowRemainsVisibleThroughRecoveryAndCompletesOnce() {
+        prepare()
+        val store = ContractionStore(preferences)
+        fun assertActiveRow() {
+            compose.onNodeWithTag("contraction-row-1").assertIsDisplayed()
+            compose.onAllNodes(hasText(labels.getValue(R.string.endContract)) and
+                hasAnyAncestor(hasTestTag("contraction-history"))).assertCountEquals(1)
+            compose.onNodeWithTag("contraction-row-2").assertDoesNotExist()
+            assertNull(store.read().entries.single().end)
+            expect(R.string.endContract)
+        }
+        ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            labels(scenario)
+            toggle().performClick()
+            assertActiveRow()
+            scenario.moveToState(Lifecycle.State.CREATED)
+            scenario.moveToState(Lifecycle.State.RESUMED)
+            scenario.recreate()
+            assertActiveRow()
+        }
+        val active = store.read().entries.single()
+        assertFalse(store.read().reactNative)
+        ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+            labels(scenario)
+            choose(R.string.ok)
+            assertActiveRow()
+            assertEquals(active, store.read().entries.single())
+            toggle().performClick()
+            expect(R.string.startContract)
+            compose.onNodeWithTag("contraction-row-1").assertIsDisplayed()
+            compose.onAllNodes(hasText(labels.getValue(R.string.endContract)) and
+                hasAnyAncestor(hasTestTag("contraction-history"))).assertCountEquals(0)
+            compose.onNodeWithTag("contraction-row-2").assertDoesNotExist()
+            val completed = store.read().entries.single()
+            assertEquals(active.copy(end = completed.end), completed)
+            assertNotNull(completed.end)
+            scenario.recreate()
+            compose.onNodeWithTag("contraction-row-1").assertIsDisplayed()
+            assertEquals(completed, store.read().entries.single())
+        }
+    }
+
     @Test fun timekeepingPreservesProvenanceNumberingAndClockRollbackBoundaries() {
         for (rn in listOf(false, true)) {
             val session = ContractionSession(rn, listOf(ContractionEntry(7, 1000, 2000, null)))
