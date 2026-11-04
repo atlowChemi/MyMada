@@ -14,7 +14,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import atlow.chemi.mymada.*
-import atlow.chemi.mymada.recieversAndServices.GrobootRec
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -139,9 +138,9 @@ class HomeActions(private val activity: FragmentActivity) {
                 PendingIntentCompat.getActivity(activity, System.currentTimeMillis().toInt(),
                     it.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS), 0, false)
             }
-            GrobootRec.madasApp(pending)
             LocalBroadcastManager.getInstance(activity).sendBroadcast(Intent("atlow.chemi.MyMada.MADA_APP")
-                .putExtra("callT", type).putExtra("text", activity.getString(if (type == 3) R.string.TEAMTest else R.string.CONANTest)))
+                .putExtra("sourceIntent", pending).putExtra("callT", type)
+                .putExtra("text", activity.getString(if (type == 3) R.string.TEAMTest else R.string.CONANTest)))
         }
     }
 }
