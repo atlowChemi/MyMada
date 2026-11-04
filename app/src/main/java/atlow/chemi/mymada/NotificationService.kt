@@ -13,6 +13,7 @@ import atlow.chemi.mymada.calls.CallParser
 import atlow.chemi.mymada.calls.ListenerAccess
 import atlow.chemi.mymada.calls.DetectionStatus
 import atlow.chemi.mymada.calls.CallRecovery
+import atlow.chemi.mymada.calls.CallDiagnostics
 
 /** Keep the installed native listener identity. */
 open class NotificationService : NotificationListenerService() {
@@ -24,9 +25,15 @@ open class NotificationService : NotificationListenerService() {
     }
 
     private fun deliver(posted: StatusBarNotification?, recovered: Boolean) {
+        val trace = if (BuildConfig.DEBUG && posted != null && CallDiagnostics.relevant(posted.packageName, packageName)) CallDiagnostics.next() else 0L
+        if (BuildConfig.DEBUG && trace != 0L) CallDiagnostics.record(trace, if (recovered) "snapshot" else "posted",
+            "listener=${listenerClass.name} ${CallDiagnostics.source(posted!!)}")
         // Both grants may survive an upgrade. Select a component, never deduplicate call content.
         val selected = ListenerAccess.selected(this)
-        if (selected != null && selected != ComponentName(this, listenerClass)) return
+        if (selected != null && selected != ComponentName(this, listenerClass)) {
+            if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "guard", "decision=other_listener")
+            return
+        }
         val notification = posted?.notification ?: return
         val extras = notification.extras
         // OS auto-group headers are navigation, not new calls. Be conservative: any
@@ -39,15 +46,29 @@ open class NotificationService : NotificationListenerService() {
                 it == "android.appInfo" || it == "android.originatingUserId" ||
                     it == "android.reduced.images" || it == Notification.EXTRA_SHOW_WHEN ||
                     it == Notification.EXTRA_SMALL_ICON
-            }) return
+            }) {
+            if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "guard", "decision=empty_summary")
+            return
+        }
         val title = extras?.getCharSequence(Notification.EXTRA_TITLE)
         // BigTextStyle updates/summaries can carry the call only in the expanded body.
         val body = extras?.getCharSequence(Notification.EXTRA_TEXT)?.takeIf { it.isNotEmpty() }
             ?: extras?.getCharSequence(Notification.EXTRA_BIG_TEXT)
             ?: extras?.getCharSequence(Notification.EXTRA_TEXT)
-        if (body.isNullOrBlank() && posted.key in validSources) return
+        if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "extract", "branch=${when {
+            !extras?.getCharSequence(Notification.EXTRA_TEXT).isNullOrEmpty() -> "text"
+            extras?.getCharSequence(Notification.EXTRA_BIG_TEXT) != null -> "bigText"
+            body != null -> "empty_text"
+            else -> "missing"
+        }} bodyLen=${body?.length ?: -1} blank=${body.isNullOrBlank()} knownValid=${posted.key in validSources}")
+        if (body.isNullOrBlank() && posted.key in validSources) {
+            if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "guard", "decision=retain_valid_source")
+            return
+        }
         val call = CallParser.parse(getSharedPreferences("Settings", 0).getBoolean("Mapp", false),
-            posted.packageName, title, body) ?: return
+            posted.packageName, title, body)
+        if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "parse", "enabled=${getSharedPreferences("Settings", 0).getBoolean("Mapp", false)} accepted=${call != null} type=${call?.type ?: -1} fallback=${call != null && body == null}")
+        if (call == null) return
         val event = Intent("MADA_APP")
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             .putExtra("pack", posted.packageName)
@@ -55,7 +76,11 @@ open class NotificationService : NotificationListenerService() {
             .putExtra("title", title?.toString()).putExtra("text", call.text)
             .putExtra("callT", call.type).putExtra("time", call.time)
             .putExtra("sourceIntent", notification.contentIntent)
-        if (!CallRecovery.track(this, posted, title, body, event, recovered)) return
+        if (BuildConfig.DEBUG && trace != 0L) event.putExtra(CallDiagnostics.EXTRA, trace)
+        if (!CallRecovery.track(this, posted, title, body, event, recovered)) {
+            if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "guard", "decision=recovery_rejected")
+            return
+        }
         if (!body.isNullOrBlank()) {
             validSources.remove(posted.key)
             validSources.add(posted.key)
@@ -63,10 +88,14 @@ open class NotificationService : NotificationListenerService() {
             if (validSources.size > 1024) validSources.remove(validSources.first())
         }
         DetectionStatus.refresh(this)
+        if (BuildConfig.DEBUG) CallDiagnostics.record(trace, "dispatch", "type=${call.type} bodyLen=${call.text.length} sourcePI=${notification.contentIntent != null} recovered=$recovered")
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(event)
     }
 
     override fun onNotificationRemoved(posted: StatusBarNotification?) {
+        if (BuildConfig.DEBUG && posted != null && CallDiagnostics.relevant(posted.packageName, packageName)) {
+            CallDiagnostics.record(CallDiagnostics.next(), "removed", "knownValid=${posted.key in validSources} ${CallDiagnostics.source(posted)}")
+        }
         validSources.remove(posted?.key)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || posted?.packageName != packageName) return
         val channel = posted.notification?.channelId ?: return
@@ -74,6 +103,7 @@ open class NotificationService : NotificationListenerService() {
     }
 
     override fun onListenerConnected() {
+        if (BuildConfig.DEBUG) CallDiagnostics.record(CallDiagnostics.next(), "connected", "validKeysCleared=${validSources.size}")
         validSources.clear()
         DetectionStatus.refresh(this)
         if (ListenerAccess.selected(this) != ComponentName(this, listenerClass)) return
@@ -85,6 +115,7 @@ open class NotificationService : NotificationListenerService() {
     }
 
     override fun onListenerDisconnected() {
+        if (BuildConfig.DEBUG) CallDiagnostics.record(CallDiagnostics.next(), "disconnected", "validKeysCleared=${validSources.size}")
         validSources.clear()
         CallRecovery.disconnected(ComponentName(this, listenerClass))
         ListenerAccess.stopIfRevoked(this)
@@ -92,6 +123,7 @@ open class NotificationService : NotificationListenerService() {
     }
 
     override fun onDestroy() {
+        if (BuildConfig.DEBUG) CallDiagnostics.record(CallDiagnostics.next(), "listener_destroy", "validKeysLost=${validSources.size}")
         CallRecovery.disconnected(ComponentName(this, listenerClass))
         ListenerAccess.stopIfRevoked(this)
         super.onDestroy()
