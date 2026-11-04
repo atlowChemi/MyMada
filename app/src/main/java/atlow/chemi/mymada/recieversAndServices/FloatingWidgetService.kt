@@ -141,20 +141,33 @@ class FloatingWidgetService : Service() {
     private fun dragging(root: View) {
         var startX = 0f; var startY = 0f; var initialX = 0; var initialY = 0
         var started = 0L; var longPress = false; var overRemoval = false
+        val target = requireNotNull(removal)
+        val icon = target.findViewById<View>(R.id.remove_img)
+        val baseWidth = icon.layoutParams.width
+        val baseHeight = icon.layoutParams.height
+        val targetWidth = baseWidth + target.paddingLeft + target.paddingRight
+        val targetHeight = baseHeight + target.paddingTop + target.paddingBottom
+        fun sizeRemoval(highlighted: Boolean) {
+            val width = if (highlighted) (baseWidth * 1.5).toInt() else baseWidth
+            val height = if (highlighted) (baseHeight * 1.5).toInt() else baseHeight
+            if (icon.layoutParams.width != width || icon.layoutParams.height != height) {
+                icon.layoutParams = icon.layoutParams.apply { this.width = width; this.height = height }
+            }
+            val position = target.layoutParams as WindowManager.LayoutParams
+            position.x = (screen.x - width) / 2
+            position.y = screen.y - (if (highlighted) height else targetHeight) - statusBarHeight()
+            update(target, position)
+        }
         val showRemoval = Runnable { longPress = true; removal?.visibility = View.VISIBLE }
         root.setOnTouchListener { view, event ->
             val floating = widget ?: return@setOnTouchListener false
-            val target = removal ?: return@setOnTouchListener false
-            val icon = target.findViewById<View>(R.id.remove_img)
+            if (removal == null) return@setOnTouchListener false
             val position = floating.layoutParams as WindowManager.LayoutParams
             val removePosition = target.layoutParams as WindowManager.LayoutParams
             val centerX = screen.x / 2
-            val centerY = screen.y - (target.height + statusBarHeight())
-            removePosition.x = (screen.x - icon.width) / 2
-            removePosition.y = centerY
-            update(target, removePosition)
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
+                    sizeRemoval(false)
                     animation?.cancel()
                     startX = event.rawX; startY = event.rawY
                     initialX = position.x; initialY = position.y
@@ -163,18 +176,22 @@ class FloatingWidgetService : Service() {
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    overRemoval = longPress && abs(event.rawX - centerX) <= icon.width * 1.5 && event.rawY >= screen.y - icon.height * 1.5
-                    icon.scaleX = if (overRemoval) 1.5f else 1f
-                    icon.scaleY = icon.scaleX
-                    position.x = if (overRemoval) (screen.x - floating.width) / 2 else initialX + (event.rawX - startX).toInt()
-                    position.y = if (overRemoval) centerY else initialY + (event.rawY - startY).toInt()
+                    overRemoval = longPress && abs(event.rawX - centerX) <= baseWidth * 1.5 && event.rawY >= screen.y - baseHeight * 1.5
+                    // Resize the real WRAP_CONTENT window: scaling its child clips the enlarged ring.
+                    sizeRemoval(overRemoval)
+                    // Native entry placement uses the unexpanded target's measured bounds. Keep it
+                    // stable on subsequent MOVE events rather than feeding enlarged dimensions back in.
+                    position.x = if (overRemoval) removePosition.x + abs(targetWidth - floating.width) / 2
+                        else initialX + (event.rawX - startX).toInt()
+                    position.y = if (overRemoval) removePosition.y + abs(targetHeight - floating.height) / 2
+                        else initialY + (event.rawY - startY).toInt()
                     update(floating, position)
                     true
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     handler.removeCallbacks(showRemoval)
                     target.visibility = View.GONE
-                    icon.scaleX = 1f; icon.scaleY = 1f
+                    sizeRemoval(false)
                     if (event.actionMasked == MotionEvent.ACTION_UP && overRemoval) stopSelf()
                     else {
                         if (event.actionMasked == MotionEvent.ACTION_UP && abs(event.rawX - startX) < 20 && abs(event.rawY - startY) < 20 &&
