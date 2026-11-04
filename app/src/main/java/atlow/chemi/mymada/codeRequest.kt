@@ -19,6 +19,7 @@ class codeRequest : AppCompatActivity() {
     override fun attachBaseContext(base: Context) = super.attachBaseContext(LocalHelper.onAttach(base))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTitle(R.string.title_activity_code)
         setContentView(R.layout.activity_code_request)
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
