@@ -138,3 +138,40 @@ disclaimer for a blank name; current Kotlin defers it to disclaimer confirmation
 No live-content authorization is needed to resolve these local states. The live
 backend, physical-device, onboarding-policy and deferred signing gaps above
 remain separate.
+
+## Batch 3: Chat first-open sequence; Home runtime diagnosis
+
+Chat first creation omitted the historical blank-name prompt above the
+disclaimer. It now queues the disclaimer then the noncancelable name dialog;
+fragment restoration owns subsequent recreation. Existing rename/send handling
+is reused. This is sequence acceptance only, not full chat visual acceptance.
+
+Evidence: `~/.local/share/opencode/evidence/m2-integration/chat-first-open/`.
+Debug/test/release builds and both lints passed (`build.log`, 1m27s).
+`verify.rb` reproduced the new check's failure on frozen #124
+(`emulator-5960-en-original124.txt`), then passed 8/8 checks across API24/37
+and EN/HE. Checks cover focused noncancelable name-over-disclaimer order,
+draft/restoration, fake-backend rename revealing the disclaimer, dismissal
+without reopening, zero sends, and existing pending-send recreation.
+Installed optimized candidate SHA256:
+`604d1ac13e5653a2b4ce3dce0d56e1b6aa1d8e60f66702f705eb21b35884287d`.
+
+Opened comparisons under `../home-ad-parity/pairs/` relative to that root:
+`chat-5960-en.png`, `chat-5960-he.png`, `chat-5962-en.png`, and
+`chat-5962-he.png`. Production and candidate both show name above disclaimer.
+Narrower/taller dialog geometry, field/button placement, banner/send styling,
+and API24 candidate keyboard visibility remain unresolved. API24 Hebrew now
+uses actual Hebrew system locale; earlier mislabeled English images remain
+excluded. The initial candidate capture stopped during locale switching;
+the separate `chat-fixed-he24/` retry supplies the Hebrew API24 pair.
+
+All eight `home-{parent,private}-{5960,5962}-{en,he}.png` comparisons were
+also opened. Public Home retains its API37 extra band; private `5bec8950`
+removes API24's production band, so neither establishes cross-API parity.
+Retained production runtime dumps and ad bytecode show API24's old remote
+ads module measuring an invisible 131px/50dp child, even after ad-load failure.
+Production API37 and the current SDK instead measure a zero-height child.
+Current `BaseAdView.onMeasure` measures a non-GONE child before considering
+the AdSize fallback. This is an ad-runtime child-sizing difference, not a
+navigation inset; no arbitrary API threshold or redesign approval is inferred.
+Home remains open, with the private attempt and all failed evidence preserved.

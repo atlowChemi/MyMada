@@ -53,7 +53,10 @@ class contactChatActivity : AppCompatActivity() {
         model.state.observe(this) { state ->
             ui.value = state
         }
-        if (savedInstanceState == null) ChatDialog().show(supportFragmentManager, "chat-disclaimer")
+        if (savedInstanceState == null) {
+            ChatDialog().show(supportFragmentManager, "chat-disclaimer")
+            if (model.name.isBlank()) askForName(false)
+        }
         model.connect()
     }
     fun askForName(cancelable: Boolean) {

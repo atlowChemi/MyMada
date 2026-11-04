@@ -190,6 +190,49 @@ class ChatIntegrationTest {
             assertEquals(1, backend.removals)
         } finally { main { ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(callback) } }
     }
+    @Test fun blankNameOpensAboveDisclaimerAndRestoresOrder() {
+        val backend = Backend()
+        context.getSharedPreferences("Settings", 0).edit().remove("UserName").putBoolean("Mapp", false).commit()
+        main { LocalHelper.setLocale(context, InstrumentationRegistry.getArguments().getString("captureLanguage") ?: "en") }
+        val callback = ActivityLifecycleCallback { activity, stage ->
+            if (activity is contactChatActivity && stage == Stage.PRE_ON_CREATE) {
+                ViewModelProvider(activity)[ChatModel::class.java].backend = backend
+            }
+        }
+        main { ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(callback) }
+        try {
+            ActivityScenario.launch(contactChatActivity::class.java).use { scenario ->
+                main { backend.token.setResult("offline-first-open-fixture") }
+                fun assertOrder() {
+                    compose.onNodeWithTag("chat-name-draft").assertIsDisplayed()
+                    scenario.onActivity { activity ->
+                        val dialogs = activity.supportFragmentManager.fragments.filterIsInstance<contactChatActivity.ChatDialog>()
+                        assertEquals(listOf("chat-disclaimer", "chat-name"), dialogs.map { it.tag })
+                        assertTrue(dialogs.last().requireDialog().window!!.decorView.hasWindowFocus())
+                        assertFalse(dialogs.last().isCancelable)
+                    }
+                }
+                assertOrder()
+                capture("first-open-name")
+                compose.onNodeWithTag("chat-name-draft").performTextReplacement("First Fixture")
+                scenario.recreate()
+                assertOrder()
+                compose.onNodeWithTag("chat-name-draft").assertTextContains("First Fixture")
+                compose.onNode(hasTestTag("chat-dialog-confirm") and hasAnyAncestor(hasTestTag("chat-name-dialog")))
+                    .performScrollTo().performClick()
+                main { backend.rename.setResult(null) }
+                compose.onNodeWithTag("chat-name-draft").assertDoesNotExist()
+                compose.onNodeWithTag("chat-disclaimer-dialog").assertIsDisplayed()
+                capture("first-open-disclaimer")
+                compose.onNodeWithTag("chat-dialog-confirm").performScrollTo().performClick()
+                compose.onNodeWithTag("chat-disclaimer-dialog").assertDoesNotExist()
+                scenario.recreate()
+                compose.onNodeWithTag("chat-name-draft").assertDoesNotExist()
+                compose.onNodeWithTag("chat-disclaimer-dialog").assertDoesNotExist()
+                assertEquals(0, backend.sends)
+            }
+        } finally { main { ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(callback) } }
+    }
     private fun capture(name: String) {
         instrumentation.waitForIdleSync()
         instrumentation.uiAutomation.waitForIdle(500, 5000)
