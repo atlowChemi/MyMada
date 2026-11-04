@@ -110,7 +110,7 @@ class HomeActions(private val activity: FragmentActivity) {
     companion object {
         private fun loadAd(owner: HomeActions) {
             val reference = WeakReference(owner)
-            InterstitialAd.load(owner.activity.applicationContext, "ca-app-pub-7600269766434003/4483563620",
+            InterstitialAd.load(owner.activity.applicationContext, owner.activity.getString(R.string.interstitial_ad_unit_id),
                 AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
                     override fun onAdLoaded(ad: InterstitialAd) {
                         reference.get()?.takeUnless { it.activity.isDestroyed }?.ad = ad

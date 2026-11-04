@@ -271,7 +271,8 @@
     <string name="systolic">סיסטולי</string>
     <string name="diastolic">דיאסטולי</string>
 
-    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-7600269766434003/5732229370</string>
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="interstitial_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
     <string name="service_exp">בכדי שנוכל לזהות את המקרים המגיעים למכשיר, אפשרות זו צריכה להיות דולקת.\nבמידה ואפשרות זו לא דולקת, לא יזוהו מקרים כלל.</string>
     <string name="pulseClickHint">לחץ על האזור האפור כדי למדוד דופק</string>
     <string name="seconds">שניות</string>
