@@ -22,10 +22,15 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import java.lang.ref.WeakReference
 
-class HomeActions(private val activity: FragmentActivity) {
+class HomeActions(private val activity: FragmentActivity,
+    initializeAds: (android.content.Context) -> Unit = { MobileAds.initialize(it) {} },
+    private val loadInterstitial: (android.content.Context, String, InterstitialAdLoadCallback) -> Unit = { context, unit, callback ->
+        InterstitialAd.load(context, unit, AdRequest.Builder().build(), callback)
+    },
+) {
     private var ad: InterstitialAd? = null
     init {
-        MobileAds.initialize(activity.applicationContext) {}
+        initializeAds(activity.applicationContext)
         loadAd(this)
     }
 
@@ -111,8 +116,8 @@ class HomeActions(private val activity: FragmentActivity) {
     companion object {
         private fun loadAd(owner: HomeActions) {
             val reference = WeakReference(owner)
-            InterstitialAd.load(owner.activity.applicationContext, owner.activity.getString(R.string.interstitial_ad_unit_id),
-                AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+            owner.loadInterstitial(owner.activity.applicationContext, owner.activity.getString(R.string.interstitial_ad_unit_id),
+                object : InterstitialAdLoadCallback() {
                     override fun onAdLoaded(ad: InterstitialAd) {
                         reference.get()?.takeUnless { it.activity.isDestroyed }?.ad = ad
                     }
