@@ -1,0 +1,8 @@
+<resources>
+    <string name="dictionary_loading">טוען מילון…</string>
+    <string name="dictionary_cached">מציג מילון מהמכשיר; העדכון מהשרת טרם התקבל.</string>
+    <string name="dictionary_read_error">לא ניתן לעדכן את המילון.</string>
+    <string name="dictionary_write_error">השליחה נכשלה. הטקסט נשמר כאן; אפשר לנסות שוב.</string>
+    <string name="dictionary_pending">ממתין לאישור מהשרת. ללא חיבור השליחה עשויה להתעכב.</string>
+    <string name="dictionary_retry">נסה שוב</string>
+</resources>

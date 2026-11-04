@@ -1,0 +1,8 @@
+<resources>
+    <string name="dictionary_loading">Loading dictionary…</string>
+    <string name="dictionary_cached">Showing the on-device dictionary; a server update has not arrived yet.</string>
+    <string name="dictionary_read_error">Could not update the dictionary.</string>
+    <string name="dictionary_write_error">Submission failed. Your text is kept here; you can retry.</string>
+    <string name="dictionary_pending">Waiting for server confirmation. Submission may be delayed while offline.</string>
+    <string name="dictionary_retry">Retry</string>
+</resources>
