@@ -143,7 +143,7 @@ class ChatIntegrationTest {
             ActivityScenario.launch<contactChatActivity>(intent).use { scenario ->
                 scenario.onActivity { assertEquals(it.getString(R.string.title_activity_contact), it.supportActionBar?.title.toString()) }
                 capture("disclaimer")
-                compose.onNodeWithTag("chat-dialog-confirm").performClick()
+                compose.onNodeWithTag("chat-dialog-confirm").performScrollTo().performClick()
                 main { backend.token.setResult("historical-token") }
                 capture("empty")
                 main {
@@ -177,11 +177,11 @@ class ChatIntegrationTest {
                     it.askForName(true)
                 }
                 capture("name")
-                compose.onNodeWithTag("chat-name-draft").performTextReplacement("123")
-                compose.onNodeWithTag("chat-dialog-confirm").performClick()
+                compose.onNodeWithTag("chat-name-draft").performScrollTo().performTextReplacement("123")
+                compose.onNodeWithTag("chat-dialog-confirm").performScrollTo().performClick()
                 compose.onNodeWithText(LocalHelper.onAttach(context).getString(R.string.chatNameNum)).assertIsDisplayed()
-                compose.onNodeWithTag("chat-name-draft").performTextReplacement("Renamed Fixture")
-                compose.onNodeWithTag("chat-dialog-confirm").performClick()
+                compose.onNodeWithTag("chat-name-draft").performScrollTo().performTextReplacement("Renamed Fixture")
+                compose.onNodeWithTag("chat-dialog-confirm").performScrollTo().performClick()
                 scenario.onActivity { assertEquals("Fixture Name", retained.name) }
                 scenario.recreate()
                 main { backend.rename.setResult(null) }

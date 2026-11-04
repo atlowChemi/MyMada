@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.material3.MaterialTheme
+import atlow.chemi.mymada.integrations.IntegrationTheme
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -30,7 +30,7 @@ class codeC : AppCompatActivity() {
         model = ViewModelProvider(this)[ActivationModel::class.java]
         val ui = mutableStateOf(model.state.value!!)
         findViewById<ComposeView>(R.id.activation_content).setContent {
-            MaterialTheme {
+            IntegrationTheme {
                 val state = ui.value
                 ActivationScreen(state.busy) { model.activate(it, null) }
                 if (state.busy) AlertDialog(onDismissRequest = {}, confirmButton = {}, text = {

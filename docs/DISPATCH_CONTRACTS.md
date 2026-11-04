@@ -42,6 +42,116 @@ Espresso's keyboard-dismiss helper after recreation; the form's Compose submit
 already dismisses its keyboard, so that redundant fixture action was removed.
 The original failed log is retained; this is not final combined-release evidence.
 
+Private Moked host now uses Kotlin with Compose header, tab controls and region
+prompt; native ViewPager remains the swipe/Fragment saved-state bridge. The
+pre-R inset boundary is retained. Detection still calls DetectionControls with
+the existing menu model and observes async preference updates. API24 dispatch/
+team/picker passed 7/7 in 16.779s (`moked-host-compose-5980.log`), including
+tab/pager synchronization, selected-page recreation and prompt dismissal state.
+Final combined/API37/release and production parity remain pending.
+
+Private visual follow-up compares the retained production request/catalog
+captures with Compose: removes new purple/filled-field styling, restores native
+accent/dialog palette and zero letter spacing, adjusts request action margins,
+and restores catalog separators/right-aligned confirmation. This is a shared
+integration theme, not a change to the approved Android font-scaling policy.
+Chat/member dialogs scroll at enlarged font sizes.
+
+Normal-size private integration tests passed 17/17 on API24 (30.406s) and API37
+(42.838s). At 2× Hebrew font, initial runs exposed off-screen chat action taps
+and a medical selection attempted beneath the keyboard. The fixture now scrolls
+to dialog actions; medical search exposes a Done action to hide the IME and
+selection is asserted before recreation. A mistaken chained fixture call caused
+one compile failure and was corrected. Focused medical/chat reruns passed 5/5
+on both APIs (12.751s / 19.95s). Logs are `ui-parity-*.log`; font scales were
+restored afterward. These checks are not landscape or final production-parity
+acceptance and do not replace final combined installed-release verification.
+Follow-up chat landscape checks at 2× Hebrew font passed 3/3 on API24 (5.785s)
+and API37 (6.986s); captured name-dialog images are 1920×1080. Evidence is under
+`ui-parity-large/chat-landscape-*`. Other integration activities retain their
+existing manifest portrait lock. Original font/rotation settings were restored;
+API24's originally absent user_rotation required deleting the temporary setting
+after a rejected attempt to write the literal `null` value.
+The first full private build caught two Compose lint errors in chat locale/
+fallback-name reads. Both now use observable Compose locale/resource APIs;
+the subsequent unit/debug/test APK/release/lintDebug/lintRelease build passed
+(`owned-compose-private-locale-build.log`). This private artifact includes all
+later layers and is distinct from the coordinator's shell/request integration.
+That private artifact subsequently passed all 17 tests on API24 EN29.288s /
+HE29.647s and API37 EN41.239s / HE40.651s. Its optimized runtime check then
+exposed an API24 RTL accessibility defect: mirrored pager/fragment transforms
+produced zero input bounds despite correct rendering. The next private fix
+reverses physical page order in RTL instead, preserving logical tab/swipe order
+without transformed content. UIAutomator now reports real visible input bounds;
+the host regression passed 1/1 in 1.902s after waiting for accessibility events
+to settle. Earlier test failure and zero-bound XML are retained. The RTL fix
+still requires its final combined/release matrix; earlier 17/17 evidence does
+not establish those new bytes.
+
+RTL source `2931c87b0d51527aa097c8ff6f07a44a5d3dc74b` subsequently passed
+unit/debug/test APK/release/both lints (2m16s), and 17/17 on API24 EN29.653s /
+HE29.454s and API37 EN39.772s / HE39.282s. Signed optimized APK SHA256:
+`9dab59fbf0830dee6b5a92ea896d8e85190ffde895aeb07170f25a507b071d71`.
+Pulled installed bytes matched on both devices. Actual background SIGKILL
+restored three form fields and an unsent chat draft on both APIs; chat used
+local offline fixture identity with original preferences restored afterward.
+Evidence: `rtl-accessibility-final/`; no fatal exception/signal matched the
+collected release form/chat logs.
+
+Direct gesture coverage added afterward FAILED on API24 EN: swipe gestures did
+not reliably change the expected logical page. Center/slow/lower-content and
+accessibility-idle attempts are retained as `swipe-*.log`, with the pending
+regression in `pending-swipe-regression.patch`. The passing 17-test matrix covers
+tab navigation, programmatic pager selection and recreation, not actual swipe
+acceptance. Root cause and API37 gesture verification remain open; this blocks
+host/RTL acceptance. No application bytes changed during these fixture trials.
+
+### Direct-swipe investigation resolved (private follow-up)
+
+The subsequent investigation traced the apparent API24 failure to input targeting,
+not ViewPager's RTL mapping. The pager measured `[0,369]`, size `1080×1425`, while
+the IME covered the lower screen. Its center/lower drag coordinates landed in the
+keyboard. A temporary Window.Callback trace recorded no activity touch events for
+the failing drag; `swipe-before.png` captures the occlusion. Closing the keyboard
+only once was insufficient: moving to another input-bearing page reopened it.
+ADB swipes on unobscured content worked, including cold-start Hebrew in the
+optimized application. No host or shared-shell change was needed for this failure.
+
+The native production12822 baseline was installed locally on owned API24, then the
+candidate and original preferences were restored. With a single unambiguous EN
+locale preference, real swipes reached form → team → custom; the reverse gesture
+worked after hiding the custom-page IME. Initial native captures had duplicate
+locale preferences and a keyboard contacts-permission dialog (denied), so those
+attempts are retained but excluded from parity conclusions. This is gesture-flow
+evidence, not broad production visual acceptance.
+
+The host regression now dismisses the IME before **each** real Espresso drag and
+asserts logical tab selection for 0→1→2→1→2, then recreation. It replaces the old
+programmatic page jump; it does not synthesize tab clicks for the swipe assertions.
+Accessibility-event idle synchronization remains at the existing 500/5000ms bounds;
+no timeout increase or application gesture workaround was introduced.
+
+Evidence: `~/.local/share/opencode/evidence/integrations/swipe-rootcause/`.
+Affected dispatch/team/picker suites passed 7/7 on API24 EN22.585s / HE22.077s and
+API37 EN28.05s / HE27.468s. The actual-swipe/accessibility/recreation regression also
+passed at 2× font: API24 EN8.648s / HE7.873s, API37 EN8.422s / HE8.441s. Original
+font settings were restored. Unit/debug/test APK/release/both lints passed in 1m59s.
+
+The rebuilt optimized artifact (separate bytes from the earlier preserved release)
+has SHA256 `745e0415f51cc99297ecb9bb4e7367194e71c9d75d35a9046366893fe3e2025c`;
+pulled installed APKs match on both APIs. Independent ADB cold-start gestures
+0→1→2→1→0 passed EN/HE at 1× and 2× on both APIs (eight combinations). The script
+checks the IME is hidden before dragging and checks selected labels in UIAutomator
+XML. One initial API24 2× run raced asynchronous IME dismissal; that failure is
+retained separately. The final script waits for UIAutomator's idle hierarchy and
+asserts hidden IME before injection (`release-settled-*`), without retrying gestures.
+It restores original preferences, app locales and font settings in finally.
+
+Application source remains `2931c87b`; the earlier 17-test/release/process-death
+results and raw swipe failures remain intact. This follow-up resolves the direct
+swipe acceptance blocker only; other production/live acceptance gates and the
+serialized publication queue remain unchanged.
+
 ## Activation request and dialog Compose layer above #106
 
 Tested source `3278850e`: request form, disclaimer/confirmation and request

@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material3.MaterialTheme
+import atlow.chemi.mymada.integrations.IntegrationTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,10 +28,9 @@ class MainActivity1 : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         ComposeView(requireContext()).apply {
             id = R.id.rap
-            if (SettingsPage.isRTL()) rotationY = 180f
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MaterialTheme {
+                IntegrationTheme {
                     FormScreen(values, { index, text -> update(index, text) }, {
                         MedicalPickerDialog.show(this@MainActivity1, MedicalCatalog.names, MedicalCatalog.ids, MedicalCatalog.categories, values[8])
                     }, { DispatchConfirmation.show(this@MainActivity1, it) })

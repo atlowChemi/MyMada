@@ -24,7 +24,7 @@ class MedicalPickerTest {
         instrumentation.runOnMainSync { atlow.chemi.mymada.helpers.LocalHelper.setLocale(context, language) }
         androidx.test.core.app.ActivityScenario.launch(atlow.chemi.mymada.MokedPage::class.java).use { scenario ->
             scenario.onActivity {
-                it.findViewById<androidx.viewpager.widget.ViewPager>(R.id.viewpager).setCurrentItem(0, false)
+                it.selectPage(0)
             }
             compose.onNodeWithTag("form-codes").performScrollTo().performClick()
             scenario.onActivity {
@@ -41,7 +41,8 @@ class MedicalPickerTest {
             image.recycle()
             compose.onNodeWithTag("medical-code-2000").performScrollTo().performClick()
             compose.onNodeWithTag("medical-query").performTextReplacement("5000")
-            compose.onNodeWithTag("medical-code-5000").performClick()
+            compose.onNodeWithTag("medical-query").performImeAction()
+            compose.onNodeWithTag("medical-code-5000").performScrollTo().performClick().assertIsOn()
             scenario.recreate()
             compose.onNodeWithTag("medical-query").assertTextContains("5000")
             compose.onNodeWithTag("medical-code-5000").assertIsOn()

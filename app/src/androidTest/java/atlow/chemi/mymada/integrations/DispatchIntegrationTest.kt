@@ -12,10 +12,11 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeLeft
+import androidx.test.espresso.action.ViewActions.swipeRight
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.viewpager.widget.ViewPager
 import atlow.chemi.mymada.MokedPage
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.helpers.LocalHelper
@@ -29,6 +30,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertIsSelected
 import java.io.File
 
 /** A blocking Instrumentation monitor intercepts approval: no SMS composer or transmission. */
@@ -36,6 +38,62 @@ class DispatchIntegrationTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
+    @Test fun hostTabsFollowPagerAndRetainSelectionAfterRecreation() {
+        context.getSharedPreferences("Settings", 0).edit().putBoolean("realM", true)
+            .putBoolean("pickedMoked", false).putBoolean("Mapp", false).commit()
+        instrumentation.runOnMainSync { LocalHelper.setLocale(context, InstrumentationRegistry.getArguments().getString("captureLanguage", "en")) }
+        ActivityScenario.launch(MokedPage::class.java).use { scenario ->
+            compose.onNodeWithTag("dispatch-region-skip").performClick()
+            compose.onNodeWithTag("dispatch-tab-1").assertIsSelected()
+            compose.onNodeWithTag("dispatch-tab-0").performClick()
+            scenario.onActivity { assertEquals(0, it.currentPage) }
+            compose.waitForIdle()
+            instrumentation.uiAutomation.waitForIdle(500, 5000)
+            fun visibleInput(node: android.view.accessibility.AccessibilityNodeInfo?): Boolean {
+                if (node == null) return false
+                val bounds = android.graphics.Rect()
+                node.getBoundsInScreen(bounds)
+                if (node.className?.toString() == "android.widget.EditText" && node.isVisibleToUser && !bounds.isEmpty) return true
+                return (0 until node.childCount).any { visibleInput(node.getChild(it)) }
+            }
+            val automation = instrumentation.uiAutomation
+            val oldFlags = automation.serviceInfo.flags
+            try {
+                // API24 can retain a stale active-window lookup after earlier dialog tests.
+                // Query the focused application window explicitly; keep the real bounds check.
+                automation.serviceInfo = automation.serviceInfo.apply {
+                    flags = flags or android.accessibilityservice.AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+                }
+                val window = automation.windows.single {
+                    it.type == android.view.accessibility.AccessibilityWindowInfo.TYPE_APPLICATION && it.isActive && it.isFocused
+                }
+                val root = window.root
+                assertEquals(context.packageName, root?.packageName?.toString())
+                assertTrue("Form inputs must expose usable screen bounds to accessibility", visibleInput(root))
+            } finally {
+                automation.serviceInfo = automation.serviceInfo.apply { flags = oldFlags }
+            }
+            val rtl = atlow.chemi.mymada.SettingsPage.isRTL()
+            fun swipe(forward: Boolean) {
+                // Each page can focus an input and reopen the IME. Pager bounds extend
+                // behind it on API24: otherwise injected drags hit the keyboard.
+                closeSoftKeyboard()
+                onView(withId(R.id.viewpager)).perform(if (rtl == forward) swipeRight() else swipeLeft())
+                instrumentation.uiAutomation.waitForIdle(500, 5000)
+            }
+            swipe(true)
+            compose.onNodeWithTag("dispatch-tab-1").assertIsSelected()
+            swipe(true)
+            compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()
+            swipe(false)
+            compose.onNodeWithTag("dispatch-tab-1").assertIsSelected()
+            swipe(true)
+            compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()
+            scenario.recreate()
+            compose.onNodeWithTag("dispatch-tab-2").assertIsSelected()
+            compose.onNodeWithTag("dispatch-region-skip").assertDoesNotExist()
+        }
+    }
     @Test fun everyRecipientKeepsLiteralBodyOutsideUri() {
         val body = "  שם & #? +%\nSecond line  "
         DispatchContract.phones.forEachIndexed { region, phone ->
@@ -57,7 +115,7 @@ class DispatchIntegrationTest {
         val monitor = instrumentation.addMonitor(filter, Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null), true)
         try {
             ActivityScenario.launch(MokedPage::class.java).use { scenario ->
-                scenario.onActivity { it.findViewById<ViewPager>(R.id.viewpager).setCurrentItem(2, false) }
+                scenario.onActivity { it.selectPage(2) }
                 compose.waitForIdle()
                 closeSoftKeyboard()
                 capture("custom", language)

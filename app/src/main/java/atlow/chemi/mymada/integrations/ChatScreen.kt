@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -25,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import atlow.chemi.mymada.R
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 @Composable
 fun ChatScreen(state: ChatModel.State, name: String, changeName: () -> Unit, send: (String) -> Unit) {
@@ -35,6 +35,9 @@ fun ChatScreen(state: ChatModel.State, name: String, changeName: () -> Unit, sen
     var count by rememberSaveable { mutableIntStateOf(0) }
     val context = LocalContext.current
     val font = FontFamily(Font(R.font.opensans_hebrew))
+    val fallbackName = stringResource(R.string.user)
+    val locale = LocalLocale.current.platformLocale
+    val dates = remember(locale) { SimpleDateFormat("dd/MM/yyyy HH:mm:ss", locale) }
     LaunchedEffect(state.sent) { if (sent != state.sent) { draft = ""; sent = state.sent } }
     LaunchedEffect(state.messages.size) {
         if (state.messages.size > count) list.animateScrollToItem(state.messages.size)
@@ -57,10 +60,10 @@ fun ChatScreen(state: ChatModel.State, name: String, changeName: () -> Unit, sen
                 } else Modifier
                 Surface(Modifier.fillMaxWidth().then(action), color = colorResource(if (message.sender == "admin" || message.whatsApp) R.color.chatAdmin else R.color.White)) {
                     Column(Modifier.padding(10.dp)) {
-                        if (!message.whatsApp) Text(if (message.sender == "admin") stringResource(R.string.admin) else name.ifBlank { context.getString(R.string.user) }, fontFamily = font)
+                        if (!message.whatsApp) Text(if (message.sender == "admin") stringResource(R.string.admin) else name.ifBlank { fallbackName }, fontFamily = font)
                         Text(if (message.whatsApp) "לחץ על כפתור הוואטסאפ בכדי לתקשר איתנו בוואטסאפ." else message.text, fontFamily = font)
                         if (message.whatsApp) Icon(painterResource(R.drawable.ic_whatsapp), contentDescription = "WhatsApp", modifier = Modifier.size(48.dp), tint = androidx.compose.ui.graphics.Color.Unspecified)
-                        Text(message.time?.let { SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(Date(it)) }.orEmpty(), fontFamily = font, fontSize = 12.sp)
+                        Text(message.time?.let { dates.format(Date(it)) }.orEmpty(), fontFamily = font, fontSize = 12.sp)
                     }
                 }
             }

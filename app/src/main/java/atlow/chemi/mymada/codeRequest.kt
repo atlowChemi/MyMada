@@ -26,7 +26,7 @@ class codeRequest : AppCompatActivity() {
         model = ViewModelProvider(this)[ActivationModel::class.java]
         val ui = androidx.compose.runtime.mutableStateOf(model.state.value!!)
         findViewById<androidx.compose.ui.platform.ComposeView>(R.id.activation_request_content).setContent {
-            androidx.compose.material3.MaterialTheme {
+            atlow.chemi.mymada.integrations.IntegrationTheme {
                 val state = ui.value
                 atlow.chemi.mymada.integrations.ActivationRequestScreen(state.busy) { email, name, reason ->
                     if (supportFragmentManager.findFragmentByTag("confirm-request") == null) {
@@ -75,7 +75,7 @@ class codeRequest : AppCompatActivity() {
             androidx.compose.ui.platform.ComposeView(requireContext()).apply {
                 setViewCompositionStrategy(androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-                    androidx.compose.material3.MaterialTheme {
+                    atlow.chemi.mymada.integrations.IntegrationTheme {
                         atlow.chemi.mymada.integrations.ActivationRequestDialog(arguments, onCancel = { dismiss() }, onConfirm = {
                             arguments?.let { args ->
                                 ViewModelProvider(requireActivity())[ActivationModel::class.java].request(
