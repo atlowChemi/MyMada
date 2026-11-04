@@ -1,5 +1,6 @@
 package atlow.chemi.mymada.home
 
+import android.content.SharedPreferences
 import android.view.View
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -89,10 +90,20 @@ object HomeContent {
             }
             DisposableEffect(banner) { onDispose { banner.destroy() } }
             LifecycleResumeEffect(Unit) {
-                detecting = preferences.getBoolean("Mapp", false)
-                detection.isChecked = detecting
+                fun refresh() {
+                    detecting = preferences.getBoolean("Mapp", false)
+                    detection.isChecked = detecting
+                }
+                val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                    if (key == "Mapp") refresh()
+                }
+                preferences.registerOnSharedPreferenceChangeListener(listener)
+                refresh()
                 banner.resume()
-                onPauseOrDispose { banner.pause() }
+                onPauseOrDispose {
+                    preferences.unregisterOnSharedPreferenceChangeListener(listener)
+                    banner.pause()
+                }
             }
             MaterialTheme {
                 HomeScreen(detecting, {

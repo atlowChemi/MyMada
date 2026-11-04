@@ -77,6 +77,30 @@ class HomeScreenTest {
 
     @Test fun englishNavigationBackAndRecreation() = verifyHome("en", 1f)
 
+    @Test fun detectionIconTracksAsynchronousPreferenceChangesWithoutNavigation() {
+        prepare("en")
+        ActivityScenario.launch(HomePage::class.java).use { scenario ->
+            var label = ""
+            scenario.onActivity { label = it.getString(R.string.pref_title_enable) }
+            val detection = compose.onNodeWithContentDescription(label)
+            detection.assertIsOff()
+            // The permission fragment completes after the click handler has returned.
+            // Update its persisted result while Home stays resumed, without a menu click.
+            scenario.onActivity { preferences.edit().putBoolean("Mapp", true).apply() }
+            detection.assertIsOn()
+            scenario.onActivity { preferences.edit().putBoolean("Mapp", false).apply() }
+            detection.assertIsOff()
+            scenario.moveToState(Lifecycle.State.CREATED)
+            preferences.edit().putBoolean("Mapp", true).commit()
+            scenario.moveToState(Lifecycle.State.RESUMED)
+            detection.assertIsOn()
+            scenario.recreate()
+            detection.assertIsOn()
+            scenario.onActivity { preferences.edit().putBoolean("Mapp", false).apply() }
+            detection.assertIsOff()
+        }
+    }
+
     @Test fun homePromptActionsKeepNativeMinimumAfterRecreationAndFontScaling() {
         for ((language, scale) in listOf("en" to 1f, "he" to 1.5f)) {
             prepare(language, scale)

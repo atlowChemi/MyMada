@@ -84,6 +84,8 @@ decisions. [Testing](TESTING.md) distinguishes local behavior from live delivery
   settings → overlay → privacy onboarding. RN privacy-first remains a product
   decision, not an inferred replacement. Restorable prompts retain destinations
   and dismissal state; fresh launch keeps the existing order.
+- Home observes detection preference changes while resumed, including asynchronous
+  permission completion; its icon must update without leaving the screen.
 - The reserved 50dp empty-ad slot is **transparent when no ad loads** on every API.
   Pending ad callbacks use weak owners/application context and skip destroyed
   Activities. About retains localized credits/disclaimer/privacy artwork and
