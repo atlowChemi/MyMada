@@ -185,12 +185,11 @@ candidate605..<1252 (6px shorter); API37 native630..<1289 versus634..<1285
 monospace and Applicatio replaces default typefaces with the bundled font via
 reflection. Current sans-serif styles are migration code, not native evidence.
 Metrics investigation continues without a compensating padding adjustment.
-Follow-up read-only trace identifies native DialogTitle fitting: title starts20sp
-and falls back to textAppearanceMedium18sp when ellipsized. Long English fits via
-fallback (53px), while short Hebrew retains20sp (59px API24/65px API37). These
-title-height differences account for the entire6px/8px modal residual. A separate
-native-host-title correction is being validated; no locale-specific sizing is
-included in this primary layer.
+DialogTitle's20sp-to18sp ellipsis fallback is confirmed, but the first native-host
+prototype produced63px English titles instead of53px on both APIs. Native APK
+theme typeface is monospace; migrated theme uses sans-serif. Title-fitting/font
+resolution remains under diagnostic investigation. No locale-specific sizing or
+unverified host-title change is included in the published primary layer.
 Delay hint/height is a separate follow-up. These gaps remain explicit: this layer
 does not claim complete Settings parity. Missing release/JVM/lint checks are
 recorded in `integration-release-jvm-lints.log`: lint rejected the platform
@@ -240,3 +239,47 @@ large English titles wrap and choices/Cancel remain reachable. Important compres
 HE accessibility exposes title/choice/action text once. Failed prototypes retained.
 Full provenance: `MODE-HANDOFF.md`; missing release and both lints passed in
 `mode-integration-release-lints.log` (BUILD SUCCESSFUL). No unchanged runtime matrix rerun.
+
+# Contractions shared alert host (bounded correction)
+
+Matched medical batch1 images show recovery, delete and empty-delete using an
+840px candidate surface versus940px native at1080px/420dpi. Empty-delete gains
+an extra wrapped line. All three resource states route through one renderer in
+ContractionScreen and one callback in ContracTimer.
+
+The correction restores AlertDialogStyle's native alert host for this renderer,
+with composition-scoped disposal and the latest state callback. Recovery/delete
+retain native explicit message/negative-button typefaces; empty-delete retains
+theme defaults. Non-cancelability, saved dialog state, recovery/delete decisions
+and expiry/persistence logic are unchanged. Settings files are not involved.
+
+Existing recovery tests now target native dialog controls. A focused regression
+checks all three states'940px content width at the matched configuration and
+empty-delete single-line text. Debug/test/release/JVM/lints passed after correcting
+a configuration-sensitive color lookup. Initial runtime passed5/7 recovery tests;
+two failed on the obsolete native toolbar selector. Tests now use the existing
+Compose shell-action tag. Corrected replay above #132 passed debug/test/release,
+JVM/both lints and16/16 device checks (seven recovery tests at font1.0 plus the
+three-dialog geometry test at font1.5 on both APIs). Opened empty-delete debug
+images: width/wrapping corrected; API37 height still differs from retained native.
+Failure logs remain retained; optimized comparisons and metric disposition remain
+pending. The three medical rows remain D.
+
+Above #133, native action sizing also depends on AppCompat's h720dp resource.
+Target35 includes system bars in screenHeightDp; resolve the existing button
+style using legacy inset-excluding height rather than hardcoding48dp. Both
+TextView.minHeight and View.minimumHeight constrain the button. The resource-only
+experiment resolved126px but rendered142px until both constraints were set.
+Failed logs/artifacts remain retained.
+
+Targeted geometry delta passed API24 and API37 at fonts1/1.5 (four checks),
+including940px content width,126px normal action height and single-line empty text.
+Prior16/16 checks are reused for unchanged recovery/expiry/store behavior.
+Debug/test/release/JVM/both lints passed before the final two-line View constraint;
+that delta's debug/test build and API37 normal/large checks passed. Final release/
+both lints passed in `build-final-viewminimum-release-lints.log`; optimized images
+are retained separately in `inventory-contractions-final-viewminimum37/`.
+Opened API37 debug recovery/empty-delete pairs: window bounds are restored, but
+small message/action glyph-baseline differences remain visible. This is a scoped
+host/size correction, not universal typography parity; T5/T6/T7 remain D pending
+those residuals and missing variant acceptance.
