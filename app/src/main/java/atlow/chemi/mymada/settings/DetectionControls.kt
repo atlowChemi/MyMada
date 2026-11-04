@@ -70,8 +70,8 @@ object DetectionControls {
     private fun enable(activity: FragmentActivity, style: String) {
         if (!NotificationPermission.granted(activity)) return
         val preferences = activity.getSharedPreferences("Settings", 0)
-        val monitor = Intent(activity, SMSMonitorService::class.java)
-        ContextCompat.startForegroundService(activity, monitor)
+        preferences.edit().putBoolean("Mapp", true).apply()
+        SMSMonitorService.start(activity)
         val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
         if (intent.resolveActivity(activity.packageManager) != null) {
             if (atlow.chemi.mymada.calls.ListenerAccess.selected(activity) == null)
@@ -82,7 +82,6 @@ object DetectionControls {
             if (!NotificationServiceOld.isAccessibilitySettingsOn(activity.applicationContext))
                 Prompt.show(activity, R.string.dialog_help, Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), request = 101, style = style)
         }
-        preferences.edit().putBoolean("Mapp", true).apply()
         activity.invalidateOptionsMenu()
         activity.findViewById<com.google.android.material.navigation.NavigationView>(R.id.navigation)
             ?.menu?.findItem(R.id.detect)?.let { render(it, true) }

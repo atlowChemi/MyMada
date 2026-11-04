@@ -40,11 +40,11 @@ public class Applicatio extends Application {
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SERIF", "fonts/opensanshebrew.ttf");
         FontsOverride.setDefaultFont(this, "SANS_SERIF", "fonts/opensanshebrew.ttf");
+        makeRec();
         SharedPreferences sharedPreferences = getSharedPreferences("Settings",0);
         boolean mapp = sharedPreferences.getBoolean("Mapp", false);
         if (mapp) {
-            Intent serviceIntent = new Intent(getApplicationContext(), SMSMonitorService.class);
-            ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
+            SMSMonitorService.start(this);
             try {
                 tryConnectService(getApplicationContext());
             } catch (NoClassDefFoundError e) {
@@ -52,7 +52,6 @@ public class Applicatio extends Application {
 //                Crashlytics.logException(e);
             }
         }
-        makeRec();
     }
     public static void tryConnectService(Context mContext) {
         atlow.chemi.mymada.calls.ListenerAccess.rebind(mContext);
