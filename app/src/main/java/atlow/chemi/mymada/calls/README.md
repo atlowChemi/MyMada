@@ -74,7 +74,23 @@ optimized release, instrumentation and lint; skip only Crashlytics mapping uploa
 via the local command line. Runtime evidence lives in
 `~/.local/share/opencode/evidence/calls` and the PR.
 
-Subsequent #24 layers own typed popup/process state, audio cleanup, listener grants
+## Popup-state layer
+
+`CallEvent` carries type/text/source PendingIntent in the activity launch Intent.
+The receiver no longer writes static `smsRes` text/action slots. Cold starts and
+recreation read the intent; singleTop warm delivery replaces the intent and
+recreates the existing native layout. Old auto-stop callbacks are canceled on
+destruction. Popup playback releases even after prepare failure or completion,
+and restores alarm volume only when that popup changed it. Overlay playback still
+needs the shared lifecycle/audio migration; this does not claim process-death or
+background-launch certification.
+
+Additional route tests cover popup cold/warm listener delivery, recreation,
+superseded auto-stop, actual details PendingIntent delivery and volume restoration
+after failed playback/recreation/close. UI resources and display parsing remain
+native pending the production-matched Kotlin UI slice.
+
+Subsequent #24 layers own process-death verification, shared audio cleanup, listener grants
 for both native and RN identities, monitoring/boot/permission/overlay restrictions
 and Kotlin replacement of remaining bridges. Shared `ActionReceiver`, manifest
 and foreground plumbing need #25 coordination. Target stays 33 / compile37 until
