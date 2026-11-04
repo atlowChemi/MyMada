@@ -38,6 +38,7 @@ class ChatIntegrationTest {
         var listens = 0
         var removals = 0
         var sends = 0
+        var renames = 0
         var identity: String? = null
         lateinit var changed: (String, Any?) -> Unit
         lateinit var failed: () -> Unit
@@ -47,7 +48,63 @@ class ChatIntegrationTest {
             return { removals++ }
         }
         override fun send(identity: String, name: String, text: String) = write.task.also { assertEquals(this.identity, identity); sends++ }
-        override fun name(identity: String, name: String) = rename.task.also { assertEquals(this.identity, identity) }
+        override fun name(identity: String, name: String) = rename.task.also { assertEquals(this.identity, identity); renames++ }
+    }
+    @Test fun keyboardKeepsHeaderAndWholeSendVisibleWithoutWrites() {
+        val backend = Backend()
+        context.getSharedPreferences("Settings", 0).edit().putString("UserName", "Fixture Name").commit()
+        main { LocalHelper.setLocale(context, InstrumentationRegistry.getArguments().getString("captureLanguage") ?: "en") }
+        val callback = ActivityLifecycleCallback { activity, stage ->
+            if (activity is contactChatActivity && stage == Stage.PRE_ON_CREATE)
+                ViewModelProvider(activity)[ChatModel::class.java].backend = backend
+        }
+        main { ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(callback) }
+        try {
+            ActivityScenario.launch(contactChatActivity::class.java).use { scenario ->
+                main { backend.token.setResult("offline-keyboard-fixture") }
+                compose.onNodeWithTag("chat-dialog-confirm").performClick()
+                compose.onNodeWithTag("chat-draft").performTextReplacement("Pending fixture")
+                fun checkKeyboard() {
+                    compose.onNodeWithTag("chat-draft").performClick()
+                    compose.waitUntil(5000) {
+                        var visible = false
+                        scenario.onActivity { visible = androidx.core.view.ViewCompat.getRootWindowInsets(it.window.decorView)
+                            ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == true }
+                        visible
+                    }
+                    compose.waitForIdle()
+                    val send = compose.onNodeWithTag("chat-send").fetchSemanticsNode().boundsInRoot
+                    val name = compose.onNodeWithText(LocalHelper.onAttach(context).getString(R.string.changeName))
+                        .fetchSemanticsNode().boundsInRoot
+                    scenario.onActivity { activity ->
+                        assertTrue("Send must retain its full minimum height, not a clipped semantics sliver",
+                            send.height >= 60 * activity.resources.displayMetrics.density - 1)
+                        val frame = android.graphics.Rect()
+                        activity.window.decorView.getWindowVisibleDisplayFrame(frame)
+                        val location = IntArray(2)
+                        activity.findViewById<android.view.View>(R.id.chat_content).getLocationOnScreen(location)
+                        for (bounds in listOf(send, name)) {
+                            assertTrue("Whole control must remain above IME: $bounds / $frame", bounds.bottom + location[1] <= frame.bottom)
+                            assertTrue("Header must not pan above visible frame", bounds.top + location[1] >= frame.top)
+                            assertTrue(bounds.width > 0 && bounds.height > 0)
+                        }
+                        val toolbar = activity.findViewById<android.view.View>(R.id.toolbar)
+                        toolbar.getLocationOnScreen(location)
+                        assertTrue("Toolbar must remain visible", location[1] >= frame.top && location[1] + toolbar.height <= frame.bottom)
+                    }
+                    capture("keyboard-visible")
+                }
+                checkKeyboard()
+                androidx.test.espresso.Espresso.closeSoftKeyboard()
+                compose.onNodeWithTag("chat-draft").assertTextContains("Pending fixture")
+                capture("keyboard-hidden")
+                scenario.recreate()
+                compose.onNodeWithTag("chat-draft").assertTextContains("Pending fixture")
+                checkKeyboard()
+                assertEquals(0, backend.sends)
+                assertEquals(0, backend.renames)
+            }
+        } finally { main { ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(callback) } }
     }
     @Test fun tokenFailureRetriesAndCachedConversationSurvivesRefresh() {
         val backend = Backend()
