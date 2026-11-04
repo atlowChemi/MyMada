@@ -189,6 +189,7 @@ class ActivationIntegrationTest {
         main { LocalHelper.setLocale(context, language) }
         ActivityScenario.launch(codeRequest::class.java).use { scenario ->
             onView(withText(R.string.ok)).perform(click())
+            closeSoftKeyboard()
             onView(withId(R.id.sendCR)).perform(click())
             scenario.onActivity {
                 assertNotNull(it.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.codeATIL).error)
@@ -196,6 +197,7 @@ class ActivationIntegrationTest {
                 it.findViewById<EditText>(R.id.codeN).setText("Fixture Name")
                 it.findViewById<EditText>(R.id.codeT).setText("A&B#\nשלום")
             }
+            closeSoftKeyboard()
             onView(withId(R.id.sendCR)).perform(click())
             scenario.recreate()
             scenario.onActivity {
