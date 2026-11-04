@@ -17,12 +17,10 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,17 +35,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.play.core.splitinstall.SplitInstallManager;
-import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
-import com.google.android.play.core.splitinstall.SplitInstallRequest;
-import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener;
-import com.google.android.play.core.splitinstall.model.SplitInstallErrorCode;
-import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import atlow.chemi.mymada.fragments.SettingsAdvanced;
 import atlow.chemi.mymada.fragments.SettingsAmpm;
@@ -65,15 +55,8 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
     private MenuItem Detect;
     private Typeface myTypeface;
     private SharedPreferences sp;
-    private int mySessionId = 0;
     private NavigationView navigationView;
     private boolean isDrawerLocked = false;
-    private ProgressBar progressBar;
-    private TextView progressText;
-    private Button posBtn, negBtn;
-    private SplitInstallManager splitInstallManager;
-    private String[] Langs = new String[] {"עברית", "English"},
-            Mokdim = new String[] {"ירושלים","איילון","אשר","גלבוע","דן","ירדן","ירקון","כרמל","לכיש","נגב","שרון","מוקד 4"};
     private static final int REQUEST_PERMISSION_SETTING = 101, OVERLAY_PER_REQ = 345;
     private Fragment settingsNotifications = new SettingsNotifications(), settingsNotifSou = new SettingsNotificationsSounds(),
     settingsAdvanced = new SettingsAdvanced(), settingsAmPm = new SettingsAmpm(), settingsTools = new SettingsTools();
@@ -198,7 +181,7 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
                 detectionBtn(item);
                 return true;
             case R.id.language:
-                CreateLangDialog();
+                atlow.chemi.mymada.settings.SettingsChoiceDialog.show(this, false);
                 return true;
             case R.id.mokedPick:
                 PickMokedDialog();
@@ -233,137 +216,6 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
         else
             super.onBackPressed();
     }
-    private void CreateLangDialog() {
-        String selectedLanguage = Locale.forLanguageTag(LocalHelper.getLanguage(SettingsPage.this)).getLanguage();
-        final int langToPick = selectedLanguage.equals("iw") || selectedLanguage.equals("he") ? 0 : 1;
-        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsPage.this, R.style.AlertDialogStyle);
-        builder.setTitle(getString(R.string.pref_title_lang));
-        builder.setNegativeButton(getString(R.string.ret), (dialog, which) -> dialog.dismiss());
-        builder.setSingleChoiceItems(Langs, langToPick, (dialog, which) -> {
-            String locale = which == 0 ? "iw" : "en";
-            if (langToPick != which) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    SplitInstallStateUpdatedListener listener = state -> {
-                        Log.e("SPLIT MANAGER", "error code is: " + state.errorCode());
-                        Log.e("SPLIT MANAGER", "status code is: " + state.status());
-                        if (state.status() == SplitInstallSessionStatus.FAILED &&
-                                (state.errorCode() == SplitInstallErrorCode.SERVICE_DIED ||
-                                        state.errorCode() == SplitInstallErrorCode.NETWORK_ERROR)) {
-                            // Retry the request.
-                            HideProgressDialog(1);
-                            return;
-                        }
-                        if (state.sessionId() == mySessionId) {
-                            Log.e("SPLIT MANAGER", "status session is: " + state.sessionId());
-                            int totalBytes = (int)state.totalBytesToDownload();
-                            int progress = (int)state.bytesDownloaded();
-                            long percent = (state.totalBytesToDownload() / 100) * state.bytesDownloaded();
-                            switch (state.status()) {
-                                case SplitInstallSessionStatus.DOWNLOADING:
-                                    Log.e("SPLIT MANAGER", "downloading");
-                                    progressBar.setMax(totalBytes);
-                                    progressBar.setProgress(progress);
-                                    progressText.setText(getString(R.string.langLoad, percent + "%"));
-                                    //TODO:Update progress bar.
-                                    break;
-                                case SplitInstallSessionStatus.INSTALLED:
-                                    //Module is downloaded successfully
-                                    progressBar.setMax(1);
-                                    progressBar.setProgress(1);
-                                    HideProgressDialog(0);
-                                    LocalHelper.setLocale(getApplicationContext(), locale);
-                                    break;
-                                case SplitInstallSessionStatus.CANCELED:
-                                case SplitInstallSessionStatus.CANCELING:
-                                case SplitInstallSessionStatus.DOWNLOADED:
-                                case SplitInstallSessionStatus.FAILED:
-                                case SplitInstallSessionStatus.INSTALLING:
-                                case SplitInstallSessionStatus.PENDING:
-                                case SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION:
-                                case SplitInstallSessionStatus.UNKNOWN:
-                                    HideProgressDialog(1);
-                                    break;
-                            }
-                        }
-                    };
-                    splitInstallManager = SplitInstallManagerFactory.create(getApplicationContext());
-                    Set<String> langs = splitInstallManager.getInstalledLanguages();
-                    StringBuilder languages = new StringBuilder();
-                    for (String lng : langs) {
-                        languages.append(lng).append(", ");
-                    }
-                    Log.e("SPLIT MANAGER", "available lang " + languages);
-                    Log.e("SPLIT MANAGER", "requested lang " + locale);
-                    splitInstallManager.registerListener(listener);
-                    SplitInstallRequest request = SplitInstallRequest.newBuilder().addLanguage(Locale.forLanguageTag(locale)).build();
-                    ShowProgressDialog();
-                    splitInstallManager.startInstall(request)
-                            .addOnSuccessListener(sessionId -> mySessionId = sessionId)
-                            .addOnFailureListener(e -> {
-                                HideProgressDialog(0);
-                                Log.e("SPLIT MANAGER", "error");
-                                try {
-                                    Snackbar bar = Snackbar.make(findViewById(android.R.id.content), R.string.langBad, Snackbar.LENGTH_LONG);
-                                    View viewSnk = bar.getView();
-                                    TextView tv = viewSnk.findViewById(com.google.android.material.R.id.snackbar_text);
-                                    tv.setTextColor(Color.WHITE);
-                                    bar.show();
-                                } catch (IllegalArgumentException il) {
-//                                    Crashlytics.logException(il);
-                                }
-                            });
-                    //splitInstallManager.unregisterListener(listener);
-                } else {
-                    LocalHelper.setLocale(getApplicationContext(), locale);
-                    recreate();
-                }
-            }
-            dialog.dismiss();
-        });
-        final AlertDialog langPicker = builder.create();
-        langPicker.setOnShowListener(dialogInterface -> {
-            TextView textView = langPicker.findViewById(android.R.id.title);
-            if (textView != null)
-                textView.setTypeface(myTypeface);
-            Button cancelButton = langPicker.getButton(DialogInterface.BUTTON_NEGATIVE);
-            cancelButton.setTypeface(myTypeface);
-        });
-        langPicker.show();
-    }
-    public void ShowProgressDialog() {
-        AlertDialog.Builder progressDialogBuilder = new AlertDialog.Builder(SettingsPage.this, R.style.AlertDialogStyle);
-        LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        View dialogView = inflater.inflate(R.layout.progress_bar_layout, null);
-        progressDialogBuilder.setView(dialogView).setTitle("מוריד שפה").setCancelable(false)
-                .setNegativeButton(R.string.ret, (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                    if (splitInstallManager != null)
-                        splitInstallManager.cancelInstall(mySessionId);
-                })
-                .setPositiveButton(R.string.apply, (dialogInterface, i) -> recreate());
-        progressBar = dialogView.findViewById(R.id.progressBar2);
-        progressText = dialogView.findViewById(R.id.loadTxt);
-        progressText.setText(getString(R.string.langLoad, "0%"));
-        AlertDialog progDialog = progressDialogBuilder.create();
-        progDialog.show();
-        posBtn = progDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        posBtn.setVisibility(View.GONE);
-        negBtn = progDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-    }
-    public void HideProgressDialog(int type){
-        //worked properly
-        if (type == 0) {
-            progressText.setText(getString(R.string.langLoad, "100%"));
-            if (posBtn != null)
-                posBtn.setVisibility(View.VISIBLE);
-            if (negBtn != null)
-                negBtn.setVisibility(View.GONE);
-        }
-        else if (type == 1) {
-            progressBar.setVisibility(View.GONE);
-            progressText.setText(R.string.langBad);
-        }
-    }
     private void CreateOverlayPermissionDialog() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
@@ -391,19 +243,7 @@ public class SettingsPage extends AppCompatActivity implements NavigationView.On
         }
     }
     private void PickMokedDialog() {
-        final int MokedToPick = sp.getInt("merhav", 0);
-        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsPage.this, R.style.AlertDialogStyle);
-        builder.setTitle(getString(R.string.pref_title_region));
-        builder.setNegativeButton(getString(R.string.ret), (dialog, which) -> dialog.dismiss());
-        builder.setSingleChoiceItems(Mokdim, MokedToPick, (dialog, which) -> {
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putBoolean("pickedMoked", true);
-            editor.putInt("merhav", which);
-            editor.apply();
-            dialog.dismiss();
-        });
-        AlertDialog langPicker = builder.create();
-        langPicker.show();
+        atlow.chemi.mymada.settings.SettingsChoiceDialog.show(this, true);
     }
     @Override
     public boolean onOptionsItemSelected(@NonNull  MenuItem item) {
