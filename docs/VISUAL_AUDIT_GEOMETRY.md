@@ -185,6 +185,12 @@ candidate605..<1252 (6px shorter); API37 native630..<1289 versus634..<1285
 monospace and Applicatio replaces default typefaces with the bundled font via
 reflection. Current sans-serif styles are migration code, not native evidence.
 Metrics investigation continues without a compensating padding adjustment.
+Follow-up read-only trace identifies native DialogTitle fitting: title starts20sp
+and falls back to textAppearanceMedium18sp when ellipsized. Long English fits via
+fallback (53px), while short Hebrew retains20sp (59px API24/65px API37). These
+title-height differences account for the entire6px/8px modal residual. A separate
+native-host-title correction is being validated; no locale-specific sizing is
+included in this primary layer.
 Delay hint/height is a separate follow-up. These gaps remain explicit: this layer
 does not claim complete Settings parity. Missing release/JVM/lint checks are
 recorded in `integration-release-jvm-lints.log`: lint rejected the platform
@@ -197,3 +203,21 @@ on both. Artifacts/hashes/logs are frozen in `integration-appcompat-runtime/`.
 Opened resulting API37 EN Advanced and API24 EN Mode images, retaining the
 aligned row/card and mode presentation. Both integrator devices restored font1.0.
 The owner's earlier matrix remains distinct from these corrected-artifact checks.
+# Delay editor follow-up above #131
+
+Replayed private `b3ac6db9db98a60a9634321b25a43d55ab36e3a2`; `git diff`
+against that commit under `app/` is empty. Native inflated shabat_t using the
+activity theme before creating its alert; restoring that context and gravityStart
+restores aqua hints and field metrics. API35+ locale-preferred minimum line height
+is disabled to match the native target29 EN/HE field height without padding hacks.
+
+Owner's six focused runs cover both APIs, font1/2, EN/HE, overflow, drafts,
+recreation, cancel/OK and volume policy. Reused after source-equivalence check.
+Opened matched API37 HE and API24 EN pairs from
+`settings-measured-parity/pair-delay-final-{5940,5942}-{en,he}.png`.
+Exact native/candidate bounds: API24 y753..<1103, editor108px; API37
+y782..<1137, editor113px. Follow-up details and invalid-reference history are in
+`settings-measured-parity/FOLLOWUP.md`. Hebrew Mode's6px/8px offset is separate.
+Release assembly and both lints passed in `delay-integration-release-lints.log`.
+Owner's verified source tree matches this replay under `app/`; no unchanged
+device matrix was rerun. Earlier private commits and failed captures are retained.

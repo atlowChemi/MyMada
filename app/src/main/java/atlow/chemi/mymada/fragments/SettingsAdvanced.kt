@@ -4,8 +4,10 @@ import android.app.Dialog
 import android.content.Context
 import android.media.AudioManager
 import android.os.Bundle
+import android.os.Build
 import android.text.InputType
 import android.view.LayoutInflater
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
@@ -84,11 +86,15 @@ class SettingsAdvanced : Fragment() {
             }) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     // Keep published floating hint/underline/IME geometry; Compose owns the draft and validation.
-                    AndroidView(factory = { context ->
-                        TextInputLayout(ContextThemeWrapper(context, R.style.AlertDialogStyle)).apply {
+                    AndroidView(factory = {
+                        // Native inflates shabat_t with the activity theme, before creating the dialog.
+                        TextInputLayout(requireActivity()).apply {
                             id = R.id.shabatTil
                             addView(FixedTextInputEditText(this.context, null).apply {
                                 id = R.id.shabatT; setSingleLine(); inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+                                gravity = Gravity.START
+                                // Native target29 does not add the target35 locale minimum line height.
+                                if (Build.VERSION.SDK_INT >= 35) setLocalePreferredLineHeightForMinimumUsed(false)
                                 hint = getString(R.string.pref_title_shabatT)
                                 setText(draft); doAfterTextChanged { draft = it.toString() }
                             })
