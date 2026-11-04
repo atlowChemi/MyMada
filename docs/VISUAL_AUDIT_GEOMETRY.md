@@ -83,3 +83,39 @@ the dialog, so its floating hint/active underline differs from the unfocused
 production background. This is not evidence of a smaller configured body font.
 Normal/large fake-backend screenshots are functional fixtures, not live messages
 or production matched populated-chat evidence.
+
+## Form picker visibility
+
+The initial API24 candidate image does show a clipped label immediately above
+Send. The root is the finite scroll viewport, not a Send overlay: `FormScreen`
+places the weighted scroll column and fixed Send button as siblings. Production
+also clips its last EditText in the initial viewport (API37 bounds
+`[42,1503][1038,1533]`), so initial screenshots alone cannot establish access.
+
+Extended `MedicalPickerTest.realFormOpensCatalogAndRetainsSelectionAcrossSearch`
+to dismiss the keyboard, scroll the semantic picker into view, assert its full
+bottom is above Send, and compare unclipped and clipped heights within one
+physical pixel before opening the catalog and exercising search/selection.
+**8/8 runs passed** across API24/37, EN/HE, font1.0/1.5. All eight screenshots
+`form-access/{5960,5962}-{en,he}-{1.0,1.5}-images/scrolled-{en,he}.png`
+(matching directory/file language) were opened: complete label/button visible,
+separated from Send. This proves semantic activation and visible hit-area
+separation, not a physical TalkBack session. No production layout defect is
+replicated and no application layout change was needed.
+
+The first test compilation used a nonexistent DpRect height property; the
+retained `form-access/test-build.log` records it. The corrected bottom-minus-top
+assertion compiled successfully (`test-build-retry.log`). Existing app builds,
+lints and business tests are reused; only the changed instrumentation APK was
+rebuilt for this test-only layer.
+
+Also opened all eight optimized pairs
+`form-access/pair-{5960,5962}-{en,he}-{1.0,1.5}.png`, with IME hidden and both
+screens swiped to the bottom. Both controls are fully exposed above Send.
+Candidate uses an outlined semantic button rather than production's underlined
+EditText picker; their scroll extents therefore differ. The 1.5 API24 production
+content remains smaller while candidate honors system scaling (already approved).
+These are matched bottom-of-scroll access comparisons, not equal pixel offsets
+or a claim that the initial viewport is fully visible. Font scale was restored
+to 1.0 on both owned emulators after capture; firewall records accompany each
+capture directory.
