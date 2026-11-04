@@ -66,3 +66,32 @@ Paths below are relative to `~/.local/share/opencode/evidence/`.
 Approved differences remain approved: Android font scaling, native Oxygen bounds/
 truncation, contraction observed-absence expiry, vitals ranges, volume writes on OK,
 and #120 SMS policy. They must not be reopened as generic visual blockers.
+
+## Focused correction: information-screen status-bar inset
+
+Ownership traced to shared `ui/ScreenToolbar.kt` (About/Privacy parity #36).
+Both callers use it as a custom Scaffold top bar. Unlike a Material top app bar,
+the custom Row did not consume status-bar insets; target37 edge-to-edge exposes
+that omission. The correction applies `statusBarsPadding()` once in the shared
+toolbar, outside its existing 56dp content/tag, retaining navy background above
+the controls. API24 receives only its remaining insets, avoiding fixed pixel offsets.
+
+Focused `InformationToolbarInsetsTest` checks both installed information screens:
+toolbar screen coordinates must be below the actual OS status-bar inset and its
+content must remain 56dp high. Evidence is retained separately under
+`~/.local/share/opencode/evidence/m2-integration/information-insets/`, including
+original-#121 failure and corrected optimized production comparisons. This fix
+does not resolve or approve the other discrepancies in the table.
+
+Executed results: debug/test/optimized release and both lints passed (2m13s).
+New check fails against frozen #121 on API37 with toolbar top0 overlapping the
+63px status bar; unchanged assertion passes corrected API37 (1.477s) and API24
+(1.287s), exercising both screens each time. No JVM business logic changed;
+the previous 20-test result is reused, not reported as rerun.
+
+All four `information-insets/pair-{en,he}-{about,privacy-offline}.png` images were
+opened and inspected. Corrected toolbar/body vertical alignment now matches
+production. About's English hyphenation remains visible; version text is expected.
+Privacy error layout matches, excluding animated ECG phase and OS clock/icons.
+Corrected local-signed optimized installed SHA256:
+`2b7220417ad6624e94d7060f97c96af6796c9b390c39676d29d6a418998e33f6`.
