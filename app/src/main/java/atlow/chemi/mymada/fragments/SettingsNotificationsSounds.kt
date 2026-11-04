@@ -12,16 +12,20 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.SwitchCompat
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import atlow.chemi.mymada.R
+import atlow.chemi.mymada.settings.*
 
-class SettingsNotificationsSounds : Fragment(R.layout.settings_notifications_sounds) {
+class SettingsNotificationsSounds : Fragment() {
     private val preferences get() = requireContext().getSharedPreferences("Settings", 0)
     private val permission get() = if (Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_AUDIO
         else Manifest.permission.READ_EXTERNAL_STORAGE
@@ -30,68 +34,46 @@ class SettingsNotificationsSounds : Fragment(R.layout.settings_notifications_sou
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().setTitle(R.string.pref_header_sound_and_vib)
-        renderView(view)
     }
 
-    private fun renderView(view: View) {
-        val cut = preferences.getBoolean("cut", false)
-        view.findViewById<View>(R.id.true_cut).visibility = if (cut) View.VISIBLE else View.GONE
-        view.findViewById<View>(R.id.false_cut).visibility = if (cut) View.GONE else View.VISIBLE
-        view.findViewById<View>(R.id.non_critical).apply {
-            visibility = if (preferences.getBoolean("callT6", true) || preferences.getBoolean("callT4", true)) View.VISIBLE else View.GONE
-            (layoutParams as ConstraintLayout.LayoutParams).topToBottom = if (cut) R.id.true_cut else R.id.false_cut
-        }
-        bind(view, 0, intArrayOf(R.id.NvibT_pref, R.id.NsouT_pref, R.id.NappT_pref, R.id.NrinT_pref),
-            intArrayOf(R.id.NvibT, R.id.NsouT, R.id.NappT), intArrayOf(R.id.NvibT_Desc, R.id.NsouT_Desc, R.id.NappT_Desc))
-        bind(view, 1, intArrayOf(R.id.NvibT1_pref, R.id.NsouT1_pref, R.id.NappT1_pref, R.id.NrinT1_pref),
-            intArrayOf(R.id.NvibT1, R.id.NsouT1, R.id.NappT1), intArrayOf(R.id.NvibT1_Desc, R.id.NsouT1_Desc, R.id.NappT1_Desc),
-            R.id.findT1_pref, R.id.findT1, R.id.findT1_Desc, R.string.findT1_on, R.string.findT1_off)
-        bind(view, 2, intArrayOf(R.id.NvibT2_pref, R.id.NsouT2_pref, R.id.NappT2_pref, R.id.NrinT2_pref),
-            intArrayOf(R.id.NvibT2, R.id.NsouT2, R.id.NappT2), intArrayOf(R.id.NvibT2_Desc, R.id.NsouT2_Desc, R.id.NappT2_Desc),
-            R.id.findT2_pref, R.id.findT2, R.id.findT2_Desc, R.string.findT2_on, R.string.findT2_off)
-        bind(view, 3, intArrayOf(R.id.NvibT3_pref, R.id.NsouT3_pref, R.id.NappT3_pref, R.id.NrinT3_pref),
-            intArrayOf(R.id.NvibT3, R.id.NsouT3, R.id.NappT3), intArrayOf(R.id.NvibT3_Desc, R.id.NsouT3_Desc, R.id.NappT3_Desc),
-            R.id.findT3_pref, R.id.findT3, R.id.findT3_Desc, R.string.findT3_on, R.string.findT3_off)
-        bind(view, 4, intArrayOf(R.id.NvibT4_pref, R.id.NsouT4_pref, R.id.NappT4_pref, R.id.NrinT4_pref),
-            intArrayOf(R.id.NvibT4, R.id.NsouT4, R.id.NappT4), intArrayOf(R.id.NvibT4_Desc, R.id.NsouT4_Desc, R.id.NappT4_Desc))
-    }
-
-    private fun bind(view: View, type: Int, rows: IntArray, switches: IntArray, descriptions: IntArray,
-                     callRow: Int = 0, callSwitch: Int = 0, callDescription: Int = 0, callOn: Int = 0, callOff: Int = 0) {
-        val keys = listOf("Nvib", "Nsou", "Napp").map { it + suffix(type) }
-        val on = intArrayOf(R.string.pref_description_vibrate_on, R.string.pref_description_ringtone_on, R.string.pref_description_app_on)
-        val off = intArrayOf(R.string.pref_description_vibrate_off, R.string.pref_description_ringtone_off, R.string.pref_description_app_off)
-        fun render() {
-            val enabled = callRow == 0 || preferences.getBoolean("callT$type", true)
-            val sound = preferences.getBoolean(keys[1], true)
-            val custom = preferences.getBoolean(keys[2], false)
-            for (i in 0..2) {
-                val checked = preferences.getBoolean(keys[i], i != 2)
-                view.findViewById<SwitchCompat>(switches[i]).isChecked = checked
-                view.findViewById<TextView>(descriptions[i]).setText(if (checked) on[i] else off[i])
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?) = settingsContent(R.id.compose_sounds) {
+        val values = preferences.observeSettings()
+        fun checked(key: String, default: Boolean) = values[key] as? Boolean ?: default
+        @Composable fun group(type: Int, heading: Int) {
+            SettingsHeading(heading)
+            val active = type !in 1..3 || checked("callT$type", true)
+            if (type in 1..3) {
+                val titles = intArrayOf(R.string.findT1, R.string.findT2, R.string.findT3)
+                val on = intArrayOf(R.string.findT1_on, R.string.findT2_on, R.string.findT3_on)
+                val off = intArrayOf(R.string.findT1_off, R.string.findT2_off, R.string.findT3_off)
+                SettingsRow("callT$type", titles[type - 1], stringResource(if (active) on[type - 1] else off[type - 1]), active) {
+                    preferences.edit().putBoolean("callT$type", !active).apply()
+                }
             }
-            rows.forEachIndexed { i, id -> view.findViewById<View>(id).apply {
-                visibility = if (enabled) View.VISIBLE else View.GONE
-                isEnabled = when (i) { 2 -> sound; 3 -> sound && custom; else -> true }
-                alpha = if (isEnabled) 1f else 0.4f
-            } }
-            if (callRow != 0) {
-                view.findViewById<SwitchCompat>(callSwitch).isChecked = enabled
-                view.findViewById<TextView>(callDescription).setText(if (enabled) callOn else callOff)
+            if (active) {
+                val sound = checked("Nsou" + suffix(type), true)
+                val custom = checked("Napp" + suffix(type), false)
+                val titles = intArrayOf(R.string.pref_title_vibrate, R.string.pref_title_ringtone, R.string.pref_title_app)
+                val on = intArrayOf(R.string.pref_description_vibrate_on, R.string.pref_description_ringtone_on, R.string.pref_description_app_on)
+                val off = intArrayOf(R.string.pref_description_vibrate_off, R.string.pref_description_ringtone_off, R.string.pref_description_app_off)
+                listOf("Nvib", "Nsou", "Napp").forEachIndexed { index, prefix ->
+                    val key = prefix + suffix(type)
+                    val enabled = checked(key, index != 2)
+                    SettingsRow(key, titles[index], stringResource(if (enabled) on[index] else off[index]), enabled,
+                        enabled = index != 2 || sound, top = if (index == 0) 2 else 3, minLines = if (index == 2) 2 else 1) {
+                        preferences.edit().putBoolean(key, !enabled).apply()
+                        if (index == 2 && !enabled) requestAccess(type)
+                    }
+                }
+                SettingsRow("NuRi" + suffix(type), R.string.pref_title_ringtone, enabled = sound && custom, top = 0, divider = false) { pickRingtone(type) }
             }
         }
-        for (i in 0..2) view.findViewById<View>(rows[i]).setOnClickListener {
-            val checked = !preferences.getBoolean(keys[i], i != 2)
-            preferences.edit().putBoolean(keys[i], checked).apply()
-            render()
-            if (i == 2 && checked) requestAccess(type)
+        SettingsList {
+            if (checked("cut", false)) {
+                group(1, R.string.callT1); group(2, R.string.callT2); group(3, R.string.callT3)
+            } else group(0, R.string.callT)
+            if (checked("callT4", true) || checked("callT6", true)) group(4, R.string.callT4)
         }
-        if (callRow != 0) view.findViewById<View>(callRow).setOnClickListener {
-            preferences.edit().putBoolean("callT$type", !preferences.getBoolean("callT$type", true)).apply()
-            render()
-        }
-        view.findViewById<View>(rows[3]).setOnClickListener { pickRingtone(type) }
-        render()
     }
 
     private fun requestAccess(type: Int) {
@@ -109,7 +91,6 @@ class SettingsNotificationsSounds : Fragment(R.layout.settings_notifications_sou
 
     private fun disableCustom(type: Int) {
         preferences.edit().putBoolean("Napp" + suffix(type), false).apply()
-        view?.let(::renderView)
     }
 
     private fun pickRingtone(type: Int) {
@@ -145,22 +126,17 @@ class SettingsNotificationsSounds : Fragment(R.layout.settings_notifications_sou
     }
 
     class AccessDialog : DialogFragment() {
-        override fun onStart() {
-            super.onStart()
-            val button = (requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
-            (button.parent as View).layoutDirection = resources.configuration.layoutDirection
-        }
-
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val owner = requireParentFragment() as SettingsNotificationsSounds
             val type = requireArguments().getInt("type")
-            return AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
-                .setTitle(R.string.permTitle).setMessage(R.string.permDesSD)
-                .setPositiveButton(R.string.permYes) { _, _ ->
+            return settingsDialog(R.id.compose_audio_access) {
+                SettingsDialogContent(getString(R.string.permTitle), cancel = { owner.disableCustom(type); dismiss() }, confirmLabel = R.string.permYes, confirm = {
                     if (requireArguments().getBoolean("settings")) owner.startActivityForResult(
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", requireContext().packageName, null)), 100 + type)
                     else owner.requestPermissions(arrayOf(owner.permission), 100 + type)
-                }.setNegativeButton(R.string.ret) { _, _ -> owner.disableCustom(type) }.create()
+                    dismiss()
+                }) { SettingsText(getString(R.string.permDesSD), 16, Modifier.padding(horizontal = 24.dp, vertical = 8.dp)) }
+            }
         }
         override fun onCancel(dialog: android.content.DialogInterface) {
             super.onCancel(dialog)

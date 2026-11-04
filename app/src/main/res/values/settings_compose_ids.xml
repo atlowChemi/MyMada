@@ -1,0 +1,10 @@
+<resources>
+    <item name="compose_notifications" type="id" />
+    <item name="compose_sounds" type="id" />
+    <item name="compose_day_night" type="id" />
+    <item name="compose_advanced" type="id" />
+    <item name="compose_mode_dialog" type="id" />
+    <item name="compose_volume_dialog" type="id" />
+    <item name="compose_delay_dialog" type="id" />
+    <item name="compose_audio_access" type="id" />
+</resources>

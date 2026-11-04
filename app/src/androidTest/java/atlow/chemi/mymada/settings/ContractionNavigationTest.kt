@@ -19,7 +19,8 @@ import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.UtillitiesAndTools
 import atlow.chemi.mymada.classes.Contraction
 import atlow.chemi.mymada.helpers.LocalHelper
-import com.google.android.material.navigation.NavigationView
+import atlow.chemi.mymada.selectShellDestination
+import atlow.chemi.mymada.waitForShellDrawer
 import com.google.gson.Gson
 import org.junit.Assert.*
 import org.junit.Rule
@@ -60,9 +61,7 @@ class ContractionNavigationTest {
                     resumed<HomePage> { settings = it.getString(R.string.action_settings) }
                     compose.onNodeWithContentDescription(settings).performClick()
                     await<SettingsPage>()
-                    resumed<SettingsPage> {
-                        it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.language))
-                    }
+                    compose.selectShellDestination(R.id.language)
                     compose.waitUntil(5_000) {
                         var focused = false
                         resumed<SettingsPage> {
@@ -73,6 +72,10 @@ class ContractionNavigationTest {
                     }
                     onView(withText(if (rn) "עברית" else "English")).perform(click())
                     await<SettingsPage>(language)
+                    // The rendered language route retains its drawer through locale recreation.
+                    compose.waitForShellDrawer(true)
+                    Espresso.pressBack()
+                    compose.waitForShellDrawer(false)
                     Espresso.pressBack()
                     await<HomePage>(language)
                     var tools = ""

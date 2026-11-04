@@ -1,5 +1,54 @@
 # Persisted-state bridge (#22)
 
+## Settings child Compose migration
+
+Notifications, sound/vibration, day/night and advanced retain their Fragment
+identities and child FragmentManager restoration. Compose owns their scrolling
+content, rows, conditional groups and app-dialog actions. Small native controls
+retain published switch/radio styling, numeric IME and alarm-volume slider behavior;
+no whole-screen XML is embedded. The existing time and ringtone pickers remain.
+
+Volume and delay drafts live in their DialogFragments and are saved in instance
+state, not preferences. Only OK commits them. Audio permission explanations cancel
+only their own custom-sound group; actual OS grants determine picker access.
+Preference observation refreshes visible Compose rows after permission/picker results.
+
+Child tests use Compose tags matching preference keys (`cut`, `NvibT1`, `sleepDay`,
+`volumeApp`), `mode-N`, and `dialog-confirm` / `dialog-cancel`. They enter via
+`displayFragment` so shared shell tests independently own navigation/back coverage.
+`SettingsNavigationTest` and `ToolsBackNavigationTest` belong to the shell owner.
+
+Font policy (approved 2026-11-01): honor Android font scaling on migrated screens,
+including API24 where production suppresses scaling. The larger candidate text is
+intentional; validate readability, scrolling/reachability, clipping and RTL rather
+than reproducing suppression. Production/candidate visual evidence records both.
+
+Private child validation, 2026-11-01 (API24 `5940`, API37 `5942`):
+
+| Configuration | API24 | API37 |
+| --- | --- | --- |
+| EN/HE portrait, normal font; four child suites + focused draft test | 7/7 | 7/7 |
+| EN/HE portrait, font 1.5 | 6/6 | 6/6 |
+| EN/HE landscape, font 1.5; includes zero delay/volume and cancel/OK | 6/6 | 6/6 |
+| Final themed-radio/time-picker capture follow-up | 2/2 | 2/2 |
+
+Real OS permission request → denial → Compose rationale → OS grant passed on
+both APIs, including disabling only the denied group and retaining its sibling.
+Interrupted/empty permission results, canceled/null ringtone results, restored
+explanations, group visibility and all nine day/night receiver encodings are also
+checked. Use `--no-window-animation` for these instrumentation runs (diagnosis below).
+No app timing workaround was added. API37 System UI ANR and an API24 emulator
+SIGSEGV interrupted initial collection; the final sequential runs above passed.
+
+Debug/test/release APK assembly and lint pass with Crashlytics mapping upload
+excluded. Evidence root: `~/.cache/mymada-m2/evidence/settings-compose/`, with
+`EVIDENCE.md`, exact APK hashes, runner logs, original screenshots, production UI
+dumps, EN/HE comparison sheets and executable offline permission/capture scripts.
+Only owned emulators were used, with IPv4 and IPv6 output rejected. Production
+reference is local-signed native 12822; Play-signing continuity and physical
+audibility are not established by these checks. Shared-shell acceptance is owned
+separately; the four child tests use the retained public Fragment entry point.
+
 Application locale lifetime: API33+ must attach the unwrapped application context
 so LocaleManager can update application resources/default locale. A configuration
 override there pins startup language even when new Activities use the selection.

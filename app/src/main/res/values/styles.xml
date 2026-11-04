@@ -144,6 +144,10 @@
         <item name="android:background">#ececec</item>
     </style>
 
+    <style name="SettingsVolumeSliderTheme" parent="AlertDialogStyle">
+        <item name="seekBarStyle">@style/Widget.AppCompat.SeekBar.Discrete</item>
+    </style>
+
     <style name="ADButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/ColorBlue</item>
         <item name="android:textColor">@color/ColorAqua</item>

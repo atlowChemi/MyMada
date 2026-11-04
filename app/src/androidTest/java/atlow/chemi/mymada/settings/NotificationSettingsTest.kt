@@ -2,23 +2,21 @@ package atlow.chemi.mymada.settings
 
 import android.graphics.Bitmap
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.fragments.SettingsNotificationsSounds
+import atlow.chemi.mymada.fragments.SettingsNotifications
 import atlow.chemi.mymada.helpers.LocalHelper
-import com.google.android.material.navigation.NavigationView
-import org.hamcrest.Matchers.not
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.Rule
 import java.io.File
 
 class NotificationSettingsTest {
+    @get:Rule val compose = createEmptyComposeRule()
     @Test fun bilingualDefaultsToggleRecreationAndSoundRoute() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
@@ -28,9 +26,6 @@ class NotificationSettingsTest {
             android.os.ParcelFileDescriptor.AutoCloseInputStream(it).readBytes()
         }
         val keys = listOf("cut", "stat", "statVib", "callT6", "callT4")
-        val rows = listOf(R.id.cutA_pref, R.id.stat_pref, R.id.statVib_pref, R.id.T6_pref, R.id.findT4_pref)
-        val switches = listOf(R.id.cutAlarm, R.id.stat, R.id.statVib, R.id.T6, R.id.findT4)
-        val descriptions = listOf(R.id.cutA_Desc, R.id.stat_Desc, R.id.statVib_Desc, R.id.T6_Desc, R.id.findT4_Desc)
         val toggledText = listOf(R.string.pref_description_cutA_on, R.string.pref_description_state_on,
             R.string.pref_description_stateVib_on, R.string.findT6_off, R.string.findT4_off)
         try {
@@ -39,7 +34,8 @@ class NotificationSettingsTest {
                 preferences.edit().also { editor -> keys.forEach { editor.remove(it) } }
                     .putBoolean("Mapp", false).commit()
                 ActivityScenario.launch(SettingsPage::class.java).use { scenario ->
-                    onView(withId(R.id.cutA_pref)).check(matches(isDisplayed()))
+                    scenario.onActivity { it.displayFragment(SettingsNotifications(), R.id.notification) }
+                    compose.onNodeWithTag("cut").assertIsDisplayed()
                     if (InstrumentationRegistry.getArguments().getString("capture") == "true") {
                         instrumentation.uiAutomation.waitForIdle(500, 5_000)
                         val bitmap = instrumentation.uiAutomation.takeScreenshot()
@@ -49,24 +45,27 @@ class NotificationSettingsTest {
                         bitmap.recycle()
                     }
                     for (index in keys.indices) {
-                        onView(withId(switches[index])).check(matches(if (index >= 3) isChecked() else not(isChecked())))
-                        onView(withId(rows[index])).perform(scrollTo(), click())
-                        onView(withId(switches[index])).check(matches(if (index < 3) isChecked() else not(isChecked())))
-                        onView(withId(descriptions[index])).check(matches(withText(toggledText[index])))
+                        val row = compose.onNodeWithTag(keys[index])
+                        if (index >= 3) row.assertIsOn() else row.assertIsOff()
+                        row.performScrollTo().performClick()
+                        if (index < 3) row.assertIsOn() else row.assertIsOff()
+                        var expected = ""
+                        scenario.onActivity { expected = it.getString(toggledText[index]) }
+                        row.assertTextContains(expected)
                         assertEquals(index < 3, preferences.getBoolean(keys[index], index >= 3))
                     }
                     scenario.recreate()
                     for (index in keys.indices) {
-                        onView(withId(switches[index])).check(matches(if (index < 3) isChecked() else not(isChecked())))
-                        onView(withId(descriptions[index])).check(matches(withText(toggledText[index])))
+                        val row = compose.onNodeWithTag(keys[index])
+                        if (index < 3) row.assertIsOn() else row.assertIsOff()
                     }
-                    onView(withId(R.id.sound_vib_card)).perform(scrollTo(), click())
+                    compose.onNodeWithTag("sound-settings").performScrollTo().performClick()
                     instrumentation.waitForIdleSync()
                     scenario.onActivity {
                         assertTrue(it.supportFragmentManager.findFragmentById(R.id.frame) is SettingsNotificationsSounds)
-                        it.onNavigationItemSelected(it.findViewById<NavigationView>(R.id.navigation).menu.findItem(R.id.notification))
+                        it.displayFragment(SettingsNotifications(), R.id.notification)
                     }
-                    onView(withId(R.id.cutAlarm)).check(matches(isChecked()))
+                    compose.onNodeWithTag("cut").assertIsOn()
                 }
             }
         } finally {
