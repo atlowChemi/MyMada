@@ -19,6 +19,7 @@ import atlow.chemi.mymada.integrations.ActivationScreen
 import androidx.lifecycle.ViewModelProvider
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.integrations.ActivationModel
+import atlow.chemi.mymada.integrations.IntegrationErrorDialog
 
 class codeC : AppCompatActivity() {
     private lateinit var model: ActivationModel
@@ -32,14 +33,17 @@ class codeC : AppCompatActivity() {
         findViewById<ComposeView>(R.id.activation_content).setContent {
             IntegrationTheme {
                 val state = ui.value
-                ActivationScreen(state.busy) { model.activate(it, null) }
+                ActivationScreen(state.busy) { model.submit(it) }
                 if (state.busy) AlertDialog(onDismissRequest = {}, confirmButton = {}, text = {
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         CircularProgressIndicator()
                         Text(getString(R.string.load))
                     }
                 })
-                if (state.message != 0) AlertDialog(onDismissRequest = {},
+                if (state.message != 0 && !state.activated) IntegrationErrorDialog(getString(state.message, state.code)) {
+                    model.dismiss()
+                }
+                if (state.message != 0 && state.activated) AlertDialog(onDismissRequest = {},
                     text = { Text(getString(state.message, state.code)) }, confirmButton = {
                     TextButton(onClick = {
                         model.dismiss()

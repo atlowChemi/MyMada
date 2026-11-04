@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.integrations.ActivationModel
+import atlow.chemi.mymada.integrations.IntegrationErrorDialog
 import atlow.chemi.mymada.settings.DetectionControls
 
 class codeRequest : AppCompatActivity() {
@@ -38,7 +39,8 @@ class codeRequest : AppCompatActivity() {
                 if (state.busy) androidx.compose.material3.AlertDialog(onDismissRequest = {}, confirmButton = {}, text = {
                     androidx.compose.material3.Text(getString(R.string.load))
                 })
-                if (state.message != 0) androidx.compose.material3.AlertDialog(onDismissRequest = {},
+                if (state.message == R.string.emailBad) IntegrationErrorDialog(getString(state.message)) { model.dismiss() }
+                else if (state.message != 0) androidx.compose.material3.AlertDialog(onDismissRequest = {},
                     text = { androidx.compose.material3.Text(getString(state.message)) }, confirmButton = {
                         androidx.compose.material3.TextButton(onClick = { model.dismiss() }) { androidx.compose.material3.Text(getString(R.string.ok)) }
                     })
