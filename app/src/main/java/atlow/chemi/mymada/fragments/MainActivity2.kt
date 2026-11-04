@@ -1,82 +1,58 @@
 package atlow.chemi.mymada.fragments
 
 import android.app.Dialog
-import android.graphics.Rect
 import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
-import atlow.chemi.mymada.adapters.VolunteerAdapter
 import atlow.chemi.mymada.integrations.DispatchConfirmation
 import atlow.chemi.mymada.integrations.TeamContract
 import atlow.chemi.mymada.integrations.TeamModel
 import com.google.android.material.textfield.TextInputLayout
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import atlow.chemi.mymada.classes.Volunteer
+import atlow.chemi.mymada.integrations.TeamScreen
 
-class MainActivity2 : Fragment(R.layout.activity_main2) {
+class MainActivity2 : Fragment() {
+    private var members by mutableStateOf<List<Volunteer>>(emptyList())
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View =
+        ComposeView(requireContext()).apply {
+            id = R.id.recycler_view
+            if (SettingsPage.isRTL()) rotationY = 180f
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent { MaterialTheme {
+                TeamScreen(members, onEdit = { index ->
+                    if (childFragmentManager.findFragmentByTag("team-member") == null)
+                        MemberDialog().apply { arguments = Bundle().apply { putInt("index", index) } }.show(childFragmentManager, "team-member")
+                }, onDelete = { ViewModelProvider(this@MainActivity2)[TeamModel::class.java].delete(it) }, onPreview = { ambulance ->
+                    if (members.isEmpty()) AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
+                        .setTitle(R.string.err).setMessage(R.string.SendNoNames).setNegativeButton(R.string.ok, null).show()
+                    else {
+                        val region = requireContext().getSharedPreferences("Settings", 0).getInt("merhav", 0)
+                        DispatchConfirmation.show(this@MainActivity2, TeamContract.body(ambulance, region, members))
+                    }
+                })
+            } }
+        }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (SettingsPage.isRTL()) view.rotationY = 180f
-        else view.findViewById<LinearLayout>(R.id.LinBtns).layoutDirection = View.LAYOUT_DIRECTION_LTR
         val model = ViewModelProvider(this)[TeamModel::class.java]
-        val font = Typeface.createFromAsset(requireContext().assets, "fonts/opensanshebrew.ttf")
-        val ambulance = view.findViewById<EditText>(R.id.M2txt1E).apply { typeface = font }
-        val ambulanceLayout = view.findViewById<TextInputLayout>(R.id.M2ambulance).apply { typeface = font }
-        ambulance.doAfterTextChanged { if (!it.isNullOrBlank()) ambulanceLayout.error = null }
-        val explain = view.findViewById<TextView>(R.id.explain).apply { typeface = font }
-        val add = view.findViewById<Button>(R.id.newManNew)
-        (add.background.mutate() as GradientDrawable).setColor(requireContext().getColor(R.color.White))
-        add.setTextColor(requireContext().getColor(R.color.ColorNice))
-        fun showMember(index: Int) {
-            if (childFragmentManager.findFragmentByTag("team-member") == null)
-                MemberDialog().apply { arguments = Bundle().apply { putInt("index", index) } }.show(childFragmentManager, "team-member")
-        }
-        add.setOnClickListener { if (model.members.size < TeamContract.LIMIT) showMember(-1) }
-        val adapter = VolunteerAdapter(::showMember, model::delete)
-        view.findViewById<RecyclerView>(R.id.recycler_view).apply {
-            layoutManager = GridLayoutManager(context, 2)
-            rotationY = 180f
-            itemAnimator = DefaultItemAnimator()
-            this.adapter = adapter
-            val spacing = (10 * resources.displayMetrics.density + .5f).toInt()
-            addItemDecoration(object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(out: Rect, child: View, parent: RecyclerView, state: RecyclerView.State) {
-                    val position = parent.getChildAdapterPosition(child)
-                    if (position < 0) return
-                    val column = position % 2
-                    out.set(spacing - column * spacing / 2, if (position < 2) spacing else 0, (column + 1) * spacing / 2, spacing)
-                }
-            })
-        }
         model.entries.observe(viewLifecycleOwner) {
-            adapter.members = model.members
-            adapter.notifyDataSetChanged()
-            add.visibility = if (adapter.itemCount < TeamContract.LIMIT) View.VISIBLE else View.GONE
-            explain.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
-        }
-        view.findViewById<Button>(R.id.M2btn1ENew).apply {
-            setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_send, 0)
-            setOnClickListener {
-                when {
-                    ambulance.text.toString().isBlank() -> ambulanceLayout.error = getString(R.string.err_amb)
-                    model.members.isEmpty() -> AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
-                        .setTitle(R.string.err).setMessage(R.string.SendNoNames).setNegativeButton(R.string.ok, null).show()
-                    else -> {
-                        val region = requireContext().getSharedPreferences("Settings", 0).getInt("merhav", 0)
-                        DispatchConfirmation.show(this@MainActivity2, TeamContract.body(ambulance.text.toString(), region, model.members))
-                    }
-                }
-            }
+            members = model.members
         }
     }
 
