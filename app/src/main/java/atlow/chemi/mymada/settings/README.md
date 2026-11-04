@@ -58,6 +58,12 @@ tool cannot be disabled, matching native behavior; unknown saved tool keys are r
 `ToolSettingsTest` covers both languages, all selections, the last-tool guard, stored
 unknown keys and recreation/scroll state. Set `capture=true` for comparison PNGs.
 
+Notification switches now use Kotlin view-scoped listeners with the published XML
+layout. No retained Fragment holds obsolete Activity views. Rendering reads defaults
+without writing them; user changes persist the existing `cut`, `stat`, `statVib`,
+`callT6` and `callT4` keys. `NotificationSettingsTest` exercises both locales, defaults,
+all toggles/descriptions, recreation, and the Sound/Vibration navigation route.
+
 `PreferenceMigrationTest` covers typed/RN/malformed/missing values, overflow, empty
 tool selection, preservation and repeated/interrupted-between-file migration.
 `StartupUpgradeTest` is opt-in: run with `startupFixture=seed`, force-stop the app,
