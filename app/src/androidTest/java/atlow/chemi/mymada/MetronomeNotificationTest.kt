@@ -15,6 +15,8 @@ import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import atlow.chemi.mymada.recieversAndServices.MetroService
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -62,10 +64,17 @@ class MetronomeNotificationTest {
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { screen ->
                 awaitState("metronome visible") { toolsResumed() }
                 lateinit var toggle: View
-                screen.onActivity { toggle = it.findViewById(R.id.bpmW) }
+                lateinit var activity: UtillitiesAndTools
+                screen.onActivity { activity = it; toggle = it.findViewById(R.id.bpmW) }
                 // ActivityScenario.onActivity waits for idle; the running clock never idles.
                 instrumentation.runOnMainSync { toggle.performClick() }
                 if (!grantNotifications && Build.VERSION.SDK_INT >= 33) {
+                    awaitState("shared permission prompt") {
+                        val prompt = activity.supportFragmentManager.findFragmentByTag("notification-permission") as? DialogFragment
+                        val dialog = prompt?.dialog as? AlertDialog
+                        if (dialog != null) dialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick()
+                        dialog != null
+                    }
                     awaitState("playback with notification permission denied") { MetroService.running }
                     assertFalse(notifications.areNotificationsEnabled())
                     instrumentation.runOnMainSync { toggle.performClick() }

@@ -1,0 +1,7 @@
+<resources>
+    <string name="notification_permission_allow">Allow notifications</string>
+    <string name="notification_permission_title">Notification permission</string>
+    <string name="notification_permission_explain">Allow notifications to show call alerts and background activity controls.</string>
+    <string name="notification_permission_denied">Notification permission was not granted. You can enable it in system settings and return to the app.</string>
+    <string name="notification_permission_settings">Go to settings</string>
+</resources>
