@@ -38,6 +38,7 @@ class HomePrompt : DialogFragment() {
     override fun onStart() {
         super.onStart()
         val alert = requireDialog() as AlertDialog
+        alert.restoreHomeActionMinimumHeight(requireActivity())
         val font = Typeface.createFromAsset(requireContext().assets, "fonts/opensanshebrew.ttf")
         alert.findViewById<TextView>(android.R.id.message)?.typeface = font
         alert.findViewById<TextView>(android.R.id.title)?.typeface = font
@@ -61,6 +62,31 @@ class HomePrompt : DialogFragment() {
                     putInt("request", request)
                 }
             }.show(activity.supportFragmentManager, "home-prompt")
+        }
+    }
+}
+
+/** Resolve the same native button qualifier as target29, without changing text size or padding. */
+internal fun AlertDialog.restoreHomeActionMinimumHeight(activity: FragmentActivity) {
+    if (android.os.Build.VERSION.SDK_INT < 35) return
+    val metrics = activity.getSystemService(android.view.WindowManager::class.java).currentWindowMetrics
+    val bars = metrics.windowInsets.getInsetsIgnoringVisibility(
+        android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout())
+    val legacy = android.content.res.Configuration(activity.resources.configuration).apply {
+        // Target35 counts system bars in screenHeightDp, selecting AppCompat's taller h720dp minimum.
+        screenHeightDp = ((metrics.bounds.height() - bars.top - bars.bottom) /
+            activity.resources.displayMetrics.density).toInt()
+    }
+    val theme = androidx.appcompat.view.ContextThemeWrapper(
+        activity.createConfigurationContext(legacy), R.style.AlertDialogStyle)
+    val attributes = theme.obtainStyledAttributes(null, intArrayOf(android.R.attr.minHeight),
+        androidx.appcompat.R.attr.buttonBarButtonStyle, 0)
+    val minimum = attributes.getDimensionPixelSize(0, getButton(AlertDialog.BUTTON_POSITIVE).minHeight)
+    attributes.recycle()
+    for (which in intArrayOf(AlertDialog.BUTTON_POSITIVE, AlertDialog.BUTTON_NEGATIVE)) {
+        getButton(which)?.apply {
+            minHeight = minimum
+            minimumHeight = minimum
         }
     }
 }

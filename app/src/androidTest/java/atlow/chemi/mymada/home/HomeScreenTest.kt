@@ -76,6 +76,61 @@ class HomeScreenTest {
     @After fun restoreFontScale() { shell("settings put system font_scale 1.0") }
 
     @Test fun englishNavigationBackAndRecreation() = verifyHome("en", 1f)
+
+    @Test fun homePromptActionsKeepNativeMinimumAfterRecreationAndFontScaling() {
+        for ((language, scale) in listOf("en" to 1f, "he" to 1.5f)) {
+            prepare(language, scale)
+            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+                for (kind in listOf("privacy", "test", "contact")) {
+                    scenario.onActivity { activity ->
+                        if (kind == "privacy") HomePrompt.show(activity, R.string.privacyMsg, 0,
+                            R.string.title_activity_privacy, android.content.Intent(activity, PrivacyActivity::class.java), false, 0)
+                        else HomeActions.ActionPrompt.show(activity, kind)
+                        activity.supportFragmentManager.executePendingTransactions()
+                    }
+                    repeat(2) { pass ->
+                        if (pass == 1) scenario.recreate()
+                        waitForPromptFocus(scenario)
+                        scenario.onActivity { activity ->
+                            val alert = activity.supportFragmentManager.fragments
+                                .filterIsInstance<androidx.fragment.app.DialogFragment>().single()
+                                .requireDialog() as androidx.appcompat.app.AlertDialog
+                            // Independent reference: inflate the native button style in the pre-edge-to-edge viewport.
+                            val config = android.content.res.Configuration(activity.resources.configuration)
+                            if (android.os.Build.VERSION.SDK_INT >= 35) {
+                                val decor = activity.window.decorView
+                                val bars = ViewCompat.getRootWindowInsets(decor)!!.getInsetsIgnoringVisibility(
+                                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                                config.screenHeightDp = ((decor.height - bars.top - bars.bottom) /
+                                    activity.resources.displayMetrics.density).toInt()
+                            }
+                            val theme = androidx.appcompat.view.ContextThemeWrapper(
+                                activity.createConfigurationContext(config), R.style.AlertDialogStyle)
+                            val reference = androidx.appcompat.widget.AppCompatButton(theme, null,
+                                androidx.appcompat.R.attr.buttonBarButtonStyle)
+                            for (which in intArrayOf(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE,
+                                androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)) {
+                                val button = alert.getButton(which)
+                                assertEquals(reference.minHeight, button.minHeight)
+                                assertEquals(reference.minimumHeight, button.minimumHeight)
+                                assertTrue(button.height >= button.minHeight)
+                                assertTrue(button.isShown)
+                                assertTrue(button.isClickable)
+                            }
+                            assertEquals(scale, alert.context.resources.configuration.fontScale, .01f)
+                        }
+                    }
+                    // Dismiss without navigating or emitting a test call; callbacks/order remain covered above.
+                    scenario.onActivity { activity ->
+                        activity.supportFragmentManager.fragments
+                            .filterIsInstance<androidx.fragment.app.DialogFragment>().single().dismiss()
+                        activity.supportFragmentManager.executePendingTransactions()
+                    }
+                    waitForHomeFocus(scenario)
+                }
+            }
+        }
+    }
     @Test fun hebrewRtlLargeTextNavigationBackAndRecreation() = verifyHome("he", 1.5f)
 
     @Test fun testAndContactPromptsRestoreTheirActionsAcrossRecreation() {

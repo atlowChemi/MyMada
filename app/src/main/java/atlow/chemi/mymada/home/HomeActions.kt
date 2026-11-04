@@ -89,6 +89,7 @@ class HomeActions(private val activity: FragmentActivity) {
         override fun onStart() {
             super.onStart()
             val dialog = requireDialog() as AlertDialog
+            dialog.restoreHomeActionMinimumHeight(requireActivity())
             val font = Typeface.createFromAsset(requireContext().assets, "fonts/opensanshebrew.ttf")
             dialog.findViewById<TextView>(android.R.id.message)?.typeface = font
             dialog.findViewById<TextView>(android.R.id.title)?.typeface = font
