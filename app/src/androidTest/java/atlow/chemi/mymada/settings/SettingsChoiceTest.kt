@@ -32,6 +32,11 @@ class SettingsChoiceTest {
             for (region in listOf(true, false)) {
                 scenario.onActivity { SettingsChoiceDialog.show(it, region) }
                 scenario.recreate()
+                if (!region && android.os.Build.VERSION.SDK_INT >= 33) onView(withText("English"))
+                    .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).check { view, error ->
+                        if (error != null) throw error
+                        assertFalse((view as android.widget.TextView).isFallbackLineSpacing)
+                    }
                 onView(androidx.test.espresso.matcher.ViewMatchers.withId(androidx.appcompat.R.id.alertTitle))
                     .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).check { view, error ->
                         if (error != null) throw error
