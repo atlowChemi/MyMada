@@ -62,6 +62,12 @@ class ActivationModel(application: Application) : AndroidViewModel(application) 
         activate(entry.first, entry.second)
     }
 
+    fun submit(code: String) {
+        if (state.value?.busy == true) return
+        if (code.length < 4) state.value = State(message = R.string.activationCodeIncomplete)
+        else activate(code, null)
+    }
+
     fun activate(code: String?, suppliedKey: String?) {
         if (state.value?.busy == true) return
         val key = suppliedKey?.takeIf { it.isNotEmpty() } ?: preferences.getString(ActivationContract.KEY, "").orEmpty()
