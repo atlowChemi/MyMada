@@ -144,6 +144,15 @@
         <item name="android:background">#ececec</item>
     </style>
 
+    <style name="SettingsModeDialogTheme" parent="AlertDialogStyle">
+        <item name="android:windowTitleStyle">@style/SettingsModeDialogTitle</item>
+    </style>
+
+    <style name="SettingsModeDialogTitle" parent="RtlOverlay.DialogWindowTitle.AppCompat">
+        <item name="fontFamily">@font/opensans_hebrew</item>
+        <item name="android:fontFamily">@font/opensans_hebrew</item>
+    </style>
+
     <style name="SettingsVolumeSliderTheme" parent="AlertDialogStyle">
         <item name="seekBarStyle">@style/Widget.AppCompat.SeekBar.Discrete</item>
     </style>

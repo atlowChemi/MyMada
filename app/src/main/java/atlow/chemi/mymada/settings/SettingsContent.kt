@@ -49,9 +49,11 @@ internal fun Fragment.settingsContent(id: Int, content: @Composable () -> Unit) 
     setContent(content)
 }
 
-/** Native alert window/insets only; all content, choices and actions are Compose. */
-internal fun DialogFragment.settingsDialog(id: Int, content: @Composable () -> Unit): android.app.Dialog =
-    AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
+/** Native alert window/insets and optional title; choices and actions remain Compose. */
+internal fun DialogFragment.settingsDialog(id: Int, title: String? = null, theme: Int = R.style.AlertDialogStyle,
+    content: @Composable () -> Unit): android.app.Dialog =
+    AlertDialog.Builder(requireContext(), theme)
+        .setTitle(title)
         .setView(settingsContent(id, content)).create()
 
 @Composable internal fun SharedPreferences.observeSettings(): Map<String, *> {

@@ -2,6 +2,9 @@ package atlow.chemi.mymada.fragments
 
 import android.app.Dialog
 import android.os.Bundle
+import android.os.Build
+import android.text.BoringLayout
+import android.widget.TextView
 import android.view.View
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -66,11 +69,27 @@ class SettingsAmpm : Fragment(), TimePickerDialog.OnTimeSetListener {
     }
 
     class ModeDialog : DialogFragment() {
+        override fun onStart() {
+            super.onStart()
+            // AlertController shows this native spacer for a list, but not custom Compose content.
+            requireDialog().findViewById<View>(androidx.appcompat.R.id.titleDividerNoCustom).visibility = View.VISIBLE
+            val title = requireDialog().findViewById<TextView>(androidx.appcompat.R.id.alertTitle)
+            if (Build.VERSION.SDK_INT >= 35) title.setLocalePreferredLineHeightForMinimumUsed(false)
+            if (Build.VERSION.SDK_INT >= 33) {
+                fun updateSpacing() = title.setFallbackLineSpacing(
+                    BoringLayout.isBoring(title.text, title.paint) == null || title.lineCount > 1)
+                // Keep native target29 line boxes without replacing DialogTitle's fitting.
+                updateSpacing()
+                title.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateSpacing() }
+            }
+        }
+
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val night = requireArguments().getBoolean("night")
             val preferences = requireContext().getSharedPreferences("Settings", 0)
-            return settingsDialog(R.id.compose_mode_dialog) {
-                SettingsDialogContent(getString(if (night) R.string.notifNight else R.string.notifDay), { dismiss() }) {
+            return settingsDialog(R.id.compose_mode_dialog, getString(if (night) R.string.notifNight else R.string.notifDay),
+                R.style.SettingsModeDialogTheme) {
+                SettingsDialogContent(cancel = { dismiss() }) {
                     resources.getStringArray(R.array.ampm).forEachIndexed { index, text ->
                         val selected = preferences.getInt(if (night) "sleepNight" else "sleepDay", 0) == index
                         Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("mode-$index")

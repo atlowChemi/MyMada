@@ -64,6 +64,19 @@ class DayNightSettingsTest {
                 compose.onNodeWithTag("sleepDay").performScrollTo().performClick()
                 compose.onNodeWithTag("mode-0").assertIsDisplayed()
                 capture("settings-day-mode-$language")
+                onView(withId(androidx.appcompat.R.id.alertTitle)).inRoot(isDialog()).check(matches(isDisplayed()))
+                scenario.onActivity {
+                    val parent = it.supportFragmentManager.findFragmentById(R.id.frame) as SettingsAmpm
+                    val dialog = parent.childFragmentManager.fragments.filterIsInstance<SettingsAmpm.ModeDialog>().single().requireDialog()
+                    val title = dialog.findViewById<android.widget.TextView>(androidx.appcompat.R.id.alertTitle)
+                    assertEquals(it.getString(R.string.notifDay), title.text.toString())
+                    android.util.Log.i("ModeTitleGeometry", "$language size=${title.textSize} height=${title.height} lines=${title.lineCount} scale=${it.resources.configuration.fontScale}")
+                    if (it.resources.displayMetrics.density == 2.625f && it.resources.configuration.fontScale == 1f) {
+                        val expected = if (language == "en") 53 else if (android.os.Build.VERSION.SDK_INT >= 28) 65 else 59
+                        assertEquals("native12822 title: $language", expected, title.height)
+                    }
+                }
+                compose.onNodeWithTag("dialog-cancel").performScrollTo().assertIsDisplayed()
                 scenario.recreate()
                 compose.onNodeWithTag("mode-1").performScrollTo().performClick()
                 compose.onNodeWithTag("sleepDay").assertTextContains(choices[1])
