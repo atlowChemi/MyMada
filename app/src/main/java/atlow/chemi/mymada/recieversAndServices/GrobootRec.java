@@ -29,6 +29,7 @@ import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.smsRes;
 import atlow.chemi.mymada.calls.CallAlerts;
 import atlow.chemi.mymada.calls.AlertDecision;
+import atlow.chemi.mymada.calls.CallEvent;
 
 
 public class GrobootRec extends BroadcastReceiver {
@@ -52,6 +53,7 @@ public class GrobootRec extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
+        if (intent == null) return;
         final SharedPreferences sp = context.getSharedPreferences("Settings", 0);
         boolean win = sp.getBoolean("win", true);
         boolean not = sp.getBoolean("not", true);
@@ -82,8 +84,6 @@ public class GrobootRec extends BroadcastReceiver {
             string = CallAlerts.suffix(callT);
             if (intent.hasExtra("sourceIntent")) madasApp = intent.getParcelableExtra("sourceIntent");
             Log.d("callT", "t6 is: " + callType);
-            smsRes.newC(text);
-            smsRes.alerT(madasApp);
         }
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
         int hour = now.get(Calendar.HOUR_OF_DAY);
@@ -139,24 +139,14 @@ public class GrobootRec extends BroadcastReceiver {
             }
             /**/
             if (win && (callType || testAp)) {
-                Intent i = new Intent(context, smsRes.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                i.putExtra("notNum", notNum);
-                i.putExtra("loop", sp.getBoolean("loop", false));
-                i.putExtra("callT", callT);
-                context.startActivity(i);
+                context.startActivity(new CallEvent(callT, text, madasApp)
+                        .popupIntent(context, notNum, sp.getBoolean("loop", false)));
             }
             testAp = false;
         }
         else if (!not && win && (callType || testAp)) {
-            Intent i = new Intent(context, smsRes.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-            i.putExtra("notNum", notNum);
-            i.putExtra("loop", sp.getBoolean("loop", false));
-            i.putExtra("callT", callT);
-            context.startActivity(i);
+            context.startActivity(new CallEvent(callT, text, madasApp)
+                    .popupIntent(context, notNum, sp.getBoolean("loop", false)));
         }
     }
     private boolean isCallable(Intent intent) {
