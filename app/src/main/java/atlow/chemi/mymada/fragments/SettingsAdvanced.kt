@@ -99,7 +99,15 @@ class SettingsAdvanced : Fragment() {
                                 setText(draft); doAfterTextChanged { draft = it.toString() }
                             })
                         }
-                    }, update = { it.error = if (invalid) getString(R.string.numberNone) else null },
+                    }, update = {
+                        it.error = if (invalid) getString(R.string.numberNone) else null
+                        it.findViewById<android.widget.TextView>(com.google.android.material.R.id.textinput_error)?.apply {
+                            // Native Material1.0 caption uses the system family and no indicator top gap.
+                            typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL)
+                            val indicator = parent.parent as View
+                            indicator.setPaddingRelative(indicator.paddingStart, 0, indicator.paddingEnd, 0)
+                        }
+                    },
                         modifier = Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 15.dp))
                 }
             }
