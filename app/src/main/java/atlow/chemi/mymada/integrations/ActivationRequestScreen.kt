@@ -40,13 +40,12 @@ fun ActivationRequestScreen(busy: Boolean, confirm: (String, String, String) -> 
                 color = colorResource(R.color.materialGrey600), textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp))
             fields.forEachIndexed { index, value ->
-                TextField(value, { next ->
+                IntegrationField(value, { next ->
                     fields = fields.toMutableList().also { it[index] = next }
                     touched = touched.toMutableList().also { it[index] = true }
                 }, enabled = !busy, singleLine = index != 2, minLines = if (index == 2) 11 else 1,
-                    label = { Text(stringResource(listOf(R.string.from, R.string.name, R.string.note2)[index]), fontFamily = font) },
-                    isError = touched[index] && errors[index] != 0,
-                    supportingText = if (touched[index] && errors[index] != 0) ({ Text(stringResource(errors[index])) }) else null,
+                    label = stringResource(listOf(R.string.from, R.string.name, R.string.note2)[index]),
+                    error = if (touched[index] && errors[index] != 0) stringResource(errors[index]) else null,
                     textStyle = TextStyle(fontFamily = font),
                     keyboardOptions = KeyboardOptions(keyboardType = if (index == 0) KeyboardType.Email else KeyboardType.Text),
                     modifier = Modifier.fillMaxWidth().testTag("activation-request-$index"))

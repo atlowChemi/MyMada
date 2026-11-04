@@ -33,9 +33,8 @@ fun FormScreen(values: List<String>, update: (Int, String) -> Unit, pickCodes: (
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             labels.forEachIndexed { index, label ->
-                TextField(values[index], { update(index, it) }, singleLine = true, label = { Text(stringResource(label), fontFamily = font) },
-                    textStyle = TextStyle(fontFamily = font), isError = submitted && errors[index] != 0,
-                    supportingText = if (submitted && errors[index] != 0) ({ Text(stringResource(errors[index])) }) else null,
+                IntegrationField(values[index], { update(index, it) }, label = stringResource(label),
+                    error = if (submitted && errors[index] != 0) stringResource(errors[index]) else null,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = when (index) {
                         0, 1, 4 -> KeyboardType.Decimal
                         3, 5 -> KeyboardType.Number
@@ -53,9 +52,10 @@ fun FormScreen(values: List<String>, update: (Int, String) -> Unit, pickCodes: (
             if (errors.all { it == 0 }) { keyboard?.hide(); preview(FormContract.body(values)) }
         }, colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.ColorNice)),
             shape = androidx.compose.foundation.shape.RoundedCornerShape(15.dp),
-            modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp).testTag("form-send")) {
-            Text(stringResource(R.string.send), fontFamily = font, fontSize = 20.sp)
-            Spacer(Modifier.width(8.dp))
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
+            modifier = Modifier.fillMaxWidth().padding(start = 9.dp, end = 9.dp, top = 11.dp, bottom = 3.dp).heightIn(min = 68.dp).testTag("form-send")) {
+            Text(stringResource(R.string.send), fontFamily = font, fontSize = 20.sp,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center, modifier = Modifier.weight(1f))
             Icon(painterResource(R.drawable.ic_send), contentDescription = null)
         }
     }

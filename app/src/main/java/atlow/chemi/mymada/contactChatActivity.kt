@@ -92,6 +92,7 @@ class contactChatActivity : AppCompatActivity() {
             super.onCreate(savedInstanceState)
             submitted = savedInstanceState?.getString("submitted")
             isCancelable = arguments?.getBoolean("cancelable") == true
+            setStyle(STYLE_NORMAL, R.style.AlertDialogStyle)
             model = ViewModelProvider(requireActivity())[ChatModel::class.java]
             draft = savedInstanceState?.getString("draft") ?: model.name
             model.state.observe(this) {
