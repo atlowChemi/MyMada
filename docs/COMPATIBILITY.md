@@ -257,6 +257,8 @@ This retained image documents the difference, not a fix or interaction equivalen
   restored fragments own recreation. Chat's lone action is physically right in
   both locales, while text/input remain locale-directed. Resize for IME so header,
   name and the whole Send control remain visible.
+- The native chat-name editor fills the dialog width with a minimum 48dp touch
+  height; empty-field taps and draft editing remain usable across recreation.
 - Dispatch retains 12 region recipient mappings and zero-based `merhav`; invalid
   indices fall back to Jerusalem. Confirmation snapshots region/body across
   recreation. ACTION_VIEW `sms:` recipient and literal `sms_body` are separate;
