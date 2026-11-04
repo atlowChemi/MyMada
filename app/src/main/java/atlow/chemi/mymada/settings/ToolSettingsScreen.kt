@@ -71,9 +71,22 @@ internal fun ToolSettingsScreen(selected: Set<String>, onToggle: (String) -> Uni
 @Composable
 private fun NativeSettingsLabel(label: String, size: Float, color: Int, modifier: Modifier, accessible: Boolean = true) {
     AndroidView(factory = { context ->
-        AppCompatTextView(context).apply {
-            textSize = size
+        object : AppCompatTextView(context) {
+            override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+                if (android.os.Build.VERSION.SDK_INT >= 33) {
+                    val boring = android.text.BoringLayout.isBoring(text, paint)
+                    setFallbackLineSpacing(boring == null || (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED &&
+                        boring.width > MeasureSpec.getSize(widthMeasureSpec) - compoundPaddingLeft - compoundPaddingRight))
+                }
+                super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+            }
+        }.apply {
+            // XML sp dimensions round to pixels before TextView measures the native labels.
+            setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, kotlin.math.round(
+                android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP, size, resources.displayMetrics)))
             typeface = Typeface.createFromAsset(context.assets, "fonts/opensanshebrew.ttf")
+            // Native target29 does not add target35 locale minimums to these label line boxes.
+            if (android.os.Build.VERSION.SDK_INT >= 35) setLocalePreferredLineHeightForMinimumUsed(false)
             setTextColor(androidx.core.content.ContextCompat.getColor(context, color))
             importantForAccessibility = if (accessible) View.IMPORTANT_FOR_ACCESSIBILITY_YES else View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }
