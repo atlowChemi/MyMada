@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import atlow.chemi.mymada.HomePage
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.permissions.NotificationPermission
+import atlow.chemi.mymada.calls.ListenerAccess
 
 /** Installed native monitor identity and channel/notification IDs stay stable. */
 class SMSMonitorService : Service() {
@@ -61,7 +62,7 @@ class SMSMonitorService : Service() {
 
     companion object {
         private fun enabled(context: Context) = context.getSharedPreferences("Settings", 0).getBoolean("Mapp", false) &&
-            NotificationPermission.granted(context)
+            NotificationPermission.granted(context) && ListenerAccess.selected(context) != null
 
         /** Background callers never open permission UI and never crash on OS start restrictions. */
         @JvmStatic fun start(context: Context) {

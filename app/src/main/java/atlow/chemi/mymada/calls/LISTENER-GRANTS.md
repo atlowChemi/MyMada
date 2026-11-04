@@ -3,7 +3,8 @@
 The native `.NotificationService` and RN v4
 `.recieversAndServices.NotificationService` remain declared with the OS binding
 permission. Both execute the same Kotlin listener; no JS runtime is required.
-Grant checks compare full component names and re-read secure OS state. Rebinding
+Grant checks compare full component names using NotificationManager's grant API
+on API27+, with the secure OS setting fallback on API24–26. Rebinding
 never disables/re-enables components (which can invalidate existing grants).
 
 When both are granted, native is selected deterministically. The other component
@@ -18,7 +19,7 @@ state. An OS or OEM that removes a grant still requires user re-enablement in
 notification-access settings; the application does not grant itself access.
 
 `ListenerAccessTest` exercises native-only, RN-only, both, unrelated-component and
-revoked grants using the emulator's secure setting and restores the original
-value. This is component/grant verification, separate from fresh unpregranted
+revoked grants using the emulator's notification-manager command on API27+ (secure
+setting on API24–26), restoring the original grants. This is separate from fresh unpregranted
 POST_NOTIFICATIONS UI tests. Production-signed in-place upgrade and real reboot
 acceptance are not implied by these checks.

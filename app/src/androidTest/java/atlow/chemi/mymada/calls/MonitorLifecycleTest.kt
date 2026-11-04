@@ -23,6 +23,7 @@ class MonitorLifecycleTest {
     private val context = instrumentation.targetContext
     private val preferences = context.getSharedPreferences("Settings", 0)
     private fun allowNotifications() {
+        assertNotNull("Harness must grant a native/RN listener", ListenerAccess.selected(context))
         if (Build.VERSION.SDK_INT >= 33) ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
             "pm grant ${context.packageName} ${Manifest.permission.POST_NOTIFICATIONS}")).use { it.readBytes() }
     }

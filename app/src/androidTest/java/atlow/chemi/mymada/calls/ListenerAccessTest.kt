@@ -18,7 +18,7 @@ class ListenerAccessTest {
         val count = java.util.concurrent.atomic.AtomicInteger()
         val receiver = object : android.content.BroadcastReceiver() {
             override fun onReceive(context: android.content.Context, intent: android.content.Intent) {
-                if (intent.getStringExtra("pack") == "atlow.mymadaadmin") count.incrementAndGet()
+                if (intent.getStringExtra("pack") == "atlow.mymadaadmin" && intent.getStringExtra("text") == "הודעת צוות בדיקה 412") count.incrementAndGet()
             }
         }
         fun await(predicate: () -> Boolean) {
@@ -68,9 +68,16 @@ class ListenerAccessTest {
             ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(command))
                 .use { it.readBytes() }
         }
-        fun set(value: String?) = shell(if (value.isNullOrEmpty()) "settings delete secure enabled_notification_listeners"
-            else "settings put secure enabled_notification_listeners $value")
         val components = ListenerAccess.components(context)
+        fun set(value: String?) {
+            if (android.os.Build.VERSION.SDK_INT >= 27) {
+                for (component in components) {
+                    val granted = component.flattenToString() in value.orEmpty().split(':')
+                    shell("cmd notification ${if (granted) "allow_listener" else "disallow_listener"} ${component.flattenToString()}")
+                }
+            } else shell(if (value.isNullOrEmpty()) "settings delete secure enabled_notification_listeners"
+                else "settings put secure enabled_notification_listeners $value")
+        }
         try {
             for (component in components) {
                 val info = context.packageManager.getServiceInfo(component, 0)
