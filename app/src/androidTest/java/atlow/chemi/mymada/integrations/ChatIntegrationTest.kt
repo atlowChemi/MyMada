@@ -21,9 +21,13 @@ import atlow.chemi.mymada.helpers.MyFirebaseMessagingService
 import com.google.android.gms.tasks.TaskCompletionSource
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.Rule
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import java.io.File
 
 class ChatIntegrationTest {
+    @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private fun main(block: () -> Unit) { instrumentation.runOnMainSync(block); instrumentation.waitForIdleSync() }
@@ -139,7 +143,7 @@ class ChatIntegrationTest {
             ActivityScenario.launch<contactChatActivity>(intent).use { scenario ->
                 scenario.onActivity { assertEquals(it.getString(R.string.title_activity_contact), it.supportActionBar?.title.toString()) }
                 capture("disclaimer")
-                onView(withText(R.string.ok)).perform(click())
+                compose.onNodeWithTag("chat-dialog-confirm").performClick()
                 main { backend.token.setResult("historical-token") }
                 capture("empty")
                 main {
@@ -156,32 +160,29 @@ class ChatIntegrationTest {
                 lateinit var retained: ChatModel
                 scenario.onActivity {
                     retained = ViewModelProvider(it)[ChatModel::class.java]
-                    it.findViewById<EditText>(R.id.chatT).setText("Pending fixture")
-                    it.findViewById<android.widget.Button>(R.id.sendChat).performClick()
                 }
+                compose.onNodeWithTag("chat-draft").performTextReplacement("Pending fixture")
+                compose.onNodeWithTag("chat-send").performClick()
                 scenario.recreate()
+                compose.onNodeWithTag("chat-draft").assertTextContains("Pending fixture")
                 scenario.onActivity {
                     assertSame(retained, ViewModelProvider(it)[ChatModel::class.java])
-                    assertEquals("Pending fixture", it.findViewById<EditText>(R.id.chatT).text.toString())
                     assertEquals(1, backend.sends); assertEquals(1, backend.listens)
                 }
                 main { backend.write.setResult(null); backend.changed("SeenByAdmin", true) }
+                compose.onNodeWithTag("chat-draft").assert(SemanticsMatcher.expectValue(
+                    androidx.compose.ui.semantics.SemanticsProperties.EditableText, androidx.compose.ui.text.AnnotatedString("")))
+                compose.onNodeWithTag("chat-seen").assertTextEquals(LocalHelper.onAttach(context).getString(R.string.msgSeen))
                 scenario.onActivity {
-                    assertEquals("", it.findViewById<EditText>(R.id.chatT).text.toString())
-                    assertEquals(it.getString(R.string.msgSeen), it.findViewById<TextView>(R.id.msgSeen).text.toString())
                     it.askForName(true)
                 }
                 capture("name")
-                scenario.onActivity {
-                    val dialog = (it.supportFragmentManager.findFragmentByTag("chat-name") as androidx.fragment.app.DialogFragment).requireDialog() as androidx.appcompat.app.AlertDialog
-                    val field = dialog.findViewById<EditText>(R.id.shabatT)!!
-                    field.setText("123")
-                    dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).performClick()
-                    assertEquals(it.getString(R.string.chatNameNum), dialog.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.shabatTil)!!.error.toString())
-                    field.setText("Renamed Fixture")
-                    dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).performClick()
-                    assertEquals("Fixture Name", retained.name)
-                }
+                compose.onNodeWithTag("chat-name-draft").performTextReplacement("123")
+                compose.onNodeWithTag("chat-dialog-confirm").performClick()
+                compose.onNodeWithText(LocalHelper.onAttach(context).getString(R.string.chatNameNum)).assertIsDisplayed()
+                compose.onNodeWithTag("chat-name-draft").performTextReplacement("Renamed Fixture")
+                compose.onNodeWithTag("chat-dialog-confirm").performClick()
+                scenario.onActivity { assertEquals("Fixture Name", retained.name) }
                 scenario.recreate()
                 main { backend.rename.setResult(null) }
                 scenario.onActivity { assertEquals("Renamed Fixture", retained.name) }

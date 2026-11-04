@@ -1,5 +1,13 @@
 # Remaining dispatch contracts (#19 / #26)
 
+## Approved accessibility policy
+
+Maintainer approved Android font scaling across migrated screens instead of
+reproducing production API24's suppression. Font-size differences caused by
+that policy are intentional, not a product blocker. Readability, reachability,
+clipping and RTL still require verification; this does not approve other
+geometry differences or restored-title behavior.
+
 ## Activation request and dialog Compose layer above #106
 
 Tested source `3278850e`: request form, disclaimer/confirmation and request
