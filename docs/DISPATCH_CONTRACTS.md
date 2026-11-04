@@ -97,6 +97,62 @@ navigation landed on MokedPage's default team tab; the corrected run explicitly
 selected Form first, with both hierarchy captures retained. No form/dispatch
 approval was performed. The final documentation commit changes no APK inputs.
 
+## Team state migration
+
+Kotlin replaces MainActivity2, VolunteerAdapter and Volunteer. TeamModel uses
+SavedStateHandle Bundle entries for names/roles; add/edit/delete update one list,
+with four-member and role/name validation in the shared model as well as the UI.
+MemberDialog is a child DialogFragment and saves draft name/role across recreation.
+The adapter owns no Activity and uses current binding positions for edit/delete.
+Deleting the last member restores the empty explanation (native previously left
+it hidden); deleting below four restores Add. Native card layout, colors, seven
+roles, mirrored grid geometry and temporary native SMS body are retained.
+Standard button handling replaces the legacy touch interception, retaining click
+actions and allowing platform accessibility/touch cancellation behavior.
+The owning member dialog restores normal title weight and production right-side
+action order. TeamContractTest locks exact provisional native payloads; runtime
+tests cover model restoration/limits, real add/validation/edit, dialog recreation,
+card retention, remove/add visibility and preview body without SMS approval.
+
+### Private team verification (before Calls restack)
+
+Application source `2bb813a0`; fixture-only update `3020cf0b` closes the IME before
+card capture. Full debug/release/unit/lint build passes in 2m03s (`team-build.log`).
+Final fixtures under `~/.local/share/opencode/evidence/integrations/team-final/`:
+API24 EN 2/2 (3.009s), HE 2/2 (3.389s); API37 EN 2/2 (4.609s), HE 2/2 (4.520s).
+Original keyboard-obscured screenshots remain in `team-2bb813a0/`.
+Signed optimized APK SHA256
+`09d7c635dcfaaef553d28ab6d033077dbe9d9035181052042ec4d579c5fb7a24`
+matches pulled installed bytes on both APIs. Real release Add dialog captures
+were opened; initial API37 Back navigation exited because no IME was present,
+then corrected explicit launch/Add navigation succeeded. No Send approval occurred.
+API37 reports actual page size16384. Owned AVD identities and outbound IPv4/IPv6
+blocking were verified before runtime checks.
+
+Opened production12822 EN Add/card and candidate captures: card geometry/name
+font/overflow placement agree; role tint changes with the selected role as expected.
+Dialog title weight is restored; full-modal geometry/focus still differs and is
+not accepted as pixel-identical. Candidate HE labels are localized. Attempting a
+production HE reference by changing its local `lng` preference produced English
+strings with mirrored actions (`production-add-he.png`); this is a retained
+failed locale setup, not a valid Hebrew reference. Production source remains the
+user-supplied12822 APK (`b08c3d812f4781cfc667edf4240c917350c8083ea91cdb95bc971e0524c09179`).
+SavedStateHandle rehydration and Activity recreation pass; an actual killed-process
+restore is not established by those checks. Calls publication/restack and final
+combined artifact verification remain pending; this team layer stays private.
+
+### Team final append verification above #93
+
+The preceding private results are superseded for publication by exact team-only
+source `e9791abf` above Calls `02368337`. Full build2m11s passes. API24 EN/HE2/2
+(3.095s/3.065s); API37 EN/HE2/2 (4.266s/4.269s). Raw artifacts/screenshots in
+`team-restacked/`, build log `team-restacked-build.log` under the same evidence root.
+Optimized release SHA256
+`04fcf9560225eadee5f0a6ef52dc44f26d3b0e6b2fe8b4d21303954b43eee544`
+matches pulled installed bytes on both APIs; exact optimized Add dialog launches
+captured both APIs. No ongoing build/test remains. This documentation-only commit
+does not alter APK inputs. Full-modal parity/Compose acceptance remains open.
+
 ## Compose accounting
 
 #26 owns its feature-screen Compose conversions as confirmed by the integrator;
