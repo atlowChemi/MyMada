@@ -154,8 +154,8 @@ absent. Retained BLS/ALS/Kuntres files have 137/290/30 pages and cover first/mid
 last, offline rendering and zoom/pan; authorized actual Android Storage download
 evidence is separate and need not be repeated merely because docs move. Do not
 commit PDFs, tokens or authenticated responses. Rendering compatibility is not
-live SDK transport. The deferred viewer difference and public image remain in
-[compatibility](COMPATIBILITY.md#deferred-viewer-presentation--issue-145).
+ live SDK transport. Deferred viewer work is tracked in
+[#145](https://github.com/atlowChemi/MyMada/issues/145).
 
 ## Focused fixture requirements
 
