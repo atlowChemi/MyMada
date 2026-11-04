@@ -24,19 +24,15 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import atlow.chemi.mymada.R;
 import atlow.chemi.mymada.adapters.ContractionAdapter;
 import atlow.chemi.mymada.classes.CircularProgressButton;
 import atlow.chemi.mymada.classes.Contraction;
+import atlow.chemi.mymada.settings.ContractionHistory;
 
 public class ContracTimer extends Fragment {
     private ContractionAdapter adapter;
@@ -47,6 +43,8 @@ public class ContracTimer extends Fragment {
     private CircularProgressButton contractBtn;
     private RecyclerView recyclerView;
     private SharedPreferences sp;
+    private ContractionHistory history;
+    private boolean recoveryPending = false;
     public ContracTimer()    {}
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,39 +53,38 @@ public class ContracTimer extends Fragment {
         if (getActivity() != null)
             getActivity().setTitle(R.string.button_f);
         sp = getActivity().getSharedPreferences("Settings", 0);
+        history = new ContractionHistory(sp);
+        ContractionHistory.Saved saved = history.read();
         if (albumList == null || albumList.isEmpty()) {
             albumList = new ArrayList<>();
             adapter = new ContractionAdapter(albumList, getContext());
             long no = Calendar.getInstance().getTime().getTime();
-            long ol = sp.getLong("contractLong", 0);
-            boolean leesT20M = (no - ol) <= (20 * 60 * 1000);
-            if (!sp.getString("contractList", "").isEmpty() && leesT20M) {
+            if (saved != null && (!saved.getCompleted().isEmpty() || saved.getActive() != null) && history.eligible(no)) {
+                recoveryPending = true;
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
                 dialog.setMessage(getActivity().getResources().getString(R.string.ContracRecover)).setCancelable(false).setPositiveButton(getActivity().getResources().getString(R.string.ok), (dialogInterface, i) -> {
-                    /**/
-                    num = sp.getInt("contarctNum", 0);
-                    end = new Date(sp.getLong("contractLong", 0));
-                    Gson gson = new Gson();
-                    String json = sp.getString("contractList", "");
-                    if (!json.isEmpty()) {
-                        Type type = new TypeToken<List<Contraction>>() {}.getType();
-                        albumList = gson.fromJson(json, type);
+                    recoveryPending = false;
+                    num = saved.getNumber();
+                    albumList = saved.getCompleted();
+                    if (!albumList.isEmpty()) {
+                        Contraction last = albumList.get(albumList.size() - 1);
+                        end = history.getReactNative() ? last.getStart() : last.getEnd();
                     }
-                    /**/
+                    running = saved.getActive() != null;
+                    start = running ? saved.getActive().getStart() : null;
+                    if (running && contractBtn != null) {
+                        contractBtn.setText(R.string.endContract);
+                        contractBtn.startAnimation();
+                        contractBtn.setBackgroundColor(Color.argb(255,218,218,218));
+                    }
                     adapter = new ContractionAdapter(albumList, getActivity());
                     if (recyclerView != null) {
                         recyclerView.setAdapter(adapter);
                     }
                 }).setNegativeButton(getActivity().getResources().getString(R.string.dialog_no), (dialogInterface, i) -> {
                     dialogInterface.dismiss();
-                    SharedPreferences.Editor spe;
-                    if (sp != null) {
-                        spe = sp.edit();
-                        spe.putString("contractList", "");
-                        spe.putInt("contarctNum", 0);
-                        spe.putLong("contractLong", 0);
-                        spe.apply();
-                    }
+                    recoveryPending = false;
+                    history.clear();
                     num = 0;
                     end = null;
                     adapter = new ContractionAdapter(albumList, getActivity());
@@ -113,14 +110,7 @@ public class ContracTimer extends Fragment {
                 alert.show();
             } else {
                 try {
-                    SharedPreferences.Editor spe;
-                    if (sp != null) {
-                        spe = sp.edit();
-                        spe.putString("contractList", "");
-                        spe.putInt("contarctNum", 0);
-                        spe.putLong("contractLong", 0);
-                        spe.apply();
-                    }
+                    if (saved != null) history.clear();
                     num = 0;
                     end = null;
                     adapter = new ContractionAdapter(albumList, getActivity());
@@ -129,14 +119,6 @@ public class ContracTimer extends Fragment {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    SharedPreferences.Editor spe;
-                    if (sp != null) {
-                        spe = sp.edit();
-                        spe.putString("contractList", "");
-                        spe.putInt("contarctNum", 0);
-                        spe.putLong("contractLong", 0);
-                        spe.apply();
-                    }
                     num = 0;
                     end = null;
                     adapter = new ContractionAdapter(albumList, getActivity());
@@ -203,6 +185,7 @@ public class ContracTimer extends Fragment {
                 contractBtn.setBackgroundColor(Color.rgb(255,255,255));
                 Contraction b = new Contraction(++num, start, end, oldEnd);
                 albumList.add(b);
+                if (history.getReactNative()) end = start;
                 adapter.notifyDataSetChanged();
                 recyclerView.smoothScrollToPosition(albumList.size());
             }
@@ -251,19 +234,8 @@ public class ContracTimer extends Fragment {
     }
     @Override
     public void onDestroy() {
-        if (albumList.size() > 0) {
-            Gson gson = new Gson();
-            String json = gson.toJson(albumList);
-            try {
-                SharedPreferences.Editor se = sp.edit();
-                se.putString("contractList", json);
-                se.putInt("contarctNum", num);
-                se.putLong("contractLong", end.getTime());
-                se.apply();
-            }catch (NullPointerException e) {
-//                Crashlytics.log(e.getMessage());
-            }
-        }
+        if (history != null && !recoveryPending && albumList != null)
+            history.save(albumList, running ? start : null, num, System.currentTimeMillis());
         super.onDestroy();
     }
     @Override
@@ -274,19 +246,17 @@ public class ContracTimer extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_delete) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle);
-            if (albumList != null && !albumList.isEmpty()) {
+            if (running || albumList != null && !albumList.isEmpty()) {
                 dialog.setMessage(getActivity().getResources().getString(R.string.ContracDelete)).setCancelable(false)
                         .setPositiveButton(getActivity().getResources().getString(R.string.ok), (dialogInterface, i) -> {
-                            SharedPreferences.Editor spe;
-                            if (sp != null) {
-                                spe = sp.edit();
-                                spe.putString("contractList", "");
-                                spe.putInt("contarctNum", 0);
-                                spe.putLong("contractLong", 0);
-                                spe.apply();
-                            }
+                            history.clear();
                             num = 0;
                             end = null;
+                            start = null;
+                            running = false;
+                            contractBtn.revertAnimation();
+                            contractBtn.setText(R.string.startContract);
+                            contractBtn.setBackgroundColor(Color.WHITE);
                             albumList.clear();
                             if (recyclerView != null) {
                                 recyclerView.setAdapter(adapter);
