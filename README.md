@@ -14,8 +14,10 @@ and [baseline assessment](https://github.com/atlowChemi/MyMada/issues/19).
 Requires JDK 17, Android SDK platform 37 (`platforms;android-37.0`), build-tools
 37.0.0 and platform-tools. Use the checked-in Gradle 9.6.0 wrapper with AGP 9.5.0
 and built-in Kotlin (compiler 2.4.21). Minimum Android is **API 24**, approved by
-the maintainer; compile and target SDK are **37**. Device/behavior and signed-upgrade
-acceptance remain tracked in #27; a target bump alone is not release readiness.
+the maintainer; compile and target SDK are **37**. Device/behavior and local migration
+acceptance remain tracked in #27; actual production-signed upgrade checks are
+explicitly deferred to release readiness #11 while Play account access is locked.
+A target bump alone is not release readiness.
 Java bytecode targets 17; built-in Kotlin inherits that target, so no separate
 `jvmTarget` override is needed. JDK/bytecode versions do not set Android minSdk.
 AGP's [compatibility table](https://developer.android.com/build/releases/agp-9-5-0-release-notes)
