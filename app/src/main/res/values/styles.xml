@@ -157,6 +157,12 @@
         <item name="seekBarStyle">@style/Widget.AppCompat.SeekBar.Discrete</item>
     </style>
 
+    <!-- Native FontsOverride replaced MONOSPACE with this asset; scope its replacement here. -->
+    <style name="SettingsNativeAlertTheme" parent="AlertDialogStyle">
+        <item name="fontFamily">@font/opensans_hebrew</item>
+        <item name="android:fontFamily">@font/opensans_hebrew</item>
+    </style>
+
     <style name="ADButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/ColorBlue</item>
         <item name="android:textColor">@color/ColorAqua</item>
