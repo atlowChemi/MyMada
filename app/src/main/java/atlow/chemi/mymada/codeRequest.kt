@@ -70,6 +70,7 @@ class codeRequest : AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             isCancelable = false
+            setStyle(STYLE_NORMAL, R.style.AlertDialogStyle)
         }
         override fun onCreateView(inflater: android.view.LayoutInflater, container: android.view.ViewGroup?, savedInstanceState: Bundle?): android.view.View =
             androidx.compose.ui.platform.ComposeView(requireContext()).apply {

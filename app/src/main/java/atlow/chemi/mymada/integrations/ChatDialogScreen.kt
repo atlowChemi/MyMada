@@ -16,18 +16,14 @@ import atlow.chemi.mymada.R
 
 @Composable
 fun ChatDialogScreen(editingName: Boolean, draft: String, update: (String) -> Unit, invalid: Boolean, ready: Boolean, confirm: () -> Unit) {
-    Surface(Modifier.testTag(if (editingName) "chat-name-dialog" else "chat-disclaimer-dialog")) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp)) {
-            Text(stringResource(if (editingName) R.string.writeName else R.string.plsNote), fontSize = 20.sp)
-            if (editingName) TextField(draft, update, singleLine = true, label = { Text(stringResource(R.string.name)) },
-                isError = invalid, supportingText = if (invalid) ({ Text(stringResource(if (draft.trim().isEmpty()) R.string.emailNameNone else R.string.chatNameNum)) }) else null,
-                modifier = Modifier.padding(vertical = 16.dp).testTag("chat-name-draft"))
-            else Text(stringResource(R.string.contactMsg), modifier = Modifier.padding(vertical = 16.dp))
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = confirm, enabled = !editingName || ready, modifier = Modifier.testTag("chat-dialog-confirm")) { Text(stringResource(R.string.ok)) }
-                }
-            }
-        }
+    IntegrationDialog(stringResource(if (editingName) R.string.writeName else R.string.plsNote),
+        Modifier.testTag(if (editingName) "chat-name-dialog" else "chat-disclaimer-dialog"), buttons = {
+            TextButton(onClick = confirm, enabled = !editingName || ready, modifier = Modifier.testTag("chat-dialog-confirm")) { Text(stringResource(R.string.ok)) }
+        }) {
+        if (editingName) IntegrationField(draft, update, label = stringResource(R.string.name),
+            error = if (invalid) stringResource(if (draft.trim().isEmpty()) R.string.emailNameNone else R.string.chatNameNum) else null,
+            modifier = Modifier.padding(top = 2.dp, bottom = 14.dp).testTag("chat-name-draft"),
+            textStyle = androidx.compose.ui.text.TextStyle(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif))
+        else Text(stringResource(R.string.contactMsg), modifier = Modifier.padding(horizontal = 24.dp))
     }
 }
