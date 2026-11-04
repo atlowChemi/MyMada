@@ -153,7 +153,47 @@ matches pulled installed bytes on both APIs; exact optimized Add dialog launches
 captured both APIs. No ongoing build/test remains. This documentation-only commit
 does not alter APK inputs. Full-modal parity/Compose acceptance remains open.
 
-## Compose accounting
+### Owning form/picker follow-up
+
+MedicalPickerDialog now owns search and selection in saved dialog state. Its
+child-fragment result updates the form's saved selection; catalog ordering and
+immediate selection semantics remain native. The Java form is a temporary caller
+bridge, not a completed Kotlin/Compose form conversion. The fixture recreates the
+Activity with a filtered selected row, checks restored query/checkbox, dismisses,
+recreates again, then checks both billed and cleared-billing confirmation bodies.
+The stale `yishuv` mode now derives from the current two billing fields on every
+submission; clearing both returns to the native unbilled body. No payload policy
+change is implied. All previews are cancelled without approving SMS.
+
+Application source `8682e810`, final fixture `f35c467e`: full debug/release/unit/lint
+retry passed1m53s. Initial command hit the tool's120s timeout during R8; its raw
+log remains `form-dialog-build.log`, completed retry `form-dialog-build-retry.log`.
+API37 initially selected the Activity root before the asynchronous dialog
+transaction ran; the fixture now executes its pending child transaction before
+Espresso root selection. Raw focus failure retained in `form-dialog-8682e810/`.
+Combined picker/form+team tests in `form-dialog-final/`: API24 EN/HE4/4
+(5.759s/5.575s), API37 EN/HE4/4 (8.629s/8.866s).
+Optimized signed SHA256
+`980480eda35500f98368c7e6dd0a069a7e8994c8f72e7a01990939868ff907ba`
+matches both pulled installed artifacts; real release picker screenshots opened
+on both APIs. API24 release is Hebrew, API37 English. Initial coordinate-based
+navigation selected Custom in RTL; corrected navigation finds the localized tab
+in the hierarchy. Initial hierarchy remains for provenance. Full-modal production
+parity, killed-process restoration and Compose conversion remain acceptance gates.
+
+### Owning picker final append verification above team/#93
+
+Exact combined source `dbdf3376` (same `app/` tree as the final doc-only restack)
+passes full build2m10s in `form-team-restacked-build.log`. Final combined picker/form
+and team runtime: API24 EN/HE4/4 (5.881s/5.341s), API37 EN/HE4/4 (8.569s/9.084s).
+`form-team-restacked/` contains exact APKs, source, tests, release hierarchies and
+screenshots. Optimized signed SHA256
+`ad78ee827c90bc3fa0645737fbb4a6f6eb7e40b450bf6acf92ae52f1c4ef6fde`
+matches both pulled installations; exact release picker launches captured on both.
+All active checks completed before publication; publication does not close the
+explicit remaining UI/Compose/backend gates.
+
+## Remaining Compose accounting
 
 #26 owns its feature-screen Compose conversions as confirmed by the integrator;
 #21 establishes the shared Compose/lifecycle/latest-target foundation. The present
