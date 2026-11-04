@@ -40,7 +40,8 @@ class PlatformSmokeTest {
                 val menu = it.findViewById<NavigationView>(R.id.navigation).menu
                 assertTrue(it.onNavigationItemSelected(menu.findItem(R.id.tools)))
                 it.supportFragmentManager.executePendingTransactions()
-                assertNotNull(it.findViewById<android.view.View>(R.id.metro_pref))
+                assertTrue(it.supportFragmentManager.findFragmentById(R.id.frame)?.view
+                    is androidx.compose.ui.platform.ComposeView)
             }
         }
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { screen ->
