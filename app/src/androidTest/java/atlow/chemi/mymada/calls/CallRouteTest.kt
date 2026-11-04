@@ -183,6 +183,90 @@ class CallRouteTest {
         delivered("תקלה", original)
     }
 
+    @Test fun metadataOnlyAutoSummaryDoesNotCreateCallsButLiveRepeatsStillDo() {
+        val source = pending(81062)
+        val body = "הודעת צוות בדיקת סיכום"
+        instrumentation.runOnMainSync { post(body, source, 81062) }
+        notifications(1)
+        // Phone events 29/34: same summary identity, flags 1794 then 1792, navigation PI only.
+        // The two salted extra names are unknown; synthetic metadata reproduces their guard effect.
+        for (flags in listOf(1794, 1792)) {
+            val summary = NotificationCompat.Builder(context, "source-fixture")
+                .setSmallIcon(R.drawable.ic_siren).setGroup("fixture-autogroup")
+                .setGroupSummary(true).setContentIntent(pending(Int.MAX_VALUE)).build().apply {
+                    this.flags = flags
+                    extras.clear()
+                    extras.putParcelable("android.appInfo", context.applicationInfo)
+                    extras.putBoolean("android.reduced.images", true)
+                    extras.putBoolean("fixture.metadata.one", true)
+                    extras.putInt("fixture.metadata.two", 1)
+                }
+            val posted = StatusBarNotification("com.groboot.mdaemergency", "com.groboot.mdaemergency",
+                Int.MAX_VALUE, "fixture-autogroup", Process.myUid(), Process.myPid(), 0,
+                summary, Process.myUserHandle(), System.currentTimeMillis())
+            instrumentation.runOnMainSync { listener.onNotificationPosted(posted) }
+            val unchanged = notifications(1).single()
+            assertEquals(body, unchanged.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
+            assertEquals(source, unchanged.actions.last().actionIntent)
+        }
+        val retained = notifications(1).single()
+        assertEquals(body, retained.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
+        assertEquals(source, retained.actions.last().actionIntent)
+        instrumentation.runOnMainSync { post(body, source, 81062) }
+        assertTrue(notifications(2).all { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString() == body &&
+            it.actions.last().actionIntent == source })
+    }
+
+    @Test fun renderableSummaryFieldsRetainExistingFallbackPolicy() {
+        val source = pending(82000)
+        val content: List<(Notification) -> Unit> = listOf(
+            { it.extras.putCharSequence(Notification.EXTRA_TITLE, "*אירוע חדש*") },
+            { it.extras.putCharSequence(Notification.EXTRA_TITLE_BIG, "fixture title") },
+            { it.extras.putCharSequence(Notification.EXTRA_SUB_TEXT, "fixture subtext") },
+            { it.extras.putCharSequence(Notification.EXTRA_SUMMARY_TEXT, "fixture summary") },
+            { it.extras.putCharSequenceArray(Notification.EXTRA_TEXT_LINES, arrayOf("fixture line")) },
+            { it.extras.putParcelableArray(Notification.EXTRA_MESSAGES, arrayOf(android.os.Bundle().apply {
+                putCharSequence("text", "fixture message")
+            })) },
+            { it.tickerText = "fixture ticker" },
+            { it.actions = arrayOf(Notification.Action.Builder(R.drawable.ic_siren, "fixture action", source).build()) },
+            { it.contentView = android.widget.RemoteViews(context.packageName, android.R.layout.simple_list_item_1) },
+            { it.bigContentView = android.widget.RemoteViews(context.packageName, android.R.layout.simple_list_item_1) },
+            { it.headsUpContentView = android.widget.RemoteViews(context.packageName, android.R.layout.simple_list_item_1) },
+            { it.fullScreenIntent = source }
+        )
+        content.forEachIndexed { index, populate ->
+            val summary = NotificationCompat.Builder(context, "source-fixture")
+                .setSmallIcon(R.drawable.ic_siren).setGroup("fixture-content").setGroupSummary(true)
+                .setContentIntent(source).build().apply { extras.clear(); populate(this) }
+            instrumentation.runOnMainSync {
+                listener.onNotificationPosted(StatusBarNotification("com.groboot.mdaemergency", "com.groboot.mdaemergency",
+                    82000 + index, null, Process.myUid(), Process.myPid(), 0, summary,
+                    Process.myUserHandle(), System.currentTimeMillis()))
+            }
+            assertEquals(index + 1, notifications(index + 1).count {
+                it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString() == "תקלה" &&
+                    it.actions.last().actionIntent == source
+            })
+        }
+        val empty = NotificationCompat.Builder(context, "source-fixture")
+            .setSmallIcon(R.drawable.ic_siren).setGroup("fixture-content").setGroupSummary(true)
+            .setContentIntent(source).build().apply {
+                extras.clear()
+                extras.putCharSequence(Notification.EXTRA_TITLE, "")
+                extras.putCharSequence(Notification.EXTRA_TEXT, "")
+                extras.putCharSequence(Notification.EXTRA_BIG_TEXT, "")
+                extras.putCharSequenceArray(Notification.EXTRA_TEXT_LINES, arrayOf("", ""))
+                tickerText = ""
+            }
+        instrumentation.runOnMainSync {
+            listener.onNotificationPosted(StatusBarNotification("com.groboot.mdaemergency", "com.groboot.mdaemergency",
+                83000, null, Process.myUid(), Process.myPid(), 0, empty,
+                Process.myUserHandle(), System.currentTimeMillis()))
+        }
+        notifications(content.size)
+    }
+
     @Test fun expandedSummaryKeepsBodyInsteadOfMalformedFallback() {
         instrumentation.runOnMainSync { post(null, pending(44), 44, title = null, expanded = "הודעת צוות סיכום", summary = true) }
         assertEquals("הודעת צוות סיכום", notifications(1).single().extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
