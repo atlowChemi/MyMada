@@ -9,6 +9,10 @@ decisions. [Testing](TESTING.md) distinguishes local behavior from live delivery
 
 - Preserve Activity, Fragment, service, listener, receiver, widget and tile names,
   preference-key spellings and Intent extras. XML/native interop is intentional.
+- The native `MyTileService` is the sole Quick Settings tile. The maintainer
+  confirmed the RN `MetronomeTileService` never shipped and approved its removal;
+  a previously installed development RN tile may disappear on upgrade and require
+  adding the native tile. Widgets and other RN component compatibility remain.
 - `HomePage` remains the launcher. RN `MainReactActivity` and `MadaCallActivity`
   aliases retain historical export behavior without a duplicate launcher icon or
   RN runtime. Home routes retained Dispatch/Form, ContactUs, ActivateCode
