@@ -16,7 +16,7 @@ import atlow.chemi.mymada.R
 
 @Composable
 fun ChatDialogScreen(editingName: Boolean, draft: String, update: (String) -> Unit, invalid: Boolean, ready: Boolean, confirm: () -> Unit) {
-    Surface {
+    Surface(Modifier.testTag(if (editingName) "chat-name-dialog" else "chat-disclaimer-dialog")) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp)) {
             Text(stringResource(if (editingName) R.string.writeName else R.string.plsNote), fontSize = 20.sp)
             if (editingName) TextField(draft, update, singleLine = true, label = { Text(stringResource(R.string.name)) },
