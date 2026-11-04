@@ -52,8 +52,34 @@ Keyboard-mismatched initial API24 pairs remain retained but are excluded from
 geometry acceptance. Recaptures dismiss only a visible IME before comparison.
 
 Activation underline placement and submit sizing, dialog widths and dispatch
-field pitch are corrected. The form's medical-code picker remains reachable
-instead of reproducing production's clipped initial viewport; full form-screen
-parity is not claimed. Chat background controls prompted the subsequent card
+field pitch are corrected. The form's medical-code picker is clipped to a sliver
+in the initial API24 viewport above Send; that image does not prove reachability
+or a fully visible control. Scrolled-state verification is required separately.
+Chat background controls prompted the subsequent card
 correction. Live populated-chat/backend and physical-device acceptance remain
 outside these isolated fixtures.
+
+## Chat card follow-up above #127
+
+Restored the native name-card margin, rounding, elevation, 19sp right-aligned
+text, 72dp composer input and rounded aqua send card. The shared field retains
+its 41dp default for activation/dispatch. Existing sequence, scalable text and
+pending-send behavior are retained.
+
+Completed `chat-cards` verification: **60/60 checks**, ten normal-font and five
+large-font checks per EN/HE/API24/API37 combination, including pending-send
+recreation at 1.5. Debug/test/release builds, both lints and 20 JVM tests passed.
+Optimized APK SHA256:
+`f850d8de366565bb961416f140c2560136569413b8e43e2736bbe6f057d8f1ad`.
+These frozen artifacts predate the independent Home commit; Home has its own
+verified artifact and policy evidence, not a claimed re-execution here.
+
+Opened all four `chat-cards/pair-{5960,5962}-{en,he}-chat.png` comparisons
+(production left, IME hidden), and all four large-font candidate
+`chat-cards/{5960,5962}-{en,he}-1.5-chat/empty-{en,he}.png` images (matching
+directory/file language). Card/composer actions remain visible; English name
+text wraps at large font. The API24 background composer retains focus behind
+the dialog, so its floating hint/active underline differs from the unfocused
+production background. This is not evidence of a smaller configured body font.
+Normal/large fake-backend screenshots are functional fixtures, not live messages
+or production matched populated-chat evidence.
