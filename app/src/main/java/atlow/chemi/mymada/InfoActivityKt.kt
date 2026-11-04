@@ -103,7 +103,7 @@ class InfoActivityKt : AppCompatActivity() {
     private fun loadPrivacyAd() {
         // An offline ad request can outlive recreation; do not retain the old Activity/view tree.
         val activity = WeakReference(this)
-        InterstitialAd.load(applicationContext, "ca-app-pub-7600269766434003/4483563620",
+        InterstitialAd.load(applicationContext, getString(R.string.interstitial_ad_unit_id),
             AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
                     activity.get()?.let { if (!it.isDestroyed) it.goToPriv = ad }
