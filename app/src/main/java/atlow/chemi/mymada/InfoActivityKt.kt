@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -47,9 +48,17 @@ class InfoActivityKt : AppCompatActivity() {
         onCreateOptionsMenu(menu)
         setContent {
             LifecycleResumeEffect(Unit) {
-                detecting = getSharedPreferences("Settings", 0).getBoolean("Mapp", false)
-                detect.isChecked = detecting
-                onPauseOrDispose {}
+                val preferences = getSharedPreferences("Settings", 0)
+                fun refresh() {
+                    detecting = preferences.getBoolean("Mapp", false)
+                    atlow.chemi.mymada.settings.DetectionControls.render(detect, detecting)
+                }
+                val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                    if (key == "Mapp") refresh()
+                }
+                preferences.registerOnSharedPreferenceChangeListener(listener)
+                refresh()
+                onPauseOrDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
             }
             MaterialTheme {
                 AboutScreen(detecting, ::finish, {
@@ -130,96 +139,7 @@ class InfoActivityKt : AppCompatActivity() {
                 return true
             }
             R.id.one -> {
-                val s = sp.edit()
-                val contentResolver = applicationContext.contentResolver
-                val enabledNotificationListeners = android.provider.Settings.Secure.getString(contentResolver, "enabled_notification_listeners")
-                val packageName = applicationContext.packageName
-                if (!item.isChecked) {
-                    item.isChecked = true
-                    item.setIcon(R.drawable.ic_detect_on)
-                    /*new*/
-                    val serviceIntent = Intent(this, SMSMonitorService::class.java)
-                    ContextCompat.startForegroundService(this, serviceIntent)
-                    /*end new*/
-                    val test = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                    val activityExists = isCallable(test)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        if (activityExists) {
-                            try {
-                                if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName)) {
-                                    val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                                    builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(resources.getString(R.string.dialog_yes)) { _,_ ->
-                                                val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                                                startActivity(intent)
-                                            }
-                                            .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
-                                    val alert = builder.create()
-                                    alert.setOnShowListener {
-                                        val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
-                                        cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
-                                    }
-                                    alert.show()
-                                }
-                                s.putBoolean("Mapp", true)
-                            }
-                            catch (e: ActivityNotFoundException) {
-                                val intent = Intent(this, NotificationService::class.java)
-                                val old = Intent(this, NotificationServiceOld::class.java)
-                                stopService(intent)
-                                startService(old)
-                                if (!NotificationServiceOld.isAccessibilitySettingsOn(applicationContext)) {
-                                    val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                                    builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
-                                            .setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
-                                                val intent1 = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                                                startActivityForResult(intent1, _requestPermissionSetting)
-                                            }
-                                            .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
-                                    val alert = builder.create()
-                                    alert.setOnShowListener {
-                                        val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
-                                        cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
-                                    }
-                                    alert.show()
-                                }
-                                s.putBoolean("Mapp", true)
-                            }
-
-                        }
-                        else {
-                            val intent = Intent(this, NotificationService::class.java)
-                            val old = Intent(this, NotificationServiceOld::class.java)
-                            stopService(intent)
-                            startService(old)
-                            if (!NotificationServiceOld.isAccessibilitySettingsOn(applicationContext)) {
-                                val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                                builder.setMessage(resources.getString(R.string.dialog_help)).setCancelable(false)
-                                        .setPositiveButton(resources.getString(R.string.dialog_yes)) { _, _ ->
-                                            val inten = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                                            startActivityForResult(inten, _requestPermissionSetting)
-                                        }
-                                        .setNegativeButton(resources.getString(R.string.dialog_no)) { dialog, _ -> dialog.cancel() }
-                                val alert = builder.create()
-                                alert.setOnShowListener {
-                                    val cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE)
-                                    cancelButton.setTextColor(ContextCompat.getColor(applicationContext, R.color.ColorPrimary))
-                                }
-                                alert.show()
-                            }
-                            s.putBoolean("Mapp", true)
-                        }
-                    } else {
-                        s.putBoolean("Mapp", true)
-                    }
-                } else {
-                    val serviceIntent = Intent(this, SMSMonitorService::class.java)
-                    stopService(serviceIntent)
-                    item.isChecked = false
-                    s.putBoolean("Mapp", false)
-                    item.setIcon(R.drawable.ic_detect_off)
-                }
-                s.apply()
+                atlow.chemi.mymada.settings.DetectionControls.toggle(this, item)
                 return true
             }
             R.id.action_settings -> {

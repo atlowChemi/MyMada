@@ -310,60 +310,7 @@ public class contactChatActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.one:
-                SharedPreferences.Editor s = sp.edit();
-                ContentResolver contentResolver = getApplicationContext().getContentResolver();
-                String enabledNotificationListeners = android.provider.Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
-                String packageName = getApplicationContext().getPackageName();
-                if (!item.isChecked()) {
-                    item.setChecked(true);
-                    item.setIcon(R.drawable.ic_detect_on);
-                    /*new*/
-                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                    ContextCompat.startForegroundService(this, serviceIntent);
-                    /*end new*/
-                    Intent test = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                    boolean activityExists = isCallable(test);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        if (activityExists) {
-                            try {
-                                if (enabledNotificationListeners == null || !enabledNotificationListeners.contains(packageName))
-                                    PermissionDialog(false);
-                                s.putBoolean("Mapp", true);
-                            }
-                            catch (ActivityNotFoundException e) {
-                                Intent intent = new Intent(this, NotificationService.class);
-                                Intent old = new Intent(this, NotificationServiceOld.class);
-                                stopService(intent);
-                                startService(old);
-                                if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext()))
-                                    PermissionDialog(true);
-
-                                s.putBoolean("Mapp", true);
-                            }
-                        }
-                        else {
-                            Intent intent = new Intent(this, NotificationService.class);
-                            Intent old = new Intent(this, NotificationServiceOld.class);
-                            stopService(intent);
-                            startService(old);
-                            if (!NotificationServiceOld.isAccessibilitySettingsOn(getApplicationContext()))
-                                PermissionDialog(true);
-
-                            s.putBoolean("Mapp", true);
-                        }
-                    }
-                    else {
-                        s.putBoolean("Mapp", true);
-                    }
-                }
-                else {
-                    Intent serviceIntent = new Intent(this, SMSMonitorService.class);
-                    stopService(serviceIntent);
-                    item.setChecked(false);
-                    s.putBoolean("Mapp", false);
-                    item.setIcon(R.drawable.ic_detect_off);
-                }
-                s.apply();
+                atlow.chemi.mymada.settings.DetectionControls.toggle(this, item);
                 return true;
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsPage.class));
