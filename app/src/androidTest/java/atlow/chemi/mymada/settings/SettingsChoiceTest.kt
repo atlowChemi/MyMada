@@ -24,6 +24,32 @@ class SettingsChoiceTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
 
+    @Test fun nativeChoiceFontAndCancelSurviveRecreation() {
+        val preferences = context.getSharedPreferences("Settings", 0)
+        preferences.edit().putBoolean("Mapp", false).putInt("merhav", 4).commit()
+        val language = preferences.getString("lng", null)
+        ActivityScenario.launch(SettingsPage::class.java).use { scenario ->
+            for (region in listOf(true, false)) {
+                scenario.onActivity { SettingsChoiceDialog.show(it, region) }
+                scenario.recreate()
+                onView(androidx.test.espresso.matcher.ViewMatchers.withId(androidx.appcompat.R.id.alertTitle))
+                    .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).check { view, error ->
+                        if (error != null) throw error
+                        val title = view as android.widget.TextView
+                        assertEquals(androidx.core.content.res.ResourcesCompat.getFont(title.context, R.font.opensans_hebrew), title.typeface)
+                    }
+                onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button2))
+                    .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).check { view, error ->
+                        if (error != null) throw error
+                        if (android.os.Build.VERSION.SDK_INT == 37 && view.resources.displayMetrics.density == 2.625f &&
+                            view.resources.configuration.fontScale == 1f) assertEquals(126, view.height)
+                    }.perform(click())
+                assertEquals(4, preferences.getInt("merhav", -1))
+                assertEquals(language, preferences.getString("lng", null))
+            }
+        }
+    }
+
     @Test fun offlineLocaleSelectionRefreshesSettingsAndHomeAndRestoresRegionDialog() {
         val previousLocales = androidx.core.app.LocaleManagerCompat.getApplicationLocales(context).toLanguageTags()
         instrumentation.uiAutomation.executeShellCommand("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow").use {

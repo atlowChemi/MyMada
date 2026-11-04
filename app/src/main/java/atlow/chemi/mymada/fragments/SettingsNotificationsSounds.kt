@@ -15,13 +15,11 @@ import android.view.View
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AlertDialog
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.settings.*
 
@@ -126,17 +124,26 @@ class SettingsNotificationsSounds : Fragment() {
     }
 
     class AccessDialog : DialogFragment() {
+        override fun onStart() {
+            super.onStart()
+            val alert = requireDialog() as AlertDialog
+            // Native message TextAppearance selects the system family, bypassing FontsOverride.
+            alert.findViewById<android.widget.TextView>(android.R.id.message)?.typeface =
+                android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL)
+            restoreNativeAlertTextMetrics(alert)
+        }
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val owner = requireParentFragment() as SettingsNotificationsSounds
             val type = requireArguments().getInt("type")
-            return settingsDialog(R.id.compose_audio_access) {
-                SettingsDialogContent(getString(R.string.permTitle), cancel = { owner.disableCustom(type); dismiss() }, confirmLabel = R.string.permYes, confirm = {
+            return AlertDialog.Builder(requireActivity(), R.style.SettingsNativeAlertTheme)
+                .setTitle(R.string.permTitle)
+                .setMessage(R.string.permDesSD)
+                .setNegativeButton(R.string.ret) { _, _ -> owner.disableCustom(type) }
+                .setPositiveButton(R.string.permYes) { _, _ ->
                     if (requireArguments().getBoolean("settings")) owner.startActivityForResult(
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", requireContext().packageName, null)), 100 + type)
                     else owner.requestPermissions(arrayOf(owner.permission), 100 + type)
-                    dismiss()
-                }) { SettingsText(getString(R.string.permDesSD), 16, Modifier.padding(horizontal = 24.dp, vertical = 8.dp)) }
-            }
+                }.create()
         }
         override fun onCancel(dialog: android.content.DialogInterface) {
             super.onCancel(dialog)

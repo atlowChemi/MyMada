@@ -221,3 +221,32 @@ an extra replacement transaction. `SettingsNavigationTest` covers every destinat
 both locales, recreation, drawer/system Back, and stale detection-menu state. The
 existing notification-listener/accessibility fallback and overlay entry points are
 retained; current-target permissions/services are still #24.
+
+### Native choice and audio-access dialog typography
+
+`SettingsNativeAlertTheme` is scoped to region/language selectors and the shared
+audio rationale/settings-fallback dialog. Native12822 used `android:typeface=3`
+with `FontsOverride` replacing MONOSPACE with `opensanshebrew.ttf`; restoring raw
+monospace alone is incorrect. The scoped resource font has the same SHA256 as the
+published asset (`34f795fc4fecb05884ba42cda7f59446d95a9eb2ea8dc908f53895e7f7e1ad6a`).
+The audio message retains the system sans-serif family from its native message
+appearance, rather than inheriting that title/action font.
+
+The native alert host retains localized actions, selection state and fragment
+restoration. `restoreNativeAlertTextMetrics` restores target29 title line metrics
+and resolves action minimum height using the pre-target35 usable screen height:
+counting system bars selects AppCompat's h720dp qualifier and makes the action row
+16px taller on the measured API37 device. Both TextView and View minimum-height
+constraints must be updated. This remains scoped; no shared alert style changes.
+
+Focused checks: `SettingsChoiceTest.nativeChoiceFontAndCancelSurviveRecreation`
+and `SoundSettingsTest.permissionExplanationRestoresAndCancelChangesOnlyItsOwnGroup`.
+The latter checks the message family and preserves the unrelated custom-audio
+group and ringtone URI when cancelling after recreation.
+
+Private validation: final debug/test assembly and debug/release lint passed;
+API37 focused choice/action-height and audio checks passed. API24 focused checks
+passed before the API35-only action correction. Matched images live in the private
+`settings-measured-parity/native-alerts-final/` archive (API37 EN) and
+`native-alerts-metrics/` (API24 HE); failed intermediate themes are retained in
+separate directories. Image acceptance is tracked independently by the auditor.
