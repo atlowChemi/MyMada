@@ -3,7 +3,6 @@ package atlow.chemi.mymada
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.os.Build
 import android.os.SystemClock
-import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
@@ -36,6 +35,7 @@ class MetronomePermissionTest {
     @Test fun recreatedPromptStartsOnceAfterActualOsDecisionAndStillStops() {
         assumeTrue(Build.VERSION.SDK_INT >= 33)
         val context = instrumentation.targetContext
+        context.getSharedPreferences("Settings", 0).edit().putStringSet("Tools", setOf("metro")).commit()
         assertFalse(NotificationPermission.granted(context))
         val grant = InstrumentationRegistry.getArguments().getString("permissionRoute", "grant") == "grant"
         instrumentation.uiAutomation.serviceInfo = instrumentation.uiAutomation.serviceInfo.apply {
@@ -44,7 +44,7 @@ class MetronomePermissionTest {
         ActivityScenario.launch(UtillitiesAndTools::class.java).use { screen ->
             lateinit var activity: UtillitiesAndTools
             try {
-                screen.onActivity { it.findViewById<View>(R.id.bpmW).performClick() }
+                clickMetronome()
                 screen.recreate()
                 screen.onActivity { activity = it }
                 fun promptButton(button: Int): Boolean {
@@ -68,11 +68,7 @@ class MetronomePermissionTest {
                 if (!grant) await { promptButton(AlertDialog.BUTTON_NEGATIVE) }
                 await { MetroService.running }
                 assertEquals(grant, NotificationPermission.granted(context))
-                instrumentation.runOnMainSync {
-                    val button = activity.findViewById<View>(R.id.bpmW)
-                    assertEquals(activity.getString(R.string.MetroStop), button.contentDescription)
-                    button.performClick()
-                }
+                clickMetronome(running = true)
                 await { !MetroService.running }
             } finally { instrumentation.runOnMainSync { MetroService.stop(context) } }
         }
