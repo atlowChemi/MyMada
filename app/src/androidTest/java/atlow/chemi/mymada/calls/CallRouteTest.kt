@@ -161,7 +161,7 @@ class CallRouteTest {
         } finally { context.unregisterReceiver(receiver) }
     }
 
-    @Test fun failedAudioStillRestoresVolumeOnCloseAndRecreation() {
+    @Test fun failedAudioRestoresVolumeImmediatelyAndAcrossRecreation() {
         val audio = context.getSystemService(AudioManager::class.java)
         val original = audio.getStreamVolume(AudioManager.STREAM_ALARM)
         // API37 enforces a non-zero minimum alarm volume; use a valid distinct level.
@@ -171,9 +171,9 @@ class CallRouteTest {
             .putBoolean("volumeApp", true).putInt("volumeAppNum", changed).commit()
         try {
             ActivityScenario.launch<smsRes>(CallEvent(1, "בדיקת שמע", null).popupIntent(context, 0, false)).use { scenario ->
-                scenario.onActivity { assertEquals(changed, audio.getStreamVolume(AudioManager.STREAM_ALARM)) }
+                scenario.onActivity { assertEquals(original, audio.getStreamVolume(AudioManager.STREAM_ALARM)) }
                 scenario.recreate()
-                scenario.onActivity { assertEquals(changed, audio.getStreamVolume(AudioManager.STREAM_ALARM)) }
+                scenario.onActivity { assertEquals(original, audio.getStreamVolume(AudioManager.STREAM_ALARM)) }
             }
             assertEquals(original, audio.getStreamVolume(AudioManager.STREAM_ALARM))
         } finally { audio.setStreamVolume(AudioManager.STREAM_ALARM, original, 0) }
