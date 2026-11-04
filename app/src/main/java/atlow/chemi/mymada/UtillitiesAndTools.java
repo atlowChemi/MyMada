@@ -67,7 +67,7 @@ public class UtillitiesAndTools extends AppCompatActivity implements NavigationV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         resetTitle();
-        setContentView(R.layout.activity_utillities_and_tools);
+        atlow.chemi.mymada.tools.ToolsWindow.setContentView(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -40,7 +40,7 @@ class SettingsPage : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_utillities_and_tools)
+        atlow.chemi.mymada.tools.ToolsWindow.setContentView(this)
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         drawer = findViewById(R.id.activity_Utils)
