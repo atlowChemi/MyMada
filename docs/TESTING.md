@@ -30,6 +30,38 @@ It proves neither Play signing continuity nor production upgrade compatibility.
 Tests use JUnit4.13.2, AndroidX runner1.7.0/ext-junit1.3.0, Espresso3.7.0,
 Compose BOM2026.09.00 `ui-test-junit4`/debug `ui-test-manifest`, and test DataStore1.1.7.
 
+## CI build
+
+`Android build` runs on pull requests (including forks) and pushes to `master`.
+It uses Ubuntu 24.04, Temurin 17.0.17+10, Android command-line tools 12266719,
+platform `android-37.0`, build-tools 37.0.0 and the checked-in Gradle wrapper.
+Reproduce its build after installing those tools:
+
+```sh
+./gradlew :app:assembleDebug :app:assembleDebugAndroidTest \
+  --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
+```
+
+Download both APKs from the run's `debug-apks-<SHA>` artifact
+(retained seven days). These are disposable debug-signed builds, not releases.
+
+The Google Services plugin reads checked-in `app/google-services.json` to generate
+build resources; no Firebase credentials or GitHub secrets are supplied. Those
+public client identifiers are **production-connected configuration**, not an offline
+backend fixture. CI only compiles/packages: it does not install or launch the app,
+run instrumentation, or contact Firebase through the app. Apply the isolation rules
+below before running downloaded APKs; demo ad IDs alone do not isolate Firebase.
+
+The workflow has read-only repository access, does not persist checkout credentials,
+and never uses `pull_request_target`. Each run can save the Gradle-managed cache;
+GitHub scopes PR caches to their merge ref, allowing retries to reuse them without
+exposing them to `master` or other PRs. Gradle uses the runner's available CPU count
+rather than the local two-worker limit. No signing keys, `gradle.properties` credentials, Android
+user directory or configuration-cache encryption secrets are cached. Superseded
+runs are cancelled. No Gradle tasks are excluded: release signing and Crashlytics
+mapping-upload configuration remain unchanged; this workflow requests debug tasks only.
+Lint, test execution and emulator jobs are separate follow-ups under #98/#99.
+
 ## Isolate an owned emulator and select a test
 
 Use an exclusively owned disposable rootable API24+ emulator. Establish host-side
