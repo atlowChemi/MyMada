@@ -33,7 +33,7 @@ Compose BOM2026.09.00 `ui-test-junit4`/debug `ui-test-manifest`, and test DataSt
 ## CI build
 
 `Android build` runs on pull requests (including forks) and pushes to `master`.
-It uses Ubuntu 24.04, Temurin 17.0.17+10, Android command-line tools 12266719,
+It uses Ubuntu 24.04, Temurin 17.0.17+10, Android command-line tools 16111833 (23.0),
 platform `android-37.0`, build-tools 37.0.0 and the checked-in Gradle wrapper.
 Reproduce its build after installing those tools:
 

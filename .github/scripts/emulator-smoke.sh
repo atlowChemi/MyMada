@@ -4,6 +4,9 @@ set -euo pipefail
 # The hosted runner is disposable. Block the emulator's host sockets before boot,
 # independently of Android firewall rules and app-controlled network settings.
 if [[ ${1:-} == isolate ]]; then
+  if [[ ${EXPECT_PAGE_SIZE:-} ]]; then
+    grep -qx 'target=android-37.0' "$ANDROID_AVD_HOME/test.ini"
+  fi
   # Check after system-image installation, before the action starts its boot wait.
   available_kb=$(df -Pk "$ANDROID_AVD_HOME" | awk 'NR == 2 {print $4}')
   if (( available_kb < 10 * 1024 * 1024 )); then
@@ -20,7 +23,8 @@ if [[ ${1:-} == isolate ]]; then
 exec sudo -n -E setpriv --reuid="$(id -u)" --regid="$(getent group ci-emulator | cut -d: -f3)" --init-groups "$(dirname "$0")/emulator.real" "$@"
 WRAPPER
   chmod +x "$ANDROID_HOME/emulator/emulator"
-  "$ANDROID_HOME/emulator/emulator" -version
+  [[ $(sudo -n -E setpriv --reuid="$(id -u)" --regid="$gid" --init-groups id -g) == "$gid" ]]
+  touch "$RUNNER_TEMP/mymada-isolation-ready"
   exit
 fi
 
@@ -54,6 +58,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
+[[ -f "$RUNNER_TEMP/mymada-isolation-ready" ]]
 adb root
 adb wait-for-device
 [[ $(adb shell id -u | tr -d '\r') == 0 ]]
