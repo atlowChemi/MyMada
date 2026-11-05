@@ -48,8 +48,8 @@ Download both APKs from the run's `debug-apks-<SHA>` artifact
 The Google Services plugin reads checked-in `app/google-services.json` to generate
 build resources; no Firebase credentials or GitHub secrets are supplied. Those
 public client identifiers are **production-connected configuration**, not an offline
-backend fixture. CI only compiles/packages: it does not install or launch the app,
-run instrumentation, or contact Firebase through the app. Apply the isolation rules
+backend fixture. The build job only compiles/packages; the emulator jobs below run
+instrumentation with network isolation. Apply the isolation rules
 below before running downloaded APKs; demo ad IDs alone do not isolate Firebase.
 
 The workflow has read-only repository access, does not persist checkout credentials,
@@ -64,7 +64,7 @@ The next step runs `:app:testDebugUnitTest :app:lintDebug :app:lintRelease` with
 `--continue --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'`. Gradle's
 `--continue` collects independent task failures; it does not turn them into success.
 Tests and lint errors fail the job; existing lint warnings remain warnings (no new
-baseline or blanket suppression). Emulator execution is separate work under #99.
+baseline or blanket suppression). Emulator execution uses separate jobs below.
 
 `mikepenz/action-junit-report` renders JUnit results and failure details in the job
 summary and emits annotations without Checks API writes or PR comments, keeping
@@ -78,7 +78,8 @@ for lint. Lint is not converted to JUnit. No live backend or emulator is used he
 ## CI emulator smoke
 
 After build/tests/lint pass, two disposable Linux runners exercise API24 and API37
-Google APIs x86_64 images (Pixel 2, 2GB RAM, requested 2GB userdata). Emulator
+Google APIs x86_64 images (Pixel 2 profile, 720×1280 at 320dpi, 2GB RAM,
+requested 2GB userdata). Emulator
 versions may enforce a larger userdata minimum: the disposable runner removes unused
 preinstalled NDK/.NET tools and requires 10GiB free after image installation, before
 boot. API24 uses font scale1.0; API37 uses1.3
@@ -96,7 +97,9 @@ is intended only for the disposable GitHub runner.
 
 Animations/spellchecking are disabled, rotation is portrait and font scale explicit;
 tests select EN/HE themselves. The test command times out after ten minutes without
-automatic retries. Two-minute screenrecord segments start before instrumentation;
+automatic retries. APKs are built before boot; Gradle uses one worker and a 2GB heap
+while the emulator runs to reduce resource contention. Gradle owns app installation.
+Two-minute screenrecord segments start before instrumentation;
 on failure, finalized MP4s and a screenshot join bounded logcat, package/activity
 state, selectors, SHA256 APK identities, source SHA and device facts in the seven-day
 `emulator-api<API>-<SHA>` artifact. JUnit XML and HTML results are retained on pass

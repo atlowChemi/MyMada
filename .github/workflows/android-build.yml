@@ -121,6 +121,7 @@ jobs:
           test -x "$ANDROID_HOME/cmdline-tools/16111833/bin/avdmanager"
           rm -rf "${ANDROID_HOME:?}/cmdline-tools/latest"
           ln -s 16111833 "$ANDROID_HOME/cmdline-tools/latest"
+          ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
           sudo chmod 666 /dev/kvm
       - name: Run isolated emulator smoke
         uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0

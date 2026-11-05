@@ -25,6 +25,13 @@ WRAPPER
   chmod +x "$ANDROID_HOME/emulator/emulator"
   [[ $(sudo -n -E setpriv --reuid="$(id -u)" --regid="$gid" --init-groups id -g) == "$gid" ]]
   touch "$RUNNER_TEMP/mymada-isolation-ready"
+  # Keep software rendering/recording modest on the shared two-core runner.
+  sed -i '/^hw\.lcd\.\(width\|height\|density\)=/d' "$ANDROID_AVD_HOME/test.avd/config.ini"
+  cat >> "$ANDROID_AVD_HOME/test.avd/config.ini" <<'DISPLAY'
+hw.lcd.width=720
+hw.lcd.height=1280
+hw.lcd.density=320
+DISPLAY
   exit
 fi
 
@@ -81,7 +88,7 @@ adb shell settings put secure show_ime_with_hard_keyboard 0
 # Build after emulator-runner finishes SDK setup. Let the connected test task own
 # installation: its API24 installer rejects an already installed package.
 ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest \
-  --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
+  --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'
 {
   git rev-parse HEAD
   java -version 2>&1
@@ -102,7 +109,7 @@ selectors='atlow.chemi.mymada.ToolsBackNavigationTest#routesRecreateAndSystemBac
 printf '%s\n' "$selectors" > "$out/selectors.txt"
 timeout --signal=TERM --kill-after=30 600 ./gradlew :app:connectedDebugAndroidTest \
   "-Pandroid.testInstrumentationRunnerArguments.class=$selectors" \
-  --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
+  --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'
 # AGP can return success after a device-install failure without any test results.
 mapfile -t results < <(find app/build/outputs/androidTest-results/connected -name 'TEST-*.xml')
 if (( ${#results[@]} == 0 )) || ! grep -Eq 'tests="[1-9][0-9]*"' "${results[@]}"; then

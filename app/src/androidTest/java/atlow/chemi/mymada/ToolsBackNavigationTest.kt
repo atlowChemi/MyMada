@@ -67,8 +67,6 @@ class ToolsBackNavigationTest {
                     assertEquals(2, it.window.decorView.findViewWithTag<android.widget.Spinner>("apgar-choice-0").selectedItemPosition)
                 }
                 capture("tools-$language-restored")
-                // Temporary #99 negative control, removed after video verification.
-                fail("Intentional emulator failure probe after navigation and recreation")
                 open()
                 destination(R.id.apgarCalc).assertIsSelected()
                 pressBack()
@@ -237,6 +235,10 @@ class ToolsBackNavigationTest {
                 androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1))
                     .perform(androidx.test.espresso.action.ViewActions.click())
                 instrumentation.uiAutomation.waitForIdle(500, 5000)
+                // Idle alone can occur before the external Settings window opens.
+                compose.waitUntil(10000) {
+                    instrumentation.uiAutomation.rootInActiveWindow?.packageName == "com.android.settings"
+                }
                 if (android.os.Build.VERSION.SDK_INT >= 27) shell("cmd notification allow_listener $component")
                 else shell("settings put secure enabled_notification_listeners $component")
                 shell("input keyevent 4")
