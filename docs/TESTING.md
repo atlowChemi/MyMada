@@ -75,6 +75,36 @@ after failures, but not cancellation; an early build failure may leave no report
 Download/unzip the artifact and open `index.html` for tests or `lint-results-*.html`
 for lint. Lint is not converted to JUnit. No live backend or emulator is used here.
 
+## CI emulator smoke
+
+After build/tests/lint pass, two disposable Linux runners exercise API24 and API37
+Google APIs x86_64 images (Pixel 2, 2GB RAM). API24 uses font scale1.0; API37 uses1.3.
+Both run the existing EN/HE tool drawer/recreation/back test, Settings destinations
+and notification-listener permission-completion route. This is a focused smoke set,
+not the full instrumentation suite or a new visual-parity claim.
+
+`.github/scripts/emulator-smoke.sh isolate` runs before emulator boot: emulator
+processes use a dedicated group whose non-loopback IPv4/IPv6 traffic is rejected
+by the host firewall. Android OUTPUT rules are also installed and checked before
+app installation. The Gradle process retains dependency-download access. Never run
+the isolation setup on a shared machine; it wraps the SDK emulator executable and
+is intended only for the disposable GitHub runner.
+
+Animations/spellchecking are disabled, rotation is portrait and font scale explicit;
+tests select EN/HE themselves. The test command times out after ten minutes without
+automatic retries. Two-minute screenrecord segments start before instrumentation;
+on failure, finalized MP4s and a screenshot join bounded logcat, package/activity
+state, selectors, SHA256 APK identities, source SHA and device facts in the seven-day
+`emulator-api<API>-<SHA>` artifact. JUnit XML and HTML results are retained on pass
+and failure and reported through the same read-only JUnit action. Recorder failures
+are logged and do not replace the original test exit status. Runner termination or
+loss of ADB can prevent final capture; cancelled runs do not claim passing results.
+
+Boot/image provisioning logs live in the emulator action step. Device evidence
+records actual page size when `getconf` exists; x86_64 runs are not proof of 16KB
+runtime support. Physical audio/OEM checks and actual-PDF fixture distribution are
+outside this initial smoke slice; their existing #99 requirements remain open.
+
 ## Isolate an owned emulator and select a test
 
 Use an exclusively owned disposable rootable API24+ emulator. Establish host-side
