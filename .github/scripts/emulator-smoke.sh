@@ -4,6 +4,12 @@ set -euo pipefail
 # The hosted runner is disposable. Block the emulator's host sockets before boot,
 # independently of Android firewall rules and app-controlled network settings.
 if [[ ${1:-} == isolate ]]; then
+  # Check after system-image installation, before the action starts its boot wait.
+  available_kb=$(df -Pk "$ANDROID_AVD_HOME" | awk 'NR == 2 {print $4}')
+  if (( available_kb < 10 * 1024 * 1024 )); then
+    echo "Insufficient emulator disk space: ${available_kb}KiB free; require 10GiB" >&2
+    exit 1
+  fi
   sudo groupadd ci-emulator
   gid=$(getent group ci-emulator | cut -d: -f3)
   sudo iptables -I OUTPUT ! -o lo -m owner --gid-owner "$gid" -j REJECT

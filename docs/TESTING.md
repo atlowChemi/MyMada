@@ -78,7 +78,10 @@ for lint. Lint is not converted to JUnit. No live backend or emulator is used he
 ## CI emulator smoke
 
 After build/tests/lint pass, two disposable Linux runners exercise API24 and API37
-Google APIs x86_64 images (Pixel 2, 2GB RAM, 2GB userdata). API24 uses font scale1.0; API37 uses1.3
+Google APIs x86_64 images (Pixel 2, 2GB RAM, requested 2GB userdata). Emulator
+versions may enforce a larger userdata minimum: the disposable runner removes unused
+preinstalled NDK/.NET tools and requires 10GiB free after image installation, before
+boot. API24 uses font scale1.0; API37 uses1.3
 and the `37.0;google_apis_ps16k` image, with a required `PAGE_SIZE=16384` check.
 Both run the existing EN/HE tool drawer/recreation/back test, Settings destinations
 and notification-listener permission-completion route. This is a focused smoke set,

@@ -113,6 +113,10 @@ jobs:
           cache-read-only: false
       - name: Prepare APKs and KVM
         run: |
+          # No NDK compilation or .NET is used by this Android smoke job.
+          # Recent emulators can require >7GB userdata even with disk-size: 2G.
+          sudo rm -rf "${ANDROID_HOME:?}/ndk" /usr/share/dotnet
+          df -h "$HOME"
           ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
           sudo chmod 666 /dev/kvm
       - name: Run isolated emulator smoke
