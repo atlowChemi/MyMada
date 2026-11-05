@@ -38,7 +38,8 @@ cleanup() {
   set +e
   if [[ -n $recorder ]]; then
     adb shell touch /sdcard/ci-stop
-    adb shell 'pkill -2 screenrecord'
+    # shellcheck disable=SC2016 # Resolve and signal the recorder on Android.
+    adb shell 'for pid in $(pidof screenrecord); do kill -2 "$pid"; done'
     timeout 15 tail --pid="$recorder" -f /dev/null
     kill "$recorder" 2>/dev/null
     wait "$recorder" 2>/dev/null
@@ -77,6 +78,10 @@ adb shell settings put system font_scale "${FONT_SCALE:-1.0}"
 adb shell settings put system accelerometer_rotation 0
 adb shell settings put system user_rotation 0
 adb shell settings put secure show_ime_with_hard_keyboard 0
+# Build after emulator-runner finishes SDK setup, using the same environment and
+# signer as connectedDebugAndroidTest. Do not preinstall an earlier cached APK.
+./gradlew :app:assembleDebug :app:assembleDebugAndroidTest \
+  --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
 {
   git rev-parse HEAD
   java -version 2>&1
@@ -100,3 +105,13 @@ printf '%s\n' "$selectors" > "$out/selectors.txt"
 timeout --signal=TERM --kill-after=30 600 ./gradlew :app:connectedDebugAndroidTest \
   "-Pandroid.testInstrumentationRunnerArguments.class=$selectors" \
   --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
+# AGP can return success after a device-install failure without any test results.
+mapfile -t results < <(find app/build/outputs/androidTest-results/connected -name 'TEST-*.xml')
+if (( ${#results[@]} == 0 )) || ! grep -Eq 'tests="[1-9][0-9]*"' "${results[@]}"; then
+  echo 'Instrumentation produced no executed-test JUnit results' >&2
+  exit 1
+fi
+if grep -Eq '<(failure|error)([ >])' "${results[@]}"; then
+  echo 'Instrumentation reported test failures' >&2
+  exit 1
+fi
