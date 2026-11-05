@@ -20,6 +20,11 @@ class SettingsNavigationTest {
     @Test fun eachDestinationRestoresAndDrawerBackDoesNotFinishTheScreen() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
+        // Navigation is independent of the separately tested overlay-permission prompt.
+        android.os.ParcelFileDescriptor.AutoCloseInputStream(
+            instrumentation.uiAutomation.executeShellCommand("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow")
+        ).use { it.readBytes() }
+        assertTrue("Overlay permission prerequisite", android.provider.Settings.canDrawOverlays(context))
         context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false).commit()
         for (language in listOf("en", "he")) {
             instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }

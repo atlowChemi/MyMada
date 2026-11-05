@@ -78,8 +78,8 @@ adb shell settings put system font_scale "${FONT_SCALE:-1.0}"
 adb shell settings put system accelerometer_rotation 0
 adb shell settings put system user_rotation 0
 adb shell settings put secure show_ime_with_hard_keyboard 0
-# Build after emulator-runner finishes SDK setup, using the same environment and
-# signer as connectedDebugAndroidTest. Do not preinstall an earlier cached APK.
+# Build after emulator-runner finishes SDK setup. Let the connected test task own
+# installation: its API24 installer rejects an already installed package.
 ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest \
   --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
 {
@@ -92,8 +92,6 @@ adb shell settings put secure show_ime_with_hard_keyboard 0
   adb shell settings get system font_scale
   sha256sum app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 } > "$out/build-device.txt"
-adb install -r app/build/outputs/apk/debug/app-debug.apk
-adb shell appops set atlow.chemi.mymada.debug SYSTEM_ALERT_WINDOW allow
 adb shell 'rm -f /sdcard/ci-stop; mkdir -p /sdcard/ci-video'
 # Rotating two-minute segments avoid screenrecord's duration ceiling. The bounded
 # test command below limits total recording to ten minutes at 1Mbps.
