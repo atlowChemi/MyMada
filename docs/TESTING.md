@@ -39,7 +39,7 @@ Reproduce its build after installing those tools:
 
 ```sh
 ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest \
-  --no-daemon --build-cache --max-workers=2 '-Dorg.gradle.jvmargs=-Xmx3g'
+  --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
 ```
 
 Download both APKs from the run's `debug-apks-<SHA>` artifact
@@ -53,8 +53,10 @@ run instrumentation, or contact Firebase through the app. Apply the isolation ru
 below before running downloaded APKs; demo ad IDs alone do not isolate Firebase.
 
 The workflow has read-only repository access, does not persist checkout credentials,
-and never uses `pull_request_target`. Only `master` writes the Gradle-managed cache;
-PRs restore it read-only. No signing keys, `gradle.properties` credentials, Android
+and never uses `pull_request_target`. Each run can save the Gradle-managed cache;
+GitHub scopes PR caches to their merge ref, allowing retries to reuse them without
+exposing them to `master` or other PRs. Gradle uses the runner's available CPU count
+rather than the local two-worker limit. No signing keys, `gradle.properties` credentials, Android
 user directory or configuration-cache encryption secrets are cached. Superseded
 runs are cancelled. No Gradle tasks are excluded: release signing and Crashlytics
 mapping-upload configuration remain unchanged; this workflow requests debug tasks only.
