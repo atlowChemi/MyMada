@@ -60,7 +60,20 @@ rather than the local two-worker limit. No signing keys, `gradle.properties` cre
 user directory or configuration-cache encryption secrets are cached. Superseded
 runs are cancelled. No Gradle tasks are excluded: release signing and Crashlytics
 mapping-upload configuration remain unchanged; this workflow requests debug tasks only.
-Lint, test execution and emulator jobs are separate follow-ups under #98/#99.
+The next step runs `:app:testDebugUnitTest :app:lintDebug :app:lintRelease` with
+`--continue --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'`. Gradle's
+`--continue` collects independent task failures; it does not turn them into success.
+Tests and lint errors fail the job; existing lint warnings remain warnings (no new
+baseline or blanket suppression). Emulator execution is separate work under #99.
+
+`mikepenz/action-junit-report` renders JUnit results and failure details in the job
+summary and emits annotations without Checks API writes or PR comments, keeping
+fork permissions read-only. Missing/malformed results or failed tests fail reporting.
+The seven-day `quality-reports-<SHA>` artifact contains JUnit XML, the browsable
+Gradle test HTML report and native lint HTML/XML. Reports and built APKs upload even
+after failures, but not cancellation; an early build failure may leave no reports.
+Download/unzip the artifact and open `index.html` for tests or `lint-results-*.html`
+for lint. Lint is not converted to JUnit. No live backend or emulator is used here.
 
 ## Isolate an owned emulator and select a test
 
