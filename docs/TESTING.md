@@ -78,7 +78,8 @@ for lint. Lint is not converted to JUnit. No live backend or emulator is used he
 ## CI emulator smoke
 
 After build/tests/lint pass, two disposable Linux runners exercise API24 and API37
-Google APIs x86_64 images (Pixel 2, 2GB RAM). API24 uses font scale1.0; API37 uses1.3.
+Google APIs x86_64 images (Pixel 2, 2GB RAM). API24 uses font scale1.0; API37 uses1.3
+and the `37.0;google_apis_ps16k` image, with a required `PAGE_SIZE=16384` check.
 Both run the existing EN/HE tool drawer/recreation/back test, Settings destinations
 and notification-listener permission-completion route. This is a focused smoke set,
 not the full instrumentation suite or a new visual-parity claim.
@@ -101,8 +102,8 @@ are logged and do not replace the original test exit status. Runner termination 
 loss of ADB can prevent final capture; cancelled runs do not claim passing results.
 
 Boot/image provisioning logs live in the emulator action step. Device evidence
-records actual page size when `getconf` exists; x86_64 runs are not proof of 16KB
-runtime support. Physical audio/OEM checks and actual-PDF fixture distribution are
+records actual page size when `getconf` exists; an image name alone does not prove
+16KB runtime support. Physical audio/OEM checks and actual-PDF fixture distribution are
 outside this initial smoke slice; their existing #99 requirements remain open.
 
 ## Isolate an owned emulator and select a test

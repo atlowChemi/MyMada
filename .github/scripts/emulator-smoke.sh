@@ -11,9 +11,10 @@ if [[ ${1:-} == isolate ]]; then
   mv "$ANDROID_HOME/emulator/emulator" "$ANDROID_HOME/emulator/emulator.real"
   cat > "$ANDROID_HOME/emulator/emulator" <<'WRAPPER'
 #!/usr/bin/env bash
-exec sudo -E -u "$(id -un)" -g ci-emulator "$(dirname "$0")/emulator.real" "$@"
+exec sudo -n -E setpriv --reuid="$(id -u)" --regid="$(getent group ci-emulator | cut -d: -f3)" --init-groups "$(dirname "$0")/emulator.real" "$@"
 WRAPPER
   chmod +x "$ANDROID_HOME/emulator/emulator"
+  "$ANDROID_HOME/emulator/emulator" -version
   exit
 fi
 
@@ -52,6 +53,9 @@ adb wait-for-device
 [[ $(adb shell id -u | tr -d '\r') == 0 ]]
 adb shell 'iptables -I OUTPUT ! -o lo -j REJECT; ip6tables -I OUTPUT ! -o lo -j REJECT'
 adb shell 'iptables -C OUTPUT ! -o lo -j REJECT && ip6tables -C OUTPUT ! -o lo -j REJECT'
+if [[ ${EXPECT_PAGE_SIZE:-} ]]; then
+  [[ $(adb shell getconf PAGE_SIZE | tr -d '\r') == "$EXPECT_PAGE_SIZE" ]]
+fi
 adb shell settings put system font_scale "${FONT_SCALE:-1.0}"
 adb shell settings put system accelerometer_rotation 0
 adb shell settings put system user_rotation 0

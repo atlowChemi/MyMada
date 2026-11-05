@@ -84,11 +84,18 @@ jobs:
       matrix:
         include:
           - api: 24
+            image: '24'
+            target: google_apis
+            page-size: ''
             font: '1.0'
           - api: 37
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
             font: '1.3'
     env:
       FONT_SCALE: ${{ matrix.font }}
+      EXPECT_PAGE_SIZE: ${{ matrix.page-size }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -112,8 +119,8 @@ jobs:
         uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: '37.0'
-          system-image-api-level: ${{ matrix.api }}
-          target: google_apis
+          system-image-api-level: ${{ matrix.image }}
+          target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_2
           ram-size: 2048M
