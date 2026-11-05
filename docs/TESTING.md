@@ -100,7 +100,7 @@ tests select EN/HE themselves. The test command times out after ten minutes with
 automatic retries. APKs are built before boot; Gradle uses one worker and a 2GB heap
 while the emulator runs to reduce resource contention. Gradle owns app installation.
 Two-minute screenrecord segments start before instrumentation;
-on failure, finalized MP4s and a screenshot join bounded logcat, package/activity
+on failure, finalized MP4s, a screenshot and Android ANR traces join the logcat ring buffers, package/activity
 state, selectors, SHA256 APK identities, source SHA and device facts in the seven-day
 `emulator-api<API>-<SHA>` artifact. JUnit XML and HTML results are retained on pass
 and failure and reported through the same read-only JUnit action. Recorder failures
