@@ -84,9 +84,12 @@ versions may enforce a larger userdata minimum: the disposable runner removes un
 preinstalled NDK/.NET tools and requires 10GiB free after image installation, before
 boot. API24 uses font scale1.0; API37 uses1.3
 and the `37.0;google_apis_ps16k` image, with a required `PAGE_SIZE=16384` check.
-Both run the existing EN/HE tool drawer/recreation/back test, Settings destinations
-and notification-listener permission-completion route. This is a focused smoke set,
-not the full instrumentation suite or a new visual-parity claim.
+Both currently run all discovered instrumentation tests with their default arguments
+for a diagnostic regression sweep. The original three-test smoke selector is removed.
+Tests needing retained PDFs, policy HTML, external audio or staged upgrade setup may
+fail or skip until those prerequisites are supplied; report those separately from
+application regressions. Discovery does not exercise every argument-dependent route,
+and an instrumentation crash can leave later tests unexecuted.
 
 `.github/scripts/emulator-smoke.sh isolate` runs before emulator boot: emulator
 processes use a dedicated group whose non-loopback IPv4/IPv6 traffic is rejected
@@ -96,7 +99,7 @@ the isolation setup on a shared machine; it wraps the SDK emulator executable an
 is intended only for the disposable GitHub runner.
 
 Animations/spellchecking are disabled, rotation is portrait and font scale explicit;
-tests select EN/HE themselves. The test command times out after ten minutes without
+tests select their own locales. The test command times out after sixty minutes without
 automatic retries. APKs are built before boot; Gradle uses one worker and a 2GB heap
 while the emulator runs to reduce resource contention. Gradle owns app installation.
 Two-minute screenrecord segments start before instrumentation;

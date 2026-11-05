@@ -78,7 +78,7 @@ jobs:
     name: Emulator API ${{ matrix.api }}
     needs: build
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -123,7 +123,7 @@ jobs:
           ln -s 16111833 "$ANDROID_HOME/cmdline-tools/latest"
           ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
           sudo chmod 666 /dev/kvm
-      - name: Run isolated emulator smoke
+      - name: Run isolated instrumentation suite
         uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: '37.0'
