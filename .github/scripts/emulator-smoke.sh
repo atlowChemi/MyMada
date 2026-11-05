@@ -59,9 +59,15 @@ cleanup() {
 trap cleanup EXIT
 
 [[ -f "$RUNNER_TEMP/mymada-isolation-ready" ]]
-adb root
-adb wait-for-device
-[[ $(adb shell id -u | tr -d '\r') == 0 ]]
+# Some images close the transport before `adb root` receives its reply. The
+# reconnected shell UID, not that transient transport result, proves root access.
+adb root || echo 'adb root disconnected; checking UID after reconnection'
+timeout 60 adb wait-for-device
+device_uid=$(adb shell id -u | tr -d '\r')
+if [[ $device_uid != 0 ]]; then
+  echo "Emulator did not reconnect as root (UID=$device_uid)" >&2
+  exit 1
+fi
 adb shell 'iptables -I OUTPUT ! -o lo -j REJECT; ip6tables -I OUTPUT ! -o lo -j REJECT'
 adb shell 'iptables -C OUTPUT ! -o lo -j REJECT && ip6tables -C OUTPUT ! -o lo -j REJECT'
 if [[ ${EXPECT_PAGE_SIZE:-} ]]; then
