@@ -233,6 +233,7 @@ class ToolsBackNavigationTest {
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
                 compose.onNodeWithTag("shell-detection").performClick()
                 androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1))
+                    .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
                     .perform(androidx.test.espresso.action.ViewActions.click())
                 instrumentation.uiAutomation.waitForIdle(500, 5000)
                 // Idle alone can occur before the external Settings window opens.
