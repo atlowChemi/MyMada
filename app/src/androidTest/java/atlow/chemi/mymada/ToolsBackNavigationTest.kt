@@ -67,8 +67,6 @@ class ToolsBackNavigationTest {
                     assertEquals(2, it.window.decorView.findViewWithTag<android.widget.Spinner>("apgar-choice-0").selectedItemPosition)
                 }
                 capture("tools-$language-restored")
-                // Temporary reporting validation; remove after inspecting CI evidence.
-                fail("CI_REPORT_PROBE: intentional failure after APGAR navigation and recreation")
                 open()
                 destination(R.id.apgarCalc).assertIsSelected()
                 pressBack()
