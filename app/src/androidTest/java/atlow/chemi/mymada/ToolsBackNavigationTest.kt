@@ -67,6 +67,8 @@ class ToolsBackNavigationTest {
                     assertEquals(2, it.window.decorView.findViewWithTag<android.widget.Spinner>("apgar-choice-0").selectedItemPosition)
                 }
                 capture("tools-$language-restored")
+                // Temporary #99 negative control, removed after video verification.
+                fail("Intentional emulator failure probe after navigation and recreation")
                 open()
                 destination(R.id.apgarCalc).assertIsSelected()
                 pressBack()
