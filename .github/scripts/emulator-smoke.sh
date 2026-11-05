@@ -36,13 +36,21 @@ DISPLAY
 fi
 
 export ANDROID_SERIAL=emulator-5554
+# A disconnected/hung device must not block cleanup until the job is cancelled.
+adb() { timeout --signal=TERM --kill-after=5 30 adb "$@"; }
 out="$PWD/emulator-evidence"
 mkdir -p "$out"
 recorder=''
+test_log=''
 cleanup() {
   status=$?
   trap - EXIT
   set +e
+  echo "Collecting emulator evidence (test exit=$status)"
+  if [[ -n $test_log ]]; then
+    kill "$test_log" 2>/dev/null
+    wait "$test_log" 2>/dev/null
+  fi
   if [[ -n $recorder ]]; then
     adb shell touch /sdcard/ci-stop
     # shellcheck disable=SC2016 # Resolve and signal the recorder on Android.
@@ -105,8 +113,10 @@ adb shell 'rm -f /sdcard/ci-stop; mkdir -p /sdcard/ci-video'
 # Rotating two-minute segments avoid screenrecord's duration ceiling. The bounded
 # test command below limits full-suite recording to sixty minutes at 1Mbps.
 # shellcheck disable=SC2016 # Expand the counter on the device, not the host.
-adb shell 'i=0; while [ ! -e /sdcard/ci-stop ]; do screenrecord --bit-rate 1000000 --size 540x960 --time-limit 120 /sdcard/ci-video/segment-$i.mp4 || exit; i=$((i+1)); done' > "$out/recorder.log" 2>&1 &
+command adb shell 'i=0; while [ ! -e /sdcard/ci-stop ]; do screenrecord --bit-rate 1000000 --size 540x960 --time-limit 120 /sdcard/ci-video/segment-$i.mp4 || exit; i=$((i+1)); done' > "$out/recorder.log" 2>&1 &
 recorder=$!
+command adb logcat -v threadtime 'TestRunner:I' '*:S' > "$out/test-progress.txt" 2>&1 &
+test_log=$!
 printf '%s\n' 'All discovered instrumentation tests; default test arguments' > "$out/selectors.txt"
 timeout --signal=TERM --kill-after=30 3600 ./gradlew :app:connectedDebugAndroidTest \
   --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'

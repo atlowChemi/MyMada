@@ -109,6 +109,8 @@ state, selectors, SHA256 APK identities, source SHA and device facts in the seve
 and failure and reported through the same read-only JUnit action. Recorder failures
 are logged and do not replace the original test exit status. Runner termination or
 loss of ADB can prevent final capture; cancelled runs do not claim passing results.
+Individual ADB diagnostic commands are bounded to30 seconds; live TestRunner logs
+retain test progress even when instrumentation never produces JUnit XML.
 
 Boot/image provisioning logs live in the emulator action step. Device evidence
 records actual page size when `getconf` exists; an image name alone does not prove
