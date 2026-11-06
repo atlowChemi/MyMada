@@ -84,12 +84,18 @@ versions may enforce a larger userdata minimum: the disposable runner removes un
 preinstalled NDK/.NET tools and requires 10GiB free after image installation, before
 boot. API24 uses font scale1.0; API37 uses1.3
 and the `37.0;google_apis_ps16k` image, with a required `PAGE_SIZE=16384` check.
-Both currently run all discovered instrumentation tests with their default arguments
-for a diagnostic regression sweep. The original three-test smoke selector is removed.
+With `TEST_CLASSES` unset, the script runs all discovered instrumentation tests with
+their default arguments. The original three-test smoke selector is removed.
 Tests needing retained PDFs, policy HTML, external audio or staged upgrade setup may
 fail or skip until those prerequisites are supplied; report those separately from
 application regressions. Discovery does not exercise every argument-dependent route,
 and an instrumentation crash can leave later tests unexecuted.
+
+The current diagnostic matrix narrows the next run to API24 PlatformSmoke alone vs.
+after the metronome classes, and fresh API37 runners for Audio, ChatDialogGeometry
+and VitalsScreen. `TEST_CLASSES` records the exact selectors in each artifact;
+focused invocations have a10-minute timeout. This compares fresh state with the
+failed full-suite baseline; it is not full-suite coverage or automatic retries.
 
 `.github/scripts/emulator-smoke.sh isolate` runs before emulator boot: emulator
 processes use a dedicated group whose non-loopback IPv4/IPv6 traffic is rejected

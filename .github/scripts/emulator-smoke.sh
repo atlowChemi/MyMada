@@ -111,14 +111,20 @@ adb shell settings put secure show_ime_with_hard_keyboard 0
 } > "$out/build-device.txt"
 adb shell 'rm -f /sdcard/ci-stop; mkdir -p /sdcard/ci-video'
 # Rotating two-minute segments avoid screenrecord's duration ceiling. The bounded
-# test command below limits full-suite recording to sixty minutes at 1Mbps.
+# test command below bounds recording at 1Mbps (10 minutes focused, 60 full suite).
 # shellcheck disable=SC2016 # Expand the counter on the device, not the host.
 command adb shell 'i=0; while [ ! -e /sdcard/ci-stop ]; do screenrecord --bit-rate 1000000 --size 540x960 --time-limit 120 /sdcard/ci-video/segment-$i.mp4 || exit; i=$((i+1)); done' > "$out/recorder.log" 2>&1 &
 recorder=$!
 command adb logcat -v threadtime 'TestRunner:I' '*:S' > "$out/test-progress.txt" 2>&1 &
 test_log=$!
-printf '%s\n' 'All discovered instrumentation tests; default test arguments' > "$out/selectors.txt"
-timeout --signal=TERM --kill-after=30 3600 ./gradlew :app:connectedDebugAndroidTest \
+test_args=()
+test_timeout=3600
+if [[ -n ${TEST_CLASSES:-} ]]; then
+  test_args+=("-Pandroid.testInstrumentationRunnerArguments.class=$TEST_CLASSES")
+  test_timeout=600
+fi
+printf '%s\n' "${TEST_CLASSES:-All discovered instrumentation tests; default test arguments}" > "$out/selectors.txt"
+timeout --signal=TERM --kill-after=30 "$test_timeout" ./gradlew :app:connectedDebugAndroidTest "${test_args[@]}" \
   --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'
 # AGP can return success after a device-install failure without any test results.
 mapfile -t results < <(find app/build/outputs/androidTest-results/connected -name 'TEST-*.xml')
