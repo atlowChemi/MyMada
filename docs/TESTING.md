@@ -120,6 +120,9 @@ retain test progress even when instrumentation never produces JUnit XML.
 Graphics use the emulator's supported `-gpu software` selection rather than the
 deprecated `swiftshader_indirect` backend. Native tombstones accompany ANR traces
 on failure to distinguish system-process crashes from application assertions.
+SDK setup uses the pinned action to download tools, then a shell pipeline for
+license answers: an early sdkmanager exit cannot crash Node with `EPIPE`, and a
+failed sdkmanager command still fails the job.
 
 Boot/image provisioning logs live in the emulator action step. Device evidence
 records actual page size when `getconf` exists; an image name alone does not prove

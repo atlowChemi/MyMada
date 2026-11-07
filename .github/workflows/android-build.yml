@@ -29,7 +29,10 @@ jobs:
       - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           cmdline-tools-version: '16111833'
-          packages: 'platforms;android-37.0 build-tools;37.0.0'
+          accept-android-sdk-licenses: false
+          packages: ''
+      - name: Accept SDK licenses and install build packages
+        run: bash .github/scripts/install-sdk.sh
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           # GitHub scopes PR caches to their merge ref; master cannot restore them.
@@ -134,7 +137,10 @@ jobs:
       - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           cmdline-tools-version: '16111833'
-          packages: 'platforms;android-37.0 build-tools;37.0.0'
+          accept-android-sdk-licenses: false
+          packages: ''
+      - name: Accept SDK licenses and install build packages
+        run: bash .github/scripts/install-sdk.sh
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           cache-read-only: false
