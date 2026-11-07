@@ -66,6 +66,7 @@ cleanup() {
   if (( status != 0 )); then
     adb shell dumpsys activity lastanr > "$out/last-anr.txt"
     adb pull /data/anr "$out/" > "$out/anr-pull.log" 2>&1
+    adb pull /data/tombstones "$out/" > "$out/tombstone-pull.log" 2>&1
     adb exec-out screencap -p > "$out/failure.png"
     adb pull /sdcard/ci-video "$out/" || echo 'Video retrieval failed' >> "$out/capture.log"
     if ! find "$out" -name '*.mp4' -size +0c | grep -q .; then

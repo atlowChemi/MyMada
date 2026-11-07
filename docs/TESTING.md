@@ -117,6 +117,9 @@ are logged and do not replace the original test exit status. Runner termination 
 loss of ADB can prevent final capture; cancelled runs do not claim passing results.
 Individual ADB diagnostic commands are bounded to30 seconds; live TestRunner logs
 retain test progress even when instrumentation never produces JUnit XML.
+Graphics use the emulator's supported `-gpu software` selection rather than the
+deprecated `swiftshader_indirect` backend. Native tombstones accompany ANR traces
+on failure to distinguish system-process crashes from application assertions.
 
 Boot/image provisioning logs live in the emulator action step. Device evidence
 records actual page size when `getconf` exists; an image name alone does not prove
