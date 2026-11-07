@@ -102,8 +102,8 @@ jobs:
             page-size: ''
             font: '1.0'
           - api: 37
-            case: audio-alone
-            tests: atlow.chemi.mymada.MetronomeAudioTest
+            case: audio-and-notification
+            tests: atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeControlTest#notificationAndWidgetActionsStopWhileUiBound
             image: '37.0'
             target: google_apis_ps16k
             page-size: '16384'
