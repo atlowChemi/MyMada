@@ -78,6 +78,15 @@ cleanup() {
 trap cleanup EXIT
 
 [[ -f "$RUNNER_TEMP/mymada-isolation-ready" ]]
+if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.tools.vitals.VitalsScreenTest ]]; then
+  # Diagnose first-boot initialization pressure without retrying instrumentation.
+  adb logcat -b all -d -v threadtime > "$out/cold-boot-logcat.txt"
+  adb reboot
+  timeout 120 adb wait-for-device
+  # shellcheck disable=SC2016 # Poll in the bounded child shell.
+  timeout 180 bash -c 'until [[ $(timeout 10 adb shell getprop sys.boot_completed | tr -d "\r") == 1 ]]; do sleep 2; done'
+  adb shell input keyevent 82
+fi
 # Some images close the transport before `adb root` receives its reply. The
 # reconnected shell UID, not that transient transport result, proves root access.
 adb root || echo 'adb root disconnected; checking UID after reconnection'
@@ -100,6 +109,13 @@ adb shell settings put secure show_ime_with_hard_keyboard 0
 # installation: its API24 installer rejects an already installed package.
 ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest \
   --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'
+if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.tools.vitals.VitalsScreenTest ]]; then
+  adb logcat -b events -d > "$out/warm-boot-events.txt"
+  if grep -E 'am_anr.*com.android.systemui' "$out/warm-boot-events.txt"; then
+    echo 'Warm boot still has a System UI ANR; refusing to run focus tests' >&2
+    exit 1
+  fi
+fi
 {
   git rev-parse HEAD
   java -version 2>&1

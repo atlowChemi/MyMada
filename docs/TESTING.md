@@ -123,6 +123,11 @@ on failure to distinguish system-process crashes from application assertions.
 SDK setup uses the pinned action to download tools, then a shell pipeline for
 license answers: an early sdkmanager exit cannot crash Node with `EPIPE`, and a
 failed sdkmanager command still fails the job.
+The Vitals diagnostic preserves cold-boot logcat and performs one warm reboot
+before instrumentation to distinguish first-boot initialization pressure. Host
+network isolation survives reboot; guest firewall rules are installed afterward.
+A fresh System UI ANR fails setup instead of producing misleading focus failures.
+This is a boot experiment, not a retry of failed tests or full-suite acceptance.
 
 Boot/image provisioning logs live in the emulator action step. Device evidence
 records actual page size when `getconf` exists; an image name alone does not prove
