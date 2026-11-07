@@ -100,6 +100,9 @@ Dedicated StartupUpgrade jobs invoke `seed`, force-stop the app, then invoke
 `verify` in a new test process. AGP retains the APKs/data and uses replace-install
 for these phases; each phase's JUnit results are preserved separately. This tests
 cold-start migration of the seeded RN preferences, not a Play-signed APK upgrade.
+Widget reinstall jobs similarly run `createFixture` before `verifyFixture`, with
+replace-install between phases. The same debug APK validates binding retention
+across reinstall; historical pre-controls-to-current upgrade acceptance is separate.
 
 `.github/scripts/emulator-smoke.sh isolate` runs before emulator boot: emulator
 processes use a dedicated group whose non-loopback IPv4/IPv6 traffic is rejected

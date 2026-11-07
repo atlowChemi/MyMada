@@ -96,7 +96,7 @@ jobs:
             font: '1.0'
           - api: 24
             case: platform-after-metronome
-            tests: atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeCallVisualTest,atlow.chemi.mymada.MetronomeControlTest,atlow.chemi.mymada.MetronomeNotificationTest,atlow.chemi.mymada.MetronomePermissionTest,atlow.chemi.mymada.MetronomeWidgetUpgradeTest,atlow.chemi.mymada.PlatformSmokeTest
+            tests: atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeCallVisualTest,atlow.chemi.mymada.MetronomeControlTest,atlow.chemi.mymada.MetronomeNotificationTest,atlow.chemi.mymada.MetronomePermissionTest,atlow.chemi.mymada.PlatformSmokeTest
             image: '24'
             target: google_apis
             page-size: ''
@@ -143,6 +143,20 @@ jobs:
             target: google_apis
             page-size: ''
             font: '1.0'
+          - api: 24
+            case: widget-reinstall
+            tests: atlow.chemi.mymada.MetronomeWidgetUpgradeTest
+            image: '24'
+            target: google_apis
+            page-size: ''
+            font: '1.0'
+          - api: 37
+            case: widget-reinstall
+            tests: atlow.chemi.mymada.MetronomeWidgetUpgradeTest
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
           - api: 37
             case: startup-upgrade
             tests: atlow.chemi.mymada.settings.StartupUpgradeTest

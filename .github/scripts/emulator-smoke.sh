@@ -171,13 +171,18 @@ phases=(default)
 if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.settings.StartupUpgradeTest ]]; then
   phases=(seed verify)
   test_args+=('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true')
+elif [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.MetronomeWidgetUpgradeTest ]]; then
+  phases=(createFixture verifyFixture)
+  test_args=('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true')
 fi
 for phase in "${phases[@]}"; do
   phase_args=()
-  if [[ $phase != default ]]; then
+  if [[ $phase == seed || $phase == verify ]]; then
     phase_args+=("-Pandroid.testInstrumentationRunnerArguments.startupFixture=$phase")
+  elif [[ $phase != default ]]; then
+    phase_args+=("-Pandroid.testInstrumentationRunnerArguments.class=$TEST_CLASSES#$phase")
   fi
-  if [[ $phase == verify ]]; then
+  if [[ $phase == verify || $phase == verifyFixture ]]; then
     adb shell am force-stop atlow.chemi.mymada.debug
   fi
   status=0
