@@ -96,6 +96,10 @@ after the metronome classes, and fresh API37 runners for Audio, ChatDialogGeomet
 and VitalsScreen. `TEST_CLASSES` records the exact selectors in each artifact;
 focused invocations have a10-minute timeout. This compares fresh state with the
 failed full-suite baseline; it is not full-suite coverage or automatic retries.
+Dedicated StartupUpgrade jobs invoke `seed`, force-stop the app, then invoke
+`verify` in a new test process. AGP retains the APKs/data and uses replace-install
+for these phases; each phase's JUnit results are preserved separately. This tests
+cold-start migration of the seeded RN preferences, not a Play-signed APK upgrade.
 
 `.github/scripts/emulator-smoke.sh isolate` runs before emulator boot: emulator
 processes use a dedicated group whose non-loopback IPv4/IPv6 traffic is rejected

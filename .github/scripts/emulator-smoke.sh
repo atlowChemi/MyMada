@@ -167,15 +167,37 @@ if [[ -n ${TEST_CLASSES:-} ]]; then
   test_timeout=600
 fi
 printf '%s\n' "${TEST_CLASSES:-All discovered instrumentation tests; default test arguments}" > "$out/selectors.txt"
-timeout --signal=TERM --kill-after=30 "$test_timeout" ./gradlew :app:connectedDebugAndroidTest "${test_args[@]}" \
-  --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'
-# AGP can return success after a device-install failure without any test results.
-mapfile -t results < <(find app/build/outputs/androidTest-results/connected -name 'TEST-*.xml')
-if (( ${#results[@]} == 0 )) || ! grep -Eq 'tests="[1-9][0-9]*"' "${results[@]}"; then
-  echo 'Instrumentation produced no executed-test JUnit results' >&2
-  exit 1
+phases=(default)
+if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.settings.StartupUpgradeTest ]]; then
+  phases=(seed verify)
+  test_args+=('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true')
 fi
-if grep -Eq '<(failure|error)([ >])' "${results[@]}"; then
-  echo 'Instrumentation reported test failures' >&2
-  exit 1
-fi
+for phase in "${phases[@]}"; do
+  phase_args=()
+  if [[ $phase != default ]]; then
+    phase_args+=("-Pandroid.testInstrumentationRunnerArguments.startupFixture=$phase")
+  fi
+  if [[ $phase == verify ]]; then
+    adb shell am force-stop atlow.chemi.mymada.debug
+  fi
+  status=0
+  rm -rf app/build/outputs/androidTest-results/connected
+  timeout --signal=TERM --kill-after=30 "$test_timeout" ./gradlew :app:connectedDebugAndroidTest \
+    "${test_args[@]}" "${phase_args[@]}" \
+    --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g' || status=$?
+  mkdir -p "$out/results/$phase"
+  if [[ -d app/build/outputs/androidTest-results/connected ]]; then
+    cp -R app/build/outputs/androidTest-results/connected/. "$out/results/$phase/"
+  fi
+  if (( status != 0 )); then exit "$status"; fi
+  # AGP can return success after a device-install failure without any test results.
+  mapfile -t results < <(find "$out/results/$phase" -name 'TEST-*.xml')
+  if (( ${#results[@]} == 0 )) || ! grep -Eq 'tests="[1-9][0-9]*"' "${results[@]}"; then
+    echo "Instrumentation phase $phase produced no executed-test JUnit results" >&2
+    exit 1
+  fi
+  if grep -Eq '<(failure|error)([ >])' "${results[@]}"; then
+    echo "Instrumentation phase $phase reported test failures" >&2
+    exit 1
+  fi
+done

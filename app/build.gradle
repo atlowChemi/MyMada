@@ -58,6 +58,10 @@ android {
         }
     }
     namespace 'atlow.chemi.mymada'
+    // Staged upgrade checks deliberately preserve app data between test processes.
+    if (providers.gradleProperty('android.injected.androidTest.leaveApksInstalledAfterRun').getOrElse('false').toBoolean()) {
+        installation.installOptions.add('-r')
+    }
 }
 
 dependencies {
