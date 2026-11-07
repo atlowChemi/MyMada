@@ -53,7 +53,7 @@ class MetronomeWidgetUpgradeTest {
                 screen.onActivity {
                     host.startListening()
                     view = host.createView(it, id, info)
-                    it.findViewById<FrameLayout>(R.id.frame).addView(view)
+                    it.findViewById<FrameLayout>(android.R.id.content).addView(view)
                     context.sendBroadcast(Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
                         .setComponent(ComponentName(context, MetroWidget::class.java))
                         .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(id)))

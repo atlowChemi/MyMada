@@ -175,6 +175,11 @@ elif [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.MetronomeWidgetUpgradeTest ]]; t
   phases=(createFixture verifyFixture)
   test_args=('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true')
 fi
+if (( ${#phases[@]} > 1 )); then
+  # AGP's built-in engine omits installation.installOptions on API24; UTP
+  # honors replace-install so staged tests retain app data and widget bindings.
+  test_args+=('-Pandroid.experimental.androidTest.builtin_test_platform=false')
+fi
 for phase in "${phases[@]}"; do
   phase_args=()
   if [[ $phase == seed || $phase == verify ]]; then
