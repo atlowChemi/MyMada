@@ -176,9 +176,9 @@ elif [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.MetronomeWidgetUpgradeTest ]]; t
   test_args=('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true')
 fi
 if (( ${#phases[@]} > 1 )); then
-  # AGP's built-in engine omits installation.installOptions on API24; UTP
-  # honors replace-install so staged tests retain app data and widget bindings.
+  # Select UTP for replace-install; retain verbose runner/installer diagnostics.
   test_args+=('-Pandroid.experimental.androidTest.builtin_test_platform=false')
+  test_args+=('--info')
 fi
 for phase in "${phases[@]}"; do
   phase_args=()
@@ -191,6 +191,7 @@ for phase in "${phases[@]}"; do
     adb shell am force-stop atlow.chemi.mymada.debug
   fi
   status=0
+  printf '%q ' ./gradlew :app:connectedDebugAndroidTest "${test_args[@]}" "${phase_args[@]}" > "$out/command-$phase.txt"
   rm -rf app/build/outputs/androidTest-results/connected
   timeout --signal=TERM --kill-after=30 "$test_timeout" ./gradlew :app:connectedDebugAndroidTest \
     "${test_args[@]}" "${phase_args[@]}" \

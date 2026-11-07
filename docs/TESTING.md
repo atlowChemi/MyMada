@@ -103,9 +103,11 @@ cold-start migration of the seeded RN preferences, not a Play-signed APK upgrade
 Widget reinstall jobs similarly run `createFixture` before `verifyFixture`, with
 replace-install between phases. The same debug APK validates binding retention
 across reinstall; historical pre-controls-to-current upgrade acceptance is separate.
-Staged jobs select AGP's UTP runner because the built-in runner omitted the configured
-replace-install option on API24. Widget host views attach to the Activity content
-frame rather than the fragment-only navigation container.
+Staged jobs request AGP's UTP runner because the built-in runner omitted the configured
+replace-install option on API24. Local offline configuration confirms the UTP task
+and `-r` option, but API24 CI still used the built-in installer; verbose per-phase
+commands and installer logs track this unresolved discrepancy. Widget host views
+attach to the Activity content frame rather than the fragment-only navigation container.
 
 `.github/scripts/emulator-smoke.sh isolate` runs before emulator boot: emulator
 processes use a dedicated group whose non-loopback IPv4/IPv6 traffic is rejected
