@@ -361,6 +361,8 @@ navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Com
 MaterialTheme because the rename field embeds a native Material text input.
 The audio stop/write check waits for the writer's actual full-buffer sleep before
 stopping it; thread startup alone does not establish that PCM encoding has finished.
+The notification/widget Stop check explicitly grants notification permission on
+API33+ and asserts access rather than skipping after a permission-denial test.
 
 | Area | Selectors and nonobvious prerequisites |
 | --- | --- |

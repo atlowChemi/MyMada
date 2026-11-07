@@ -16,7 +16,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import atlow.chemi.mymada.recieversAndServices.*
 import org.junit.Assert.*
-import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -104,7 +103,11 @@ class MetronomeControlTest {
 
     @Test fun notificationAndWidgetActionsStopWhileUiBound() {
         val manager = context.getSystemService(NotificationManager::class.java)
-        assumeTrue("Notification denied route covered by UI test", manager.areNotificationsEnabled())
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            instrumentation.uiAutomation.grantRuntimePermission(
+                context.packageName, android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+        assertTrue("Notification actions require notification access", manager.areNotificationsEnabled())
         scenario().use { screen ->
             try {
                 screen.onActivity { MetroService.start(it) }
