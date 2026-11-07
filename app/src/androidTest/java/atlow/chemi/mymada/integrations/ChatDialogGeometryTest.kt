@@ -7,6 +7,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -21,7 +22,8 @@ class ChatDialogGeometryTest {
 
     private fun chat(direction: LayoutDirection, editing: Boolean) {
         compose.setContent {
-            CompositionLocalProvider(LocalLayoutDirection provides direction) {
+            val context = androidx.appcompat.view.ContextThemeWrapper(LocalContext.current, atlow.chemi.mymada.R.style.AppTheme)
+            CompositionLocalProvider(LocalLayoutDirection provides direction, LocalContext provides context) {
                 MaterialTheme { ChatDialogScreen(editing, "Fixture", {}, false, true, {}) }
             }
         }

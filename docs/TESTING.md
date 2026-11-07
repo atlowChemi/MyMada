@@ -252,6 +252,10 @@ commit PDFs, tokens or authenticated responses. Rendering compatibility is not
 
 ## Focused fixture requirements
 
+`PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
+navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
+MaterialTheme because the rename field embeds a native Material text input.
+
 | Area | Selectors and nonobvious prerequisites |
 | --- | --- |
 | Home/memory | `HomeScreenTest` covers onboarding/locale/navigation; `HomeMemoryTest` checks Activity collection after the real sequence on the stock API24 heap. Optional `dumpHeap=true` is diagnostic, not normal pass/fail (it forces GC). An isolated About launch is insufficient. |
