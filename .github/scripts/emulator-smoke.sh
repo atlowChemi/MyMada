@@ -176,8 +176,8 @@ elif [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.MetronomeWidgetUpgradeTest ]]; t
   test_args=('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true')
 fi
 if (( ${#phases[@]} > 1 )); then
-  # Select UTP for replace-install; retain verbose runner/installer diagnostics.
-  test_args+=('-Pandroid.experimental.androidTest.builtin_test_platform=false')
+  # Retain verbose runner/installer diagnostics for the staged replace-install.
+  test_args+=('-Pandroid.experimental.androidTest.builtin_test_platform=true')
   test_args+=('--info')
 fi
 for phase in "${phases[@]}"; do
