@@ -313,6 +313,8 @@ The Google-4KB Vitals comparison failed all three focus checks with a visible
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
 MaterialTheme because the rename field embeds a native Material text input.
+The audio stop/write check waits for the writer's actual full-buffer sleep before
+stopping it; thread startup alone does not establish that PCM encoding has finished.
 
 | Area | Selectors and nonobvious prerequisites |
 | --- | --- |
