@@ -365,6 +365,12 @@ offscreen item, then retains the displayed/bounds assertions. Verification is pe
 The Google-4KB Vitals comparison failed all three focus checks with a visible
 "Pixel Launcher isn't responding" dialog; actual-16KB and AOSP Vitals passed.
 
+The CI `tools-and-dictionary` and `home-and-integrations` jobs select whole test
+packages through AndroidJUnitRunner's `package` argument on API24 and API37
+(actual 16KB). Each invocation has a 20-minute test timeout. These broaden screen
+coverage beyond the diagnostic classes; they do not cover the separate settings,
+calls, permission, external-audio or historical-upgrade prerequisites below.
+
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
 MaterialTheme because the rename field embeds a native Material text input.
