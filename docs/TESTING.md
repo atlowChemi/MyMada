@@ -132,6 +132,9 @@ An additional Vitals job uses the API37 AOSP `default` image without bundled
 Google services, with the same screen, memory, font scale and test selectors.
 Its observed page size is recorded; it does not replace the required 16KB image.
 This compares image configurations, not Google services independently of page size.
+A third Vitals job uses API37 `google_apis` and asserts a 4096-byte page size.
+Together these jobs compare AOSP 4KB, Google-services 4KB and Google-services 16KB
+with identical test selectors, display settings and warm-boot preparation.
 
 Boot/image provisioning logs live in the emulator action step. Device evidence
 records actual page size when `getconf` exists; an image name alone does not prove

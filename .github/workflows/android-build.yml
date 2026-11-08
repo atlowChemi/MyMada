@@ -129,6 +129,13 @@ jobs:
             target: default
             page-size: ''
             font: '1.3'
+          - api: 37
+            case: vitals-google-4k
+            tests: atlow.chemi.mymada.tools.vitals.VitalsScreenTest
+            image: '37.0'
+            target: google_apis
+            page-size: '4096'
+            font: '1.3'
     env:
       FONT_SCALE: ${{ matrix.font }}
       EXPECT_PAGE_SIZE: ${{ matrix.page-size }}
