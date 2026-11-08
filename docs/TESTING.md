@@ -128,6 +128,10 @@ before instrumentation to distinguish first-boot initialization pressure. Host
 network isolation survives reboot; guest firewall rules are installed afterward.
 A fresh System UI ANR fails setup instead of producing misleading focus failures.
 This is a boot experiment, not a retry of failed tests or full-suite acceptance.
+An additional Vitals job uses the API37 AOSP `default` image without bundled
+Google services, with the same screen, memory, font scale and test selectors.
+Its observed page size is recorded; it does not replace the required 16KB image.
+This compares image configurations, not Google services independently of page size.
 
 Boot/image provisioning logs live in the emulator action step. Device evidence
 records actual page size when `getconf` exists; an image name alone does not prove
