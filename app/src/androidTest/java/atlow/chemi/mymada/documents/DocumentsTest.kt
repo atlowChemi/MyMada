@@ -14,6 +14,7 @@ import atlow.chemi.mymada.R
 import atlow.chemi.mymada.UtillitiesAndTools
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.selectShellDestination
+import atlow.chemi.mymada.retainedFixture
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
@@ -156,10 +157,9 @@ class DocumentsTest {
 
     @Test fun existingProductionDocumentsRenderFirstMiddleLastAndOffline() {
         // Host-fetched read-only Storage objects, supplied outside git. Missing inputs FAIL, never fake acceptance.
-        val input = context.getExternalFilesDir("live-documents")!!
         val root = File(context.cacheDir, "documents-live-test").apply { deleteRecursively(); mkdirs() }
         for (kind in DocumentKind.entries) {
-            val original = File(input, kind.objectName)
+            val original = retainedFixture(kind.objectName, "live-documents")
             assertTrue("Supply the actual Storage object: ${kind.objectName}", original.isFile)
             val loaded = runBlocking { DocumentStore(root).load(kind) { _, output -> original.copyTo(output, overwrite = true) } }
             assertTrue(loaded.pageCount > 0)
@@ -188,7 +188,7 @@ class DocumentsTest {
         prepare()
         val root = File(context.filesDir, "documents").apply { mkdirs() }
         val counts = DocumentKind.entries.map { kind ->
-            val source = File(context.getExternalFilesDir("live-documents"), kind.objectName)
+            val source = retainedFixture(kind.objectName, "live-documents")
             assertTrue("Actual document required", source.isFile)
             source.copyTo(File(root, kind.objectName), overwrite = true)
             pageCount(source)
@@ -206,7 +206,7 @@ class DocumentsTest {
     @Test fun actualSmallTextZoomRerendersWithoutCoveringControls() {
         prepare()
         for ((kind, page) in listOf(DocumentKind.BLS to 68, DocumentKind.ALS to 145, DocumentKind.KUNTRES to 15)) {
-            val file = File(context.getExternalFilesDir("live-documents"), kind.objectName)
+            val file = retainedFixture(kind.objectName, "live-documents")
             assertTrue("Actual document required", file.isFile)
             val count = pageCount(file)
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
