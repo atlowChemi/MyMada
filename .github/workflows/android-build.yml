@@ -63,7 +63,7 @@ jobs:
             app/build/reports/lint-results-*.html
             app/build/reports/lint-results-*.xml
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 2
       - name: Upload debug APKs
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -73,7 +73,7 @@ jobs:
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 2
   emulator:
     name: Emulator API ${{ matrix.api }} / ${{ matrix.case }}
     needs: build
@@ -185,4 +185,4 @@ jobs:
             app/build/outputs/androidTest-results/connected/
             app/build/reports/androidTests/connected/
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 2

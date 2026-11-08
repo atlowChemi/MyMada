@@ -43,7 +43,7 @@ Reproduce its build after installing those tools:
 ```
 
 Download both APKs from the run's `debug-apks-<SHA>` artifact
-(retained seven days). These are disposable debug-signed builds, not releases.
+(retained two days). These are disposable debug-signed builds, not releases.
 
 The Google Services plugin reads checked-in `app/google-services.json` to generate
 build resources; no Firebase credentials or GitHub secrets are supplied. Those
@@ -69,7 +69,7 @@ baseline or blanket suppression). Emulator execution uses separate jobs below.
 `mikepenz/action-junit-report` renders JUnit results and failure details in the job
 summary and emits annotations without Checks API writes or PR comments, keeping
 fork permissions read-only. Missing/malformed results or failed tests fail reporting.
-The seven-day `quality-reports-<SHA>` artifact contains JUnit XML, the browsable
+The two-day `quality-reports-<SHA>` artifact contains JUnit XML, the browsable
 Gradle test HTML report and native lint HTML/XML. Reports and built APKs upload even
 after failures, but not cancellation; an early build failure may leave no reports.
 Download/unzip the artifact and open `index.html` for tests or `lint-results-*.html`
@@ -110,7 +110,7 @@ automatic retries. APKs are built before boot; Gradle uses one worker and a 2GB 
 while the emulator runs to reduce resource contention. Gradle owns app installation.
 Two-minute screenrecord segments start before instrumentation;
 on failure, finalized MP4s, a screenshot and Android ANR traces join the logcat ring buffers, package/activity
-state, selectors, SHA256 APK identities, source SHA and device facts in the seven-day
+state, selectors, SHA256 APK identities, source SHA and device facts in the two-day
 `emulator-api<API>-<SHA>` artifact. JUnit XML and HTML results are retained on pass
 and failure and reported through the same read-only JUnit action. Recorder failures
 are logged and do not replace the original test exit status. Runner termination or
