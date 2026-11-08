@@ -180,7 +180,7 @@ jobs:
           profile: pixel_2
           ram-size: 2048M
           disk-size: 2G
-          emulator-options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim -no-metrics
+          emulator-options: -no-window -accel on -gpu ${{ matrix.api == 37 && 'swiftshader' || 'software' }} -no-snapshot -noaudio -no-boot-anim -no-metrics
           disable-animations: true
           disable-spellchecker: true
           pre-emulator-launch-script: bash .github/scripts/emulator-smoke.sh isolate

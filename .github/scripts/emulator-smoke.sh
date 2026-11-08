@@ -4,6 +4,10 @@ set -euo pipefail
 # The hosted runner is disposable. Block the emulator's host sockets before boot,
 # independently of Android firewall rules and app-controlled network settings.
 if [[ ${1:-} == isolate ]]; then
+  mkdir -p emulator-evidence
+  { nproc; free -m; cat /proc/pressure/cpu /proc/pressure/memory; } > emulator-evidence/host-before-boot.txt
+  # Bounded sampling covers cold boot and the Vitals warm-boot experiment.
+  vmstat -w 2 180 > emulator-evidence/host-boot-vmstat.txt &
   if [[ ${EXPECT_PAGE_SIZE:-} ]]; then
     grep -qx 'target=android-37.0' "$ANDROID_AVD_HOME/test.ini"
   fi
@@ -61,6 +65,8 @@ cleanup() {
   fi
   adb logcat -b all -d -v threadtime > "$out/logcat.txt"
   adb shell dumpsys activity activities > "$out/activities.txt"
+  adb shell dumpsys window windows > "$out/windows.txt"
+  { free -m; cat /proc/pressure/cpu /proc/pressure/memory; ps -eo pid,comm,pcpu,rss --sort=-rss | head -20; } > "$out/host-after-tests.txt"
   adb shell dumpsys package atlow.chemi.mymada.debug > "$out/package.txt"
   { sudo iptables -nvL OUTPUT; sudo ip6tables -nvL OUTPUT; } > "$out/host-firewall.txt"
   if (( status != 0 )); then
