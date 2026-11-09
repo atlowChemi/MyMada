@@ -296,6 +296,12 @@ Inspection of `42599045842` narrows that teardown failure: AndroidX launches
 10:36:59.248, after the teardown deadline. The prompt-metrics test now finishes
 the resumed Home directly and requires its exact instance to reach DESTROYED
 before scenario close. This candidate fix is awaiting emulator verification.
+Run `42681459354` passed both document/policy jobs and the API37 chat-focus check.
+API24 Home did not execute: emulator package download failed during setup.
+API37 home/integrations reached 57/58, failing the ad test's global lifecycle scan.
+That scan included DESTROYED destination instances from preceding About tests.
+The ad check now records destination PRE_ON_CREATE callbacks during its own actions,
+requiring zero creations as well as the existing exact blocking-monitor hit counts.
 
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
