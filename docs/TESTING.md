@@ -259,6 +259,9 @@ Firebase local-error assertions explicitly select the native dialog root. Home's
 dispatch-choice test invokes the real dialog button on the main thread, avoiding
 Espresso's post-click Compose-idle wait after navigation to the native lock screen;
 the destination monitor, focus and actual Back-navigation checks remain intact.
+The real offline document-artwork check uses main-thread callbacks and WebView's
+visual-state callback rather than idle waits while `err.html` continuously animates
+its ECG bar. The production animation remains enabled, including on API24.
 
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
