@@ -252,6 +252,10 @@ commit PDFs, tokens or authenticated responses. Rendering compatibility is not
 
 ## Focused fixture requirements
 
+Dispatch pager gestures start/end at the inner quarter points, outside system Back
+gesture edges. Run `42539403774` recorded a return-to-home Back navigation during
+the old reverse swipe; tab-selection and recreation assertions remain required.
+
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
 MaterialTheme because the rename field embeds a native Material text input.
