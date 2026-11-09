@@ -279,6 +279,17 @@ Activity instance (captured after recreation), including its DESTROYED stage.
 Dictionary native dialog buttons, editors and caption assertions explicitly select
 the dialog root after that run selected an unfocused base Activity window instead.
 Both corrections await emulator verification.
+Run `42599045842` verified About on both APIs and both tools/dictionary jobs.
+Its Privacy trace still blocked inside `waitForBody`'s `onActivity` idle wait.
+Privacy now tracks the current Activity across recreation, performs WebView reads
+directly on main, waits for lifecycle stages, and finishes before scenario cleanup.
+JavaScript body strings are JSON-decoded before matching, including escaped Hebrew.
+The real animated artwork and all body/viewport assertions remain enabled.
+That run also found the chat name dialog without window focus and Home's scrolled
+contact node reporting not displayed before a later bounds query showed it inside
+the viewport. Bounded focus/display waits now precede those assertions. These are
+synchronization candidates awaiting verification, not accepted parity fixes.
+The separate API24 Home prompt teardown failure remains unresolved.
 
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose

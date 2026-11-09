@@ -4,6 +4,7 @@ import android.app.Activity
 import android.view.KeyEvent
 import android.view.View
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isDisplayed as isComposeDisplayed
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
@@ -263,6 +264,9 @@ class HomeScreenTest {
             for (id in listOf(R.string.title_activity_utills_and_tools, R.string.title_activity_moked_page,
                 R.string.test_beep, R.string.title_activity_contact, R.string.title_activity_info)) {
                 val node = compose.onNodeWithText(labels.getValue(id)).performScrollTo()
+                // Lazy-grid semantics can move before Android's visible viewport
+                // catches up. Still require the real displayed-state predicate.
+                compose.waitUntil(5_000) { node.isComposeDisplayed() }
                 try {
                     node.assertIsDisplayed()
                 } catch (failure: AssertionError) {
