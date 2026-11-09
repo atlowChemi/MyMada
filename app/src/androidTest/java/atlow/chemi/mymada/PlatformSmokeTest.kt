@@ -31,6 +31,15 @@ class PlatformSmokeTest {
     @get:Rule val compose = createEmptyComposeRule()
     @Test
     fun homeSettingsNavigationAndCalculator() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        context.getSharedPreferences("Settings", 0).edit()
+            .putStringSet("Tools", setOf("oxy"))
+            .putBoolean("Mapp", false).putBoolean("privacy", true).putBoolean("oldU", true).commit()
+        android.os.ParcelFileDescriptor.AutoCloseInputStream(
+            instrumentation.uiAutomation.executeShellCommand("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow")
+        ).use { it.readBytes() }
+        assertTrue(android.provider.Settings.canDrawOverlays(context))
         ActivityScenario.launch(HomePage::class.java).use { screen ->
             screen.onActivity {
                 assertTrue(it.findViewById<android.view.ViewGroup>(android.R.id.content).getChildAt(0)

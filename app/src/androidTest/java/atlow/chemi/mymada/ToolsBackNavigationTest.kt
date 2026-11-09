@@ -233,8 +233,13 @@ class ToolsBackNavigationTest {
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
                 compose.onNodeWithTag("shell-detection").performClick()
                 androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1))
+                    .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
                     .perform(androidx.test.espresso.action.ViewActions.click())
                 instrumentation.uiAutomation.waitForIdle(500, 5000)
+                // Idle alone can occur before the external Settings window opens.
+                compose.waitUntil(10000) {
+                    instrumentation.uiAutomation.rootInActiveWindow?.packageName == "com.android.settings"
+                }
                 if (android.os.Build.VERSION.SDK_INT >= 27) shell("cmd notification allow_listener $component")
                 else shell("settings put secure enabled_notification_listeners $component")
                 shell("input keyevent 4")

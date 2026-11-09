@@ -1,5 +1,6 @@
 package atlow.chemi.mymada.about
 
+import android.app.Activity
 import android.view.KeyEvent
 import android.view.View
 import android.graphics.Color
@@ -14,15 +15,17 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import atlow.chemi.mymada.BuildConfig
 import atlow.chemi.mymada.HomePage
 import atlow.chemi.mymada.InfoActivityKt
 import atlow.chemi.mymada.PrivacyActivity
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
+import atlow.chemi.mymada.home.homeDestination
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -88,6 +91,8 @@ class AboutScreenTest {
             compose.onNodeWithContentDescription(privacy).assertIsDisplayed()
             compose.onNodeWithContentDescription(detection).assertIsOff()
             compose.onNodeWithText(body).assertExists()
+            lateinit var owner: InfoActivityKt
+            scenario.onActivity { owner = it }
 
             val privacyMonitor = instrumentation.addMonitor(PrivacyActivity::class.java.name, null, false)
             try {
@@ -96,7 +101,7 @@ class AboutScreenTest {
                 assertNotNull(activity)
                 compose.onNodeWithText(privacy).assertIsDisplayed()
                 compose.onNodeWithContentDescription(back).performClick()
-                compose.waitUntil(10_000) { scenario.state == Lifecycle.State.RESUMED }
+                awaitStage(owner, Stage.RESUMED)
                 compose.onNodeWithText(title).assertIsDisplayed()
             } finally { instrumentation.removeMonitor(privacyMonitor) }
 
@@ -108,15 +113,17 @@ class AboutScreenTest {
                 // Settings permission dialogs are outside this slice; simulate a changed detection preference.
                 preferences.edit().putBoolean("Mapp", true).commit()
                 instrumentation.runOnMainSync { activity!!.finish() }
-                compose.waitUntil(10_000) { scenario.state == Lifecycle.State.RESUMED }
+                awaitStage(owner, Stage.RESUMED)
                 compose.onNodeWithContentDescription(detection).assertIsOn().performClick().assertIsOff()
             } finally { instrumentation.removeMonitor(settingsMonitor) }
             compose.onNodeWithContentDescription(back).performClick()
-            compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
+            awaitStage(owner, Stage.DESTROYED)
         }
         ActivityScenario.launch(InfoActivityKt::class.java).use { scenario ->
+            lateinit var owner: InfoActivityKt
+            scenario.onActivity { owner = it }
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-            compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
+            awaitStage(owner, Stage.DESTROYED)
         }
         verifyHomeEntry(title)
     }
@@ -129,13 +136,26 @@ class AboutScreenTest {
         val monitor = instrumentation.addMonitor(InfoActivityKt::class.java.name, null, false)
         try {
             ActivityScenario.launch(HomePage::class.java).use { home ->
-                compose.onNodeWithText(title).performScrollTo().performClick()
+                lateinit var owner: HomePage
+                home.onActivity { owner = it }
+                compose.homeDestination(title).performClick()
                 assertNotNull(instrumentation.waitForMonitorWithTimeout(monitor, 5_000))
                 compose.onNodeWithText(title).assertIsDisplayed()
                 instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-                compose.waitUntil(10_000) { home.state == Lifecycle.State.RESUMED }
+                awaitStage(owner, Stage.RESUMED)
             }
         } finally { instrumentation.removeMonitor(monitor) }
+    }
+
+    private fun awaitStage(activity: Activity, expected: Stage) {
+        compose.waitUntil(10_000) {
+            var reached = false
+            // The monitor supports transitional stages and must be read on main.
+            instrumentation.runOnMainSync {
+                reached = ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(activity) == expected
+            }
+            reached
+        }
     }
 
     private fun verifyArtwork(scenario: ActivityScenario<InfoActivityKt>, tile: Rect) {

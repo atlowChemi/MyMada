@@ -76,6 +76,15 @@ class AdsLocalAcceptanceTest {
                 instrumentation.addMonitor(it, Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null), true)
             }
             fun destinations() = monitors.values.sumOf { it.hits }
+            val createdDestinations = mutableListOf<String>()
+            val lifecycle = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+            val callback = androidx.test.runner.lifecycle.ActivityLifecycleCallback { activity, stage ->
+                if (stage == androidx.test.runner.lifecycle.Stage.PRE_ON_CREATE &&
+                    (activity is InfoActivityKt || activity is contactChatActivity)) {
+                    createdDestinations += activity.javaClass.name
+                }
+            }
+            instrumentation.runOnMainSync { lifecycle.addLifecycleCallback(callback) }
             try {
                 scenario.onActivity { activity ->
                     for ((destination, target) in listOf("inf" to InfoActivityKt::class.java.name,
@@ -137,13 +146,13 @@ class AdsLocalAcceptanceTest {
                     fake.callback!!.onAdFailedToShowFullScreenContent(AdError(0, "local fixture", "test"))
                     assertEquals(before, destinations())
                     assertEquals(1, loads)
-                    for (stage in androidx.test.runner.lifecycle.Stage.values()) {
-                        assertTrue("Destinations must be intercepted before activity creation",
-                            androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
-                                .getActivitiesInStage(stage).none { it is InfoActivityKt || it is contactChatActivity })
-                    }
+                    assertTrue("Destinations must be intercepted before activity creation: $createdDestinations",
+                        createdDestinations.isEmpty())
                 }
-            } finally { monitors.values.forEach(instrumentation::removeMonitor) }
+            } finally {
+                instrumentation.runOnMainSync { lifecycle.removeLifecycleCallback(callback) }
+                monitors.values.forEach(instrumentation::removeMonitor)
+            }
         }
     }
 

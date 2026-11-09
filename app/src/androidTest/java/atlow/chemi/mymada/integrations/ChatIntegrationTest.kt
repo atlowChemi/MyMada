@@ -261,6 +261,17 @@ class ChatIntegrationTest {
             ActivityScenario.launch(contactChatActivity::class.java).use { scenario ->
                 main { backend.token.setResult("offline-first-open-fixture") }
                 fun assertOrder() {
+                    // Compose layout can precede WindowManager's focus transfer,
+                    // both on first show and after restoring the two dialogs.
+                    compose.waitUntil(5_000) {
+                        var focused = false
+                        scenario.onActivity { activity ->
+                            val dialog = activity.supportFragmentManager.findFragmentByTag("chat-name")
+                                as? contactChatActivity.ChatDialog
+                            focused = dialog?.dialog?.window?.decorView?.hasWindowFocus() == true
+                        }
+                        focused
+                    }
                     compose.onNodeWithTag("chat-name-draft").assertIsDisplayed()
                     scenario.onActivity { activity ->
                         val dialogs = activity.supportFragmentManager.fragments.filterIsInstance<contactChatActivity.ChatDialog>()
