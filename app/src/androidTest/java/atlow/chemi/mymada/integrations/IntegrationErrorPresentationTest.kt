@@ -7,6 +7,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
@@ -40,20 +41,20 @@ class IntegrationErrorPresentationTest {
             compose.onNodeWithTag("activation-digit-0").performTextReplacement("1")
             compose.onNodeWithTag("activation-digit-1").performTextReplacement("2")
             compose.onNodeWithTag("activation-submit").performClick()
-            onView(withText(R.string.err)).check(matches(isDisplayed()))
-            onView(withId(android.R.id.message)).check(matches(withText(R.string.activationCodeIncomplete)))
+            onView(withText(R.string.err)).inRoot(isDialog()).check(matches(isDisplayed()))
+            onView(withId(android.R.id.message)).inRoot(isDialog()).check(matches(withText(R.string.activationCodeIncomplete)))
             assertEquals(0, calls)
             scenario.recreate()
-            onView(withId(android.R.id.message)).check(matches(withText(R.string.activationCodeIncomplete)))
-            onView(withId(android.R.id.button2)).perform(click())
+            onView(withId(android.R.id.message)).inRoot(isDialog()).check(matches(withText(R.string.activationCodeIncomplete)))
+            onView(withId(android.R.id.button2)).inRoot(isDialog()).perform(click())
             compose.onNodeWithTag("activation-digit-2").performTextReplacement("3")
             compose.onNodeWithTag("activation-digit-3").performTextReplacement("4")
             compose.onNodeWithTag("activation-submit").performClick()
-            onView(withText(R.string.err)).check(matches(isDisplayed()))
-            onView(withId(android.R.id.message)).check(matches(withText(R.string.codeBad)))
+            onView(withText(R.string.err)).inRoot(isDialog()).check(matches(isDisplayed()))
+            onView(withId(android.R.id.message)).inRoot(isDialog()).check(matches(withText(R.string.codeBad)))
             assertEquals(1, calls)
             assertFalse(preferences.getBoolean("realM", false))
-            onView(withId(android.R.id.button2)).perform(click())
+            onView(withId(android.R.id.button2)).inRoot(isDialog()).perform(click())
         }
     }
 }
