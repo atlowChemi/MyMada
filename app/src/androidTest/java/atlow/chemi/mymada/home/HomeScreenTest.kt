@@ -153,6 +153,18 @@ class HomeScreenTest {
                     }
                     waitForHomeFocus(scenario)
                 }
+                // API24 can defer Home's destruction when close() first launches
+                // AndroidX's EmptyActivity. Finish the resumed owner directly.
+                lateinit var finished: HomePage
+                scenario.onActivity { finished = it; it.finish() }
+                compose.waitUntil(10_000) {
+                    var destroyed = false
+                    instrumentation.runOnMainSync {
+                        destroyed = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                            .getLifecycleStageOf(finished) == androidx.test.runner.lifecycle.Stage.DESTROYED
+                    }
+                    destroyed
+                }
             }
         }
     }

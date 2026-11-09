@@ -290,6 +290,12 @@ contact node reporting not displayed before a later bounds query showed it insid
 the viewport. Bounded focus/display waits now precede those assertions. These are
 synchronization candidates awaiting verification, not accepted parity fixes.
 The separate API24 Home prompt teardown failure remains unresolved.
+Inspection of `42599045842` narrows that teardown failure: AndroidX launches
+`EmptyActivity`, Home pauses at 10:36:09.816, and its finish request follows at
+10:36:09.873. Home is not destroyed until the next Activity launch at
+10:36:59.248, after the teardown deadline. The prompt-metrics test now finishes
+the resumed Home directly and requires its exact instance to reach DESTROYED
+before scenario close. This candidate fix is awaiting emulator verification.
 
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
