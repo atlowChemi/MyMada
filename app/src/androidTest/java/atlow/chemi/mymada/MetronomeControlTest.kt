@@ -63,6 +63,7 @@ class MetronomeControlTest {
                     ready
                 }
                 await("Running") { MetroService.running }
+                android.util.Log.i("MetronomeTest", "After accessible Start:\n${metronomeUiTree()}")
                 val prefs = context.getSharedPreferences("metronome", 0)
                 val start = prefs.getLong("start", 0)
                 assertTrue(start in 1..SystemClock.elapsedRealtime())
@@ -71,6 +72,7 @@ class MetronomeControlTest {
                 instrumentation.runOnMainSync { }
                 assertEquals("Repeated start retains origin", start, prefs.getLong("start", 0))
                 Thread.sleep(1100)
+                android.util.Log.i("MetronomeTest", "Before recreation:\n${metronomeUiTree()}")
                 val old = activity
                 instrumentation.runOnMainSync { old.recreate() }
                 await("New Activity after recreation") {
@@ -82,6 +84,7 @@ class MetronomeControlTest {
                     }
                     recreated
                 }
+                android.util.Log.i("MetronomeTest", "After recreation, before Home:\n${metronomeUiTree()}")
                 assertTrue(instrumentation.uiAutomation.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME))
                 await("Recreated Activity stopped after Home") {
                     var stopped = false
@@ -101,6 +104,7 @@ class MetronomeControlTest {
                     }
                     focused
                 }
+                android.util.Log.i("MetronomeTest", "After focused return, before Stop:\n${metronomeUiTree()}")
                 instrumentation.runOnMainSync {
                     val it = activity
                     assertNotEquals("00:00", it.findViewById<TextView>(R.id.metro_Clock).text.toString())

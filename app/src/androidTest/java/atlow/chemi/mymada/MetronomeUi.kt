@@ -34,8 +34,11 @@ internal fun clickMetronome(running: Boolean = false) {
         }
         Thread.sleep(50)
     }
-    fun tree(node: AccessibilityNodeInfo?): String = if (node == null) "null" else
-        "${node.className}: ${node.contentDescription} / ${node.text} clickable=${node.isClickable}\n" +
-            (0 until node.childCount).joinToString("") { tree(node.getChild(it)) }
-    throw AssertionError("Missing accessible metronome action: $label\n${tree(instrumentation.uiAutomation.rootInActiveWindow)}")
+    throw AssertionError("Missing accessible metronome action: $label\n${metronomeUiTree()}")
 }
+
+internal fun metronomeUiTree(node: AccessibilityNodeInfo? =
+    InstrumentationRegistry.getInstrumentation().uiAutomation.rootInActiveWindow): String =
+    if (node == null) "null" else
+        "${node.className}: ${node.contentDescription} / ${node.text} clickable=${node.isClickable}\n" +
+            (0 until node.childCount).joinToString("") { metronomeUiTree(node.getChild(it)) }

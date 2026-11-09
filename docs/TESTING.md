@@ -366,6 +366,9 @@ API33+ and asserts access rather than skipping after a permission-denial test.
 The recreation/background Stop check waits for the recreated Activity to stop after
 Home and regain resumed/window-focus state after returning. Fixed 300/600ms sleeps
 did not establish those prerequisites on API24; accessibility Stop remains required.
+Run `42539403774` still failed accessible Stop after these waits. `MetronomeTest`
+logs now retain trees before/after recreation and after focused return to locate
+the unexpected open drawer; the failure is not waived or auto-dismissed.
 About artwork/navigation checks decline the permission prompt caused by a stale
 enabled detection preference without OS access, then wait for window focus. A
 dimmed permission dialog is not a valid sample of the underlying artwork.
