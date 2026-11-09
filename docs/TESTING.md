@@ -262,6 +262,10 @@ the destination monitor, focus and actual Back-navigation checks remain intact.
 The real offline document-artwork check uses main-thread callbacks and WebView's
 visual-state callback rather than idle waits while `err.html` continuously animates
 its ECG bar. The production animation remains enabled, including on API24.
+Run `42580327819` captured the remaining API24 hang in `ActivityScenario.close()`:
+its pre-close idle wait runs while the error artwork still animates. After the
+artwork capture, the test finishes the Activity on main so Compose releases the
+WebView before scenario teardown waits for idle.
 
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
