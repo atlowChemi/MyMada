@@ -63,10 +63,12 @@ dump_app_threads() {
     echo 'No target app process found for ART thread dump'
   fi
 }
+watchdog=''
 cleanup() {
   status=$?
   trap - EXIT
   set +e
+  if [[ -n $watchdog ]]; then kill "$watchdog" 2>/dev/null; fi
   echo "Collecting emulator evidence (test exit=$status)"
   if [[ -n $test_log ]]; then
     kill "$test_log" 2>/dev/null
@@ -160,15 +162,61 @@ if [[ -n ${TEST_CLASSES:-} ]]; then
   test_timeout=600
 fi
 printf '%s\n' "${TEST_CLASSES:-All discovered instrumentation tests; default test arguments}" > "$out/selectors.txt"
-timeout --signal=TERM --kill-after=30 "$test_timeout" ./gradlew :app:connectedDebugAndroidTest "${test_args[@]}" \
-  --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'
-# AGP can return success after a device-install failure without any test results.
-mapfile -t results < <(find app/build/outputs/androidTest-results/connected -name 'TEST-*.xml')
-if (( ${#results[@]} == 0 )) || ! grep -Eq 'tests="[1-9][0-9]*"' "${results[@]}"; then
-  echo 'Instrumentation produced no executed-test JUnit results' >&2
-  exit 1
+phases=(default)
+if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.settings.StartupUpgradeTest ]]; then
+  phases=(seed verify)
+  test_args+=('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true')
+elif [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.MetronomeWidgetUpgradeTest ]]; then
+  phases=(createFixture verifyFixture)
+  test_args=('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true')
 fi
-if grep -Eq '<(failure|error)([ >])' "${results[@]}"; then
-  echo 'Instrumentation reported test failures' >&2
-  exit 1
+if (( ${#phases[@]} > 1 )); then
+  # Retain verbose runner/installer diagnostics for the staged replace-install.
+  test_args+=('-Pandroid.experimental.androidTest.builtin_test_platform=true')
 fi
+# Installer hangs also occur before non-staged tests start; retain their diagnostics.
+test_args+=('--info')
+for phase in "${phases[@]}"; do
+  phase_args=()
+  if [[ $phase == seed || $phase == verify ]]; then
+    phase_args+=("-Pandroid.testInstrumentationRunnerArguments.startupFixture=$phase")
+  elif [[ $phase != default ]]; then
+    phase_args+=("-Pandroid.testInstrumentationRunnerArguments.class=$TEST_CLASSES#$phase")
+  fi
+  if [[ $phase == verify || $phase == verifyFixture ]]; then
+    adb shell am force-stop atlow.chemi.mymada.debug
+  fi
+  status=0
+  printf '%q ' ./gradlew :app:connectedDebugAndroidTest "${test_args[@]}" "${phase_args[@]}" > "$out/command-$phase.txt"
+  rm -rf app/build/outputs/androidTest-results/connected
+  # Gradle terminates instrumentation on timeout, too early for EXIT cleanup to
+  # recover the blocked test's stack. Capture it while the process still exists.
+  (
+    sleep "$((test_timeout - 30))"
+    dump_app_threads
+    adb pull /data/anr "$out/pre-timeout-$phase" || true
+    adb logcat -b all -d -v threadtime > "$out/pre-timeout-$phase-logcat.txt"
+  ) &
+  watchdog=$!
+  timeout --signal=TERM --kill-after=30 "$test_timeout" ./gradlew :app:connectedDebugAndroidTest \
+    "${test_args[@]}" "${phase_args[@]}" \
+    --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g' || status=$?
+  kill "$watchdog" 2>/dev/null || true
+  wait "$watchdog" 2>/dev/null || true
+  watchdog=''
+  mkdir -p "$out/results/$phase"
+  if [[ -d app/build/outputs/androidTest-results/connected ]]; then
+    cp -R app/build/outputs/androidTest-results/connected/. "$out/results/$phase/"
+  fi
+  if (( status != 0 )); then exit "$status"; fi
+  # AGP can return success after a device-install failure without any test results.
+  mapfile -t results < <(find "$out/results/$phase" -name 'TEST-*.xml')
+  if (( ${#results[@]} == 0 )) || ! grep -Eq 'tests="[1-9][0-9]*"' "${results[@]}"; then
+    echo "Instrumentation phase $phase produced no executed-test JUnit results" >&2
+    exit 1
+  fi
+  if grep -Eq '<(failure|error)([ >])' "${results[@]}"; then
+    echo "Instrumentation phase $phase reported test failures" >&2
+    exit 1
+  fi
+done
