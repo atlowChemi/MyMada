@@ -41,7 +41,7 @@ main-queue idle condition required by `ActivityScenario.launch`.
 ## CI build
 
 `Android build` runs on pull requests (including forks) and pushes to `master`.
-It uses Ubuntu 24.04, Temurin 17.0.17+10, Android command-line tools 12266719,
+It uses Ubuntu 24.04, Temurin 17.0.17+10, Android command-line tools 16111833 (23.0),
 platform `android-37.0`, build-tools 37.0.0 and the checked-in Gradle wrapper.
 Reproduce its build after installing those tools:
 
@@ -51,13 +51,13 @@ Reproduce its build after installing those tools:
 ```
 
 Download both APKs from the run's `debug-apks-<SHA>` artifact
-(retained seven days). These are disposable debug-signed builds, not releases.
+(retained two days). These are disposable debug-signed builds, not releases.
 
 The Google Services plugin reads checked-in `app/google-services.json` to generate
 build resources; no Firebase credentials or GitHub secrets are supplied. Those
 public client identifiers are **production-connected configuration**, not an offline
-backend fixture. CI only compiles/packages: it does not install or launch the app,
-run instrumentation, or contact Firebase through the app. Apply the isolation rules
+backend fixture. The build job only compiles/packages; the emulator jobs below run
+instrumentation with network isolation. Apply the isolation rules
 below before running downloaded APKs; demo ad IDs alone do not isolate Firebase.
 
 The workflow has read-only repository access, does not persist checkout credentials,
@@ -72,16 +72,64 @@ The next step runs `:app:testDebugUnitTest :app:lintDebug :app:lintRelease` with
 `--continue --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'`. Gradle's
 `--continue` collects independent task failures; it does not turn them into success.
 Tests and lint errors fail the job; existing lint warnings remain warnings (no new
-baseline or blanket suppression). Emulator execution is separate work under #99.
+baseline or blanket suppression). Emulator execution uses separate jobs below.
 
 `mikepenz/action-junit-report` renders JUnit results and failure details in the job
 summary and emits annotations without Checks API writes or PR comments, keeping
 fork permissions read-only. Missing/malformed results or failed tests fail reporting.
-The seven-day `quality-reports-<SHA>` artifact contains JUnit XML, the browsable
+The two-day `quality-reports-<SHA>` artifact contains JUnit XML, the browsable
 Gradle test HTML report and native lint HTML/XML. Reports and built APKs upload even
 after failures, but not cancellation; an early build failure may leave no reports.
 Download/unzip the artifact and open `index.html` for tests or `lint-results-*.html`
 for lint. Lint is not converted to JUnit. No live backend or emulator is used here.
+
+## CI emulator smoke
+
+After build/tests/lint pass, two disposable Linux runners exercise API24 and API37
+Google APIs x86_64 images (Pixel 2 profile, 720×1280 at 320dpi, 2GB RAM,
+requested 2GB userdata). Emulator
+versions may enforce a larger userdata minimum: the disposable runner removes unused
+preinstalled NDK/.NET tools and requires 10GiB free after image installation, before
+boot. API24 uses font scale1.0; API37 uses1.3
+and the `37.0;google_apis_ps16k` image, with a required `PAGE_SIZE=16384` check.
+With `TEST_CLASSES` unset, the script runs all discovered instrumentation tests with
+their default arguments. The original three-test smoke selector is removed.
+Tests needing retained PDFs, policy HTML, external audio or staged upgrade setup may
+fail or skip until those prerequisites are supplied; report those separately from
+application regressions. Discovery does not exercise every argument-dependent route,
+and an instrumentation crash can leave later tests unexecuted.
+
+The current diagnostic matrix narrows the next run to API24 PlatformSmoke alone vs.
+after the metronome classes, and fresh API37 runners for Audio, ChatDialogGeometry
+and VitalsScreen. `TEST_CLASSES` records the exact selectors in each artifact;
+focused invocations have a10-minute timeout. This compares fresh state with the
+failed full-suite baseline; it is not full-suite coverage or automatic retries.
+
+`.github/scripts/emulator-smoke.sh isolate` runs before emulator boot: emulator
+processes use a dedicated group whose non-loopback IPv4/IPv6 traffic is rejected
+by the host firewall. Android OUTPUT rules are also installed and checked before
+app installation. The Gradle process retains dependency-download access. Never run
+the isolation setup on a shared machine; it wraps the SDK emulator executable and
+is intended only for the disposable GitHub runner.
+
+Animations/spellchecking are disabled, rotation is portrait and font scale explicit;
+tests select their own locales. The test command times out after sixty minutes without
+automatic retries. APKs are built before boot; Gradle uses one worker and a 2GB heap
+while the emulator runs to reduce resource contention. Gradle owns app installation.
+Two-minute screenrecord segments start before instrumentation;
+on failure, finalized MP4s, a screenshot and Android ANR traces join the logcat ring buffers, package/activity
+state, selectors, SHA256 APK identities, source SHA and device facts in the two-day
+`emulator-api<API>-<SHA>` artifact. JUnit XML and HTML results are retained on pass
+and failure and reported through the same read-only JUnit action. Recorder failures
+are logged and do not replace the original test exit status. Runner termination or
+loss of ADB can prevent final capture; cancelled runs do not claim passing results.
+Individual ADB diagnostic commands are bounded to30 seconds; live TestRunner logs
+retain test progress even when instrumentation never produces JUnit XML.
+
+Boot/image provisioning logs live in the emulator action step. Device evidence
+records actual page size when `getconf` exists; an image name alone does not prove
+16KB runtime support. Physical audio/OEM checks and actual-PDF fixture distribution are
+outside this initial smoke slice; their existing #99 requirements remain open.
 
 ## Isolate an owned emulator and select a test
 
