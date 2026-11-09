@@ -200,8 +200,7 @@ for phase in "${phases[@]}"; do
   # recover the blocked test's stack. Capture it while the process still exists.
   (
     sleep "$((test_timeout - 30))"
-    # shellcheck disable=SC2016 # PID lookup and ART completion wait run on Android.
-    adb shell 'pid=$(pidof atlow.chemi.mymada.debug); if [ -n "$pid" ]; then kill -3 "$pid"; sleep 2; fi'
+    dump_app_threads
     adb pull /data/anr "$out/pre-timeout-$phase" || true
     adb logcat -b all -d -v threadtime > "$out/pre-timeout-$phase-logcat.txt"
   ) &
