@@ -75,12 +75,16 @@ class MetronomeControlTest {
                 android.util.Log.i("MetronomeTest", "Before recreation:\n${metronomeUiTree()}")
                 val old = activity
                 instrumentation.runOnMainSync { old.recreate() }
-                await("New Activity after recreation") {
+                await("Focused, laid-out Activity after recreation") {
                     var recreated = false
                     instrumentation.runOnMainSync {
                         val resumed = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
                             .filterIsInstance<UtillitiesAndTools>().firstOrNull { it !== old }
-                        if (resumed != null) { activity = resumed; recreated = true }
+                        val clock = resumed?.findViewById<TextView>(R.id.metro_Clock)
+                        if (resumed?.hasWindowFocus() == true && clock?.isShown == true && clock.width > 0) {
+                            activity = resumed
+                            recreated = true
+                        }
                     }
                     recreated
                 }

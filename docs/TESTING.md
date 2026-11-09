@@ -369,6 +369,8 @@ did not establish those prerequisites on API24; accessibility Stop remains requi
 Run `42539403774` still failed accessible Stop after these waits. `MetronomeTest`
 logs now retain trees before/after recreation and after focused return to locate
 the unexpected open drawer; the failure is not waived or auto-dismissed.
+The recreated screen must also have window focus and a laid-out clock before Home
+is pressed: run `42549862874` reached RESUMED with no active accessibility root.
 About artwork/navigation checks decline the permission prompt caused by a stale
 enabled detection preference without OS access, then wait for window focus. A
 dimmed permission dialog is not a valid sample of the underlying artwork.
