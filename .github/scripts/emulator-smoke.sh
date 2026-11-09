@@ -46,6 +46,19 @@ out="$PWD/emulator-evidence"
 mkdir -p "$out"
 recorder=''
 test_log=''
+dump_app_threads() {
+  # Old Android pidof implementations can miss long process names. Preserve ps
+  # and the selected PID so an empty diagnostic cannot masquerade as a dump.
+  adb shell 'ps -A 2>/dev/null || ps' | tr -d '\r' > "$out/process-list.txt"
+  local pid
+  pid=$(awk '$NF == "atlow.chemi.mymada.debug" {print $2; exit}' "$out/process-list.txt")
+  if [[ $pid =~ ^[0-9]+$ ]]; then
+    echo "Requesting ART thread dump for app PID $pid"
+    adb shell "kill -3 $pid; sleep 2"
+  else
+    echo 'No target app process found for ART thread dump'
+  fi
+}
 cleanup() {
   status=$?
   trap - EXIT
@@ -65,8 +78,7 @@ cleanup() {
   fi
   if (( status != 0 )); then
     # A hung test can time out without an Android ANR. Ask ART for its thread dump.
-    # shellcheck disable=SC2016 # Resolve the disposable app process on Android.
-    adb shell 'pid=$(pidof atlow.chemi.mymada.debug); if [ -n "$pid" ]; then kill -3 "$pid"; fi'
+    dump_app_threads
     adb shell dumpsys activity processes > "$out/processes.txt"
   fi
   adb logcat -b all -d -v threadtime > "$out/logcat.txt"
