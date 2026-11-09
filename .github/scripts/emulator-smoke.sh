@@ -4,6 +4,10 @@ set -euo pipefail
 # The hosted runner is disposable. Block the emulator's host sockets before boot,
 # independently of Android firewall rules and app-controlled network settings.
 if [[ ${1:-} == isolate ]]; then
+  mkdir -p emulator-evidence
+  { nproc; free -m; cat /proc/pressure/cpu /proc/pressure/memory; } > emulator-evidence/host-before-boot.txt
+  # Bounded sampling covers cold boot and the Vitals warm-boot experiment.
+  vmstat -w 2 180 > emulator-evidence/host-boot-vmstat.txt &
   if [[ ${EXPECT_PAGE_SIZE:-} ]]; then
     grep -qx 'target=android-37.0' "$ANDROID_AVD_HOME/test.ini"
   fi
@@ -42,6 +46,23 @@ out="$PWD/emulator-evidence"
 mkdir -p "$out"
 recorder=''
 test_log=''
+dump_app_threads() {
+  # Old Android pidof implementations can miss long process names. Preserve ps
+  # and the selected PID so an empty diagnostic cannot masquerade as a dump.
+  adb shell 'ps -A 2>/dev/null || ps' | tr -d '\r' > "$out/process-list.txt"
+  local pid
+  pid=$(awk '$NF == "atlow.chemi.mymada.debug" {print $2; exit}' "$out/process-list.txt")
+  if [[ $pid =~ ^[0-9]+$ ]]; then
+    # Pre-O ART writes a shared file directly; unlike debuggerd it cannot create
+    # that file in /data/anr. Prepare it without truncating existing ANR evidence.
+    # shellcheck disable=SC2016 # Query the guest API, not the host.
+    adb shell 'if [ "$(getprop ro.build.version.sdk)" -lt 26 ]; then touch /data/anr/traces.txt && chmod 0666 /data/anr/traces.txt && restorecon /data/anr/traces.txt; fi'
+    echo "Requesting ART thread dump for app PID $pid"
+    adb shell "kill -3 $pid; sleep 2"
+  else
+    echo 'No target app process found for ART thread dump'
+  fi
+}
 cleanup() {
   status=$?
   trap - EXIT
@@ -59,13 +80,21 @@ cleanup() {
     kill "$recorder" 2>/dev/null
     wait "$recorder" 2>/dev/null
   fi
+  if (( status != 0 )); then
+    # A hung test can time out without an Android ANR. Ask ART for its thread dump.
+    dump_app_threads
+    adb shell dumpsys activity processes > "$out/processes.txt"
+  fi
   adb logcat -b all -d -v threadtime > "$out/logcat.txt"
   adb shell dumpsys activity activities > "$out/activities.txt"
+  adb shell dumpsys window windows > "$out/windows.txt"
+  { free -m; cat /proc/pressure/cpu /proc/pressure/memory; ps -eo pid,comm,pcpu,rss --sort=-rss | head -20; } > "$out/host-after-tests.txt"
   adb shell dumpsys package atlow.chemi.mymada.debug > "$out/package.txt"
   { sudo iptables -nvL OUTPUT; sudo ip6tables -nvL OUTPUT; } > "$out/host-firewall.txt"
   if (( status != 0 )); then
     adb shell dumpsys activity lastanr > "$out/last-anr.txt"
     adb pull /data/anr "$out/" > "$out/anr-pull.log" 2>&1
+    adb pull /data/tombstones "$out/" > "$out/tombstone-pull.log" 2>&1
     adb exec-out screencap -p > "$out/failure.png"
     adb pull /sdcard/ci-video "$out/" || echo 'Video retrieval failed' >> "$out/capture.log"
     if ! find "$out" -name '*.mp4' -size +0c | grep -q .; then
@@ -77,6 +106,15 @@ cleanup() {
 trap cleanup EXIT
 
 [[ -f "$RUNNER_TEMP/mymada-isolation-ready" ]]
+if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.tools.vitals.VitalsScreenTest ]]; then
+  # Diagnose first-boot initialization pressure without retrying instrumentation.
+  adb logcat -b all -d -v threadtime > "$out/cold-boot-logcat.txt"
+  adb reboot
+  timeout 120 adb wait-for-device
+  # shellcheck disable=SC2016 # Poll in the bounded child shell.
+  timeout 180 bash -c 'until [[ $(timeout 10 adb shell getprop sys.boot_completed | tr -d "\r") == 1 ]]; do sleep 2; done'
+  adb shell input keyevent 82
+fi
 # Some images close the transport before `adb root` receives its reply. The
 # reconnected shell UID, not that transient transport result, proves root access.
 adb root || echo 'adb root disconnected; checking UID after reconnection'
@@ -95,10 +133,15 @@ adb shell settings put system font_scale "${FONT_SCALE:-1.0}"
 adb shell settings put system accelerometer_rotation 0
 adb shell settings put system user_rotation 0
 adb shell settings put secure show_ime_with_hard_keyboard 0
-# Build after emulator-runner finishes SDK setup. Let the connected test task own
-# installation: its API24 installer rejects an already installed package.
-./gradlew :app:assembleDebug :app:assembleDebugAndroidTest \
-  --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'
+# The workflow assembles before boot; do not start another Gradle JVM while
+# SystemUI is initializing. The connected test task still owns installation.
+if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.tools.vitals.VitalsScreenTest ]]; then
+  adb logcat -b events -d > "$out/warm-boot-events.txt"
+  if grep -E 'am_anr.*com.android.systemui' "$out/warm-boot-events.txt"; then
+    echo 'Warm boot still has a System UI ANR; refusing to run focus tests' >&2
+    exit 1
+  fi
+fi
 {
   git rev-parse HEAD
   java -version 2>&1
@@ -115,7 +158,7 @@ adb shell 'rm -f /sdcard/ci-stop; mkdir -p /sdcard/ci-video'
 # shellcheck disable=SC2016 # Expand the counter on the device, not the host.
 command adb shell 'i=0; while [ ! -e /sdcard/ci-stop ]; do screenrecord --bit-rate 1000000 --size 540x960 --time-limit 120 /sdcard/ci-video/segment-$i.mp4 || exit; i=$((i+1)); done' > "$out/recorder.log" 2>&1 &
 recorder=$!
-command adb logcat -v threadtime 'TestRunner:I' '*:S' > "$out/test-progress.txt" 2>&1 &
+command adb logcat -v threadtime 'TestRunner:I' 'MetronomeTest:I' '*:S' > "$out/test-progress.txt" 2>&1 &
 test_log=$!
 test_args=()
 test_timeout=3600
