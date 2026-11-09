@@ -366,6 +366,9 @@ API33+ and asserts access rather than skipping after a permission-denial test.
 The recreation/background Stop check waits for the recreated Activity to stop after
 Home and regain resumed/window-focus state after returning. Fixed 300/600ms sleeps
 did not establish those prerequisites on API24; accessibility Stop remains required.
+About artwork/navigation checks decline the permission prompt caused by a stale
+enabled detection preference without OS access, then wait for window focus. A
+dimmed permission dialog is not a valid sample of the underlying artwork.
 
 | Area | Selectors and nonobvious prerequisites |
 | --- | --- |
