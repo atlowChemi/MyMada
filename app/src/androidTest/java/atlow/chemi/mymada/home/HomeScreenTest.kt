@@ -262,7 +262,20 @@ class HomeScreenTest {
 
             for (id in listOf(R.string.title_activity_utills_and_tools, R.string.title_activity_moked_page,
                 R.string.test_beep, R.string.title_activity_contact, R.string.title_activity_info)) {
-                val node = compose.onNodeWithText(labels.getValue(id)).performScrollTo().assertIsDisplayed()
+                val node = compose.onNodeWithText(labels.getValue(id)).performScrollTo()
+                try {
+                    node.assertIsDisplayed()
+                } catch (failure: AssertionError) {
+                    var window = ""
+                    instrumentation.runOnMainSync {
+                        val resumed = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                            .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED)
+                        window = resumed.joinToString { "${it.javaClass.simpleName}:focus=${it.hasWindowFocus()}" }
+                    }
+                    throw AssertionError("Home scroll $language/$scale id=$id: " +
+                        "bounds=${node.fetchSemanticsNode().boundsInWindow}, bottomLimit=$bottomLimit, " +
+                        "scenario=${scenario.state}, resumed=[$window]", failure)
+                }
                 assertTrue(node.fetchSemanticsNode().boundsInRoot.bottom <= bottomLimit)
             }
             scenario.recreate()
