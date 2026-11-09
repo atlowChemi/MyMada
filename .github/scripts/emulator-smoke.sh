@@ -53,6 +53,10 @@ dump_app_threads() {
   local pid
   pid=$(awk '$NF == "atlow.chemi.mymada.debug" {print $2; exit}' "$out/process-list.txt")
   if [[ $pid =~ ^[0-9]+$ ]]; then
+    # Pre-O ART writes a shared file directly; unlike debuggerd it cannot create
+    # that file in /data/anr. Prepare it without truncating existing ANR evidence.
+    # shellcheck disable=SC2016 # Query the guest API, not the host.
+    adb shell 'if [ "$(getprop ro.build.version.sdk)" -lt 26 ]; then touch /data/anr/traces.txt && chmod 0666 /data/anr/traces.txt && restorecon /data/anr/traces.txt; fi'
     echo "Requesting ART thread dump for app PID $pid"
     adb shell "kill -3 $pid; sleep 2"
   else
