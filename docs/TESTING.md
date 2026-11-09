@@ -125,6 +125,36 @@ are logged and do not replace the original test exit status. Runner termination 
 loss of ADB can prevent final capture; cancelled runs do not claim passing results.
 Individual ADB diagnostic commands are bounded to30 seconds; live TestRunner logs
 retain test progress even when instrumentation never produces JUnit XML.
+Graphics use the emulator's supported `-gpu software` selection rather than the
+deprecated `swiftshader_indirect` backend. Native tombstones accompany ANR traces
+on failure to distinguish system-process crashes from application assertions.
+API37 now tests explicit `-gpu swiftshader`, following Android's slow-emulator
+troubleshooting guidance, rather than automatic software-backend selection.
+`-accel on` requires working KVM. Host vmstat samples cover boot; memory/CPU
+pressure and window diagnostics accompany results. Although the AVD requests
+2GB RAM, current API37 images raise it to 4GB at startup; use logs for actual RAM.
+SDK setup uses the pinned action to download tools, then a shell pipeline for
+license answers: an early sdkmanager exit cannot crash Node with `EPIPE`, and a
+failed sdkmanager command still fails the job.
+The Vitals diagnostic preserves cold-boot logcat and performs one warm reboot
+before instrumentation to distinguish first-boot initialization pressure. Host
+network isolation survives reboot; guest firewall rules are installed afterward.
+A fresh System UI ANR fails setup instead of producing misleading focus failures.
+APKs are assembled before boot; the harness does not repeat the standalone
+assemble invocation after boot. Public run `42534397767` still showed a Google16KB
+KeyguardService ANR (SystemUI main thread: 0.58s executing, 20.68s scheduler wait),
+so public runners/SwiftShader alone are not yet a verified boot-stability fix.
+Failure cleanup requests an ART thread dump with SIGQUIT when the target process
+still exists, including test timeouts that never produce an OS ANR. Process state
+and the existing ANR directory/logcat evidence accompany that request.
+This is a boot experiment, not a retry of failed tests or full-suite acceptance.
+An additional Vitals job uses the API37 AOSP `default` image without bundled
+Google services, with the same screen, memory, font scale and test selectors.
+Its observed page size is recorded; it does not replace the required 16KB image.
+This compares image configurations, not Google services independently of page size.
+A third Vitals job uses API37 `google_apis` and asserts a 4096-byte page size.
+Together these jobs compare AOSP 4KB, Google-services 4KB and Google-services 16KB
+with identical test selectors, display settings and warm-boot preparation.
 
 Boot/image provisioning logs live in the emulator action step. Device evidence
 records actual page size when `getconf` exists; an image name alone does not prove
@@ -259,6 +289,70 @@ commit PDFs, tokens or authenticated responses. Rendering compatibility is not
 [#145](https://github.com/atlowChemi/MyMada/issues/145).
 
 ## Focused fixture requirements
+
+Dispatch pager gestures start/end at the inner quarter points, outside system Back
+gesture edges. Run `42539403774` recorded a return-to-home Back navigation during
+the old reverse swipe; tab-selection and recreation assertions remain required.
+Firebase local-error assertions explicitly select the native dialog root. Home's
+dispatch-choice test invokes the real dialog button on the main thread, avoiding
+Espresso's post-click Compose-idle wait after navigation to the native lock screen;
+the destination monitor, focus and actual Back-navigation checks remain intact.
+The real offline document-artwork check uses main-thread callbacks and WebView's
+visual-state callback rather than idle waits while `err.html` continuously animates
+its ECG bar. The production animation remains enabled, including on API24.
+Run `42580327819` captured the remaining API24 hang in `ActivityScenario.close()`:
+its pre-close idle wait runs while the error artwork still animates. After the
+artwork capture, the test finishes the Activity on main so Compose releases the
+WebView before scenario teardown waits for idle.
+Run `42584103354` attempt 2 completed all seven API24 document tests, including
+the offline-artwork check in about 65 seconds. The combined job still timed out:
+its ART trace now points to `PrivacyScreenTest.verifyScreen` calling
+`ActivityScenario.onActivity`, and retained-policy loading also failed.
+The same run exposed About's return-state query racing the intermediate RESTARTED
+stage. About lifecycle assertions now sample on main between lifecycle transactions;
+the requested state and timeout remain unchanged. Run `42590403416` showed that
+`ActivityScenario.state` itself waits for idle and rejects main-thread access.
+The corrected assertions query `ActivityLifecycleMonitor` on main for the exact
+Activity instance (captured after recreation), including its DESTROYED stage.
+Dictionary native dialog buttons, editors and caption assertions explicitly select
+the dialog root after that run selected an unfocused base Activity window instead.
+Both corrections await emulator verification.
+Run `42599045842` verified About on both APIs and both tools/dictionary jobs.
+Its Privacy trace still blocked inside `waitForBody`'s `onActivity` idle wait.
+Privacy now tracks the current Activity across recreation, performs WebView reads
+directly on main, waits for lifecycle stages, and finishes before scenario cleanup.
+JavaScript body strings are JSON-decoded before matching, including escaped Hebrew.
+The real animated artwork and all body/viewport assertions remain enabled.
+That run also found the chat name dialog without window focus and Home's scrolled
+contact node reporting not displayed before a later bounds query showed it inside
+the viewport. Bounded focus/display waits now precede those assertions. These are
+synchronization candidates awaiting verification, not accepted parity fixes.
+The separate API24 Home prompt teardown failure remains unresolved.
+Inspection of `42599045842` narrows that teardown failure: AndroidX launches
+`EmptyActivity`, Home pauses at 10:36:09.816, and its finish request follows at
+10:36:09.873. Home is not destroyed until the next Activity launch at
+10:36:59.248, after the teardown deadline. The prompt-metrics test now finishes
+the resumed Home directly and requires its exact instance to reach DESTROYED
+before scenario close. This candidate fix is awaiting emulator verification.
+Run `42681459354` passed both document/policy jobs and the API37 chat-focus check.
+API24 Home did not execute: emulator package download failed during setup.
+API37 home/integrations reached 57/58, failing the ad test's global lifecycle scan.
+That scan included DESTROYED destination instances from preceding About tests.
+The ad check now records destination PRE_ON_CREATE callbacks during its own actions,
+requiring zero creations as well as the existing exact blocking-monitor hit counts.
+Run `42686300456` passed the Home prompt teardown check and API37 home/integrations.
+API24 Home reached 57/58: its large-text scroll still failed after five seconds.
+Video shows the grid never leaving its top rows during that wait. Home test navigation
+now uses the lazy grid's `performScrollToNode` rather than `performScrollTo` on an
+offscreen item, then retains the displayed/bounds assertions. Verification is pending.
+The Google-4KB Vitals comparison failed all three focus checks with a visible
+"Pixel Launcher isn't responding" dialog; actual-16KB and AOSP Vitals passed.
+
+`PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
+navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
+MaterialTheme because the rename field embeds a native Material text input.
+The audio stop/write check waits for the writer's actual full-buffer sleep before
+stopping it; thread startup alone does not establish that PCM encoding has finished.
 
 | Area | Selectors and nonobvious prerequisites |
 | --- | --- |
