@@ -86,7 +86,7 @@ boot. API24 uses font scale1.0; API37 uses1.3
 and the `37.0;google_apis_ps16k` image, with a required `PAGE_SIZE=16384` check.
 With `TEST_CLASSES` unset, the script runs all discovered instrumentation tests with
 their default arguments. The original three-test smoke selector is removed.
-Tests needing retained PDFs, policy HTML, external audio or staged upgrade setup may
+Tests needing external audio or staged upgrade setup may
 fail or skip until those prerequisites are supplied; report those separately from
 application regressions. Discovery does not exercise every argument-dependent route,
 and an instrumentation crash can leave later tests unexecuted.
@@ -260,6 +260,15 @@ separately authorized nonproduction services/accounts; checked-in configuration
 does not authorize production use or require a new manual-phone matrix.
 
 ## Privacy and document content
+
+CI runs `.github/scripts/download-test-fixtures.sh` on the host before builds and
+emulator boot. Five public read-only Storage objects (three PDFs and both policies)
+must match the pinned SHA256 values; changed/error responses fail setup. The
+ignored `app/src/androidTest/assets/ci-fixtures/` directory is packaged only in the
+test APK. `retainedFixture` copies these to the app's external test files when no
+local fixture exists. No production application asset or emulator networking is
+added. The policy hashes match the previously accepted authentic fixtures.
+Dedicated API24/API37 document-policy jobs exercise this path.
 
 Synthetic `PrivacyScreenTest#localLoadedPolicyScrollsAndNavigatesWithinTheRealHost`
 has **no external-file prerequisite**. It exercises real PrivacyActivity/WebView

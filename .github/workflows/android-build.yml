@@ -38,9 +38,11 @@ jobs:
           # GitHub scopes PR caches to their merge ref; master cannot restore them.
           cache-read-only: false
       - name: Build debug app and instrumentation APKs
-        run: >-
-          ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest
-          --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
+        # Public fixtures go into the test APK, never the production application.
+        # Downloads finish before any isolated emulator is started.
+        run: |
+          bash .github/scripts/download-test-fixtures.sh
+          ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
       - name: Run JVM tests and Android Lint
         run: >-
           ./gradlew :app:testDebugUnitTest :app:lintDebug :app:lintRelease
@@ -87,6 +89,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - api: 24
+            case: document-policy-fixtures
+            tests: atlow.chemi.mymada.documents.DocumentsTest,atlow.chemi.mymada.privacy.PrivacyScreenTest
+            image: '24'
+            target: google_apis
+            page-size: ''
+            font: '1.0'
+          - api: 37
+            case: document-policy-fixtures
+            tests: atlow.chemi.mymada.documents.DocumentsTest,atlow.chemi.mymada.privacy.PrivacyScreenTest
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
           - api: 24
             case: platform-alone
             tests: atlow.chemi.mymada.PlatformSmokeTest
@@ -196,6 +212,7 @@ jobs:
           test -x "$ANDROID_HOME/cmdline-tools/16111833/bin/avdmanager"
           rm -rf "${ANDROID_HOME:?}/cmdline-tools/latest"
           ln -s 16111833 "$ANDROID_HOME/cmdline-tools/latest"
+          bash .github/scripts/download-test-fixtures.sh
           ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
           sudo chmod 666 /dev/kvm
       - name: Run isolated instrumentation suite
