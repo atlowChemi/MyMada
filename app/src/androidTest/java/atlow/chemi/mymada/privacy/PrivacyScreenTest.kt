@@ -18,6 +18,7 @@ import androidx.test.runner.lifecycle.Stage
 import atlow.chemi.mymada.PrivacyActivity
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
+import atlow.chemi.mymada.retainedFixture
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -109,7 +110,7 @@ class PrivacyScreenTest {
         for ((language, hash) in mapOf(
             "en" to "9efca8dbd6eb632fc6f0027ca1da03f113b41130bad9f9dbbcdcb636b901e9ac",
             "he" to "c9d22a2aa8313cf46451c36f56680e5b79b9b05fd6c00037e85a868f1c286a46")) {
-            val bytes = java.io.File(instrumentation.targetContext.getExternalFilesDir(null), "policy-$language.html").readBytes()
+            val bytes = retainedFixture("policy-$language.html").readBytes()
             assertEquals(hash, java.security.MessageDigest.getInstance("SHA-256").digest(bytes)
                 .joinToString("") { "%02x".format(it) })
             instrumentation.runOnMainSync {
