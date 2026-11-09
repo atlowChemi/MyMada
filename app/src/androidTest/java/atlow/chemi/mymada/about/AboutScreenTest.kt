@@ -25,6 +25,7 @@ import atlow.chemi.mymada.InfoActivityKt
 import atlow.chemi.mymada.PrivacyActivity
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
+import atlow.chemi.mymada.home.homeDestination
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -137,7 +138,7 @@ class AboutScreenTest {
             ActivityScenario.launch(HomePage::class.java).use { home ->
                 lateinit var owner: HomePage
                 home.onActivity { owner = it }
-                compose.onNodeWithText(title).performScrollTo().performClick()
+                compose.homeDestination(title).performClick()
                 assertNotNull(instrumentation.waitForMonitorWithTimeout(monitor, 5_000))
                 compose.onNodeWithText(title).assertIsDisplayed()
                 instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)

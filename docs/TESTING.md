@@ -302,6 +302,13 @@ API37 home/integrations reached 57/58, failing the ad test's global lifecycle sc
 That scan included DESTROYED destination instances from preceding About tests.
 The ad check now records destination PRE_ON_CREATE callbacks during its own actions,
 requiring zero creations as well as the existing exact blocking-monitor hit counts.
+Run `42686300456` passed the Home prompt teardown check and API37 home/integrations.
+API24 Home reached 57/58: its large-text scroll still failed after five seconds.
+Video shows the grid never leaving its top rows during that wait. Home test navigation
+now uses the lazy grid's `performScrollToNode` rather than `performScrollTo` on an
+offscreen item, then retains the displayed/bounds assertions. Verification is pending.
+The Google-4KB Vitals comparison failed all three focus checks with a visible
+"Pixel Launcher isn't responding" dialog; actual-16KB and AOSP Vitals passed.
 
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
