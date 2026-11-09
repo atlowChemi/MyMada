@@ -136,6 +136,9 @@ APKs are assembled before boot; the harness does not repeat the standalone
 assemble invocation after boot. Public run `42534397767` still showed a Google16KB
 KeyguardService ANR (SystemUI main thread: 0.58s executing, 20.68s scheduler wait),
 so public runners/SwiftShader alone are not yet a verified boot-stability fix.
+Failure cleanup requests an ART thread dump with SIGQUIT when the target process
+still exists, including test timeouts that never produce an OS ANR. Process state
+and the existing ANR directory/logcat evidence accompany that request.
 This is a boot experiment, not a retry of failed tests or full-suite acceptance.
 An additional Vitals job uses the API37 AOSP `default` image without bundled
 Google services, with the same screen, memory, font scale and test selectors.

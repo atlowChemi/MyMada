@@ -63,6 +63,12 @@ cleanup() {
     kill "$recorder" 2>/dev/null
     wait "$recorder" 2>/dev/null
   fi
+  if (( status != 0 )); then
+    # A hung test can time out without an Android ANR. Ask ART for its thread dump.
+    # shellcheck disable=SC2016 # Resolve the disposable app process on Android.
+    adb shell 'pid=$(pidof atlow.chemi.mymada.debug); if [ -n "$pid" ]; then kill -3 "$pid"; fi'
+    adb shell dumpsys activity processes > "$out/processes.txt"
+  fi
   adb logcat -b all -d -v threadtime > "$out/logcat.txt"
   adb shell dumpsys activity activities > "$out/activities.txt"
   adb shell dumpsys window windows > "$out/windows.txt"
@@ -136,7 +142,7 @@ adb shell 'rm -f /sdcard/ci-stop; mkdir -p /sdcard/ci-video'
 # shellcheck disable=SC2016 # Expand the counter on the device, not the host.
 command adb shell 'i=0; while [ ! -e /sdcard/ci-stop ]; do screenrecord --bit-rate 1000000 --size 540x960 --time-limit 120 /sdcard/ci-video/segment-$i.mp4 || exit; i=$((i+1)); done' > "$out/recorder.log" 2>&1 &
 recorder=$!
-command adb logcat -v threadtime 'TestRunner:I' '*:S' > "$out/test-progress.txt" 2>&1 &
+command adb logcat -v threadtime 'TestRunner:I' 'MetronomeTest:I' '*:S' > "$out/test-progress.txt" 2>&1 &
 test_log=$!
 test_args=()
 test_timeout=3600
