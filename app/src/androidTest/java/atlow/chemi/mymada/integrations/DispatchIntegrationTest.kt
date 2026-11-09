@@ -12,8 +12,10 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.swipeLeft
-import androidx.test.espresso.action.ViewActions.swipeRight
+import androidx.test.espresso.action.GeneralLocation
+import androidx.test.espresso.action.GeneralSwipeAction
+import androidx.test.espresso.action.Press
+import androidx.test.espresso.action.Swipe
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -168,7 +170,11 @@ class DispatchIntegrationTest {
                 // Each page can focus an input and reopen the IME. Pager bounds extend
                 // behind it on API24: otherwise injected drags hit the keyboard.
                 closeSoftKeyboard()
-                onView(withId(R.id.viewpager)).perform(if (rtl == forward) swipeRight() else swipeLeft())
+                // Edge-origin swipes invoke system Back with API37 gesture navigation.
+                val startOffset = if (rtl == forward) -.25f else .25f
+                onView(withId(R.id.viewpager)).perform(GeneralSwipeAction(Swipe.FAST,
+                    GeneralLocation.translate(GeneralLocation.CENTER, startOffset, 0f),
+                    GeneralLocation.translate(GeneralLocation.CENTER, -startOffset, 0f), Press.FINGER))
                 instrumentation.uiAutomation.waitForIdle(500, 5000)
             }
             swipe(true)

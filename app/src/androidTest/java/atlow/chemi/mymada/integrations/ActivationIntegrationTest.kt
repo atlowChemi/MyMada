@@ -160,16 +160,16 @@ class ActivationIntegrationTest {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         assertNotEquals(first, second)
         ActivityScenario.launch<codeC>(intent).use { scenario ->
-            onView(withId(android.R.id.message)).check(matches(withText(R.string.codeNotExist)))
+            onView(withId(android.R.id.message)).inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).check(matches(withText(R.string.codeNotExist)))
             assertFalse(preferences.getBoolean("realM", false))
             scenario.recreate()
-            onView(withId(android.R.id.message)).check(matches(withText(R.string.codeNotExist)))
+            onView(withId(android.R.id.message)).inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).check(matches(withText(R.string.codeNotExist)))
         }
         MyFirebaseMessagingService.publish(context, route)
         if (Build.VERSION.SDK_INT >= 26) assertNotNull(context.getSystemService(NotificationManager::class.java).getNotificationChannel("Push"))
         val malformed = Intent(context, codeC::class.java).putExtra("toCode", true).putExtra("code", "abcd")
         ActivityScenario.launch<codeC>(malformed).use {
-            onView(withId(android.R.id.message)).check(matches(withText(R.string.codeBad)))
+            onView(withId(android.R.id.message)).inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).check(matches(withText(R.string.codeBad)))
             assertFalse(preferences.getBoolean("realM", false))
         }
         val monitor = instrumentation.addMonitor(codeC::class.java.name, null, false)

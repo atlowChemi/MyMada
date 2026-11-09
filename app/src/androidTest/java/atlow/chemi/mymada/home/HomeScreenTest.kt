@@ -14,7 +14,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
@@ -152,6 +151,18 @@ class HomeScreenTest {
                     }
                     waitForHomeFocus(scenario)
                 }
+                // API24 can defer Home's destruction when close() first launches
+                // AndroidX's EmptyActivity. Finish the resumed owner directly.
+                lateinit var finished: HomePage
+                scenario.onActivity { finished = it; it.finish() }
+                compose.waitUntil(10_000) {
+                    var destroyed = false
+                    instrumentation.runOnMainSync {
+                        destroyed = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                            .getLifecycleStageOf(finished) == androidx.test.runner.lifecycle.Stage.DESTROYED
+                    }
+                    destroyed
+                }
             }
         }
     }
@@ -168,7 +179,7 @@ class HomeScreenTest {
                 }
                 for ((action, message) in listOf(R.string.test_beep to R.string.TestCallMsg,
                     R.string.title_activity_contact to R.string.plsNoteCon)) {
-                    compose.onNodeWithText(labels.getValue(action)).performScrollTo().performClick()
+                    compose.homeDestination(labels.getValue(action)).performClick()
                     scenario.recreate()
                     onView(withText(labels.getValue(message))).inRoot(isDialog()).check(matches(isDisplayed()))
                     instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
@@ -190,7 +201,7 @@ class HomeScreenTest {
                 repeat(20) { round ->
                     for ((action, message) in listOf(R.string.test_beep to R.string.TestCallMsg,
                         R.string.title_activity_contact to R.string.plsNoteCon)) {
-                        compose.onNodeWithText(labels.getValue(action)).performScrollTo().performClick()
+                        compose.homeDestination(labels.getValue(action)).performClick()
                         onView(withText(labels.getValue(message))).inRoot(isDialog()).check { view, failure ->
                             if (failure != null) throw failure
                             val params = view.rootView.layoutParams as android.view.WindowManager.LayoutParams
@@ -262,7 +273,20 @@ class HomeScreenTest {
 
             for (id in listOf(R.string.title_activity_utills_and_tools, R.string.title_activity_moked_page,
                 R.string.test_beep, R.string.title_activity_contact, R.string.title_activity_info)) {
-                val node = compose.onNodeWithText(labels.getValue(id)).performScrollTo().assertIsDisplayed()
+                val node = compose.homeDestination(labels.getValue(id))
+                try {
+                    node.assertIsDisplayed()
+                } catch (failure: AssertionError) {
+                    var window = ""
+                    instrumentation.runOnMainSync {
+                        val resumed = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                            .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED)
+                        window = resumed.joinToString { "${it.javaClass.simpleName}:focus=${it.hasWindowFocus()}" }
+                    }
+                    throw AssertionError("Home scroll $language/$scale id=$id: " +
+                        "bounds=${node.fetchSemanticsNode().boundsInWindow}, bottomLimit=$bottomLimit, " +
+                        "scenario=${scenario.state}, resumed=[$window]", failure)
+                }
                 assertTrue(node.fetchSemanticsNode().boundsInRoot.bottom <= bottomLimit)
             }
             scenario.recreate()
@@ -270,7 +294,7 @@ class HomeScreenTest {
             detection.assertIsOff()
 
             visit(UtillitiesAndTools::class.java, {
-                compose.onNodeWithText(labels.getValue(R.string.title_activity_utills_and_tools)).performScrollTo().performClick()
+                compose.homeDestination(labels.getValue(R.string.title_activity_utills_and_tools)).performClick()
             }) {
                 compose.onNodeWithTag("shell-navigation").performClick()
                 compose.waitForShellDrawer(open = true)
@@ -285,17 +309,28 @@ class HomeScreenTest {
                 android.os.Debug.dumpHprofData(java.io.File(context.filesDir, "home-$language-before-about.hprof").path)
             }
             visit(InfoActivityKt::class.java, {
-                compose.onNodeWithText(labels.getValue(R.string.title_activity_info)).performScrollTo().performClick()
+                compose.homeDestination(labels.getValue(R.string.title_activity_info)).performClick()
             })
-            compose.onNodeWithText(labels.getValue(R.string.title_activity_moked_page)).performScrollTo().performClick()
-            visit(lockPage::class.java, { onView(withText("עמוד חסימה")).inRoot(isDialog()).perform(click()) })
+            compose.homeDestination(labels.getValue(R.string.title_activity_moked_page)).performClick()
+            visit(lockPage::class.java, {
+                // A native destination can pause the Compose owner before Espresso's
+                // post-click idle wait completes. Invoke the real dialog button on main.
+                waitForPromptFocus(scenario)
+                scenario.onActivity { activity ->
+                    val dialog = activity.supportFragmentManager.fragments
+                        .filterIsInstance<HomeActions.ActionPrompt>().single().requireDialog() as androidx.appcompat.app.AlertDialog
+                    val button = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                    assertEquals("עמוד חסימה", button.text.toString())
+                    assertTrue(button.performClick())
+                }
+            })
             assertFalse(preferences.getBoolean("realM", true))
-            compose.onNodeWithText(labels.getValue(R.string.test_beep)).performScrollTo().performClick()
+            compose.homeDestination(labels.getValue(R.string.test_beep)).performClick()
             onView(withText(labels.getValue(R.string.TestCallMsg))).inRoot(isDialog()).check(matches(isDisplayed()))
             waitForPromptFocus(scenario)
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             waitForHomeFocus(scenario)
-            compose.onNodeWithText(labels.getValue(R.string.title_activity_contact)).performScrollTo().performClick()
+            compose.homeDestination(labels.getValue(R.string.title_activity_contact)).performClick()
             onView(withText(labels.getValue(R.string.plsNoteCon))).inRoot(isDialog()).check(matches(isDisplayed()))
             waitForPromptFocus(scenario)
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)

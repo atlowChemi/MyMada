@@ -275,12 +275,16 @@ class DocumentsTest {
         for (language in listOf("en", "he")) {
             prepare(language)
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
+                lateinit var activity: UtillitiesAndTools
+                scenario.onActivity { activity = it }
                 compose.selectShellDestination(R.id.bls)
                 compose.waitUntil(60_000) { compose.onAllNodesWithTag("documentError").fetchSemanticsNodes().isNotEmpty() }
                 // Wait for the local asset to render before capturing the production comparison.
                 val painted = java.util.concurrent.atomic.AtomicBoolean(false)
                 compose.waitUntil(10_000) {
-                    scenario.onActivity { activity ->
+                    // err.html continuously animates its ECG bar. API24 may never
+                    // satisfy onActivity's main-queue idle wait while it is visible.
+                    instrumentation.runOnMainSync {
                         findWeb(activity.window.decorView)?.let { web ->
                             web.evaluateJavascript("Boolean(document.getElementById('header'))") { present ->
                                 if (present == "true") web.postVisualStateCallback(0,
@@ -292,7 +296,14 @@ class DocumentsTest {
                     }
                     painted.get()
                 }
-                screenshot("candidate-$language-bls-offline")
+                val image = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+                try {
+                    File(context.getExternalFilesDir("documents-evidence"), "candidate-$language-bls-offline.png")
+                        .outputStream().use { image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+                } finally { image.recycle() }
+                // close() first waits for an idle main queue on API24. Finish on
+                // main so Compose releases the animated WebView before that wait.
+                instrumentation.runOnMainSync { activity.finish() }
             }
         }
     }
