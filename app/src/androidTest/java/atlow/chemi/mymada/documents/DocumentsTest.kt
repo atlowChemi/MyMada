@@ -177,9 +177,6 @@ class DocumentsTest {
                     val evidence = File(context.getExternalFilesDir("documents-evidence"), "$kind-page-${page + 1}.png")
                     evidence.outputStream().use { image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
                 } finally { image.recycle() }
-                // close() first waits for an idle main queue on API24. Finish on
-                // main so Compose releases the animated WebView before that wait.
-                instrumentation.runOnMainSync { activity.finish() }
             }
             assertTrue(runBlocking { DocumentStore(root).load(kind) { _, _ -> fail("Offline must use saved copy") } }.cached)
             android.util.Log.i("DocumentsEvidence", "$kind bytes=${original.length()} pages=${loaded.pageCount}")
@@ -304,6 +301,9 @@ class DocumentsTest {
                     File(context.getExternalFilesDir("documents-evidence"), "candidate-$language-bls-offline.png")
                         .outputStream().use { image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
                 } finally { image.recycle() }
+                // close() first waits for an idle main queue on API24. Finish on
+                // main so Compose releases the animated WebView before that wait.
+                instrumentation.runOnMainSync { activity.finish() }
             }
         }
     }
