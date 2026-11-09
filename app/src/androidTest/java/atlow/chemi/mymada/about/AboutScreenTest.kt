@@ -16,6 +16,10 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
@@ -65,6 +69,7 @@ class AboutScreenTest {
                 assertEquals(56 * it.resources.displayMetrics.density, toolbarBounds.height, 1f)
             }
             compose.onNodeWithContentDescription(detection).assertIsOn().performClick().assertIsOff()
+            declineMissingDetectionAccess(scenario)
             assertFalse(preferences.getBoolean("Mapp", true))
             val backBounds = compose.onNodeWithContentDescription(back).assertHasClickAction()
                 .fetchSemanticsNode().touchBoundsInRoot
@@ -115,6 +120,7 @@ class AboutScreenTest {
                 instrumentation.runOnMainSync { activity!!.finish() }
                 awaitStage(owner, Stage.RESUMED)
                 compose.onNodeWithContentDescription(detection).assertIsOn().performClick().assertIsOff()
+                declineMissingDetectionAccess(scenario)
             } finally { instrumentation.removeMonitor(settingsMonitor) }
             compose.onNodeWithContentDescription(back).performClick()
             awaitStage(owner, Stage.DESTROYED)
@@ -126,6 +132,21 @@ class AboutScreenTest {
             awaitStage(owner, Stage.DESTROYED)
         }
         verifyHomeEntry(title)
+    }
+
+    private fun declineMissingDetectionAccess(scenario: ActivityScenario<InfoActivityKt>) {
+        val context = instrumentation.targetContext
+        // A stale enabled preference without OS access opens a permission prompt.
+        // Decline it before sampling artwork or interacting with the underlying screen.
+        if (!atlow.chemi.mymada.permissions.NotificationPermission.granted(context) ||
+            atlow.chemi.mymada.calls.ListenerAccess.selected(context) == null) {
+            onView(withText(R.string.dialog_no)).inRoot(isDialog()).perform(click())
+            compose.waitUntil(5_000) {
+                var focused = false
+                scenario.onActivity { focused = it.hasWindowFocus() }
+                focused
+            }
+        }
     }
 
     private fun verifyHomeEntry(title: String) {

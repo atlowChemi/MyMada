@@ -16,7 +16,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import atlow.chemi.mymada.recieversAndServices.*
 import org.junit.Assert.*
-import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -64,6 +63,7 @@ class MetronomeControlTest {
                     ready
                 }
                 await("Running") { MetroService.running }
+                android.util.Log.i("MetronomeTest", "After accessible Start:\n${metronomeUiTree()}")
                 val prefs = context.getSharedPreferences("metronome", 0)
                 val start = prefs.getLong("start", 0)
                 assertTrue(start in 1..SystemClock.elapsedRealtime())
@@ -72,23 +72,43 @@ class MetronomeControlTest {
                 instrumentation.runOnMainSync { }
                 assertEquals("Repeated start retains origin", start, prefs.getLong("start", 0))
                 Thread.sleep(1100)
+                android.util.Log.i("MetronomeTest", "Before recreation:\n${metronomeUiTree()}")
                 val old = activity
                 instrumentation.runOnMainSync { old.recreate() }
-                await("New Activity after recreation") {
+                await("Focused, laid-out Activity after recreation") {
                     var recreated = false
                     instrumentation.runOnMainSync {
                         val resumed = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
                             .filterIsInstance<UtillitiesAndTools>().firstOrNull { it !== old }
-                        if (resumed != null) { activity = resumed; recreated = true }
+                        val clock = resumed?.findViewById<TextView>(R.id.metro_Clock)
+                        if (resumed?.hasWindowFocus() == true && clock?.isShown == true && clock.width > 0) {
+                            activity = resumed
+                            recreated = true
+                        }
                     }
                     recreated
                 }
+                android.util.Log.i("MetronomeTest", "After recreation, before Home:\n${metronomeUiTree()}")
                 assertTrue(instrumentation.uiAutomation.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME))
-                Thread.sleep(300)
+                await("Recreated Activity stopped after Home") {
+                    var stopped = false
+                    instrumentation.runOnMainSync {
+                        stopped = activity in ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.STOPPED)
+                    }
+                    stopped
+                }
                 assertTrue("Background still plays", MetroService.running)
                 context.startActivity(Intent(context, UtillitiesAndTools::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))
-                Thread.sleep(600)
+                await("Recreated Activity resumed and focused after returning") {
+                    var focused = false
+                    instrumentation.runOnMainSync {
+                        focused = activity in ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED) &&
+                            activity.hasWindowFocus()
+                    }
+                    focused
+                }
+                android.util.Log.i("MetronomeTest", "After focused return, before Stop:\n${metronomeUiTree()}")
                 instrumentation.runOnMainSync {
                     val it = activity
                     assertNotEquals("00:00", it.findViewById<TextView>(R.id.metro_Clock).text.toString())
@@ -104,7 +124,11 @@ class MetronomeControlTest {
 
     @Test fun notificationAndWidgetActionsStopWhileUiBound() {
         val manager = context.getSystemService(NotificationManager::class.java)
-        assumeTrue("Notification denied route covered by UI test", manager.areNotificationsEnabled())
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            instrumentation.uiAutomation.grantRuntimePermission(
+                context.packageName, android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+        assertTrue("Notification actions require notification access", manager.areNotificationsEnabled())
         scenario().use { screen ->
             try {
                 screen.onActivity { MetroService.start(it) }
