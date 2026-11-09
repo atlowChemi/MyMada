@@ -83,11 +83,24 @@ class MetronomeControlTest {
                     recreated
                 }
                 assertTrue(instrumentation.uiAutomation.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME))
-                Thread.sleep(300)
+                await("Recreated Activity stopped after Home") {
+                    var stopped = false
+                    instrumentation.runOnMainSync {
+                        stopped = activity in ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.STOPPED)
+                    }
+                    stopped
+                }
                 assertTrue("Background still plays", MetroService.running)
                 context.startActivity(Intent(context, UtillitiesAndTools::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))
-                Thread.sleep(600)
+                await("Recreated Activity resumed and focused after returning") {
+                    var focused = false
+                    instrumentation.runOnMainSync {
+                        focused = activity in ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED) &&
+                            activity.hasWindowFocus()
+                    }
+                    focused
+                }
                 instrumentation.runOnMainSync {
                     val it = activity
                     assertNotEquals("00:00", it.findViewById<TextView>(R.id.metro_Clock).text.toString())

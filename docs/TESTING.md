@@ -363,6 +363,9 @@ The audio stop/write check waits for the writer's actual full-buffer sleep befor
 stopping it; thread startup alone does not establish that PCM encoding has finished.
 The notification/widget Stop check explicitly grants notification permission on
 API33+ and asserts access rather than skipping after a permission-denial test.
+The recreation/background Stop check waits for the recreated Activity to stop after
+Home and regain resumed/window-focus state after returning. Fixed 300/600ms sleeps
+did not establish those prerequisites on API24; accessibility Stop remains required.
 
 | Area | Selectors and nonobvious prerequisites |
 | --- | --- |
