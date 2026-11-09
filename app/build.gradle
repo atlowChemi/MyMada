@@ -58,6 +58,19 @@ android {
         }
     }
     namespace 'atlow.chemi.mymada'
+    // Staged upgrade checks deliberately preserve app data between test processes.
+    if (providers.gradleProperty('android.injected.androidTest.leaveApksInstalledAfterRun').getOrElse('false').toBoolean()) {
+        installation.installOptions.add('-r')
+    }
+}
+
+if (providers.gradleProperty('android.injected.androidTest.leaveApksInstalledAfterRun').getOrElse('false').toBoolean()) {
+    tasks.withType(Test).configureEach {
+        if (name == 'connectedDebugAndroidTest') {
+            // AGP 9.5 sends a device-qualified key; engine 1.0.8 reads the global key.
+            systemProperty 'android-test.apk-install-options', '-r'
+        }
+    }
 }
 
 dependencies {
