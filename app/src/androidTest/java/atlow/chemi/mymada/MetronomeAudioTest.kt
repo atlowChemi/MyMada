@@ -6,8 +6,6 @@ import atlow.chemi.mymada.classes.Metronome
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
 @RunWith(AndroidJUnit4::class)
@@ -32,20 +30,27 @@ class MetronomeAudioTest {
     @Test fun stopUnblocksWriterAndOtherPlayerSurvives() {
         val metro = AudioGenerator(8000)
         val pulse = AudioGenerator(8000)
-        val writing = CountDownLatch(1)
         val failure = AtomicReference<Throwable?>()
         metro.createPlayer()
         pulse.createPlayer()
         val writer = Thread {
             try {
-                writing.countDown()
                 metro.writeSound(DoubleArray(8000 * 10))
             } catch (error: Throwable) { failure.set(error) }
         }
         try {
             writer.start()
-            assertTrue(writing.await(2, TimeUnit.SECONDS))
-            Thread.sleep(100)
+            // writeSound encodes PCM before capturing its track. Wait for its full-buffer
+            // sleep, not merely thread entry, so Stop tests an in-flight write.
+            val deadline = android.os.SystemClock.elapsedRealtime() + 5000
+            fun waitingForBuffer() = writer.state == Thread.State.TIMED_WAITING &&
+                writer.stackTrace.any { it.className == AudioGenerator::class.java.name && it.methodName == "writeSound" }
+            var reachedBufferWait = waitingForBuffer()
+            while (writer.isAlive && !reachedBufferWait && android.os.SystemClock.elapsedRealtime() < deadline) {
+                Thread.sleep(5)
+                reachedBufferWait = waitingForBuffer()
+            }
+            assertTrue("Writer reached the full-buffer wait; failure=${failure.get()}", reachedBufferWait)
             metro.destroyAudioTrack()
             metro.destroyAudioTrack()
             writer.join(2000)
@@ -59,6 +64,7 @@ class MetronomeAudioTest {
         } finally {
             metro.destroyAudioTrack()
             pulse.destroyAudioTrack()
+            writer.join(2000)
         }
     }
 
