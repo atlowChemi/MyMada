@@ -63,10 +63,12 @@ dump_app_threads() {
     echo 'No target app process found for ART thread dump'
   fi
 }
+watchdog=''
 cleanup() {
   status=$?
   trap - EXIT
   set +e
+  if [[ -n $watchdog ]]; then kill "$watchdog" 2>/dev/null; fi
   echo "Collecting emulator evidence (test exit=$status)"
   if [[ -n $test_log ]]; then
     kill "$test_log" 2>/dev/null
@@ -194,9 +196,22 @@ for phase in "${phases[@]}"; do
   status=0
   printf '%q ' ./gradlew :app:connectedDebugAndroidTest "${test_args[@]}" "${phase_args[@]}" > "$out/command-$phase.txt"
   rm -rf app/build/outputs/androidTest-results/connected
+  # Gradle terminates instrumentation on timeout, too early for EXIT cleanup to
+  # recover the blocked test's stack. Capture it while the process still exists.
+  (
+    sleep "$((test_timeout - 30))"
+    # shellcheck disable=SC2016 # PID lookup and ART completion wait run on Android.
+    adb shell 'pid=$(pidof atlow.chemi.mymada.debug); if [ -n "$pid" ]; then kill -3 "$pid"; sleep 2; fi'
+    adb pull /data/anr "$out/pre-timeout-$phase" || true
+    adb logcat -b all -d -v threadtime > "$out/pre-timeout-$phase-logcat.txt"
+  ) &
+  watchdog=$!
   timeout --signal=TERM --kill-after=30 "$test_timeout" ./gradlew :app:connectedDebugAndroidTest \
     "${test_args[@]}" "${phase_args[@]}" \
     --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g' || status=$?
+  kill "$watchdog" 2>/dev/null || true
+  wait "$watchdog" 2>/dev/null || true
+  watchdog=''
   mkdir -p "$out/results/$phase"
   if [[ -d app/build/outputs/androidTest-results/connected ]]; then
     cp -R app/build/outputs/androidTest-results/connected/. "$out/results/$phase/"
