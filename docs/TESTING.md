@@ -272,7 +272,13 @@ its ART trace now points to `PrivacyScreenTest.verifyScreen` calling
 `ActivityScenario.onActivity`, and retained-policy loading also failed.
 The same run exposed About's return-state query racing the intermediate RESTARTED
 stage. About lifecycle assertions now sample on main between lifecycle transactions;
-the requested state and timeout remain unchanged. Emulator verification is pending.
+the requested state and timeout remain unchanged. Run `42590403416` showed that
+`ActivityScenario.state` itself waits for idle and rejects main-thread access.
+The corrected assertions query `ActivityLifecycleMonitor` on main for the exact
+Activity instance (captured after recreation), including its DESTROYED stage.
+Dictionary native dialog buttons, editors and caption assertions explicitly select
+the dialog root after that run selected an unfocused base Activity window instead.
+Both corrections await emulator verification.
 
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose

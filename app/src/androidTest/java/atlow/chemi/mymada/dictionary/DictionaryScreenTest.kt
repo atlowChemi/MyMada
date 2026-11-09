@@ -17,6 +17,7 @@ import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.Espresso.pressBackUnconditionally
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.R
@@ -70,42 +71,42 @@ class DictionaryScreenTest {
                 if (!captionsOnly) capture("empty-$language")
                 compose.onNodeWithTag("shell-action-${R.id.app_bar_word_add}").performClick()
                 capture("add-$language")
-                onView(withId(android.R.id.button1)).perform(click())
+                onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
                 assertEquals(0, source.writes.size)
                 assertCaptionMetrics()
                 capture("required-$language")
                 if (captionsOnly) {
-                    onView(withId(android.R.id.button2)).perform(click())
+                    onView(withId(android.R.id.button2)).inRoot(isDialog()).perform(click())
                     scenario.onActivity { source.emit(listOf(alpha)) }
                     compose.onNodeWithText("Alpha").performClick()
                     compose.waitForIdle()
-                    onView(withId(android.R.id.button1)).perform(click())
+                    onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
                     compose.waitForIdle()
-                    onView(withId(android.R.id.button1)).perform(click())
+                    onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
                     assertEquals("Validation never submits", 0, source.writes.size)
                     assertCaptionMetrics()
                     capture("unchanged-edit-$language")
                     return@use
                 }
-                onView(withId(R.id.wordName)).perform(replaceText("  New term  "))
-                onView(withId(R.id.wordDefinition)).perform(replaceText("  New meaning  "), closeSoftKeyboard())
+                onView(withId(R.id.wordName)).inRoot(isDialog()).perform(replaceText("  New term  "))
+                onView(withId(R.id.wordDefinition)).inRoot(isDialog()).perform(replaceText("  New meaning  "), closeSoftKeyboard())
                 scenario.recreate()
-                onView(withId(R.id.wordName)).check(matches(withText("  New term  ")))
-                onView(withId(R.id.wordDefinition)).check(matches(withText("  New meaning  ")))
-                onView(withId(android.R.id.button1)).perform(click())
-                onView(withId(android.R.id.button1)).check(matches(isNotEnabled()))
+                onView(withId(R.id.wordName)).inRoot(isDialog()).check(matches(withText("  New term  ")))
+                onView(withId(R.id.wordDefinition)).inRoot(isDialog()).check(matches(withText("  New meaning  ")))
+                onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
+                onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isNotEnabled()))
                 assertEquals(1, source.writes.size)
                 val addition = source.writes.single()
                 assertFalse(addition.edit)
                 assertEquals(mapOf("key" to addition.key, "name" to "New term", "definition" to "New meaning", "approved" to false), addition.fields)
                 capture("pending-$language")
                 scenario.recreate()
-                onView(withId(android.R.id.button1)).check(matches(isNotEnabled()))
+                onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isNotEnabled()))
                 scenario.onActivity { source.complete(Exception("fixture permission denied")) }
-                onView(withId(android.R.id.button1)).check(matches(isEnabled()))
-                onView(withId(R.id.wordName)).check(matches(withText("  New term  ")))
+                onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isEnabled()))
+                onView(withId(R.id.wordName)).inRoot(isDialog()).check(matches(withText("  New term  ")))
                 capture("write-error-$language")
-                onView(withId(android.R.id.button1)).perform(click())
+                onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
                 assertEquals(addition, source.writes.last())
                 scenario.onActivity { source.complete(null) }
                 compose.waitForIdle()
@@ -121,14 +122,14 @@ class DictionaryScreenTest {
                 onView(withId(androidx.appcompat.R.id.search_src_text)).check(matches(withText("meaning")))
                 compose.onNodeWithText("Alpha").performClick()
                 capture("details-$language")
-                onView(withId(android.R.id.button1)).perform(click())
+                onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
                 capture("edit-$language")
-                onView(withId(android.R.id.button1)).perform(click())
+                onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
                 assertEquals(2, source.writes.size) // unchanged edit is rejected
                 assertCaptionMetrics()
                 capture("unchanged-edit-$language")
-                onView(withId(R.id.wordName)).perform(replaceText("Changed"), closeSoftKeyboard())
-                onView(withId(android.R.id.button1)).perform(click())
+                onView(withId(R.id.wordName)).inRoot(isDialog()).perform(replaceText("Changed"), closeSoftKeyboard())
+                onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
                 assertEquals(Write("a", true, mapOf("newName" to "Changed")), source.writes.last())
                 scenario.onActivity { source.complete(null); source.emit(listOf(beta)) }
                 compose.onNodeWithText("Alpha").assertDoesNotExist()
@@ -182,7 +183,7 @@ class DictionaryScreenTest {
 
     private fun assertCaptionMetrics() {
         compose.waitForIdle()
-        for (id in listOf(R.id.nameTil, R.id.definitionTil)) onView(withId(id)).check { view, error ->
+        for (id in listOf(R.id.nameTil, R.id.definitionTil)) onView(withId(id)).inRoot(isDialog()).check { view, error ->
             if (error != null) throw error
             val edit = (view as com.google.android.material.textfield.TextInputLayout).editText!!
             if (android.os.Build.VERSION.SDK_INT >= 35) {

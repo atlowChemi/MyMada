@@ -1,5 +1,6 @@
 package atlow.chemi.mymada.about
 
+import android.app.Activity
 import android.view.KeyEvent
 import android.view.View
 import android.graphics.Color
@@ -14,9 +15,10 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import atlow.chemi.mymada.BuildConfig
 import atlow.chemi.mymada.HomePage
 import atlow.chemi.mymada.InfoActivityKt
@@ -88,6 +90,8 @@ class AboutScreenTest {
             compose.onNodeWithContentDescription(privacy).assertIsDisplayed()
             compose.onNodeWithContentDescription(detection).assertIsOff()
             compose.onNodeWithText(body).assertExists()
+            lateinit var owner: InfoActivityKt
+            scenario.onActivity { owner = it }
 
             val privacyMonitor = instrumentation.addMonitor(PrivacyActivity::class.java.name, null, false)
             try {
@@ -96,7 +100,7 @@ class AboutScreenTest {
                 assertNotNull(activity)
                 compose.onNodeWithText(privacy).assertIsDisplayed()
                 compose.onNodeWithContentDescription(back).performClick()
-                awaitState(scenario, Lifecycle.State.RESUMED)
+                awaitStage(owner, Stage.RESUMED)
                 compose.onNodeWithText(title).assertIsDisplayed()
             } finally { instrumentation.removeMonitor(privacyMonitor) }
 
@@ -108,15 +112,17 @@ class AboutScreenTest {
                 // Settings permission dialogs are outside this slice; simulate a changed detection preference.
                 preferences.edit().putBoolean("Mapp", true).commit()
                 instrumentation.runOnMainSync { activity!!.finish() }
-                awaitState(scenario, Lifecycle.State.RESUMED)
+                awaitStage(owner, Stage.RESUMED)
                 compose.onNodeWithContentDescription(detection).assertIsOn().performClick().assertIsOff()
             } finally { instrumentation.removeMonitor(settingsMonitor) }
             compose.onNodeWithContentDescription(back).performClick()
-            awaitState(scenario, Lifecycle.State.DESTROYED)
+            awaitStage(owner, Stage.DESTROYED)
         }
         ActivityScenario.launch(InfoActivityKt::class.java).use { scenario ->
+            lateinit var owner: InfoActivityKt
+            scenario.onActivity { owner = it }
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-            awaitState(scenario, Lifecycle.State.DESTROYED)
+            awaitStage(owner, Stage.DESTROYED)
         }
         verifyHomeEntry(title)
     }
@@ -129,21 +135,24 @@ class AboutScreenTest {
         val monitor = instrumentation.addMonitor(InfoActivityKt::class.java.name, null, false)
         try {
             ActivityScenario.launch(HomePage::class.java).use { home ->
+                lateinit var owner: HomePage
+                home.onActivity { owner = it }
                 compose.onNodeWithText(title).performScrollTo().performClick()
                 assertNotNull(instrumentation.waitForMonitorWithTimeout(monitor, 5_000))
                 compose.onNodeWithText(title).assertIsDisplayed()
                 instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-                awaitState(home, Lifecycle.State.RESUMED)
+                awaitStage(owner, Stage.RESUMED)
             }
         } finally { instrumentation.removeMonitor(monitor) }
     }
 
-    private fun awaitState(scenario: ActivityScenario<*>, expected: Lifecycle.State) {
+    private fun awaitStage(activity: Activity, expected: Stage) {
         compose.waitUntil(10_000) {
             var reached = false
-            // Sample between main-thread lifecycle transactions, never halfway
-            // through onRestart/onStart where ActivityScenario.state can throw.
-            instrumentation.runOnMainSync { reached = scenario.state == expected }
+            // The monitor supports transitional stages and must be read on main.
+            instrumentation.runOnMainSync {
+                reached = ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(activity) == expected
+            }
             reached
         }
     }
