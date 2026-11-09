@@ -255,6 +255,10 @@ commit PDFs, tokens or authenticated responses. Rendering compatibility is not
 Dispatch pager gestures start/end at the inner quarter points, outside system Back
 gesture edges. Run `42539403774` recorded a return-to-home Back navigation during
 the old reverse swipe; tab-selection and recreation assertions remain required.
+Firebase local-error assertions explicitly select the native dialog root. Home's
+dispatch-choice test invokes the real dialog button on the main thread, avoiding
+Espresso's post-click Compose-idle wait after navigation to the native lock screen;
+the destination monitor, focus and actual Back-navigation checks remain intact.
 
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose

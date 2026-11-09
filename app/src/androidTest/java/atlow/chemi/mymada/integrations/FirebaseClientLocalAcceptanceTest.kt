@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleCallback
@@ -68,7 +69,7 @@ class FirebaseClientLocalAcceptanceTest {
             compose.onNodeWithText(context.getString(R.string.load)).assertIsDisplayed()
             capture("request-token-pending")
             main { token.setException(IllegalStateException("local token failure")) }
-            onView(withText(R.string.emailBad)).check(matches(isDisplayed()))
+            onView(withText(R.string.emailBad)).inRoot(isDialog()).check(matches(isDisplayed()))
             capture("request-token-error")
             assertEquals(0, requests)
             assertEquals("prior-identity", preferences.getString(ActivationContract.KEY, null))
@@ -85,7 +86,7 @@ class FirebaseClientLocalAcceptanceTest {
             }
             capture("request-write-pending")
             main { write.setException(IllegalStateException("local write rejection")) }
-            onView(withText(R.string.emailBad)).check(matches(isDisplayed()))
+            onView(withText(R.string.emailBad)).inRoot(isDialog()).check(matches(isDisplayed()))
             capture("request-write-error")
             main {
                 model.dismiss()

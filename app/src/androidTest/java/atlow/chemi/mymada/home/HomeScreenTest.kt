@@ -288,7 +288,18 @@ class HomeScreenTest {
                 compose.onNodeWithText(labels.getValue(R.string.title_activity_info)).performScrollTo().performClick()
             })
             compose.onNodeWithText(labels.getValue(R.string.title_activity_moked_page)).performScrollTo().performClick()
-            visit(lockPage::class.java, { onView(withText("עמוד חסימה")).inRoot(isDialog()).perform(click()) })
+            visit(lockPage::class.java, {
+                // A native destination can pause the Compose owner before Espresso's
+                // post-click idle wait completes. Invoke the real dialog button on main.
+                waitForPromptFocus(scenario)
+                scenario.onActivity { activity ->
+                    val dialog = activity.supportFragmentManager.fragments
+                        .filterIsInstance<HomeActions.ActionPrompt>().single().requireDialog() as androidx.appcompat.app.AlertDialog
+                    val button = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                    assertEquals("עמוד חסימה", button.text.toString())
+                    assertTrue(button.performClick())
+                }
+            })
             assertFalse(preferences.getBoolean("realM", true))
             compose.onNodeWithText(labels.getValue(R.string.test_beep)).performScrollTo().performClick()
             onView(withText(labels.getValue(R.string.TestCallMsg))).inRoot(isDialog()).check(matches(isDisplayed()))
