@@ -266,6 +266,13 @@ Run `42580327819` captured the remaining API24 hang in `ActivityScenario.close()
 its pre-close idle wait runs while the error artwork still animates. After the
 artwork capture, the test finishes the Activity on main so Compose releases the
 WebView before scenario teardown waits for idle.
+Run `42584103354` attempt 2 completed all seven API24 document tests, including
+the offline-artwork check in about 65 seconds. The combined job still timed out:
+its ART trace now points to `PrivacyScreenTest.verifyScreen` calling
+`ActivityScenario.onActivity`, and retained-policy loading also failed.
+The same run exposed About's return-state query racing the intermediate RESTARTED
+stage. About lifecycle assertions now sample on main between lifecycle transactions;
+the requested state and timeout remain unchanged. Emulator verification is pending.
 
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose

@@ -96,7 +96,7 @@ class AboutScreenTest {
                 assertNotNull(activity)
                 compose.onNodeWithText(privacy).assertIsDisplayed()
                 compose.onNodeWithContentDescription(back).performClick()
-                compose.waitUntil(10_000) { scenario.state == Lifecycle.State.RESUMED }
+                awaitState(scenario, Lifecycle.State.RESUMED)
                 compose.onNodeWithText(title).assertIsDisplayed()
             } finally { instrumentation.removeMonitor(privacyMonitor) }
 
@@ -108,15 +108,15 @@ class AboutScreenTest {
                 // Settings permission dialogs are outside this slice; simulate a changed detection preference.
                 preferences.edit().putBoolean("Mapp", true).commit()
                 instrumentation.runOnMainSync { activity!!.finish() }
-                compose.waitUntil(10_000) { scenario.state == Lifecycle.State.RESUMED }
+                awaitState(scenario, Lifecycle.State.RESUMED)
                 compose.onNodeWithContentDescription(detection).assertIsOn().performClick().assertIsOff()
             } finally { instrumentation.removeMonitor(settingsMonitor) }
             compose.onNodeWithContentDescription(back).performClick()
-            compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
+            awaitState(scenario, Lifecycle.State.DESTROYED)
         }
         ActivityScenario.launch(InfoActivityKt::class.java).use { scenario ->
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-            compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
+            awaitState(scenario, Lifecycle.State.DESTROYED)
         }
         verifyHomeEntry(title)
     }
@@ -133,9 +133,19 @@ class AboutScreenTest {
                 assertNotNull(instrumentation.waitForMonitorWithTimeout(monitor, 5_000))
                 compose.onNodeWithText(title).assertIsDisplayed()
                 instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-                compose.waitUntil(10_000) { home.state == Lifecycle.State.RESUMED }
+                awaitState(home, Lifecycle.State.RESUMED)
             }
         } finally { instrumentation.removeMonitor(monitor) }
+    }
+
+    private fun awaitState(scenario: ActivityScenario<*>, expected: Lifecycle.State) {
+        compose.waitUntil(10_000) {
+            var reached = false
+            // Sample between main-thread lifecycle transactions, never halfway
+            // through onRestart/onStart where ActivityScenario.state can throw.
+            instrumentation.runOnMainSync { reached = scenario.state == expected }
+            reached
+        }
     }
 
     private fun verifyArtwork(scenario: ActivityScenario<InfoActivityKt>, tile: Rect) {
