@@ -111,10 +111,8 @@ adb shell settings put system font_scale "${FONT_SCALE:-1.0}"
 adb shell settings put system accelerometer_rotation 0
 adb shell settings put system user_rotation 0
 adb shell settings put secure show_ime_with_hard_keyboard 0
-# Build after emulator-runner finishes SDK setup. Let the connected test task own
-# installation: its API24 installer rejects an already installed package.
-./gradlew :app:assembleDebug :app:assembleDebugAndroidTest \
-  --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'
+# The workflow assembles before boot; do not start another Gradle JVM while
+# SystemUI is initializing. The connected test task still owns installation.
 if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.tools.vitals.VitalsScreenTest ]]; then
   adb logcat -b events -d > "$out/warm-boot-events.txt"
   if grep -E 'am_anr.*com.android.systemui' "$out/warm-boot-events.txt"; then

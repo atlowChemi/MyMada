@@ -132,6 +132,10 @@ The Vitals diagnostic preserves cold-boot logcat and performs one warm reboot
 before instrumentation to distinguish first-boot initialization pressure. Host
 network isolation survives reboot; guest firewall rules are installed afterward.
 A fresh System UI ANR fails setup instead of producing misleading focus failures.
+APKs are assembled before boot; the harness does not repeat the standalone
+assemble invocation after boot. Public run `42534397767` still showed a Google16KB
+KeyguardService ANR (SystemUI main thread: 0.58s executing, 20.68s scheduler wait),
+so public runners/SwiftShader alone are not yet a verified boot-stability fix.
 This is a boot experiment, not a retry of failed tests or full-suite acceptance.
 An additional Vitals job uses the API37 AOSP `default` image without bundled
 Google services, with the same screen, memory, font scale and test selectors.
