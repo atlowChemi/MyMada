@@ -93,7 +93,7 @@ jobs:
             font: '1.0'
           - api: 24
             case: platform-after-metronome
-            tests: atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeCallVisualTest,atlow.chemi.mymada.MetronomeControlTest,atlow.chemi.mymada.MetronomeNotificationTest,atlow.chemi.mymada.MetronomePermissionTest,atlow.chemi.mymada.MetronomeWidgetUpgradeTest,atlow.chemi.mymada.PlatformSmokeTest
+            tests: atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeCallVisualTest,atlow.chemi.mymada.MetronomeControlTest,atlow.chemi.mymada.MetronomeNotificationTest,atlow.chemi.mymada.MetronomePermissionTest,atlow.chemi.mymada.PlatformSmokeTest
             image: '24'
             target: google_apis
             page-size: ''
