@@ -26,6 +26,9 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleCallback
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import atlow.chemi.mymada.HomePage
 import atlow.chemi.mymada.InfoActivityKt
 import atlow.chemi.mymada.PrivacyActivity
@@ -46,6 +49,36 @@ class HomeScreenTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private val preferences = context.getSharedPreferences("Settings", 0)
+
+    private fun withHomeScenario(block: (ActivityScenario<HomePage>) -> Unit) {
+        val monitor = ActivityLifecycleMonitorRegistry.getInstance()
+        var owner: HomePage? = null
+        val callback = ActivityLifecycleCallback { activity, stage ->
+            if (activity is HomePage && stage == Stage.PRE_ON_CREATE) owner = activity
+        }
+        instrumentation.runOnMainSync { monitor.addLifecycleCallback(callback) }
+        var scenario: ActivityScenario<HomePage>? = null
+        try {
+            val launched = ActivityScenario.launch(HomePage::class.java)
+            scenario = launched
+            block(launched)
+        } finally {
+            try {
+                // Finish the current owner before close() launches AndroidX's EmptyActivity.
+                instrumentation.runOnMainSync { owner?.takeUnless { it.isDestroyed }?.finish() }
+                compose.waitUntil(10_000) {
+                    var destroyed = false
+                    instrumentation.runOnMainSync {
+                        destroyed = owner?.let { monitor.getLifecycleStageOf(it) == Stage.DESTROYED } ?: true
+                    }
+                    destroyed
+                }
+                scenario?.close()
+            } finally {
+                instrumentation.runOnMainSync { monitor.removeLifecycleCallback(callback) }
+            }
+        }
+    }
 
     private fun shell(command: String) {
         instrumentation.uiAutomation.executeShellCommand(command).use {
@@ -78,7 +111,7 @@ class HomeScreenTest {
 
     @Test fun detectionIconTracksAsynchronousPreferenceChangesWithoutNavigation() {
         prepare("en")
-        ActivityScenario.launch(HomePage::class.java).use { scenario ->
+        withHomeScenario { scenario ->
             var label = ""
             scenario.onActivity { label = it.getString(R.string.pref_title_enable) }
             val detection = compose.onNodeWithContentDescription(label)
@@ -103,7 +136,7 @@ class HomeScreenTest {
     @Test fun homePromptActionsKeepNativeMinimumAfterRecreationAndFontScaling() {
         for ((language, scale) in listOf("en" to 1f, "he" to 1.5f)) {
             prepare(language, scale)
-            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+            withHomeScenario { scenario ->
                 for (kind in listOf("privacy", "test", "contact")) {
                     scenario.onActivity { activity ->
                         if (kind == "privacy") HomePrompt.show(activity, R.string.privacyMsg, 0,
@@ -151,18 +184,6 @@ class HomeScreenTest {
                     }
                     waitForHomeFocus(scenario)
                 }
-                // API24 can defer Home's destruction when close() first launches
-                // AndroidX's EmptyActivity. Finish the resumed owner directly.
-                lateinit var finished: HomePage
-                scenario.onActivity { finished = it; it.finish() }
-                compose.waitUntil(10_000) {
-                    var destroyed = false
-                    instrumentation.runOnMainSync {
-                        destroyed = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
-                            .getLifecycleStageOf(finished) == androidx.test.runner.lifecycle.Stage.DESTROYED
-                    }
-                    destroyed
-                }
             }
         }
     }
@@ -171,7 +192,7 @@ class HomeScreenTest {
     @Test fun testAndContactPromptsRestoreTheirActionsAcrossRecreation() {
         for (language in listOf("en", "he")) {
             prepare(language)
-            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+            withHomeScenario { scenario ->
                 val labels = mutableMapOf<Int, String>()
                 scenario.onActivity { activity ->
                     listOf(R.string.test_beep, R.string.TestCallMsg, R.string.title_activity_contact,
@@ -192,7 +213,7 @@ class HomeScreenTest {
     @Test fun repeatedTestCallThenContactDialogTargetsFocusedWindow() {
         for (language in listOf("en", "he")) {
             prepare(language)
-            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+            withHomeScenario { scenario ->
                 val labels = mutableMapOf<Int, String>()
                 scenario.onActivity { activity ->
                     listOf(R.string.test_beep, R.string.TestCallMsg, R.string.title_activity_contact,
@@ -219,7 +240,7 @@ class HomeScreenTest {
 
     private fun verifyHome(language: String, scale: Float) {
         prepare(language, scale)
-        ActivityScenario.launch(HomePage::class.java).use { scenario ->
+        withHomeScenario { scenario ->
             compose.waitForIdle()
             val labels = mutableMapOf<Int, String>()
             var topInset = 0
@@ -390,7 +411,7 @@ class HomeScreenTest {
         for (language in listOf("en", "he")) {
             prepare(language)
             preferences.edit().putBoolean("oldU", false).commit()
-            ActivityScenario.launch(HomePage::class.java).use { scenario ->
+            withHomeScenario { scenario ->
                 var message = ""
                 var cancel = ""
                 scenario.onActivity {
@@ -420,7 +441,7 @@ class HomeScreenTest {
     @Test fun multiplePromptsRestoreInOrderUsingTheNewLocale() {
         prepare("en")
         preferences.edit().putBoolean("oldU", false).commit()
-        ActivityScenario.launch(HomePage::class.java).use { scenario ->
+        withHomeScenario { scenario ->
             // Home can show onboarding and channel-importance prompts in one creation.
             // Exercise both saved dialogs without enabling a detection service or modifying OS channels.
             scenario.onActivity {
@@ -461,7 +482,7 @@ class HomeScreenTest {
     @Test fun onboardingDestinationsAndLocaleReturn() {
         prepare("en")
         preferences.edit().putBoolean("oldU", false).commit()
-        ActivityScenario.launch(HomePage::class.java).use { scenario ->
+        withHomeScenario { scenario ->
             onView(withText(R.string.newSettings)).inRoot(isDialog()).check(matches(isDisplayed()))
             visit(SettingsPage::class.java, { onView(withText(R.string.title_activity_settings)).inRoot(isDialog()).perform(click()) })
             // Settings' locale contract: Home recreates on return using the persisted selection.
@@ -474,7 +495,7 @@ class HomeScreenTest {
         }
         prepare("en")
         preferences.edit().putBoolean("privacy", false).commit()
-        ActivityScenario.launch(HomePage::class.java).use {
+        withHomeScenario {
             onView(withText(R.string.privacyMsg)).inRoot(isDialog()).check(matches(isDisplayed()))
             visit(PrivacyActivity::class.java, { onView(withText(R.string.title_activity_privacy)).inRoot(isDialog()).perform(click()) })
         }
