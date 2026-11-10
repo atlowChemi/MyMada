@@ -11,6 +11,8 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.DataInputStream
+import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -81,8 +83,17 @@ internal fun renderPage(file: File, index: Int, width: Int, zoom: Float = 1f,
     }
 }
 
-private inline fun <T> withPdf(file: File, block: (PdfRenderer) -> T): T {
+// Android 7's PDFium calls share native state across renderer instances.
+// ponytail: process-wide lock; revisit only if supported runtimes safely allow parallel PDF work.
+private val pdfLock = Any()
+
+private inline fun <T> withPdf(file: File, block: (PdfRenderer) -> T): T = synchronized(pdfLock) {
+    // Android 7 finalizes a failed PdfRenderer constructor by closing PDFium a second time.
+    // Reject non-PDF responses before entering native code. This is not full PDF validation.
+    val header = ByteArray(minOf(file.length(), 1024L).toInt())
+    DataInputStream(file.inputStream()).use { it.readFully(header) }
+    if (!header.toString(Charsets.ISO_8859_1).contains("%PDF-")) throw IOException("Missing PDF header")
     ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY).use { descriptor ->
-        PdfRenderer(descriptor).use { return block(it) }
+        PdfRenderer(descriptor).use { block(it) }
     }
 }
