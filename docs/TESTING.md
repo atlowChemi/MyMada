@@ -116,7 +116,8 @@ Animations/spellchecking are disabled, rotation is portrait and font scale expli
 tests select their own locales. The test command times out after sixty minutes without
 automatic retries. APKs are built before boot; Gradle uses one worker and a 2GB heap
 while the emulator runs to reduce resource contention. Gradle owns app installation.
-The smoke script passes the global `android-test.apk-install-options` property via
+The smoke script selects the built-in test platform for every shard and passes
+the global `android-test.apk-install-options` property via
 `JAVA_TOOL_OPTIONS` to its worker JVMs. AGP9.5 sends device-qualified options, but
 engine1.0.8 reads the global key; `connectedDebugAndroidTest` is not a Gradle `Test`
 task. Verify `--no-streaming` in the logged `Installing with command:` lines, not

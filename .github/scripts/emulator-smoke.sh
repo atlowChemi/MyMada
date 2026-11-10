@@ -153,7 +153,8 @@ command adb shell 'i=0; while [ ! -e /sdcard/ci-stop ]; do screenrecord --bit-ra
 recorder=$!
 command adb logcat -v threadtime 'TestRunner:I' 'MetronomeTest:I' '*:S' > "$out/test-progress.txt" 2>&1 &
 test_log=$!
-test_args=()
+# Use the same platform for every shard; the legacy worker drops JAVA_TOOL_OPTIONS.
+test_args=('-Pandroid.experimental.androidTest.builtin_test_platform=true')
 install_options=--no-streaming
 test_timeout=3600
 if [[ -n ${TEST_CLASSES:-} ]]; then
