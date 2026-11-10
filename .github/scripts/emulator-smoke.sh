@@ -29,7 +29,7 @@ WRAPPER
   chmod +x "$ANDROID_HOME/emulator/emulator"
   [[ $(sudo -n -E setpriv --reuid="$(id -u)" --regid="$gid" --init-groups id -g) == "$gid" ]]
   touch "$RUNNER_TEMP/mymada-isolation-ready"
-  # Keep software rendering/recording modest on the shared two-core runner.
+  # Keep software rendering/recording modest on the shared runner.
   sed -i '/^hw\.lcd\.\(width\|height\|density\)=/d' "$ANDROID_AVD_HOME/test.avd/config.ini"
   cat >> "$ANDROID_AVD_HOME/test.avd/config.ini" <<'DISPLAY'
 hw.lcd.width=720
