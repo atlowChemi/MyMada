@@ -18,6 +18,9 @@ import atlow.chemi.mymada.retainedFixture
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.Dispatchers
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +55,31 @@ class DocumentsTest {
         } finally {
             pdf.close()
         }
+    }
+
+    @Test fun concurrentPageCountsAndRendersKeepIndependentDocumentsIntact(): Unit = runBlocking {
+        val files = (1..2).map { pages ->
+            File.createTempFile("concurrent-pdf-", ".pdf", context.cacheDir).also { fixture(it, pages) }
+        }
+        val start = CompletableDeferred<Unit>()
+        try {
+            val workers = (0..3).map { worker ->
+                async(Dispatchers.IO) {
+                    start.await()
+                    val file = files[worker % files.size]
+                    repeat(12) {
+                        assertEquals(worker % files.size + 1, pageCount(file))
+                        val image = renderPage(file, 0, 300)
+                        try {
+                            assertEquals(Color.rgb(180, 30, 30), image.getPixel(100, 100))
+                            assertEquals(Color.WHITE, image.getPixel(10, 10))
+                        } finally { image.recycle() }
+                    }
+                }
+            }
+            start.complete(Unit)
+            workers.awaitAll()
+        } finally { files.forEach { it.delete() } }
     }
 
     @Test fun cacheDownloadCorruptionCancellationAndRefreshAreAtomic(): Unit = runBlocking {

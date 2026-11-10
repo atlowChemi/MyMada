@@ -65,6 +65,11 @@ class ChatIntegrationTest {
                 compose.onNodeWithTag("chat-dialog-confirm").performClick()
                 compose.onNodeWithTag("chat-draft").performTextReplacement("Pending fixture")
                 fun checkKeyboard() {
+                    compose.waitUntil(5000) {
+                        var focused = false
+                        scenario.onActivity { focused = it.hasWindowFocus() }
+                        focused
+                    }
                     compose.onNodeWithTag("chat-draft").performClick()
                     compose.waitUntil(5000) {
                         var visible = false
@@ -96,6 +101,13 @@ class ChatIntegrationTest {
                 }
                 checkKeyboard()
                 androidx.test.espresso.Espresso.closeSoftKeyboard()
+                // Do not recreate while the old window's asynchronous IME hide is pending.
+                compose.waitUntil(5000) {
+                    var hidden = false
+                    scenario.onActivity { hidden = androidx.core.view.ViewCompat.getRootWindowInsets(it.window.decorView)
+                        ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == false }
+                    hidden
+                }
                 compose.onNodeWithTag("chat-draft").assertTextContains("Pending fixture")
                 capture("keyboard-hidden")
                 scenario.recreate()
