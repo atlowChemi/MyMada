@@ -30,6 +30,14 @@ It proves neither Play signing continuity nor production upgrade compatibility.
 Tests use JUnit4.13.2, AndroidX runner1.7.0/ext-junit1.3.0, Espresso3.7.0,
 Compose BOM2026.09.00 `ui-test-junit4`/debug `ui-test-manifest`, and test DataStore1.1.7.
 
+Document checks include concurrent rendering/page counts and rejection of non-PDF
+replacements before native parsing. Android 7's failed `PdfRenderer` constructor
+leaves a finalizer that closes PDFium again; a shared renderer lock cannot protect
+against that finalizer. The header check rejects non-PDF responses, not all malformed
+PDFs. Validate these paths on API24 as well as API37. Information-toolbar checks
+launch asynchronously because Privacy's animated offline WebView can prevent the
+main-queue idle condition required by `ActivityScenario.launch`.
+
 ## CI build
 
 `Android build` runs on pull requests (including forks) and pushes to `master`.
