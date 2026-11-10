@@ -124,8 +124,9 @@ if [[ $device_uid != 0 ]]; then
   echo "Emulator did not reconnect as root (UID=$device_uid)" >&2
   exit 1
 fi
-adb shell 'iptables -I OUTPUT ! -o lo -j REJECT; ip6tables -I OUTPUT ! -o lo -j REJECT'
-adb shell 'iptables -C OUTPUT ! -o lo -j REJECT && ip6tables -C OUTPUT ! -o lo -j REJECT'
+# Android's network service can hold the xtables lock just after boot.
+timeout 30 adb shell 'iptables -w 10 -I OUTPUT ! -o lo -j REJECT && ip6tables -w 10 -I OUTPUT ! -o lo -j REJECT'
+timeout 30 adb shell 'iptables -w 10 -C OUTPUT ! -o lo -j REJECT && ip6tables -w 10 -C OUTPUT ! -o lo -j REJECT'
 if [[ ${EXPECT_PAGE_SIZE:-} ]]; then
   [[ $(adb shell getconf PAGE_SIZE | tr -d '\r') == "$EXPECT_PAGE_SIZE" ]]
 fi
