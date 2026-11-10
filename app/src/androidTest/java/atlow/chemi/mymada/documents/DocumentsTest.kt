@@ -107,7 +107,9 @@ class DocumentsTest {
             try {
                 store.load(kind, true) { _, output -> output.writeText("not a PDF") }
                 fail("Invalid replacement must fail")
-            } catch (_: IOException) { }
+            } catch (error: IOException) {
+                assertEquals("Missing PDF header", error.message)
+            }
             assertArrayEquals(original, loaded.file.readBytes())
             loaded.file.writeText("corrupt old copy")
             assertEquals(2, store.load(kind) { _, output -> fixture(output, 2) }.pageCount)
