@@ -179,6 +179,7 @@ jobs:
           arch: x86_64
           profile: pixel_2
           ram-size: 2048M
+          cores: ${{ matrix.api == 37 && 4 || 2 }}
           disk-size: 2G
           emulator-options: -no-window -accel on -gpu ${{ matrix.api == 37 && 'swiftshader' || 'software' }} -no-snapshot -noaudio -no-boot-anim -no-metrics
           disable-animations: true
