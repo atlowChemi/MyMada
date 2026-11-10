@@ -81,8 +81,12 @@ internal fun renderPage(file: File, index: Int, width: Int, zoom: Float = 1f,
     }
 }
 
-private inline fun <T> withPdf(file: File, block: (PdfRenderer) -> T): T {
+// Android 7's PDFium calls share native state across renderer instances.
+// ponytail: process-wide lock; revisit only if supported runtimes safely allow parallel PDF work.
+private val pdfLock = Any()
+
+private inline fun <T> withPdf(file: File, block: (PdfRenderer) -> T): T = synchronized(pdfLock) {
     ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY).use { descriptor ->
-        PdfRenderer(descriptor).use { return block(it) }
+        PdfRenderer(descriptor).use { block(it) }
     }
 }
