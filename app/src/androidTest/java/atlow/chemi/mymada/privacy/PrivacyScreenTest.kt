@@ -42,6 +42,7 @@ class PrivacyScreenTest {
             }
         }
         instrumentation.runOnMainSync { monitor.addLifecycleCallback(callback) }
+        var testFailure: Throwable? = null
         try {
             // startActivitySync waits for queue idle, which animated err.html can prevent.
             instrumentation.runOnMainSync {
@@ -61,6 +62,9 @@ class PrivacyScreenTest {
                 ready
             }
             block()
+        } catch (failure: Throwable) {
+            testFailure = failure
+            throw failure
         } finally {
             try {
                 instrumentation.runOnMainSync { if (created && !owner.isDestroyed) owner.finish() }
@@ -71,6 +75,11 @@ class PrivacyScreenTest {
                     }
                     destroyed
                 }
+            } catch (cleanupFailure: Throwable) {
+                // Keep the original assertion when a failed gesture also prevents cleanup.
+                val original = testFailure
+                if (original == null) throw cleanupFailure
+                original.addSuppressed(cleanupFailure)
             } finally {
                 instrumentation.runOnMainSync { monitor.removeLifecycleCallback(callback) }
             }
@@ -292,8 +301,10 @@ class PrivacyScreenTest {
         androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(WebView::class.java))
             .perform(androidx.test.espresso.action.GeneralSwipeAction(
                 androidx.test.espresso.action.Swipe.SLOW,
-                androidx.test.espresso.action.GeneralLocation.BOTTOM_CENTER,
-                androidx.test.espresso.action.GeneralLocation.TOP_CENTER,
+                androidx.test.espresso.action.GeneralLocation.translate(
+                    androidx.test.espresso.action.GeneralLocation.CENTER, 0f, 0.3f),
+                androidx.test.espresso.action.GeneralLocation.translate(
+                    androidx.test.espresso.action.GeneralLocation.CENTER, 0f, -0.3f),
                 androidx.test.espresso.action.Press.FINGER))
         var geometry = ""
         try {
