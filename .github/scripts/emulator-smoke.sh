@@ -125,8 +125,9 @@ if [[ $device_uid != 0 ]]; then
   exit 1
 fi
 # Android's network service can hold the xtables lock just after boot.
-timeout 30 adb shell 'iptables -w 10 -I OUTPUT ! -o lo -j REJECT && ip6tables -w 10 -I OUTPUT ! -o lo -j REJECT'
-timeout 30 adb shell 'iptables -w 10 -C OUTPUT ! -o lo -j REJECT && ip6tables -w 10 -C OUTPUT ! -o lo -j REJECT'
+# API24 supports -w without seconds; bound the wait with the host timeout.
+timeout 30 adb shell 'iptables -w -I OUTPUT ! -o lo -j REJECT && ip6tables -w -I OUTPUT ! -o lo -j REJECT'
+timeout 30 adb shell 'iptables -w -C OUTPUT ! -o lo -j REJECT && ip6tables -w -C OUTPUT ! -o lo -j REJECT'
 if [[ ${EXPECT_PAGE_SIZE:-} ]]; then
   [[ $(adb shell getconf PAGE_SIZE | tr -d '\r') == "$EXPECT_PAGE_SIZE" ]]
 fi
