@@ -147,13 +147,7 @@ class PrivacyScreenTest {
                     image.recycle()
                 }
                 capture("top")
-                androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(WebView::class.java))
-                    .perform(androidx.test.espresso.action.ViewActions.swipeUp())
-                compose.waitUntil(5_000) {
-                    var scrolled = false
-                    onPrivacyActivity { scrolled = webView(it.window.decorView)!!.scrollY > 0 }
-                    scrolled
-                }
+                dragPolicyUp()
                 val bottom = AtomicReference("")
                 compose.waitUntil(5_000) {
                     onPrivacyActivity {
@@ -188,13 +182,7 @@ class PrivacyScreenTest {
                     html, "text/html", "UTF-8", null)
             }
             waitForBody("Synthetic local policy")
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(WebView::class.java))
-                .perform(androidx.test.espresso.action.ViewActions.swipeUp())
-            compose.waitUntil(5_000) {
-                var scrolled = false
-                onPrivacyActivity { scrolled = webView(it.window.decorView)!!.scrollY > 0 }
-                scrolled
-            }
+            dragPolicyUp()
             val bottom = AtomicReference("")
             onPrivacyActivity {
                 webView(it.window.decorView)!!.evaluateJavascript("window.scrollTo(0,document.body.scrollHeight)", null)
@@ -291,6 +279,36 @@ class PrivacyScreenTest {
             }
             instrumentation.sendKeyDownUpSync(android.view.KeyEvent.KEYCODE_BACK)
             compose.waitUntil(10_000) { privacyStage() == Stage.DESTROYED }
+        }
+    }
+
+    private fun dragPolicyUp() {
+        compose.waitUntil(5_000) {
+            var scrollable = false
+            onPrivacyActivity { scrollable = webView(it.window.decorView)!!.canScrollVertically(1) }
+            scrollable
+        }
+        // Exercise a real drag without depending on fast-fling timing on the emulator.
+        androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(WebView::class.java))
+            .perform(androidx.test.espresso.action.GeneralSwipeAction(
+                androidx.test.espresso.action.Swipe.SLOW,
+                androidx.test.espresso.action.GeneralLocation.BOTTOM_CENTER,
+                androidx.test.espresso.action.GeneralLocation.TOP_CENTER,
+                androidx.test.espresso.action.Press.FINGER))
+        var geometry = ""
+        try {
+            compose.waitUntil(5_000) {
+                var scrolled = false
+                onPrivacyActivity {
+                    val view = webView(it.window.decorView)!!
+                    geometry = "scrollY=${view.scrollY}, height=${view.height}, contentHeight=${view.contentHeight}, " +
+                        "canScrollDown=${view.canScrollVertically(1)}, focus=${view.hasWindowFocus()}, url=${view.url}"
+                    scrolled = view.scrollY > 0
+                }
+                scrolled
+            }
+        } catch (failure: androidx.compose.ui.test.ComposeTimeoutException) {
+            throw AssertionError("Policy drag did not retain vertical scroll: $geometry", failure)
         }
     }
 
