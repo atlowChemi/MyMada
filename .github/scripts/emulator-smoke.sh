@@ -154,12 +154,16 @@ recorder=$!
 command adb logcat -v threadtime 'TestRunner:I' 'MetronomeTest:I' '*:S' > "$out/test-progress.txt" 2>&1 &
 test_log=$!
 test_args=()
+install_options=--no-streaming
 test_timeout=3600
 if [[ -n ${TEST_CLASSES:-} ]]; then
   test_args+=("-Pandroid.testInstrumentationRunnerArguments.class=$TEST_CLASSES")
   test_timeout=600
 fi
 printf '%s\n' "${TEST_CLASSES:-All discovered instrumentation tests; default test arguments}" > "$out/selectors.txt"
+# AGP 9.5 qualifies install options by device; engine 1.0.8 reads only the global key.
+# JAVA_TOOL_OPTIONS reaches its worker JVM; this task is not a Gradle Test task.
+JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} -Dandroid-test.apk-install-options=$install_options" \
 timeout --signal=TERM --kill-after=30 "$test_timeout" ./gradlew :app:connectedDebugAndroidTest "${test_args[@]}" \
   --no-daemon --build-cache --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx2g'
 # AGP can return success after a device-install failure without any test results.
