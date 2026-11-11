@@ -446,6 +446,11 @@ jobs. The remaining API37 tablet Back test stayed in portrait despite a user
 rotation lock. Its fixture now enables fixed-to-user rotation while testing the
 landscape tablet and restores the platform default afterward; landscape, tablet
 drawer visibility and Back-exit assertions remain required.
+Run `43016477054` passed the tablet case and 23/24 jobs. Pulse navigation failed
+immediately after resuming/recreating the backgrounded host because its shell
+node was not yet available. The shared navigation helper now waits for a visible
+navigation button or permanent drawer, retaining a bounded failure and window
+diagnostics. Timer/deadline/beep assertions are unchanged.
 
 Build the offline notification source fixture:
 

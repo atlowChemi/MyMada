@@ -74,7 +74,12 @@ fun ComposeTestRule.waitForShellDrawer(open: Boolean) {
 }
 
 /** Route through the rendered shell; feature tests keep their own content assertions. */
-fun SemanticsNodeInteractionsProvider.selectShellDestination(id: Int) {
+fun ComposeTestRule.selectShellDestination(id: Int) {
+    // RESUMED can precede the restored Compose shell after a background rotation.
+    waitForShellCondition("navigation-ready-$id") {
+        onNodeWithTag("shell-navigation").isDisplayed() ||
+            onNodeWithTag("shell-destination-${R.id.homeDrawer}").isDisplayed()
+    }
     if (!onNodeWithTag("shell-destination-${R.id.homeDrawer}").isDisplayed()) {
         onNodeWithTag("shell-navigation").performClick()
     }
