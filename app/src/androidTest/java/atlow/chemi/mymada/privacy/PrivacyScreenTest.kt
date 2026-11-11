@@ -18,6 +18,7 @@ import androidx.test.runner.lifecycle.Stage
 import atlow.chemi.mymada.PrivacyActivity
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.SettingsPage
+import atlow.chemi.mymada.retainedFixture
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -41,6 +42,7 @@ class PrivacyScreenTest {
             }
         }
         instrumentation.runOnMainSync { monitor.addLifecycleCallback(callback) }
+        var testFailure: Throwable? = null
         try {
             // startActivitySync waits for queue idle, which animated err.html can prevent.
             instrumentation.runOnMainSync {
@@ -60,6 +62,9 @@ class PrivacyScreenTest {
                 ready
             }
             block()
+        } catch (failure: Throwable) {
+            testFailure = failure
+            throw failure
         } finally {
             try {
                 instrumentation.runOnMainSync { if (created && !owner.isDestroyed) owner.finish() }
@@ -70,6 +75,11 @@ class PrivacyScreenTest {
                     }
                     destroyed
                 }
+            } catch (cleanupFailure: Throwable) {
+                // Keep the original assertion when a failed gesture also prevents cleanup.
+                val original = testFailure
+                if (original == null) throw cleanupFailure
+                original.addSuppressed(cleanupFailure)
             } finally {
                 instrumentation.runOnMainSync { monitor.removeLifecycleCallback(callback) }
             }
@@ -109,7 +119,7 @@ class PrivacyScreenTest {
         for ((language, hash) in mapOf(
             "en" to "9efca8dbd6eb632fc6f0027ca1da03f113b41130bad9f9dbbcdcb636b901e9ac",
             "he" to "c9d22a2aa8313cf46451c36f56680e5b79b9b05fd6c00037e85a868f1c286a46")) {
-            val bytes = java.io.File(instrumentation.targetContext.getExternalFilesDir(null), "policy-$language.html").readBytes()
+            val bytes = retainedFixture("policy-$language.html").readBytes()
             assertEquals(hash, java.security.MessageDigest.getInstance("SHA-256").digest(bytes)
                 .joinToString("") { "%02x".format(it) })
             instrumentation.runOnMainSync {
@@ -146,13 +156,7 @@ class PrivacyScreenTest {
                     image.recycle()
                 }
                 capture("top")
-                androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(WebView::class.java))
-                    .perform(androidx.test.espresso.action.ViewActions.swipeUp())
-                compose.waitUntil(5_000) {
-                    var scrolled = false
-                    onPrivacyActivity { scrolled = webView(it.window.decorView)!!.scrollY > 0 }
-                    scrolled
-                }
+                dragPolicyUp()
                 val bottom = AtomicReference("")
                 compose.waitUntil(5_000) {
                     onPrivacyActivity {
@@ -187,13 +191,7 @@ class PrivacyScreenTest {
                     html, "text/html", "UTF-8", null)
             }
             waitForBody("Synthetic local policy")
-            androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(WebView::class.java))
-                .perform(androidx.test.espresso.action.ViewActions.swipeUp())
-            compose.waitUntil(5_000) {
-                var scrolled = false
-                onPrivacyActivity { scrolled = webView(it.window.decorView)!!.scrollY > 0 }
-                scrolled
-            }
+            dragPolicyUp()
             val bottom = AtomicReference("")
             onPrivacyActivity {
                 webView(it.window.decorView)!!.evaluateJavascript("window.scrollTo(0,document.body.scrollHeight)", null)
@@ -290,6 +288,38 @@ class PrivacyScreenTest {
             }
             instrumentation.sendKeyDownUpSync(android.view.KeyEvent.KEYCODE_BACK)
             compose.waitUntil(10_000) { privacyStage() == Stage.DESTROYED }
+        }
+    }
+
+    private fun dragPolicyUp() {
+        compose.waitUntil(5_000) {
+            var scrollable = false
+            onPrivacyActivity { scrollable = webView(it.window.decorView)!!.canScrollVertically(1) }
+            scrollable
+        }
+        // Exercise a real drag without depending on fast-fling timing on the emulator.
+        androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(WebView::class.java))
+            .perform(androidx.test.espresso.action.GeneralSwipeAction(
+                androidx.test.espresso.action.Swipe.SLOW,
+                androidx.test.espresso.action.GeneralLocation.translate(
+                    androidx.test.espresso.action.GeneralLocation.CENTER, 0f, 0.3f),
+                androidx.test.espresso.action.GeneralLocation.translate(
+                    androidx.test.espresso.action.GeneralLocation.CENTER, 0f, -0.3f),
+                androidx.test.espresso.action.Press.FINGER))
+        var geometry = ""
+        try {
+            compose.waitUntil(5_000) {
+                var scrolled = false
+                onPrivacyActivity {
+                    val view = webView(it.window.decorView)!!
+                    geometry = "scrollY=${view.scrollY}, height=${view.height}, contentHeight=${view.contentHeight}, " +
+                        "canScrollDown=${view.canScrollVertically(1)}, focus=${view.hasWindowFocus()}, url=${view.url}"
+                    scrolled = view.scrollY > 0
+                }
+                scrolled
+            }
+        } catch (failure: androidx.compose.ui.test.ComposeTimeoutException) {
+            throw AssertionError("Policy drag did not retain vertical scroll: $geometry", failure)
         }
     }
 
