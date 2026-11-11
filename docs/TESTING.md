@@ -430,9 +430,17 @@ The settings/history domain runs the settings package except separately staged
 startup, isolated sound-settings, and external-audio fixture checks. Navigation/
 compatibility runs the root-package drawer, visual, entry-point and receiver tests.
 Sound-settings runs on fresh emulators so its denied-permission prerequisite is
-not contaminated by other domains. These added jobs still require their first
-remote validation; listener/overlay/permission and external-audio jobs remain
+not contaminated by other domains. Expanded validation is still incomplete;
+listener/overlay/permission and external-audio jobs remain
 unfinished until their fixture setup is wired.
+
+The first expanded run (`42999185238`) passed both sound jobs but exposed test
+fixture defects: contraction navigation must drive its native recovery dialog
+through Espresso and preserve the configured system font scale (including 1.3),
+while the Settings status-bar capture requires overlay access before launch.
+Corrections retain the dialog action, font-scale equality and pixel assertions.
+An API24 document/policy timeout also left empty guest diagnostics; its cause is
+unresolved and is not attributed to those fixture defects.
 
 Build the offline notification source fixture:
 
