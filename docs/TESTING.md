@@ -111,6 +111,19 @@ after the metronome classes, and fresh API37 runners for Audio, ChatDialogGeomet
 and VitalsScreen. `TEST_CLASSES` records the exact selectors in each artifact;
 focused invocations have a10-minute timeout. This compares fresh state with the
 failed full-suite baseline; it is not full-suite coverage or automatic retries.
+Dedicated StartupUpgrade jobs invoke `seed`, force-stop the app, then invoke
+`verify` in a new test process. AGP retains the APKs/data and uses replace-install
+for these phases; each phase's JUnit results are preserved separately. This tests
+cold-start migration of the seeded RN preferences, not a Play-signed APK upgrade.
+Widget reinstall jobs similarly run `createFixture` before `verifyFixture`, with
+replace-install between phases. The same debug APK validates binding retention
+across reinstall; historical pre-controls-to-current upgrade acceptance is separate.
+AGP9.5 passes `android-test.apk-install-options[emulator-5554]`, but engine1.0.8
+reads the unqualified `android-test.apk-install-options`. Staged jobs also supply
+that worker property explicitly so API24 receives `-r`. Remove the workaround when
+the AGP/engine property contract is fixed. Per-phase commands and verbose installer
+logs are retained. Widget host views attach to the Activity content frame rather
+than the fragment-only navigation container.
 
 `.github/scripts/emulator-smoke.sh isolate` runs before emulator boot: emulator
 processes use a dedicated group whose non-loopback IPv4/IPv6 traffic is rejected
@@ -160,6 +173,9 @@ so public runners/SwiftShader alone are not yet a verified boot-stability fix.
 Failure cleanup requests an ART thread dump with SIGQUIT when the target process
 still exists, including test timeouts that never produce an OS ANR. Process state
 and the existing ANR directory/logcat evidence accompany that request.
+A phase watchdog also captures ART traces/logcat 30 seconds before the test
+deadline, before Gradle can terminate instrumentation. It is cancelled when the
+phase finishes and does not retry tests or change their timeout/result.
 This is a boot experiment, not a retry of failed tests or full-suite acceptance.
 An additional Vitals job uses the API37 AOSP `default` image without bundled
 Google services, with the same screen, memory, font scale and test selectors.
@@ -366,6 +382,19 @@ navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Com
 MaterialTheme because the rename field embeds a native Material text input.
 The audio stop/write check waits for the writer's actual full-buffer sleep before
 stopping it; thread startup alone does not establish that PCM encoding has finished.
+The notification/widget Stop check explicitly grants notification permission on
+API33+ and asserts access rather than skipping after a permission-denial test.
+The recreation/background Stop check waits for the recreated Activity to stop after
+Home and regain resumed/window-focus state after returning. Fixed 300/600ms sleeps
+did not establish those prerequisites on API24; accessibility Stop remains required.
+Run `42539403774` still failed accessible Stop after these waits. `MetronomeTest`
+logs now retain trees before/after recreation and after focused return to locate
+the unexpected open drawer; the failure is not waived or auto-dismissed.
+The recreated screen must also have window focus and a laid-out clock before Home
+is pressed: run `42549862874` reached RESUMED with no active accessibility root.
+About artwork/navigation checks decline the permission prompt caused by a stale
+enabled detection preference without OS access, then wait for window focus. A
+dimmed permission dialog is not a valid sample of the underlying artwork.
 
 | Area | Selectors and nonobvious prerequisites |
 | --- | --- |
