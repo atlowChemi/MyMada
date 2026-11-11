@@ -386,6 +386,12 @@ offscreen item, then retains the displayed/bounds assertions. Verification is pe
 The Google-4KB Vitals comparison failed all three focus checks with a visible
 "Pixel Launcher isn't responding" dialog; actual-16KB and AOSP Vitals passed.
 
+The CI `tools-and-dictionary` and `home-and-integrations` jobs select whole test
+packages through AndroidJUnitRunner's `package` argument on API24 and API37
+(actual 16KB). Each invocation has a 20-minute test timeout. These broaden screen
+coverage beyond the diagnostic classes; they do not cover the separate settings,
+calls, permission, external-audio or historical-upgrade prerequisites below.
+
 `PlatformSmokeTest` seeds its oxygen-tool selection and grants overlay access before
 navigation. `ChatDialogGeometryTest` supplies the app's XML theme as well as Compose
 MaterialTheme because the rename field embeds a native Material text input.
@@ -419,10 +425,32 @@ dimmed permission dialog is not a valid sample of the underlying artwork.
 | Dispatch/chat | Use blocking ACTION_VIEW/sms instrumentation monitor; never approve a real composer. Hide IME before each real pager swipe and use the unique active/focused app accessibility window. Native editor IME actions require real View input, not Compose-only semantics. |
 | Metronome/popup | `MetronomeControlTest`, `MetronomeNotificationTest`, `MetronomePermissionTest`, `CallRouteTest`, `CallPopupComposeTest`. Wait for both playback and notification before Stop. `MetronomeCallVisualTest`: `screen=metro\|call`, `language=en\|he`, `landscape=true\|false`; set font scale externally. AudioTrack writes do not prove physical sound/tempo. |
 
-For the standalone contraction policy check, compile
-`:app:compileDebugUnitTestKotlin`, then run
-`atlow.chemi.mymada.contractions.ContractionPolicyCheck` with debug/test compiled
-classes and Kotlin stdlib on the JVM classpath.
+`ContractionPolicyCheck` is a JUnit test and runs with `:app:testDebugUnitTest`.
+The settings/history domain runs the settings package except separately staged
+startup, isolated sound-settings, and external-audio fixture checks. Navigation/
+compatibility runs the root-package drawer, visual, entry-point and receiver tests.
+Sound-settings runs on fresh emulators so its denied-permission prerequisite is
+not contaminated by other domains. Expanded validation is still incomplete;
+listener/overlay/permission and external-audio jobs remain
+unfinished until their fixture setup is wired.
+
+The first expanded run (`42999185238`) passed both sound jobs but exposed test
+fixture defects: contraction navigation must drive its native recovery dialog
+through Espresso and preserve the configured system font scale (including 1.3),
+while the Settings status-bar capture requires overlay access before launch.
+Corrections retain the dialog action, font-scale equality and pixel assertions.
+An API24 document/policy timeout also left empty guest diagnostics; its cause is
+unresolved and is not attributed to those fixture defects.
+Run `43008928177` passed 23/24 jobs, including settings/history and both document
+jobs. The remaining API37 tablet Back test stayed in portrait despite a user
+rotation lock. Its fixture now enables fixed-to-user rotation while testing the
+landscape tablet and restores the platform default afterward; landscape, tablet
+drawer visibility and Back-exit assertions remain required.
+Run `43016477054` passed the tablet case and 23/24 jobs. Pulse navigation failed
+immediately after resuming/recreating the backgrounded host because its shell
+node was not yet available. The shared navigation helper now waits for a visible
+navigation button or permanent drawer, retaining a bounded failure and window
+diagnostics. Timer/deadline/beep assertions are unchanged.
 
 Build the offline notification source fixture:
 

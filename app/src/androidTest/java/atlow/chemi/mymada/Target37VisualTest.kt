@@ -137,6 +137,10 @@ class Target37VisualTest {
                 }
             }
         }
+        // This checks the Settings window, not the separately tested overlay-permission dialog.
+        android.os.ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
+            "appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow")).use { it.readBytes() }
+        assertTrue(android.provider.Settings.canDrawOverlays(context))
         ActivityScenario.launch(SettingsPage::class.java).use { capture(it, "settings-status") }
     }
 

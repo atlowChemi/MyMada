@@ -10,6 +10,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
@@ -35,6 +36,8 @@ class ContractionNavigationTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private val preferences = context.getSharedPreferences("Settings", 0)
+    private val expectedFontScale = android.provider.Settings.System.getFloat(
+        context.contentResolver, android.provider.Settings.System.FONT_SCALE, 1f)
 
     @Test fun settingsLocaleRoundTripPreservesNativeAndRnRecovery() {
         instrumentation.uiAutomation.executeShellCommand("appops set ${context.packageName} SYSTEM_ALERT_WINDOW allow").use {
@@ -90,7 +93,7 @@ class ContractionNavigationTest {
                         start = it.getString(R.string.startContract)
                         end = it.getString(R.string.endContract)
                     }
-                    compose.onNodeWithText(ok).performClick()
+                    onView(withText(ok)).inRoot(isDialog()).perform(click())
                     await<UtillitiesAndTools>(language)
                     val toggle = compose.onNodeWithTag("contraction-toggle")
                     toggle.assertTextContains(if (rn) end else start)
@@ -98,7 +101,7 @@ class ContractionNavigationTest {
                     toggle.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.GetTextLayoutResult) { it(layouts) }
                     assertEquals(if (rn) androidx.compose.ui.unit.LayoutDirection.Rtl else androidx.compose.ui.unit.LayoutDirection.Ltr,
                         layouts.single().layoutInput.layoutDirection)
-                    assertEquals(1f, layouts.single().layoutInput.density.fontScale, .01f)
+                    assertEquals(expectedFontScale, layouts.single().layoutInput.density.fontScale, .01f)
                     capture("recovered-$language")
                     if (!rn) toggle.performClick()
                     toggle.assertTextContains(end)
@@ -113,7 +116,7 @@ class ContractionNavigationTest {
                     await<HomePage>(language)
                     compose.onNodeWithText(tools).performClick()
                     await<UtillitiesAndTools>(language, focus = false)
-                    compose.onNodeWithText(ok).performClick()
+                    onView(withText(ok)).inRoot(isDialog()).perform(click())
                     toggle.assertTextContains(start)
                     await<UtillitiesAndTools>(language)
                     Espresso.pressBack()
@@ -149,7 +152,7 @@ class ContractionNavigationTest {
                 if (ready && language != null) {
                     assertEquals(Locale.forLanguageTag(language).language, context.applicationContext.resources.configuration.locales[0].language)
                     assertEquals(if (language == "he") View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR, config.layoutDirection)
-                    assertEquals(1f, config.fontScale, .01f)
+                    assertEquals(expectedFontScale, config.fontScale, .01f)
                 }
             }
             ready

@@ -1,8 +1,8 @@
 package atlow.chemi.mymada.contractions
 
-/** Standalone JVM checks: no device, Android runtime, or test dependency. */
-object ContractionPolicyCheck {
-    @JvmStatic fun main(args: Array<String>) {
+/** JVM regression checks discovered by testDebugUnitTest. */
+class ContractionPolicyCheck {
+    @org.junit.Test fun awayBoundariesAndHistoricalIntervals() {
         val departure = ContractionAway(1_000_000, 10_000, 7)
         for (minutes in listOf(0, 15, 20)) {
             check(!departure.expired(departure.copy(elapsed = 10_000 + minutes * 60_000L)))
