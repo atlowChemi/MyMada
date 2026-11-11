@@ -95,14 +95,21 @@ class CallRouteTest {
         return posted
     }
 
-    private fun notifications(count: Int): List<Notification> {
+    private fun notifications(count: Int, ready: (List<Notification>) -> Boolean = { true }): List<Notification> {
         instrumentation.waitForIdleSync()
         val deadline = SystemClock.uptimeMillis() + 3000
         // Status78 now refreshes on real source delivery/resume; its controls have a separate suite.
-        fun alerts() = manager.activeNotifications.filter { it.id != 78 }
-        while (alerts().size != count && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
-        assertEquals(count, alerts().size)
-        return alerts().map { it.notification }
+        // This fixture posts untagged notifications. Android's tagged aggregate
+        // summary is system-owned and is not an additional delivered call.
+        fun alerts() = manager.activeNotifications.filter { it.id != 78 && it.tag == null }.map { it.notification }
+        var current = alerts()
+        while ((current.size != count || !ready(current)) && SystemClock.uptimeMillis() < deadline) {
+            SystemClock.sleep(20)
+            current = alerts()
+        }
+        assertEquals(count, current.size)
+        assertTrue("Expected notification content; received ${current.map { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) }}", ready(current))
+        return current
     }
 
     @Test fun queuedRepeatCallsKeepTheirOwnSourceActionsAndReplacementSetting() {
@@ -153,7 +160,10 @@ class CallRouteTest {
         val original = pending(40)
         val updated = pending(41)
         fun delivered(text: String, source: PendingIntent, count: Int = 1) {
-            val calls = notifications(count)
+            val calls = notifications(count) { current -> current.any {
+                it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() == text &&
+                    it.actions.last().actionIntent == source
+            } }
             assertTrue("Expected $text; received ${calls.map { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) }}", calls.any {
                 it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() == text &&
                     it.actions.last().actionIntent == source

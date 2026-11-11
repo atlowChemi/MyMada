@@ -1,13 +1,20 @@
 # Build and verify locally
 
-The `call-regressions` CI domain selects `CallPopupComposeTest`,
-`CallRecoveryTest` and `CallRouteTest` on API24 and API37 actual16KB emulators.
+The `call-regressions` CI domain selects `CallPopupComposeTest` and
+`CallRouteTest` on API24 and API37 actual16KB emulators. `CallRecoveryTest`
+runs in separate `call-recovery` jobs because listener revocation asynchronously
+turns detection off and must not race the next routing fixture.
 These offline checks cover popup/audio ownership, persisted recovery policy and
 notification routing through the real app callback/receiver. Recovery grants and
 revokes its own listener; route tests grant notification permission where needed.
 They require no source APK. Real listener delivery, overlay lifecycle, fresh
 notification-permission routes and MediaStore audio fixtures need separate jobs.
-This domain's first CI execution is pending; selection alone is not a pass.
+Run `43086318106` passed 24/26 jobs; both call jobs failed. Notification checks
+now wait for replacement content as well as count, using one observed snapshot,
+and count the fixture's untagged notifications rather than Android-generated
+tagged aggregate summaries. API37 logs confirmed an aggregate summary alongside
+the four retained notifications and a listener-setting change during Home's
+test-call check. Runtime validation of these corrections is pending.
 
 Graphics investigation: run `42926381398` captured API24 `system_server` crashing
 in `android.display`/`memcpy`, and the API37 AOSP launcher waiting for its render
