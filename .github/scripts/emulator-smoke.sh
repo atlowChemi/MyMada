@@ -46,6 +46,7 @@ out="$PWD/emulator-evidence"
 mkdir -p "$out"
 recorder=''
 test_log=''
+live_log=''
 dump_app_threads() {
   # Old Android pidof implementations can miss long process names. Preserve ps
   # and the selected PID so an empty diagnostic cannot masquerade as a dump.
@@ -68,6 +69,10 @@ cleanup() {
   trap - EXIT
   set +e
   echo "Collecting emulator evidence (test exit=$status)"
+  if [[ -n $live_log ]]; then
+    kill "$live_log" 2>/dev/null
+    wait "$live_log" 2>/dev/null
+  fi
   if [[ -n $test_log ]]; then
     kill "$test_log" 2>/dev/null
     wait "$test_log" 2>/dev/null
@@ -105,6 +110,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
+
 [[ -f "$RUNNER_TEMP/mymada-isolation-ready" ]]
 # Some images close the transport before `adb root` receives its reply. The
 # reconnected shell UID, not that transient transport result, proves root access.
@@ -115,6 +121,10 @@ if [[ $device_uid != 0 ]]; then
   echo "Emulator did not reconnect as root (UID=$device_uid)" >&2
   exit 1
 fi
+# Preserve the last guest messages even if a system crash makes adb dumps time out.
+# Start after adb root's transport restart, which would terminate this stream.
+command adb logcat -b all -v threadtime > "$out/live-logcat.txt" 2>&1 &
+live_log=$!
 # Android's network service can hold the xtables lock just after boot.
 # API24 supports -w without seconds; bound the wait with the host timeout.
 timeout 30 adb shell 'iptables -w -I OUTPUT ! -o lo -j REJECT && ip6tables -w -I OUTPUT ! -o lo -j REJECT'
