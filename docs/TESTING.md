@@ -16,6 +16,15 @@ tagged aggregate summaries. API37 logs confirmed an aggregate summary alongside
 the four retained notifications and a listener-setting change during Home's
 test-call check. Runtime validation of these corrections is pending.
 
+Run `43093518194` passed 24/28 jobs. API24 recovery and Google4KB Vitals passed
+instrumentation but failed GitHub artifact uploads; API24 settings completed
+instrumentation before the overall job timeout. API37 routing hit Android's
+notification enqueue rate limit (logged rate 6.36825): replacement cancelled the
+old notification and the OS shed the new one. Independent payload-variant checks
+now wait one second between verified deliveries, preserving their content/source
+assertions. This does not fix or validate burst delivery: loss under OS throttling
+remains a production risk requiring separate resolution, not a fixture pass.
+
 Graphics investigation: run `42926381398` captured API24 `system_server` crashing
 in `android.display`/`memcpy`, and the API37 AOSP launcher waiting for its render
 thread in `glGetProgramiv` over the emulator GLES pipe. CI now explicitly selects
