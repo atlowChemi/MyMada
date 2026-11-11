@@ -1,5 +1,13 @@
 # Build and verify locally
 
+Notification permission coverage uses eight separate API37 actual16KB jobs:
+fresh-install grant/deny/dismiss/Settings routes, listener Settings grant/revoke,
+detection cancellation after recreation, and metronome grant/deny playback.
+Each job starts with a fresh emulator/install; permission-changing methods are
+selected individually so pregrants cannot contaminate an ungranted route.
+`PERMISSION_ROUTE` supplies the existing instrumentation `permissionRoute`
+argument. These new jobs require remote runtime validation.
+
 The `call-regressions` CI domain selects `CallPopupComposeTest` and
 `CallRouteTest` on API24 and API37 actual16KB emulators. `CallRecoveryTest`
 runs in separate `call-recovery` jobs because listener revocation asynchronously
