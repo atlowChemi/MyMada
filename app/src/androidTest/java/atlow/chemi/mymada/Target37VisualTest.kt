@@ -51,7 +51,13 @@ class Target37VisualTest {
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
                 // Compose installs the fragment host after Activity.onCreate. Rotate the
                 // rendered screen, not a host whose initial fragment is still queued.
-                compose.waitForIdle()
+                compose.waitForShellCondition("oxygen-installed-before-visual-rotation") {
+                    var installed = false
+                    scenario.onActivity {
+                        installed = it.supportFragmentManager.findFragmentById(R.id.frame) is atlow.chemi.mymada.fragments.OxyCalc
+                    }
+                    installed
+                }
                 scenario.onActivity {
                     assertTrue("Oxygen must be installed before visual rotation",
                         it.supportFragmentManager.findFragmentById(R.id.frame) is atlow.chemi.mymada.fragments.OxyCalc)

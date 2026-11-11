@@ -1,5 +1,12 @@
 # Build and verify locally
 
+Run `43086485490` was superseded by a push, with four permission jobs passing
+(deny, dismiss, Settings and listener Settings) before cancellation. Its genuine
+navigation failure checked Oxygen before the asynchronous host transaction was
+installed. The visual test now uses the existing bounded shell-condition wait
+before its fragment assertion and rotations, preserving failure diagnostics.
+Runtime verification is pending; cancelled jobs are not test failures or passes.
+
 Notification permission coverage uses eight separate API37 actual16KB jobs:
 fresh-install grant/deny/dismiss/Settings routes, listener Settings grant/revoke,
 detection cancellation after recreation, and metronome grant/deny playback.
