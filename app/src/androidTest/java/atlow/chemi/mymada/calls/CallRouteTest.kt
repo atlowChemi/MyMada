@@ -168,6 +168,9 @@ class CallRouteTest {
                 it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() == text &&
                     it.actions.last().actionIntent == source
             })
+            // These are independent payload variants, not a burst-throughput test.
+            // Android sheds rapid same-ID updates above its notification rate limit.
+            SystemClock.sleep(1000)
         }
         instrumentation.runOnMainSync { post("הודעת צוות ראשונה", original, 40) }
         delivered("הודעת צוות ראשונה", original)
