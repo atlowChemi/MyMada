@@ -209,6 +209,7 @@ class ToolsBackNavigationTest {
             compose.onNodeWithTag("shell-navigation").performClick()
             compose.onNodeWithTag("shell-action-${R.id.app_bar_word_add}").performClick()
             androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.wordName))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
                 .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.isDisplayed()))
             // No submit: all checks are isolated and never write dictionary data.
         }
