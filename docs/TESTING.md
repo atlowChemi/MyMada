@@ -1,5 +1,14 @@
 # Build and verify locally
 
+The `call-regressions` CI domain selects `CallPopupComposeTest`,
+`CallRecoveryTest` and `CallRouteTest` on API24 and API37 actual16KB emulators.
+These offline checks cover popup/audio ownership, persisted recovery policy and
+notification routing through the real app callback/receiver. Recovery grants and
+revokes its own listener; route tests grant notification permission where needed.
+They require no source APK. Real listener delivery, overlay lifecycle, fresh
+notification-permission routes and MediaStore audio fixtures need separate jobs.
+This domain's first CI execution is pending; selection alone is not a pass.
+
 Graphics investigation: run `42926381398` captured API24 `system_server` crashing
 in `android.display`/`memcpy`, and the API37 AOSP launcher waiting for its render
 thread in `glGetProgramiv` over the emulator GLES pipe. CI now explicitly selects
