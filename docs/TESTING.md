@@ -441,6 +441,11 @@ while the Settings status-bar capture requires overlay access before launch.
 Corrections retain the dialog action, font-scale equality and pixel assertions.
 An API24 document/policy timeout also left empty guest diagnostics; its cause is
 unresolved and is not attributed to those fixture defects.
+Run `43008928177` passed 23/24 jobs, including settings/history and both document
+jobs. The remaining API37 tablet Back test stayed in portrait despite a user
+rotation lock. Its fixture now enables fixed-to-user rotation while testing the
+landscape tablet and restores the platform default afterward; landscape, tablet
+drawer visibility and Back-exit assertions remain required.
 
 Build the offline notification source fixture:
 

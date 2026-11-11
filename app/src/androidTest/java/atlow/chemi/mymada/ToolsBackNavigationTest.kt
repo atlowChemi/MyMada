@@ -124,7 +124,12 @@ class ToolsBackNavigationTest {
 
     @Test fun lockedLandscapeDrawerLeavesOnBack() {
         shell("wm size 1600x2560")
-        if (android.os.Build.VERSION.SDK_INT >= 29) shell("wm user-rotation lock 1")
+        if (android.os.Build.VERSION.SDK_INT >= 29) {
+            // A launcher's portrait request can override a user lock. This fixture
+            // models a physically locked landscape tablet, independent of app requests.
+            shell("wm fixed-to-user-rotation enabled")
+            shell("wm user-rotation lock 1")
+        }
         else {
             shell("settings put system accelerometer_rotation 0")
             shell("settings put system user_rotation 1")
@@ -146,7 +151,10 @@ class ToolsBackNavigationTest {
             }
         } finally {
             shell("wm size reset")
-            if (android.os.Build.VERSION.SDK_INT >= 29) shell("wm user-rotation lock 0")
+            if (android.os.Build.VERSION.SDK_INT >= 29) {
+                shell("wm user-rotation lock 0")
+                shell("wm fixed-to-user-rotation default")
+            }
             else shell("settings put system user_rotation 0")
         }
     }
