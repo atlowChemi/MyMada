@@ -177,6 +177,10 @@ elif [[ -n ${TEST_PACKAGES:-} ]]; then
   test_timeout=1200
 fi
 printf '%s\n' "${TEST_CLASSES:-${TEST_PACKAGES:-All discovered instrumentation tests; default test arguments}}" > "$out/selectors.txt"
+if [[ -n ${TEST_EXCLUDE:-} ]]; then
+  test_args+=("-Pandroid.testInstrumentationRunnerArguments.notClass=$TEST_EXCLUDE")
+  printf 'Separate fixture jobs: %s\n' "$TEST_EXCLUDE" >> "$out/selectors.txt"
+fi
 phases=(default)
 if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.settings.StartupUpgradeTest ]]; then
   phases=(seed verify)

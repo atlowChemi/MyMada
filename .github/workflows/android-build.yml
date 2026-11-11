@@ -90,6 +90,47 @@ jobs:
       matrix:
         include:
           - api: 24
+            case: settings-and-history
+            packages: atlow.chemi.mymada.settings
+            exclude: atlow.chemi.mymada.settings.StartupUpgradeTest,atlow.chemi.mymada.settings.SoundSettingsTest,atlow.chemi.mymada.settings.ExternalAudioDispatchTest
+            image: '24'
+            target: google_apis
+            font: '1.0'
+          - api: 37
+            case: settings-and-history
+            packages: atlow.chemi.mymada.settings
+            exclude: atlow.chemi.mymada.settings.StartupUpgradeTest,atlow.chemi.mymada.settings.SoundSettingsTest,atlow.chemi.mymada.settings.ExternalAudioDispatchTest
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 24
+            case: navigation-and-compatibility
+            tests: atlow.chemi.mymada.ToolsBackNavigationTest,atlow.chemi.mymada.Target37VisualTest,atlow.chemi.mymada.UpgradeEntryPointTest,atlow.chemi.mymada.RemainingBridgeTest
+            image: '24'
+            target: google_apis
+            font: '1.0'
+          - api: 37
+            case: navigation-and-compatibility
+            tests: atlow.chemi.mymada.ToolsBackNavigationTest,atlow.chemi.mymada.Target37VisualTest,atlow.chemi.mymada.UpgradeEntryPointTest,atlow.chemi.mymada.RemainingBridgeTest
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 24
+            case: sound-settings
+            tests: atlow.chemi.mymada.settings.SoundSettingsTest
+            image: '24'
+            target: google_apis
+            font: '1.0'
+          - api: 37
+            case: sound-settings
+            tests: atlow.chemi.mymada.settings.SoundSettingsTest
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 24
             case: tools-and-dictionary
             packages: atlow.chemi.mymada.tools,atlow.chemi.mymada.dictionary,atlow.chemi.mymada.oxygen,atlow.chemi.mymada.helpers
             image: '24'
@@ -213,6 +254,7 @@ jobs:
       EXPECT_PAGE_SIZE: ${{ matrix.page-size }}
       TEST_CLASSES: ${{ matrix.tests }}
       TEST_PACKAGES: ${{ matrix.packages }}
+      TEST_EXCLUDE: ${{ matrix.exclude }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

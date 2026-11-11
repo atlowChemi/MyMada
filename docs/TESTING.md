@@ -425,10 +425,14 @@ dimmed permission dialog is not a valid sample of the underlying artwork.
 | Dispatch/chat | Use blocking ACTION_VIEW/sms instrumentation monitor; never approve a real composer. Hide IME before each real pager swipe and use the unique active/focused app accessibility window. Native editor IME actions require real View input, not Compose-only semantics. |
 | Metronome/popup | `MetronomeControlTest`, `MetronomeNotificationTest`, `MetronomePermissionTest`, `CallRouteTest`, `CallPopupComposeTest`. Wait for both playback and notification before Stop. `MetronomeCallVisualTest`: `screen=metro\|call`, `language=en\|he`, `landscape=true\|false`; set font scale externally. AudioTrack writes do not prove physical sound/tempo. |
 
-For the standalone contraction policy check, compile
-`:app:compileDebugUnitTestKotlin`, then run
-`atlow.chemi.mymada.contractions.ContractionPolicyCheck` with debug/test compiled
-classes and Kotlin stdlib on the JVM classpath.
+`ContractionPolicyCheck` is a JUnit test and runs with `:app:testDebugUnitTest`.
+The settings/history domain runs the settings package except separately staged
+startup, isolated sound-settings, and external-audio fixture checks. Navigation/
+compatibility runs the root-package drawer, visual, entry-point and receiver tests.
+Sound-settings runs on fresh emulators so its denied-permission prerequisite is
+not contaminated by other domains. These added jobs still require their first
+remote validation; listener/overlay/permission and external-audio jobs remain
+unfinished until their fixture setup is wired.
 
 Build the offline notification source fixture:
 
