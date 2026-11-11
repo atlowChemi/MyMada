@@ -1,5 +1,12 @@
 # Build and verify locally
 
+Graphics investigation: run `42926381398` captured API24 `system_server` crashing
+in `android.display`/`memcpy`, and the API37 AOSP launcher waiting for its render
+thread in `glGetProgramiv` over the emulator GLES pipe. CI now explicitly selects
+SwiftShader on API24 (rather than automatic software-backend selection) and
+ANGLE/SwiftShader on the AOSP comparison. This is a candidate mitigation requiring
+runtime validation, not a confirmed app fix; original crash/ANR evidence is retained.
+
 Use the [README toolchain](../README.md#development). These commands describe
 reproduction, not a claim that every task or fixture has run on the current tree.
 Keep build success, executed runtime checks, visual inspection and live-service
