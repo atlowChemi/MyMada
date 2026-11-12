@@ -167,6 +167,19 @@ command adb logcat -v threadtime 'TestRunner:I' 'MetronomeTest:I' '*:S' > "$out/
 test_log=$!
 # Use the same platform for every shard; the legacy worker drops JAVA_TOOL_OPTIONS.
 test_args=('-Pandroid.experimental.androidTest.builtin_test_platform=true')
+if [[ ${CALL_SOURCE:-} == true ]]; then
+  adb install --no-streaming app/src/androidTest/fixtures/call-source/build/outputs/apk/debug/call-source-fixture-debug.apk
+  if (( $(adb shell getprop ro.build.version.sdk | tr -d '\r') >= 33 )); then
+    adb shell pm grant atlow.mymadaadmin android.permission.POST_NOTIFICATIONS
+  fi
+  adb shell am start -W -n atlow.mymadaadmin/.Details
+fi
+if [[ -n ${LISTENER_FIXTURE:-} ]]; then
+  test_args+=("-Pandroid.testInstrumentationRunnerArguments.listenerFixture=$LISTENER_FIXTURE")
+fi
+if [[ -n ${OVERLAY_FIXTURE:-} ]]; then
+  test_args+=("-Pandroid.testInstrumentationRunnerArguments.overlayFixture=$OVERLAY_FIXTURE")
+fi
 if [[ -n ${PERMISSION_ROUTE:-} ]]; then
   test_args+=("-Pandroid.testInstrumentationRunnerArguments.permissionRoute=$PERMISSION_ROUTE")
 fi

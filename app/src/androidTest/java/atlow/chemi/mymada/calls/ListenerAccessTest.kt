@@ -9,6 +9,7 @@ import org.junit.Test
 
 /** Disposable emulator only: restores the original OS grant list even when an assertion fails. */
 class ListenerAccessTest {
+    @org.junit.Before fun fixture() = configureCallFixture()
     /** Requires the offline source-fixture APK and an externally configured OS listener grant. */
     @Test fun osBoundListenerPreservesRepeatedSourceNotifications() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
