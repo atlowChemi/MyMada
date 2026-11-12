@@ -1,5 +1,13 @@
 # Build and verify locally
 
+Run `43280369521` passed 57/58 jobs: both API recovery, call-regression and
+Hebrew-pager jobs passed. API37 home/integrations timed out waiting for the chat
+IME after recreation. The fixture used `IntegrationField`'s semantics click,
+which only requests native focus; it now physically taps the native editor.
+IME visibility, full-control geometry, retained draft and zero-write assertions
+remain intact. This correction awaits runtime validation. The earlier API24
+guest freeze remains intermittent, not proven eliminated by this passing run.
+
 Run `43180001381` passed 56/58 jobs. Listener/source, overlay, external audio and
 metronome variants passed; both failures were dispatch integration assertions.
 Home tests reset the shared device font scale to 1.0, contaminating the later
