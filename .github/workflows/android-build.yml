@@ -90,6 +90,21 @@ jobs:
       matrix:
         include:
           - api: 24
+            case: external-audio
+            tests: atlow.chemi.mymada.settings.ExternalAudioDispatchTest
+            external-audio: true
+            image: '24'
+            target: google_apis
+            font: '1.0'
+          - api: 37
+            case: external-audio
+            tests: atlow.chemi.mymada.settings.ExternalAudioDispatchTest
+            external-audio: true
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 24
             case: listener-native
             tests: atlow.chemi.mymada.calls.ListenerAccessTest#osBoundListenerPreservesRepeatedSourceNotifications,atlow.chemi.mymada.calls.SummaryNotificationTest
             call-source: true
@@ -449,6 +464,7 @@ jobs:
       CALL_SOURCE: ${{ matrix.call-source }}
       LISTENER_FIXTURE: ${{ matrix.listeners }}
       OVERLAY_FIXTURE: ${{ matrix.overlay }}
+      EXTERNAL_AUDIO: ${{ matrix.external-audio }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
