@@ -15,6 +15,29 @@ import org.junit.Test
 
 /** Opt-in device check after selecting an external, >1s audio file through Settings. */
 class ExternalAudioDispatchTest {
+    @org.junit.Before fun seedCiSelection() {
+        if (InstrumentationRegistry.getArguments().getString("externalAudioFixture") != "true") return
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        val permission = if (Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_AUDIO
+            else Manifest.permission.READ_EXTERNAL_STORAGE
+        android.os.ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
+            "pm grant ${context.packageName} $permission")).use { it.readBytes() }
+        val collection = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        var selected: Uri? = null
+        val deadline = SystemClock.uptimeMillis() + 10000
+        while (selected == null && SystemClock.uptimeMillis() < deadline) {
+            context.contentResolver.query(collection, arrayOf("_id"), "_display_name = ?",
+                arrayOf("mymada-ci-external.mp3"), null)?.use { cursor ->
+                if (cursor.moveToFirst()) selected = android.content.ContentUris.withAppendedId(collection, cursor.getLong(0))
+            }
+            if (selected == null) SystemClock.sleep(50)
+        }
+        assertNotNull("Host audio fixture must be indexed by MediaStore", selected)
+        context.getSharedPreferences("Settings", 0).edit()
+            .putBoolean("Napp", true).putString("NuRi", selected.toString()).commit()
+    }
+
     @Test fun selectedExternalAudioDecodesAndDispatchesOnAlarmStream() {
         assumeTrue(InstrumentationRegistry.getArguments().getString("externalAudio") == "true")
         val context = InstrumentationRegistry.getInstrumentation().targetContext

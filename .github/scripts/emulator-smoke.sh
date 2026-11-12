@@ -167,6 +167,13 @@ command adb logcat -v threadtime 'TestRunner:I' 'MetronomeTest:I' '*:S' > "$out/
 test_log=$!
 # Use the same platform for every shard; the legacy worker drops JAVA_TOOL_OPTIONS.
 test_args=('-Pandroid.experimental.androidTest.builtin_test_platform=true')
+if [[ ${EXTERNAL_AUDIO:-} == true ]]; then
+  adb shell mkdir -p /sdcard/Music
+  adb push app/src/main/res/raw/alert.mp3 /sdcard/Music/mymada-ci-external.mp3
+  adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Music/mymada-ci-external.mp3
+  test_args+=('-Pandroid.testInstrumentationRunnerArguments.externalAudio=true'
+    '-Pandroid.testInstrumentationRunnerArguments.externalAudioFixture=true')
+fi
 if [[ ${CALL_SOURCE:-} == true ]]; then
   adb install --no-streaming app/src/androidTest/fixtures/call-source/build/outputs/apk/debug/call-source-fixture-debug.apk
   if (( $(adb shell getprop ro.build.version.sdk | tr -d '\r') >= 33 )); then
