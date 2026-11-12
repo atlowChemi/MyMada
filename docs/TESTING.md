@@ -8,6 +8,16 @@ IME visibility, full-control geometry, retained draft and zero-write assertions
 remain intact. This correction awaits runtime validation. The earlier API24
 guest freeze remains intermittent, not proven eliminated by this passing run.
 
+Run `43257434506` had 48 passed, three failed and seven unfinished jobs before
+the next corrections. Both recovery-policy failures raced a real listener bind:
+the fixture called main-thread-owned `CallRecovery` state from the instrumentation
+thread. Its complete policy sequence now runs on the main thread, retaining all
+assertions and revoking grants in cleanup. API24 Hebrew integrations stopped
+during `ChatNameFieldAccessibilityTest`, before the pager test; guest output ended
+at a kernel warning and subsequent ADB diagnostic captures were empty. Host-side
+`-show-kernel` logging now preserves kernel output independently of ADB. This
+freeze remains unresolved; no pager pass or complete-suite pass is claimed.
+
 Run `43211894261` passed 56/58 jobs, including both API37 dispatch shards.
 API24 Hebrew paging hit the bottom Send control; swipes now use the visible
 top padding outside editable/button content, preserving all navigation checks.
