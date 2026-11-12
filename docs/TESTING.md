@@ -6,6 +6,14 @@ the visible overlay and restored alarm volume rather than a fixed sleep. Privacy
 recreation waits for focus/layout; Home navigation retains the destruction assertion
 with a ten-second teardown bound. These synchronization fixes require hosted validation.
 
+Superseded run `43168940596` was cancelled (12 passed, 5 failed, 41 cancelled),
+not a completed suite. Monitor boot/update now waits for asynchronous status
+delivery using its existing bounded await; logs showed enqueue at assertion time.
+The harness now forwards its configured font scale to the dispatch preview's
+effective-scale assertion. Hebrew pager navigation remains unresolved: the
+recording shows the gesture focusing a form input and opening the IME rather
+than changing tabs. Preserve that assertion pending gesture/input investigation.
+
 Run `43168223822` passed 41/48 jobs, including monitor and overlay allowed/denied
 on both APIs. API24 source setup timed out in `am start -W` before instrumentation:
 the source Details Activity immediately finishes. Source broadcasts now explicitly

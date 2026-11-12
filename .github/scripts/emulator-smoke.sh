@@ -167,6 +167,7 @@ command adb logcat -v threadtime 'TestRunner:I' 'MetronomeTest:I' '*:S' > "$out/
 test_log=$!
 # Use the same platform for every shard; the legacy worker drops JAVA_TOOL_OPTIONS.
 test_args=('-Pandroid.experimental.androidTest.builtin_test_platform=true')
+test_args+=("-Pandroid.testInstrumentationRunnerArguments.captureFontScale=${FONT_SCALE:-1.0}")
 if [[ -n ${TEST_LANGUAGE:-} ]]; then
   test_args+=("-Pandroid.testInstrumentationRunnerArguments.language=$TEST_LANGUAGE"
     "-Pandroid.testInstrumentationRunnerArguments.captureLanguage=$TEST_LANGUAGE")
