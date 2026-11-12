@@ -92,7 +92,7 @@ class MonitorLifecycleTest {
             receiver.onReceive(recording, Intent(Intent.ACTION_BOOT_COMPLETED))
             receiver.onReceive(recording, Intent(Intent.ACTION_MY_PACKAGE_REPLACED))
             assertTrue("Boot/update must never start a service", starts.isEmpty())
-            assertTrue(context.getSystemService(NotificationManager::class.java).activeNotifications.any { it.id == 78 })
+            await { context.getSystemService(NotificationManager::class.java).activeNotifications.any { it.id == 78 } }
         } finally { DetectionStatus.stop(context) }
     }
 }
