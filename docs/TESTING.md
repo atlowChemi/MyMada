@@ -7,6 +7,15 @@ include stopped packages, avoiding that unnecessary Activity launch. API37 summa
 fallback now uses a fresh ID: a malformed update to an already-valid source is
 intentionally suppressed by the retained-content policy. Corrections await CI.
 
+Remaining-variant coverage schedules metronome/call visuals as eight named JUnit
+parameters (two screens × two locales × two orientations) on each API. Explicit
+`screen`, `language`, and `landscape` arguments still narrow manual parity runs.
+API37 notification delivery has separate granted/denied installs, all metronome
+control methods are selected, and Hebrew integration/Oxygen jobs complement the
+existing defaults. The API33+ permission test is no longer scheduled on API24
+where every method skipped; its grant/deny API37 jobs remain. These additions
+need remote validation before claiming complete variant coverage.
+
 External-audio jobs copy the existing 4.7-second `alert.mp3` to shared Music
 storage, request MediaStore indexing, and select that external content URI using
 the opt-in `externalAudioFixture` setup. API24/API37 then run the existing
