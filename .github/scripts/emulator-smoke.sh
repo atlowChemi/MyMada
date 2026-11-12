@@ -172,7 +172,6 @@ if [[ ${CALL_SOURCE:-} == true ]]; then
   if (( $(adb shell getprop ro.build.version.sdk | tr -d '\r') >= 33 )); then
     adb shell pm grant atlow.mymadaadmin android.permission.POST_NOTIFICATIONS
   fi
-  adb shell am start -W -n atlow.mymadaadmin/.Details
 fi
 if [[ -n ${LISTENER_FIXTURE:-} ]]; then
   test_args+=("-Pandroid.testInstrumentationRunnerArguments.listenerFixture=$LISTENER_FIXTURE")
