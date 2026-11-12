@@ -90,6 +90,65 @@ jobs:
       matrix:
         include:
           - api: 24
+            case: metronome-call-visuals
+            tests: atlow.chemi.mymada.MetronomeCallVisualTest
+            image: '24'
+            target: google_apis
+            font: '1.0'
+          - api: 37
+            case: metronome-call-visuals
+            tests: atlow.chemi.mymada.MetronomeCallVisualTest
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 37
+            case: metronome-notifications-granted
+            tests: atlow.chemi.mymada.MetronomeNotificationTest
+            grant-notifications: 'true'
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 37
+            case: metronome-notifications-denied
+            tests: atlow.chemi.mymada.MetronomeNotificationTest
+            grant-notifications: 'false'
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 24
+            case: integrations-hebrew
+            packages: atlow.chemi.mymada.integrations
+            language: he
+            image: '24'
+            target: google_apis
+            font: '1.0'
+          - api: 37
+            case: integrations-hebrew
+            packages: atlow.chemi.mymada.integrations
+            language: he
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 24
+            case: oxygen-hebrew
+            tests: atlow.chemi.mymada.oxygen.OxygenTest
+            language: he
+            image: '24'
+            target: google_apis
+            font: '1.0'
+          - api: 37
+            case: oxygen-hebrew
+            tests: atlow.chemi.mymada.oxygen.OxygenTest
+            language: he
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 24
             case: external-audio
             tests: atlow.chemi.mymada.settings.ExternalAudioDispatchTest
             external-audio: true
@@ -386,14 +445,14 @@ jobs:
             font: '1.0'
           - api: 24
             case: platform-after-metronome
-            tests: atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeCallVisualTest,atlow.chemi.mymada.MetronomeControlTest,atlow.chemi.mymada.MetronomeNotificationTest,atlow.chemi.mymada.MetronomePermissionTest,atlow.chemi.mymada.PlatformSmokeTest
+            tests: atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeControlTest,atlow.chemi.mymada.MetronomeNotificationTest,atlow.chemi.mymada.PlatformSmokeTest
             image: '24'
             target: google_apis
             page-size: ''
             font: '1.0'
           - api: 37
             case: audio-and-notification
-            tests: atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeControlTest#notificationAndWidgetActionsStopWhileUiBound
+            tests: atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeControlTest
             image: '37.0'
             target: google_apis_ps16k
             page-size: '16384'
@@ -465,6 +524,8 @@ jobs:
       LISTENER_FIXTURE: ${{ matrix.listeners }}
       OVERLAY_FIXTURE: ${{ matrix.overlay }}
       EXTERNAL_AUDIO: ${{ matrix.external-audio }}
+      TEST_LANGUAGE: ${{ matrix.language }}
+      GRANT_NOTIFICATIONS: ${{ matrix.grant-notifications }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
