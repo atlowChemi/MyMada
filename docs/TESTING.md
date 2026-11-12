@@ -1,5 +1,12 @@
 # Build and verify locally
 
+Run `43168223822` passed 41/48 jobs, including monitor and overlay allowed/denied
+on both APIs. API24 source setup timed out in `am start -W` before instrumentation:
+the source Details Activity immediately finishes. Source broadcasts now explicitly
+include stopped packages, avoiding that unnecessary Activity launch. API37 summary
+fallback now uses a fresh ID: a malformed update to an already-valid source is
+intentionally suppressed by the retained-content policy. Corrections await CI.
+
 Listener/source and overlay coverage adds twelve isolated API24/API37 jobs:
 native-only, RN-only and both OS listeners with the offline `atlow.mymadaadmin`
 source APK; monitor controls/component grants; and separate overlay allowed/denied
