@@ -8,6 +8,17 @@ IME visibility, full-control geometry, retained draft and zero-write assertions
 remain intact. This correction awaits runtime validation. The earlier API24
 guest freeze remains intermittent, not proven eliminated by this passing run.
 
+Run `43211894261` passed 56/58 jobs, including both API37 dispatch shards.
+API24 Hebrew paging hit the bottom Send control; swipes now use the visible
+top padding outside editable/button content, preserving all navigation checks.
+API37 call repeats exposed production grouping: each call incorrectly carried
+`FLAG_GROUP_SUMMARY`. Logs show `notification_summary_converted` and removal
+of ID5023 before the later repeat (ID5025), without rate-limit shedding at that
+failure. Individual calls now remain children of `Calls`, with an explicit
+flag assertion alongside the existing count/body/source-action regression.
+Runtime validation is pending; the separate cancel-before-notify burst-loss
+risk remains unresolved.
+
 Run `43180001381` passed 56/58 jobs. Listener/source, overlay, external audio and
 metronome variants passed; both failures were dispatch integration assertions.
 Home tests reset the shared device font scale to 1.0, contaminating the later
