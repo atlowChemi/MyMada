@@ -172,9 +172,11 @@ class DispatchIntegrationTest {
                 closeSoftKeyboard()
                 // Edge-origin swipes invoke system Back with API37 gesture navigation.
                 val startOffset = if (rtl == forward) -.25f else .25f
+                // Center crosses horizontally scrollable form inputs, which own
+                // the drag and open the IME. Swipe through the bottom action area.
                 onView(withId(R.id.viewpager)).perform(GeneralSwipeAction(Swipe.FAST,
-                    GeneralLocation.translate(GeneralLocation.CENTER, startOffset, 0f),
-                    GeneralLocation.translate(GeneralLocation.CENTER, -startOffset, 0f), Press.FINGER))
+                    GeneralLocation.translate(GeneralLocation.CENTER, startOffset, .4f),
+                    GeneralLocation.translate(GeneralLocation.CENTER, -startOffset, .4f), Press.FINGER))
                 instrumentation.uiAutomation.waitForIdle(500, 5000)
             }
             swipe(true)
