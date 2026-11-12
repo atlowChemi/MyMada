@@ -1,10 +1,12 @@
 # Build and verify locally
 
-Fixture broadcasts use `FLAG_RECEIVER_FOREGROUND` so API24 boot broadcasts cannot
-delay the source command past the listener assertion. Overlay failure checks await
-the visible overlay and restored alarm volume rather than a fixed sleep. Privacy
-recreation waits for focus/layout; Home navigation retains the destruction assertion
-with a ten-second teardown bound. These synchronization fixes require hosted validation.
+Run `43180001381` passed 56/58 jobs. Listener/source, overlay, external audio and
+metronome variants passed; both failures were dispatch integration assertions.
+Home tests reset the shared device font scale to 1.0, contaminating the later
+1.3-scale preview: cleanup now restores the incoming setting. Hebrew pager
+gestures crossed editable form content and focused an input instead of paging;
+the gesture now uses the bottom action area, retaining all tab/recreation
+assertions. These corrections await runtime validation.
 
 Superseded run `43168940596` was cancelled (12 passed, 5 failed, 41 cancelled),
 not a completed suite. Monitor boot/update now waits for asynchronous status
@@ -37,6 +39,12 @@ decode, playback-position and alarm-stream assertions with `externalAudio=true`.
 This covers external-storage dispatch, not the picker UI or physical audibility.
 Manual selected-audio runs remain available without the fixture argument.
 Remote validation is pending.
+
+Fixture broadcasts use `FLAG_RECEIVER_FOREGROUND` so API24 boot broadcasts cannot
+delay the source command past the listener assertion. Overlay failure checks await
+the visible overlay and restored alarm volume rather than a fixed sleep. Privacy
+recreation waits for focus/layout; Home navigation retains the destruction assertion
+with a ten-second teardown bound. These synchronization fixes require hosted validation.
 
 Listener/source and overlay coverage adds twelve isolated API24/API37 jobs:
 native-only, RN-only and both OS listeners with the offline `atlow.mymadaadmin`
