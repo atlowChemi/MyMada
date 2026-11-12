@@ -31,6 +31,24 @@ include stopped packages, avoiding that unnecessary Activity launch. API37 summa
 fallback now uses a fresh ID: a malformed update to an already-valid source is
 intentionally suppressed by the retained-content policy. Corrections await CI.
 
+Run `ruby .github/scripts/check-test-assignments.rb` to inventory retained
+instrumentation methods against the workflow's class/method/package selectors
+and exclusions. CI fails on an unassigned method, unknown explicit selector,
+unsupported test declaration or missing required permission/listener/overlay/
+audio/API variant. `--self-test` checks selection boundaries and exclusions.
+The build report includes `test-assignments.txt`. This is a static assignment
+guard, not proof of execution: review JUnit skips and parameterized case results
+before declaring complete coverage. Optional heap dumps and screenshot capture
+switches are diagnostics, not additional functional test variants.
+
+Migration-test review: retain `RemainingBridgeTest` (installed receiver/widget
+actions and Stop semantics), `UpgradeEntryPointTest` (installed aliases and
+notification payload routes), `StartupUpgradeTest` (cold-process legacy settings
+conversion), and `MetronomeWidgetUpgradeTest` (retained widgets/data across install).
+Their names reflect migration history, but their assertions protect ongoing
+compatibility. None is retired merely because Java/RN implementation migration
+was accepted. Historical production-APK upgrade acceptance remains separate.
+
 Remaining-variant coverage schedules metronome/call visuals as eight named JUnit
 parameters (two screens × two locales × two orientations) on each API. Explicit
 `screen`, `language`, and `landscape` arguments still narrow manual parity runs.

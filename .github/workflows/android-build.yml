@@ -22,6 +22,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Verify retained instrumentation assignments
+        run: |
+          ruby .github/scripts/check-test-assignments.rb --self-test
+          ruby .github/scripts/check-test-assignments.rb > test-assignments.txt
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           distribution: temurin
@@ -68,6 +72,7 @@ jobs:
             app/build/reports/tests/testDebugUnitTest/
             app/build/reports/lint-results-*.html
             app/build/reports/lint-results-*.xml
+            test-assignments.txt
           if-no-files-found: warn
           retention-days: 2
       - name: Upload debug APKs
