@@ -105,7 +105,13 @@ class HomeScreenTest {
         instrumentation.waitForIdleSync()
     }
 
-    @After fun restoreFontScale() { shell("settings put system font_scale 1.0") }
+    private val originalFontScale = android.provider.Settings.System.getFloat(
+        context.contentResolver, android.provider.Settings.System.FONT_SCALE, 1f)
+
+    @After fun restoreFontScale() {
+        shell("settings put system font_scale $originalFontScale")
+        instrumentation.uiAutomation.waitForIdle(500, 5_000)
+    }
 
     @Test fun englishNavigationBackAndRecreation() = verifyHome("en", 1f)
 

@@ -1,5 +1,13 @@
 # Build and verify locally
 
+Run `43180001381` passed 56/58 jobs. Listener/source, overlay, external audio and
+metronome variants passed; both failures were dispatch integration assertions.
+Home tests reset the shared device font scale to 1.0, contaminating the later
+1.3-scale preview: cleanup now restores the incoming setting. Hebrew pager
+gestures crossed editable form content and focused an input instead of paging;
+the gesture now uses the bottom action area, retaining all tab/recreation
+assertions. These corrections await runtime validation.
+
 Superseded run `43168940596` was cancelled (12 passed, 5 failed, 41 cancelled),
 not a completed suite. Monitor boot/update now waits for asynchronous status
 delivery using its existing bounded await; logs showed enqueue at assertion time.
