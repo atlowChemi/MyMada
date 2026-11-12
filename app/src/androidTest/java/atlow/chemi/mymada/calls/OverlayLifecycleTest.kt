@@ -19,6 +19,7 @@ import org.junit.Test
 
 /** Disposable emulator with SYSTEM_ALERT_WINDOW explicitly granted by the harness. */
 class OverlayLifecycleTest {
+    @org.junit.Before fun fixture() = configureCallFixture()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private fun find(node: AccessibilityNodeInfo?, id: String): AccessibilityNodeInfo? {

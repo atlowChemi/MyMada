@@ -1,5 +1,14 @@
 # Build and verify locally
 
+Listener/source and overlay coverage adds twelve isolated API24/API37 jobs:
+native-only, RN-only and both OS listeners with the offline `atlow.mymadaadmin`
+source APK; monitor controls/component grants; and separate overlay allowed/denied
+states. The source APK is built before emulator boot and installed only after
+guest network isolation. `listenerFixture` and `overlayFixture` apply OS grants
+inside instrumentation, after its force-stop, and assert the resulting state.
+The source fixture has no network permission. Real reboot/kill acceptance remains
+separate from these callback/lifecycle checks. First runtime validation is pending.
+
 Run `43105329820` passed 34/36 jobs, including calls, recovery and all eight
 permission jobs. API37 navigation selected the unfocused Activity root while
 the native add-word dialog was open; its field assertion now targets `isDialog()`.

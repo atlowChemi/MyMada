@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 /** Real OS source app; run separately with native-only, RN-only, then both listener grants. */
 class SummaryNotificationTest {
+    @org.junit.Before fun fixture() = configureCallFixture()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private fun shell(command: String) = ParcelFileDescriptor.AutoCloseInputStream(

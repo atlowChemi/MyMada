@@ -19,6 +19,7 @@ import org.junit.Test
 
 /** Ordinary status/Stop controls; real OS kill/reboot checks live in the device evidence. */
 class MonitorLifecycleTest {
+    @org.junit.Before fun fixture() = configureCallFixture()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private val preferences = context.getSharedPreferences("Settings", 0)
