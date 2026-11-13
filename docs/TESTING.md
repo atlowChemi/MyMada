@@ -7,6 +7,14 @@ include stopped packages, avoiding that unnecessary Activity launch. API37 summa
 fallback now uses a fresh ID: a malformed update to an already-valid source is
 intentionally suppressed by the retained-content policy. Corrections await CI.
 
+External-audio jobs copy the existing 4.7-second `alert.mp3` to shared Music
+storage, request MediaStore indexing, and select that external content URI using
+the opt-in `externalAudioFixture` setup. API24/API37 then run the existing
+decode, playback-position and alarm-stream assertions with `externalAudio=true`.
+This covers external-storage dispatch, not the picker UI or physical audibility.
+Manual selected-audio runs remain available without the fixture argument.
+Remote validation is pending.
+
 Listener/source and overlay coverage adds twelve isolated API24/API37 jobs:
 native-only, RN-only and both OS listeners with the offline `atlow.mymadaadmin`
 source APK; monitor controls/component grants; and separate overlay allowed/denied
