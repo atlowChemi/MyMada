@@ -167,6 +167,9 @@ command adb logcat -v threadtime 'TestRunner:I' 'MetronomeTest:I' '*:S' > "$out/
 test_log=$!
 # Use the same platform for every shard; the legacy worker drops JAVA_TOOL_OPTIONS.
 test_args=('-Pandroid.experimental.androidTest.builtin_test_platform=true')
+if [[ -n ${PERMISSION_ROUTE:-} ]]; then
+  test_args+=("-Pandroid.testInstrumentationRunnerArguments.permissionRoute=$PERMISSION_ROUTE")
+fi
 install_options=--no-streaming
 test_timeout=3600
 if [[ -n ${TEST_CLASSES:-} ]]; then
