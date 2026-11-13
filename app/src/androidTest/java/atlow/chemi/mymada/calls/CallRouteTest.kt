@@ -478,7 +478,17 @@ class CallRouteTest {
             ActivityScenario.launch<smsRes>(launch).use { scenario ->
                 if (warm) {
                     scenario.onActivity { it.startActivity(tap) }
-                    instrumentation.waitForIdleSync()
+                    // Main-loop idleness does not await the system's onNewIntent transaction.
+                    val deadline = SystemClock.uptimeMillis() + 3000
+                    var delivered = false
+                    while (!delivered && SystemClock.uptimeMillis() < deadline) {
+                        scenario.onActivity {
+                            delivered = it.intent.getBooleanExtra("openSource", false) &&
+                                it.findViewById<TextView>(R.id.Address).text.toString() == "פרטי מקרה שמורים"
+                        }
+                        if (!delivered) SystemClock.sleep(20)
+                    }
+                    assertTrue("Warm shade intent must reach the existing popup", delivered)
                 }
                 repeat(2) {
                     scenario.onActivity { activity ->
