@@ -164,6 +164,8 @@ class CallRouteTest {
                 it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() == text &&
                     it.actions.last().actionIntent == source
             } }
+            assertTrue("Individual calls must be group children, not competing summaries",
+                calls.all { it.flags and Notification.FLAG_GROUP_SUMMARY == 0 })
             assertTrue("Expected $text; received ${calls.map { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) }}", calls.any {
                 it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() == text &&
                     it.actions.last().actionIntent == source
