@@ -1,5 +1,14 @@
 # Build and verify locally
 
+Run `43308094500` passed 56/58 jobs. API24 chat failed touch injection because
+the automatically opening IME resized the editor after Espresso calculated its
+coordinates; the video shows the field moving above the keyboard. The fixture
+now waits for accessibility-window idleness before calculating the native tap.
+API37 warm shade fallback asserted the previous case before the asynchronous
+`onNewIntent` transaction completed; it now bounds the wait for delivery to the
+existing popup before checking saved content, silent state and recreation.
+Assertions remain intact; runtime validation of these changes is pending.
+
 Run `43280369521` passed 57/58 jobs: both API recovery, call-regression and
 Hebrew-pager jobs passed. API37 home/integrations timed out waiting for the chat
 IME after recreation. The fixture used `IntegrationField`'s semantics click,
