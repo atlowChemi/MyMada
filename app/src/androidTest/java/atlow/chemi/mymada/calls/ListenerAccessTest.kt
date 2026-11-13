@@ -9,6 +9,7 @@ import org.junit.Test
 
 /** Disposable emulator only: restores the original OS grant list even when an assertion fails. */
 class ListenerAccessTest {
+    @org.junit.Before fun fixture() = configureCallFixture()
     /** Requires the offline source-fixture APK and an externally configured OS listener grant. */
     @Test fun osBoundListenerPreservesRepeatedSourceNotifications() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
@@ -49,6 +50,7 @@ class ListenerAccessTest {
         try {
             repeat(2) { index ->
                 context.sendBroadcast(android.content.Intent().setComponent(android.content.ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
+                    .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
                     .putExtra("id", 412))
                 await { count.get() >= index + 1 }
                 instrumentation.uiAutomation.waitForIdle(300, 5000)
@@ -56,6 +58,7 @@ class ListenerAccessTest {
             }
             DetectionStatus.stop(context)
             context.sendBroadcast(android.content.Intent().setComponent(android.content.ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
+                .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
                 .putExtra("id", 412))
             android.os.SystemClock.sleep(500)
             assertEquals("Stopped detection ignores source callbacks without revoking access", 2, count.get())
@@ -63,6 +66,7 @@ class ListenerAccessTest {
             preferences.edit().putBoolean("Mapp", true).commit()
             ListenerAccess.rebind(context)
             context.sendBroadcast(android.content.Intent().setComponent(android.content.ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
+                .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
                 .putExtra("id", 412))
             await { count.get() == 3 }
         } finally {

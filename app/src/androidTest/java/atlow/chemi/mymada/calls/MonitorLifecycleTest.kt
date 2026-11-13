@@ -19,6 +19,7 @@ import org.junit.Test
 
 /** Ordinary status/Stop controls; real OS kill/reboot checks live in the device evidence. */
 class MonitorLifecycleTest {
+    @org.junit.Before fun fixture() = configureCallFixture()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private val preferences = context.getSharedPreferences("Settings", 0)
@@ -91,7 +92,7 @@ class MonitorLifecycleTest {
             receiver.onReceive(recording, Intent(Intent.ACTION_BOOT_COMPLETED))
             receiver.onReceive(recording, Intent(Intent.ACTION_MY_PACKAGE_REPLACED))
             assertTrue("Boot/update must never start a service", starts.isEmpty())
-            assertTrue(context.getSystemService(NotificationManager::class.java).activeNotifications.any { it.id == 78 })
+            await { context.getSystemService(NotificationManager::class.java).activeNotifications.any { it.id == 78 } }
         } finally { DetectionStatus.stop(context) }
     }
 }
