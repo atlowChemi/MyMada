@@ -6,6 +6,9 @@ the native add-word dialog was open; its field assertion now targets `isDialog()
 API24 settings lost `system_server` to SIGSEGV in `android.display`/`memcpy`
 (null destination, 720×1280×4-byte copy). Explicit SwiftShader did not eliminate
 the recurring guest OS crash. Original streamed logs and artifacts are retained.
+API24 now trials ANGLE/SwiftShader (`swangle`), already used by the AOSP
+comparison. This is an unverified graphics mitigation; screenshots, videos,
+assertions and the API24 jobs remain required, with no instrumentation retries.
 
 Run `43086485490` was superseded by a push, with four permission jobs passing
 (deny, dismiss, Settings and listener Settings) before cancellation. Its genuine
