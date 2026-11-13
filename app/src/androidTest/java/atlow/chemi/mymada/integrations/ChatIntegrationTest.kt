@@ -72,6 +72,9 @@ class ChatIntegrationTest {
                     }
                     // IntegrationField's semantics click only requests focus;
                     // tap the native editor to reopen the IME after recreation.
+                    // Initial focus can also open the IME automatically. Let its
+                    // resize settle before Espresso computes physical coordinates.
+                    instrumentation.uiAutomation.waitForIdle(500, 5000)
                     onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(EditText::class.java)).perform(click())
                     compose.waitUntil(5000) {
                         var visible = false
