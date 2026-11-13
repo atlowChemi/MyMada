@@ -95,14 +95,21 @@ class CallRouteTest {
         return posted
     }
 
-    private fun notifications(count: Int): List<Notification> {
+    private fun notifications(count: Int, ready: (List<Notification>) -> Boolean = { true }): List<Notification> {
         instrumentation.waitForIdleSync()
         val deadline = SystemClock.uptimeMillis() + 3000
         // Status78 now refreshes on real source delivery/resume; its controls have a separate suite.
-        fun alerts() = manager.activeNotifications.filter { it.id != 78 }
-        while (alerts().size != count && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
-        assertEquals(count, alerts().size)
-        return alerts().map { it.notification }
+        // This fixture posts untagged notifications. Android's tagged aggregate
+        // summary is system-owned and is not an additional delivered call.
+        fun alerts() = manager.activeNotifications.filter { it.id != 78 && it.tag == null }.map { it.notification }
+        var current = alerts()
+        while ((current.size != count || !ready(current)) && SystemClock.uptimeMillis() < deadline) {
+            SystemClock.sleep(20)
+            current = alerts()
+        }
+        assertEquals(count, current.size)
+        assertTrue("Expected notification content; received ${current.map { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) }}", ready(current))
+        return current
     }
 
     @Test fun queuedRepeatCallsKeepTheirOwnSourceActionsAndReplacementSetting() {
@@ -153,11 +160,17 @@ class CallRouteTest {
         val original = pending(40)
         val updated = pending(41)
         fun delivered(text: String, source: PendingIntent, count: Int = 1) {
-            val calls = notifications(count)
+            val calls = notifications(count) { current -> current.any {
+                it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() == text &&
+                    it.actions.last().actionIntent == source
+            } }
             assertTrue("Expected $text; received ${calls.map { it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) }}", calls.any {
                 it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() == text &&
                     it.actions.last().actionIntent == source
             })
+            // These are independent payload variants, not a burst-throughput test.
+            // Android sheds rapid same-ID updates above its notification rate limit.
+            SystemClock.sleep(1000)
         }
         instrumentation.runOnMainSync { post("הודעת צוות ראשונה", original, 40) }
         delivered("הודעת צוות ראשונה", original)
@@ -465,7 +478,17 @@ class CallRouteTest {
             ActivityScenario.launch<smsRes>(launch).use { scenario ->
                 if (warm) {
                     scenario.onActivity { it.startActivity(tap) }
-                    instrumentation.waitForIdleSync()
+                    // Main-loop idleness does not await the system's onNewIntent transaction.
+                    val deadline = SystemClock.uptimeMillis() + 3000
+                    var delivered = false
+                    while (!delivered && SystemClock.uptimeMillis() < deadline) {
+                        scenario.onActivity {
+                            delivered = it.intent.getBooleanExtra("openSource", false) &&
+                                it.findViewById<TextView>(R.id.Address).text.toString() == "פרטי מקרה שמורים"
+                        }
+                        if (!delivered) SystemClock.sleep(20)
+                    }
+                    assertTrue("Warm shade intent must reach the existing popup", delivered)
                 }
                 repeat(2) {
                     scenario.onActivity { activity ->
