@@ -36,9 +36,9 @@ class AdvancedSettingsTest {
         ActivityScenario.launch(SettingsPage::class.java).use { scenario ->
             scenario.onActivity { it.displayFragment(SettingsAdvanced(), R.id.advanced) }
             clickRow("timeK")
-            onView(withId(R.id.shabatT)).perform(replaceText(""), closeSoftKeyboard())
+            onView(withId(R.id.shabatT)).inRoot(isDialog()).perform(replaceText(""), closeSoftKeyboard())
             clickRow("dialog-confirm")
-            onView(withId(com.google.android.material.R.id.textinput_error)).check { view, error ->
+            onView(withId(com.google.android.material.R.id.textinput_error)).inRoot(isDialog()).check { view, error ->
                 if (error != null) throw error
                 val caption = view as android.widget.TextView
                 assertEquals(android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL), caption.typeface)

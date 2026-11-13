@@ -1,5 +1,19 @@
 # Build and verify locally
 
+Run `43105329820` passed 34/36 jobs, including calls, recovery and all eight
+permission jobs. API37 navigation selected the unfocused Activity root while
+the native add-word dialog was open; its field assertion now targets `isDialog()`.
+API24 settings lost `system_server` to SIGSEGV in `android.display`/`memcpy`
+(null destination, 720×1280×4-byte copy). Explicit SwiftShader did not eliminate
+the recurring guest OS crash. Original streamed logs and artifacts are retained.
+
+Run `43086485490` was superseded by a push, with four permission jobs passing
+(deny, dismiss, Settings and listener Settings) before cancellation. Its genuine
+navigation failure checked Oxygen before the asynchronous host transaction was
+installed. The visual test now uses the existing bounded shell-condition wait
+before its fragment assertion and rotations, preserving failure diagnostics.
+Runtime verification is pending; cancelled jobs are not test failures or passes.
+
 Notification permission coverage uses eight separate API37 actual16KB jobs:
 fresh-install grant/deny/dismiss/Settings routes, listener Settings grant/revoke,
 detection cancellation after recreation, and metronome grant/deny playback.
