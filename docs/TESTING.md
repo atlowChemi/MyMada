@@ -1,5 +1,13 @@
 # Build and verify locally
 
+Run `43400543780` passed 56/58 jobs, including the preceding chat and warm-call
+regressions. API24 About dropped injected Back with `no window focus`; both
+About Back paths now wait for their actual target Activity's window focus.
+API37 Hebrew Home retained the listener prompt after a coordinate-based decline;
+the setup now waits for prompt focus and invokes its actual negative button,
+checking its label and subsequent Home focus. Navigation, detection-state and
+recreation assertions remain unchanged. Runtime verification is pending.
+
 Run `43308094500` passed 56/58 jobs. API24 chat failed touch injection because
 the automatically opening IME resized the editor after Espresso calculated its
 coordinates; the video shows the field moving above the keyboard. The fixture
