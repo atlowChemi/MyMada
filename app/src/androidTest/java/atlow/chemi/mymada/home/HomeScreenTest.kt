@@ -287,7 +287,15 @@ class HomeScreenTest {
             scenario.moveToState(Lifecycle.State.RESUMED)
             detection.assertIsOn().performClick().assertIsOff()
             if (atlow.chemi.mymada.calls.ListenerAccess.selected(context) == null) {
-                onView(withText(R.string.dialog_no)).inRoot(isDialog()).perform(click())
+                waitForPromptFocus(scenario)
+                scenario.onActivity { activity ->
+                    val prompt = activity.supportFragmentManager.fragments
+                        .filterIsInstance<atlow.chemi.mymada.settings.DetectionControls.Prompt>().single()
+                    val dialog = prompt.requireDialog() as androidx.appcompat.app.AlertDialog
+                    val decline = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
+                    assertEquals(activity.getString(R.string.dialog_no), decline.text.toString())
+                    assertTrue(decline.performClick())
+                }
                 waitForHomeFocus(scenario)
             }
             assertFalse(preferences.getBoolean("Mapp", true))
