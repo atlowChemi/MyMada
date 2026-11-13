@@ -12,7 +12,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.GeneralLocation
+import androidx.test.espresso.action.CoordinatesProvider
 import androidx.test.espresso.action.GeneralSwipeAction
 import androidx.test.espresso.action.Press
 import androidx.test.espresso.action.Swipe
@@ -172,9 +172,16 @@ class DispatchIntegrationTest {
                 closeSoftKeyboard()
                 // Edge-origin swipes invoke system Back with API37 gesture navigation.
                 val startOffset = if (rtl == forward) -.25f else .25f
+                // Inputs and Compose buttons can consume the gesture. All three
+                // pages have at least 12dp top padding; use that visible strip.
+                fun point(offset: Float) = CoordinatesProvider { view ->
+                    val bounds = android.graphics.Rect()
+                    check(view.getGlobalVisibleRect(bounds))
+                    floatArrayOf(bounds.exactCenterX() + bounds.width() * offset,
+                        bounds.top + 8 * view.resources.displayMetrics.density)
+                }
                 onView(withId(R.id.viewpager)).perform(GeneralSwipeAction(Swipe.FAST,
-                    GeneralLocation.translate(GeneralLocation.CENTER, startOffset, 0f),
-                    GeneralLocation.translate(GeneralLocation.CENTER, -startOffset, 0f), Press.FINGER))
+                    point(startOffset), point(-startOffset), Press.FINGER))
                 instrumentation.uiAutomation.waitForIdle(500, 5000)
             }
             swipe(true)
