@@ -128,7 +128,7 @@ class AboutScreenTest {
         ActivityScenario.launch(InfoActivityKt::class.java).use { scenario ->
             lateinit var owner: InfoActivityKt
             scenario.onActivity { owner = it }
-            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            pressBackWhenFocused(owner)
             awaitStage(owner, Stage.DESTROYED)
         }
         verifyHomeEntry(title)
@@ -160,12 +160,22 @@ class AboutScreenTest {
                 lateinit var owner: HomePage
                 home.onActivity { owner = it }
                 compose.homeDestination(title).performClick()
-                assertNotNull(instrumentation.waitForMonitorWithTimeout(monitor, 5_000))
+                val about = instrumentation.waitForMonitorWithTimeout(monitor, 5_000)
+                assertNotNull(about)
                 compose.onNodeWithText(title).assertIsDisplayed()
-                instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                pressBackWhenFocused(requireNotNull(about))
                 awaitStage(owner, Stage.RESUMED)
             }
         } finally { instrumentation.removeMonitor(monitor) }
+    }
+
+    private fun pressBackWhenFocused(activity: Activity) {
+        compose.waitUntil(5_000) {
+            var focused = false
+            instrumentation.runOnMainSync { focused = activity.hasWindowFocus() }
+            focused
+        }
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
     }
 
     private fun awaitStage(activity: Activity, expected: Stage) {
