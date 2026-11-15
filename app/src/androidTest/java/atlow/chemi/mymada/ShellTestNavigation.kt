@@ -77,8 +77,9 @@ fun ComposeTestRule.waitForShellDrawer(open: Boolean) {
 fun ComposeTestRule.selectShellDestination(id: Int) {
     // RESUMED can precede the restored Compose shell after a background rotation.
     waitForShellCondition("navigation-ready-$id") {
-        onNodeWithTag("shell-navigation").isDisplayed() ||
-            onNodeWithTag("shell-destination-${R.id.homeDrawer}").isDisplayed()
+        onAllNodes(isRoot()).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() &&
+            (onNodeWithTag("shell-navigation").isDisplayed() ||
+            onNodeWithTag("shell-destination-${R.id.homeDrawer}").isDisplayed())
     }
     if (!onNodeWithTag("shell-destination-${R.id.homeDrawer}").isDisplayed()) {
         onNodeWithTag("shell-navigation").performClick()

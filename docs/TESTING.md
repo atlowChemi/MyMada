@@ -578,6 +578,18 @@ acceptance evidence (Refs #11); Firebase's Xiaomi crash was in React Native's
 `Arguments.fromBundle` conversion of `android.os.UserHandle`, a path removed by
 the native candidate, not yet a verified physical-device beta fix.
 
+Intermediate-head review found an API24 guest kernel NULL dereference in
+`goldfish_pipe_dma_clear_lock` (job `131891276411`); disable GLDMA for API24
+before boot. This targets that crash, not every historical timeout. Job
+`131805951970` has no JUnit results and no kernel trace; job `131889057044`
+timed out during boot. Neither is an executed test pass.
+The edge-Back fixture now waits for gesture insets, window focus and the existing
+drawer-state predicate before/after its single swipe. Shared route readiness
+allows a temporarily absent Compose root during recreation (job `131891276436`).
+Call alerts must be group children before the call-regression layer runs: multiple
+summary notifications can replace each other. Rapid cancel-before-notify loss
+remains a separate unresolved issue. These corrections require new CI evidence.
+
 Use Android's [official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment).
 No NDK is needed to compile app-owned code; inspection of packaged libraries is separate:
 
