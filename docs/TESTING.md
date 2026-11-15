@@ -636,6 +636,13 @@ its destruction/count assertions with a ten-second lifecycle budget. Settings Ba
 was injected while the dismissed region dialog still held focus; drawer readiness
 now also requires its resumed host window to own focus before injecting Back.
 
+Visual status-bar checks retain their exact pixel/color contract but allow up to
+five seconds for the captured compositor frame to show it. App focus, UI idle and
+two draw callbacks did not establish screenshot readiness in jobs `131888529091`
+and `131889056959`. The last frame is now saved even on failure, with window/task
+diagnostics; no instrumentation method is retried. The separate Oxygen-install
+timeout in job `131889147158` remains unexplained pending fresh diagnostic evidence.
+
 Intermediate-head review found an API24 guest kernel NULL dereference in
 `goldfish_pipe_dma_clear_lock` (job `131891276411`); disable GLDMA for API24
 before boot. This targets that crash, not every historical timeout. Job

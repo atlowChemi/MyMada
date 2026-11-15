@@ -181,13 +181,24 @@ class Target37VisualTest {
                 compose.onNodeWithTag("shell-navigation").fetchSemanticsNode().boundsInWindow.top >= top)
         }
         assertTrue(drawn.await(5, TimeUnit.SECONDS))
-        val image = instrumentation.uiAutomation.takeScreenshot()!!
-        File(context.getExternalFilesDir("target37-visuals"), "$name.png").outputStream().use {
-            image.compress(Bitmap.CompressFormat.PNG, 100, it)
-        }
+        var image: Bitmap? = null
         try {
             assertTrue("Visible status inset", top > 0)
-            assertEquals("Primary color behind status bar", color, image.getPixel(image.width / 2, top / 2))
-        } finally { image.recycle() }
+            // App draw callbacks precede SurfaceFlinger presentation. Require the
+            // actual captured frame, rather than treating two callbacks as a fence.
+            compose.waitForShellCondition("status-frame-$name") {
+                image?.recycle()
+                image = instrumentation.uiAutomation.takeScreenshot()!!
+                image!!.getPixel(image!!.width / 2, top / 2) == color
+            }
+            assertEquals("Primary color behind status bar", color, image!!.getPixel(image!!.width / 2, top / 2))
+        } finally {
+            image?.let { frame ->
+                File(context.getExternalFilesDir("target37-visuals"), "$name.png").outputStream().use {
+                    frame.compress(Bitmap.CompressFormat.PNG, 100, it)
+                }
+                frame.recycle()
+            }
+        }
     }
 }
