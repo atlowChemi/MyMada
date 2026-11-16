@@ -1,11 +1,44 @@
 # Build and verify locally
 
+Run `43280369521` passed 57/58 jobs: both API recovery, call-regression and
+Hebrew-pager jobs passed. API37 home/integrations timed out waiting for the chat
+IME after recreation. The fixture used `IntegrationField`'s semantics click,
+which only requests native focus; it now physically taps the native editor.
+IME visibility, full-control geometry, retained draft and zero-write assertions
+remain intact. This correction awaits runtime validation. The earlier API24
+guest freeze remains intermittent, not proven eliminated by this passing run.
+
+Run `43180001381` passed 56/58 jobs. Listener/source, overlay, external audio and
+metronome variants passed; both failures were dispatch integration assertions.
+Home tests reset the shared device font scale to 1.0, contaminating the later
+1.3-scale preview: cleanup now restores the incoming setting. Hebrew pager
+gestures crossed editable form content and focused an input instead of paging;
+the gesture now uses the bottom action area, retaining all tab/recreation
+assertions. These corrections await runtime validation.
+
+Superseded run `43168940596` was cancelled (12 passed, 5 failed, 41 cancelled),
+not a completed suite. Monitor boot/update now waits for asynchronous status
+delivery using its existing bounded await; logs showed enqueue at assertion time.
+The harness now forwards its configured font scale to the dispatch preview's
+effective-scale assertion. Hebrew pager navigation remains unresolved: the
+recording shows the gesture focusing a form input and opening the IME rather
+than changing tabs. Preserve that assertion pending gesture/input investigation.
+
 Run `43168223822` passed 41/48 jobs, including monitor and overlay allowed/denied
 on both APIs. API24 source setup timed out in `am start -W` before instrumentation:
 the source Details Activity immediately finishes. Source broadcasts now explicitly
 include stopped packages, avoiding that unnecessary Activity launch. API37 summary
 fallback now uses a fresh ID: a malformed update to an already-valid source is
 intentionally suppressed by the retained-content policy. Corrections await CI.
+
+Remaining-variant coverage schedules metronome/call visuals as eight named JUnit
+parameters (two screens × two locales × two orientations) on each API. Explicit
+`screen`, `language`, and `landscape` arguments still narrow manual parity runs.
+API37 notification delivery has separate granted/denied installs, all metronome
+control methods are selected, and Hebrew integration/Oxygen jobs complement the
+existing defaults. The API33+ permission test is no longer scheduled on API24
+where every method skipped; its grant/deny API37 jobs remain. These additions
+need remote validation before claiming complete variant coverage.
 
 External-audio jobs copy the existing 4.7-second `alert.mp3` to shared Music
 storage, request MediaStore indexing, and select that external content URI using
