@@ -86,6 +86,8 @@ class AboutMemoryTest {
                 compose.waitForIdle()
                 memory("about from home")
                 instrumentation.runOnMainSync { about!!.finish() }
+                // close() cannot move a scenario out of the transient RESTARTED stage.
+                compose.waitUntil(10_000) { home.state == Lifecycle.State.RESUMED }
             } finally { instrumentation.removeMonitor(monitor) }
         }
     }
