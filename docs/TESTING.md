@@ -643,6 +643,12 @@ and `131889056959`. The last frame is now saved even on failure, with window/tas
 diagnostics; no instrumentation method is retried. The separate Oxygen-install
 timeout in job `131889147158` remains unexplained pending fresh diagnostic evidence.
 
+Jobs `132907543709` and `132907543799` exposed additional fixture races: About
+closed Home's scenario during `RESTARTED` after returning from its child; chat
+scrolled while the draft editor's IME was resizing its viewport. Await Home's
+resumed state before teardown and the hidden IME before message assertions, as
+the existing chat keyboard fixture does. Runtime validation is still required.
+
 Intermediate-head review found an API24 guest kernel NULL dereference in
 `goldfish_pipe_dma_clear_lock` (job `131891276411`); disable GLDMA for API24
 before boot. This targets that crash, not every historical timeout. Job
