@@ -492,6 +492,13 @@ grants are distinct cases.
 
 ## Packaging, upgrades and acceptance boundaries
 
+Follow-up jobs `132907543581` and `132908624026` exposed two synchronization gaps:
+API24 acknowledged the warm shade source and requested finish immediately, but
+destruction exceeded the fixture's three-second deadline; the fixture now retains
+its destruction/count assertions with a ten-second lifecycle budget. Settings Back
+was injected while the dismissed region dialog still held focus; drawer readiness
+now also requires its resumed host window to own focus before injecting Back.
+
 Intermediate-head review found an API24 guest kernel NULL dereference in
 `goldfish_pipe_dma_clear_lock` (job `131891276411`); disable GLDMA for API24
 before boot. This targets that crash, not every historical timeout. Job

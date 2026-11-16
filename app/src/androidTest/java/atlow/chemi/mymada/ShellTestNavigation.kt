@@ -71,6 +71,15 @@ fun ComposeTestRule.waitForShellDrawer(open: Boolean) {
     }
     waitForIdle()
     if (open) home.assertIsDisplayed() else home.assertIsNotDisplayed()
+    if (open) waitForShellCondition("drawer-host-focus") {
+        var focused = false
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            focused = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED)
+                .any { (it is SettingsPage || it is UtillitiesAndTools || it is HomePage) && it.hasWindowFocus() }
+        }
+        focused
+    }
 }
 
 /** Route through the rendered shell; feature tests keep their own content assertions. */

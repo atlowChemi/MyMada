@@ -442,7 +442,9 @@ class CallRouteTest {
             val alert = notifications(1).single()
             assertEquals(source, alert.actions.last().actionIntent)
             alert.contentIntent.send()
-            val deadline = SystemClock.uptimeMillis() + 3000
+            // API24 logged finish immediately, but OS teardown exceeded three
+            // seconds. Use ActivityScenario's lifecycle budget; never force close.
+            val deadline = SystemClock.uptimeMillis() + 10_000
             while ((delivered.size < id || destroyedTaps.get() < id) && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(20)
             instrumentation.waitForIdleSync()
             assertEquals((1..id).toList(), delivered.toList())
