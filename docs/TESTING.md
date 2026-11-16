@@ -283,8 +283,14 @@ does not authorize production use or require a new manual-phone matrix.
 ## Privacy and document content
 
 CI runs `.github/scripts/download-test-fixtures.sh` on the host before builds and
-emulator boot. Five public read-only Storage objects (three PDFs and both policies)
-must match the pinned SHA256 values; changed/error responses fail setup. The
+emulator boot. Five public fixtures (three PDFs and both policies) are mirrored in
+the GitHub `ci-fixtures-v1` release; CI never downloads them from Firebase. Existing
+files are used only after their pinned SHA256 values match. Missing/corrupt files
+are downloaded to temporary files, verified, then replaced; changed/error responses
+fail setup. The build job shares the verified files through a two-day GitHub artifact
+with emulator jobs, which recheck the hashes without downloading from the mirror.
+Run `bash .github/scripts/download-test-fixtures-test.sh /absolute/fixture/directory`
+to verify corrupt-response rejection and the network-free cache path. The
 ignored `app/src/androidTest/assets/ci-fixtures/` directory is packaged only in the
 test APK. `retainedFixture` copies these to the app's external test files when no
 local fixture exists. No production application asset or emulator networking is
