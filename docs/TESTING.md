@@ -1,5 +1,30 @@
 # Build and verify locally
 
+The `call-regressions` CI domain selects `CallPopupComposeTest` and
+`CallRouteTest` on API24 and API37 actual16KB emulators. `CallRecoveryTest`
+runs in separate `call-recovery` jobs because listener revocation asynchronously
+turns detection off and must not race the next routing fixture.
+These offline checks cover popup/audio ownership, persisted recovery policy and
+notification routing through the real app callback/receiver. Recovery grants and
+revokes its own listener; route tests grant notification permission where needed.
+They require no source APK. Real listener delivery, overlay lifecycle, fresh
+notification-permission routes and MediaStore audio fixtures need separate jobs.
+Run `43086318106` passed 24/26 jobs; both call jobs failed. Notification checks
+now wait for replacement content as well as count, using one observed snapshot,
+and count the fixture's untagged notifications rather than Android-generated
+tagged aggregate summaries. API37 logs confirmed an aggregate summary alongside
+the four retained notifications and a listener-setting change during Home's
+test-call check. Runtime validation of these corrections is pending.
+
+Run `43093518194` passed 24/28 jobs. API24 recovery and Google4KB Vitals passed
+instrumentation but failed GitHub artifact uploads; API24 settings completed
+instrumentation before the overall job timeout. API37 routing hit Android's
+notification enqueue rate limit (logged rate 6.36825): replacement cancelled the
+old notification and the OS shed the new one. Independent payload-variant checks
+now wait one second between verified deliveries, preserving their content/source
+assertions. This does not fix or validate burst delivery: loss under OS throttling
+remains a production risk requiring separate resolution, not a fixture pass.
+
 Graphics investigation: run `42926381398` captured API24 `system_server` crashing
 in `android.display`/`memcpy`, and the API37 AOSP launcher waiting for its render
 thread in `glGetProgramiv` over the emulator GLES pipe. CI now explicitly selects
@@ -482,6 +507,25 @@ bind can leave stale system_server registration. Native-only, RN-only and both
 grants are distinct cases.
 
 ## Packaging, upgrades and acceptance boundaries
+
+Follow-up jobs `132907543581` and `132908624026` exposed two synchronization gaps:
+API24 acknowledged the warm shade source and requested finish immediately, but
+destruction exceeded the fixture's three-second deadline; the fixture now retains
+its destruction/count assertions with a ten-second lifecycle budget. Settings Back
+was injected while the dismissed region dialog still held focus; drawer readiness
+now also requires its resumed host window to own focus before injecting Back.
+
+Intermediate-head review found an API24 guest kernel NULL dereference in
+`goldfish_pipe_dma_clear_lock` (job `131891276411`); disable GLDMA for API24
+before boot. This targets that crash, not every historical timeout. Job
+`131805951970` has no JUnit results and no kernel trace; job `131889057044`
+timed out during boot. Neither is an executed test pass.
+The edge-Back fixture now waits for gesture insets, window focus and the existing
+drawer-state predicate before/after its single swipe. Shared route readiness
+allows a temporarily absent Compose root during recreation (job `131891276436`).
+Call alerts must be group children before the call-regression layer runs: multiple
+summary notifications can replace each other. Rapid cancel-before-notify loss
+remains a separate unresolved issue. These corrections require new CI evidence.
 
 Use Android's [official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment).
 No NDK is needed to compile app-owned code; inspection of packaged libraries is separate:

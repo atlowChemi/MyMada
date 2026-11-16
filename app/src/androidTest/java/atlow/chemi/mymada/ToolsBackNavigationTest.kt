@@ -167,14 +167,22 @@ class ToolsBackNavigationTest {
             instrumentation.runOnMainSync { LocalHelper.setLocale(context, "en") }
             prefs.edit().putBoolean("Mapp", false).putStringSet("Tools", setOf("oxy")).commit()
             ActivityScenario.launch(UtillitiesAndTools::class.java).use { scenario ->
-                compose.waitForIdle()
+                compose.waitForShellCondition("edge-back-ready") {
+                    var ready = false
+                    scenario.onActivity {
+                        val insets = androidx.core.view.ViewCompat.getRootWindowInsets(it.window.decorView)
+                            ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemGestures())
+                        ready = it.hasWindowFocus() && (insets?.right ?: 0) > 0
+                    }
+                    ready
+                }
                 open()
-                compose.waitForIdle()
+                compose.waitForShellDrawer(open = true)
                 val metrics = context.resources.displayMetrics
                 val x = metrics.widthPixels - 1
                 val y = metrics.heightPixels / 2
                 shell("input swipe $x $y ${x - 300} $y 400")
-                compose.waitForIdle()
+                compose.waitForShellDrawer(open = false)
                 scenario.onActivity { assertFalse(it.isFinishing) }
                 destination(R.id.oxygenCalc).assertIsNotDisplayed()
                 shell("input swipe $x $y ${x - 300} $y 400")

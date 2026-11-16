@@ -71,14 +71,24 @@ fun ComposeTestRule.waitForShellDrawer(open: Boolean) {
     }
     waitForIdle()
     if (open) home.assertIsDisplayed() else home.assertIsNotDisplayed()
+    if (open) waitForShellCondition("drawer-host-focus") {
+        var focused = false
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            focused = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED)
+                .any { (it is SettingsPage || it is UtillitiesAndTools || it is HomePage) && it.hasWindowFocus() }
+        }
+        focused
+    }
 }
 
 /** Route through the rendered shell; feature tests keep their own content assertions. */
 fun ComposeTestRule.selectShellDestination(id: Int) {
     // RESUMED can precede the restored Compose shell after a background rotation.
     waitForShellCondition("navigation-ready-$id") {
-        onNodeWithTag("shell-navigation").isDisplayed() ||
-            onNodeWithTag("shell-destination-${R.id.homeDrawer}").isDisplayed()
+        onAllNodes(isRoot()).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() &&
+            (onNodeWithTag("shell-navigation").isDisplayed() ||
+            onNodeWithTag("shell-destination-${R.id.homeDrawer}").isDisplayed())
     }
     if (!onNodeWithTag("shell-destination-${R.id.homeDrawer}").isDisplayed()) {
         onNodeWithTag("shell-navigation").performClick()

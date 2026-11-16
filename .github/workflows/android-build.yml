@@ -139,9 +139,35 @@ jobs:
             image: '24'
             target: google_apis
             font: '1.0'
+          - api: 24
+            case: call-regressions
+            tests: atlow.chemi.mymada.calls.CallPopupComposeTest,atlow.chemi.mymada.calls.CallRouteTest
+            image: '24'
+            target: google_apis
+            font: '1.0'
+          - api: 37
+            case: call-regressions
+            tests: atlow.chemi.mymada.calls.CallPopupComposeTest,atlow.chemi.mymada.calls.CallRouteTest
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
           - api: 37
             case: sound-settings
             tests: atlow.chemi.mymada.settings.SoundSettingsTest
+            image: '37.0'
+            target: google_apis_ps16k
+            page-size: '16384'
+            font: '1.3'
+          - api: 24
+            case: call-recovery
+            tests: atlow.chemi.mymada.calls.CallRecoveryTest
+            image: '24'
+            target: google_apis
+            font: '1.0'
+          - api: 37
+            case: call-recovery
+            tests: atlow.chemi.mymada.calls.CallRecoveryTest
             image: '37.0'
             target: google_apis_ps16k
             page-size: '16384'
@@ -309,6 +335,11 @@ jobs:
           bash .github/scripts/download-test-fixtures.sh
           ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
           sudo chmod 666 /dev/kvm
+          if [ '${{ matrix.api }}' = '24' ]; then
+            # API24 goldfish_pipe_dma_clear_lock crashes with the modern host renderer.
+            mkdir -p "$HOME/.android"
+            echo 'GLDMA = off' >> "$HOME/.android/advancedFeatures.ini"
+          fi
       - name: Run isolated instrumentation suite
         uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
