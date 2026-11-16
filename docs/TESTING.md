@@ -68,9 +68,19 @@ instrumentation with network isolation. Apply the isolation rules
 below before running downloaded APKs; demo ad IDs alone do not isolate Firebase.
 
 The workflow has read-only repository access, does not persist checkout credentials,
-and never uses `pull_request_target`. Each run can save the Gradle-managed cache;
-GitHub scopes PR caches to their merge ref, allowing retries to reuse them without
-exposing them to `master` or other PRs. Gradle uses the runner's available CPU count
+and never uses `pull_request_target`. Only the build job saves the Gradle-managed
+cache. Dependent emulator jobs restore it read-only, avoiding dozens of competing
+cache writes and eviction of shared dependency entries. Gradle checks its restored
+local cache first and downloads missing artifacts normally; no test is retried and
+no failure is hidden by an offline/online retry. GitHub scopes PR caches to their
+merge ref; default-branch caches are also readable by every PR. After merging cache
+changes, seed that shared cache without emulators using
+`gh workflow run android-build.yml --ref master -f cache_only=true`.
+This still compiles the APKs and runs JVM tests/lint; it is not instrumentation
+acceptance. Emulator concurrency is capped at four per workflow (not globally
+across PRs), so validate stack updates in batches rather than starting nine full
+matrices together. SDK/image downloads are separate from Gradle's cache and may
+still fail independently. Gradle uses the runner's available CPU count
 rather than the local two-worker limit. No signing keys, `gradle.properties` credentials, Android
 user directory or configuration-cache encryption secrets are cached. Superseded
 runs are cancelled. No Gradle tasks are excluded: release signing and Crashlytics

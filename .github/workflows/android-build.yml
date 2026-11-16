@@ -2,6 +2,11 @@ name: Android build
 
 on:
   workflow_dispatch:
+    inputs:
+      cache_only:
+        description: Warm build/dependency caches without starting emulators (use master for a shared seed)
+        type: boolean
+        default: false
   pull_request:
   push:
     branches: [master]
@@ -35,7 +40,8 @@ jobs:
         run: bash .github/scripts/install-sdk.sh
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
-          # GitHub scopes PR caches to their merge ref; master cannot restore them.
+          # One writer per run. Master seeds are readable by every PR; PR seeds
+          # are readable by that PR's dependent emulator jobs and later reruns.
           cache-read-only: false
       - name: Build debug app and instrumentation APKs
         # Public fixtures go into the test APK, never the production application.
@@ -90,10 +96,13 @@ jobs:
   emulator:
     name: Emulator API ${{ matrix.api }} / ${{ matrix.case }}
     needs: build
+    if: ${{ !inputs.cache_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
+      # Limit simultaneous SDK/Maven downloads on cold runners.
+      max-parallel: 4
       matrix:
         include:
           - api: 24
@@ -279,7 +288,9 @@ jobs:
         run: bash .github/scripts/install-sdk.sh
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
-          cache-read-only: false
+          # Restore the build job's seed; dozens of shard writes otherwise evict
+          # shared entries. Gradle still fetches genuinely missing dependencies.
+          cache-read-only: true
       - name: Restore verified fixtures from build job
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
