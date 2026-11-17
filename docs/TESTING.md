@@ -483,6 +483,32 @@ grants are distinct cases.
 
 ## Packaging, upgrades and acceptance boundaries
 
+### Play CI authentication preflight
+
+After merging, run `gh workflow run android-publish.yml --ref master`. This manual
+workflow uses the existing `production` GitHub environment (a secret/environment
+name, not a Play track) to inspect MyMada's tracks, bundle codes and APK codes. It
+creates a temporary Play edit and deletes it without committing. It does not build,
+upload or roll out an app. Its summary is release inventory, not upgrade acceptance.
+Run `node --test .github/scripts/play-preflight.test.mjs` for local API/cleanup checks.
+
+Environment variables `PLAY_WORKLOAD_IDENTITY_PROVIDER` and `PLAY_SERVICE_ACCOUNT`
+select the configured Google Workload Identity Federation provider and existing
+`google-play-publisher@project-3918384647339420127.iam.gserviceaccount.com` account.
+The provider restricts GitHub claims to repository ID `155338314`, owner ID
+`67366097`, `master`, manual dispatch, this exact workflow file and the `production`
+environment. Only `roles/iam.workloadIdentityUser` is bound on the service account;
+no new service-account key or broad project role is required. Play permissions are
+managed separately in Play Console. The existing publisher's production-track
+permission is unchanged; this workflow has no release mutation/commit operation.
+
+The provider is
+`projects/973214169451/locations/global/workloadIdentityPools/mymada-github/providers/play-publisher`.
+Disable that provider or remove its service-account binding to revoke CI trust.
+Release signing/upload-key activation, the intended tester track, the next unused
+version code and production-compatible upgrade checks must be established before
+extending this workflow to publish the replacement beta (Refs #11).
+
 Use Android's [official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment).
 No NDK is needed to compile app-owned code; inspection of packaged libraries is separate:
 
