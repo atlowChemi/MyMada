@@ -18,8 +18,8 @@ android {
         // Experimental common candidate: actual enforcement validation, not release acceptance.
         targetSdkVersion 37
         // Development version only; verify Play's highest versionCode before release (#11).
-        versionCode 12828
-        versionName '4.0.0-native-dev'
+        versionCode providers.gradleProperty('releaseVersionCode').getOrElse('12828').toInteger()
+        versionName providers.gradleProperty('releaseVersionName').getOrElse('4.0.0-native-dev')
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
     }
