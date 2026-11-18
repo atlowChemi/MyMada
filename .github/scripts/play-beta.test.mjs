@@ -54,7 +54,7 @@ for (const scenario of ['validate', 'publish', 'used-code', 'pending-beta', 'upl
         return Response.json(betaWrite);
       }
       if (path.endsWith(':validate')) {
-        assert.equal(new URL(url).searchParams.get('changesNotSentForReview'), 'true');
+        assert.equal(new URL(url).search, '');
         return scenario === 'validation-denied'
           ? new Response('invalid release', { status: 400 }) : Response.json({ id: '123' });
       }
@@ -77,6 +77,7 @@ for (const scenario of ['validate', 'publish', 'used-code', 'pending-beta', 'upl
     assert.ok(calls.every(c => !c.url.includes('/tracks/production')));
     assert.deepEqual(originalProduction.releases[0].versionCodes, ['12822']);
     assert.equal(calls.filter(c => new URL(c.url).pathname.endsWith(':commit')).length, ['publish', 'commit-unknown'].includes(scenario) ? 1 : 0);
+    if (scenario === 'validation-denied') assert.ok(calls.every(c => !new URL(c.url).pathname.endsWith(':commit')));
     assert.equal(calls.filter(c => c.method === 'DELETE').length, scenario === 'publish' ? 0 : 1);
     if (['used-code', 'pending-beta'].includes(scenario)) assert.ok(calls.every(c => !c.url.includes('/upload/')));
   });
