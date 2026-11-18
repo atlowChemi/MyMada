@@ -53,9 +53,13 @@ for (const scenario of ['validate', 'publish', 'used-code', 'pending-beta', 'upl
         assert.equal(betaWrite.releases[0].status, 'completed');
         return Response.json(betaWrite);
       }
-      if (path.endsWith(':validate')) return scenario === 'validation-denied'
-        ? new Response('invalid release', { status: 400 }) : Response.json({ id: '123' });
+      if (path.endsWith(':validate')) {
+        assert.equal(new URL(url).searchParams.get('changesNotSentForReview'), 'true');
+        return scenario === 'validation-denied'
+          ? new Response('invalid release', { status: 400 }) : Response.json({ id: '123' });
+      }
       if (path.endsWith(':commit')) {
+        assert.equal(new URL(url).searchParams.get('changesNotSentForReview'), 'true');
         assert.ok(betaWrite);
         if (scenario === 'commit-unknown') throw new Error('connection lost after commit request');
         return Response.json({ id: '123' });
@@ -66,12 +70,13 @@ for (const scenario of ['validate', 'publish', 'used-code', 'pending-beta', 'upl
     const result = releaseBeta('fixture', operation, '12828', '4.0.0-beta.5', bundlePath);
     if (['validate', 'publish'].includes(scenario)) assert.deepEqual(await result, {
       operation, track: 'beta', versionCode: '12828', versionName: '4.0.0-beta.5', sha256: digest, committed: scenario === 'publish',
+      reviewSubmission: scenario === 'publish' ? 'required-in-play-console' : 'not-committed',
     });
     else await assert.rejects(result);
     const calls = mocked.mock.calls.map(({ arguments: [url, options] }) => ({ url, method: options.method }));
     assert.ok(calls.every(c => !c.url.includes('/tracks/production')));
     assert.deepEqual(originalProduction.releases[0].versionCodes, ['12822']);
-    assert.equal(calls.filter(c => c.url.endsWith(':commit')).length, ['publish', 'commit-unknown'].includes(scenario) ? 1 : 0);
+    assert.equal(calls.filter(c => new URL(c.url).pathname.endsWith(':commit')).length, ['publish', 'commit-unknown'].includes(scenario) ? 1 : 0);
     assert.equal(calls.filter(c => c.method === 'DELETE').length, scenario === 'publish' ? 0 : 1);
     if (['used-code', 'pending-beta'].includes(scenario)) assert.ok(calls.every(c => !c.url.includes('/upload/')));
   });

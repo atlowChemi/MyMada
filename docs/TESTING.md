@@ -485,6 +485,14 @@ grants are distinct cases.
 
 ### Play CI authentication and beta release
 
+Run `44264600152` passed the optimized release build, JVM tests/lint, signing,
+OIDC authentication, and Play upload version/digest checks. Play rejected edit
+validation with HTTP 400 requiring `changesNotSentForReview=true`; the temporary
+edit was cleaned up without committing. Validation and commit now request manual
+review submission. After `publish-beta` commits, submit the changes for review
+from Play Console; a successful commit does not mean testers can install it.
+The updated validation request still needs confirmation against Play.
+
 Validation run `44259191028` stopped before compilation because AGP 9 defaults
 to generating JVM tests only for the tested (debug) build type. The project now
 enables both build types, and PR CI runs and retains both JVM test reports.
