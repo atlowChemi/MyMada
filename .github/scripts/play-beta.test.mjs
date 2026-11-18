@@ -18,7 +18,7 @@ test('rejects invalid release inputs and missing auth before network or file acc
   assert.equal(mocked.mock.callCount(), 0);
 });
 
-for (const scenario of ['validate', 'publish', 'used-code', 'pending-beta', 'upload-denied', 'wrong-digest', 'wrong-code', 'validation-denied', 'commit-unknown']) {
+for (const scenario of ['validate', 'publish', 'used-code', 'pending-beta', 'upload-denied', 'wrong-digest', 'wrong-code', 'validation-denied', 'in-review', 'commit-unknown']) {
   test(`beta transaction: ${scenario}`, async (t) => {
     const directory = mkdtempSync(`${tmpdir()}/play-beta-test-`);
     t.after(() => rmSync(directory, { recursive: true, force: true }));
@@ -59,24 +59,26 @@ for (const scenario of ['validate', 'publish', 'used-code', 'pending-beta', 'upl
           ? new Response('invalid release', { status: 400 }) : Response.json({ id: '123' });
       }
       if (path.endsWith(':commit')) {
-        assert.equal(new URL(url).searchParams.get('changesNotSentForReview'), 'true');
+        assert.equal(new URL(url).searchParams.has('changesNotSentForReview'), false);
+        assert.equal(new URL(url).searchParams.get('changesInReviewBehavior'), 'ERROR_IF_IN_REVIEW');
         assert.ok(betaWrite);
+        if (scenario === 'in-review') return new Response('Changes already in review', { status: 400 });
         if (scenario === 'commit-unknown') throw new Error('connection lost after commit request');
         return Response.json({ id: '123' });
       }
       assert.fail(`Unexpected request ${options.method} ${path}`);
     });
-    const operation = ['publish', 'commit-unknown'].includes(scenario) ? 'publish-beta' : 'validate-beta';
+    const operation = ['publish', 'in-review', 'commit-unknown'].includes(scenario) ? 'publish-beta' : 'validate-beta';
     const result = releaseBeta('fixture', operation, '12828', '4.0.0-beta.5', bundlePath);
     if (['validate', 'publish'].includes(scenario)) assert.deepEqual(await result, {
       operation, track: 'beta', versionCode: '12828', versionName: '4.0.0-beta.5', sha256: digest, committed: scenario === 'publish',
-      reviewSubmission: scenario === 'publish' ? 'required-in-play-console' : 'not-committed',
+      reviewSubmission: scenario === 'publish' ? 'submitted-automatically' : 'not-committed',
     });
     else await assert.rejects(result);
     const calls = mocked.mock.calls.map(({ arguments: [url, options] }) => ({ url, method: options.method }));
     assert.ok(calls.every(c => !c.url.includes('/tracks/production')));
     assert.deepEqual(originalProduction.releases[0].versionCodes, ['12822']);
-    assert.equal(calls.filter(c => new URL(c.url).pathname.endsWith(':commit')).length, ['publish', 'commit-unknown'].includes(scenario) ? 1 : 0);
+    assert.equal(calls.filter(c => new URL(c.url).pathname.endsWith(':commit')).length, ['publish', 'in-review', 'commit-unknown'].includes(scenario) ? 1 : 0);
     if (scenario === 'validation-denied') assert.ok(calls.every(c => !new URL(c.url).pathname.endsWith(':commit')));
     assert.equal(calls.filter(c => c.method === 'DELETE').length, scenario === 'publish' ? 0 : 1);
     if (['used-code', 'pending-beta'].includes(scenario)) assert.ok(calls.every(c => !c.url.includes('/upload/')));
