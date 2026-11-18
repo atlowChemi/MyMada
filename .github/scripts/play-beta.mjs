@@ -44,13 +44,15 @@ export async function releaseBeta(token, operation, code, name, bundlePath) {
         { language: 'iw-IL', text: 'עדכון בטא בגרסה טבעית לטיפול בקריסת React Native בעת פתיחה שדווחה במכשירי Xiaomi. נשמח לדיווח על תקלות במהלך הבדיקות.' },
       ],
     }] });
-    await request(token, `/${edit.id}:validate`, 'POST', {});
+    // Play requires this app's changes to be submitted for review in the Console.
+    await request(token, `/${edit.id}:validate?changesNotSentForReview=true`, 'POST', {});
     if (operation === 'publish-beta') {
       // Commit is never retried: a lost response requires inspecting Play before another attempt.
-      await request(token, `/${edit.id}:commit`, 'POST', {});
+      await request(token, `/${edit.id}:commit?changesNotSentForReview=true`, 'POST', {});
       committed = true;
     }
-    return { operation, track: 'beta', versionCode: code, versionName: name, sha256, committed };
+    return { operation, track: 'beta', versionCode: code, versionName: name, sha256, committed,
+      reviewSubmission: committed ? 'required-in-play-console' : 'not-committed' };
   } catch (error) {
     failure = error;
     throw error;
