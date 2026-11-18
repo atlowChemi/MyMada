@@ -483,14 +483,36 @@ grants are distinct cases.
 
 ## Packaging, upgrades and acceptance boundaries
 
-### Play CI authentication preflight
+### Play CI authentication and beta release
 
-After merging, run `gh workflow run android-publish.yml --ref master`. This manual
+Run `gh workflow run android-publish.yml --ref master` for the default inspection. This manual
 workflow uses the existing `production` GitHub environment (a secret/environment
 name, not a Play track) to inspect MyMada's tracks, bundle codes and APK codes. It
-creates a temporary Play edit and deletes it without committing. It does not build,
-upload or roll out an app. Its summary is release inventory, not upgrade acceptance.
-Run `node --test .github/scripts/play-preflight.test.mjs` for local API/cleanup checks.
+creates a temporary Play edit and deletes it without committing. Inspection does
+not build, upload or roll out an app. Run
+`node --test .github/scripts/play-*.test.mjs` for local API/cleanup checks.
+
+Preflight run `44177516279` verified OIDC and Play permissions: production is
+`3.5.7`/`12822`, beta is `4.0.0-4`/`12827`, and internal/alpha have no releases.
+The highest returned bundle code was `12827`; every release operation rechecks it.
+The authorized replacement targets the existing **beta** testers, not internal.
+
+Prepare `4.0.0-beta.5`/`12828` with:
+`gh workflow run android-publish.yml --ref master -f operation=validate-beta -f version_code=12828 -f version_name=4.0.0-beta.5`.
+This builds an optimized AAB, runs release JVM tests/lint, signs with the existing
+upload-key secrets and verifies the signature. It preserves the signed bundle,
+SHA256, source commit and R8 mapping for seven days. The PKCS12 file is deleted
+after signing. Play upload acceptance verifies the replacement upload key; bundle
+digest/version and the beta edit must pass validation before the edit is deleted.
+Successful validation is not a rollout and does not prove a Play-signed upgrade.
+
+After reviewing the candidate and completing release/upgrade checks, the same
+command with `operation=publish-beta` builds/signs and commits a completed release
+only to `beta`. The script cannot target production. It rejects reused version
+codes and pending/staged beta releases, and never retries an upload or commit.
+If a commit response is lost, inspect Play before doing anything further. The
+workflow prints a fresh inventory after either operation; Google review/managed
+publishing may delay availability even after a successful commit.
 
 Environment variables `PLAY_WORKLOAD_IDENTITY_PROVIDER` and `PLAY_SERVICE_ACCOUNT`
 select the configured Google Workload Identity Federation provider and existing
@@ -500,14 +522,16 @@ The provider restricts GitHub claims to repository ID `155338314`, owner ID
 environment. Only `roles/iam.workloadIdentityUser` is bound on the service account;
 no new service-account key or broad project role is required. Play permissions are
 managed separately in Play Console. The existing publisher's production-track
-permission is unchanged; this workflow has no release mutation/commit operation.
+permission is unchanged; release mutations in this workflow are restricted to beta.
 
 The provider is
 `projects/973214169451/locations/global/workloadIdentityPools/mymada-github/providers/play-publisher`.
 Disable that provider or remove its service-account binding to revoke CI trust.
-Release signing/upload-key activation, the intended tester track, the next unused
-version code and production-compatible upgrade checks must be established before
-extending this workflow to publish the replacement beta (Refs #11).
+Play app-signing identity must remain unchanged. Upload-key validation, release
+bundle verification and production-compatible upgrade checks remain distinct
+acceptance evidence (Refs #11); Firebase's Xiaomi crash was in React Native's
+`Arguments.fromBundle` conversion of `android.os.UserHandle`, a path removed by
+the native candidate, not yet a verified physical-device beta fix.
 
 Use Android's [official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment).
 No NDK is needed to compile app-owned code; inspection of packaged libraries is separate:

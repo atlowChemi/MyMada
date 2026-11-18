@@ -1,7 +1,7 @@
 import { appendFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
-async function request(token, path, method = 'GET', body) {
+export async function request(token, path, method = 'GET', body) {
   const base = 'https://androidpublisher.googleapis.com/androidpublisher/v3/applications/atlow.chemi.mymada/edits';
   const response = await fetch(base + path, {
     method,
