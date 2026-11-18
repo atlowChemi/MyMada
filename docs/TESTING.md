@@ -20,7 +20,7 @@ JAVA_HOME="<JDK17>" ANDROID_HOME="<SDK37>" ./gradlew \
   :app:assembleDebug :app:assembleDebugAndroidTest \
   --max-workers=2 '-Dorg.gradle.jvmargs=-Xmx3g'
 
-./gradlew :app:testDebugUnitTest :app:lintDebug :app:lintRelease \
+./gradlew :app:testDebugUnitTest :app:testReleaseUnitTest :app:lintDebug :app:lintRelease \
   --max-workers=2 '-Dorg.gradle.jvmargs=-Xmx3g'
 
 # Local optimized outputs; exclude the network mapping-upload task.
@@ -85,7 +85,7 @@ rather than the local two-worker limit. No signing keys, `gradle.properties` cre
 user directory or configuration-cache encryption secrets are cached. Superseded
 runs are cancelled. No Gradle tasks are excluded: release signing and Crashlytics
 mapping-upload configuration remain unchanged; this workflow requests debug tasks only.
-The next step runs `:app:testDebugUnitTest :app:lintDebug :app:lintRelease` with
+The next step runs `:app:testDebugUnitTest :app:testReleaseUnitTest :app:lintDebug :app:lintRelease` with
 `--continue --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'`. Gradle's
 `--continue` collects independent task failures; it does not turn them into success.
 Tests and lint errors fail the job; existing lint warnings remain warnings (no new
@@ -484,6 +484,11 @@ grants are distinct cases.
 ## Packaging, upgrades and acceptance boundaries
 
 ### Play CI authentication and beta release
+
+Validation run `44259191028` stopped before compilation because AGP 9 defaults
+to generating JVM tests only for the tested (debug) build type. The project now
+enables both build types, and PR CI runs and retains both JVM test reports.
+That failed run did not reach signing or Play upload.
 
 Run `gh workflow run android-publish.yml --ref master` for the default inspection. This manual
 workflow uses the existing `production` GitHub environment (a secret/environment
