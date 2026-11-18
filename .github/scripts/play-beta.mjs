@@ -46,13 +46,13 @@ export async function releaseBeta(token, operation, code, name, bundlePath) {
     }] });
     await request(token, `/${edit.id}:validate`, 'POST', {});
     if (operation === 'publish-beta') {
-      // Only commit supports leaving changes for review submission in the Console.
+      // Submit automatically, but never cancel an existing review.
       // Commit is never retried: a lost response requires inspecting Play before another attempt.
-      await request(token, `/${edit.id}:commit?changesNotSentForReview=true`, 'POST', {});
+      await request(token, `/${edit.id}:commit?changesInReviewBehavior=ERROR_IF_IN_REVIEW`, 'POST', {});
       committed = true;
     }
     return { operation, track: 'beta', versionCode: code, versionName: name, sha256, committed,
-      reviewSubmission: committed ? 'required-in-play-console' : 'not-committed' };
+      reviewSubmission: committed ? 'submitted-automatically' : 'not-committed' };
   } catch (error) {
     failure = error;
     throw error;

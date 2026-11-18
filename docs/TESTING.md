@@ -490,11 +490,15 @@ OIDC authentication, and Play upload version/digest checks. Play rejected edit
 validation with HTTP 400 requiring `changesNotSentForReview=true`; the temporary
 edit was cleaned up without committing. Run `44269745077` then confirmed that
 validation rejects that commit-only query parameter. Validation now uses its
-documented URL without query parameters; commit requests manual review submission.
-Validation failure still blocks commit. After `publish-beta` commits, submit the changes for review
-from Play Console; a successful commit does not mean testers can install it.
-Validation after the existing Console changes were submitted still needs confirmation
-against Play; the review-state error may remain a blocker.
+documented URL without query parameters. Validation run `44273916856` passed
+after existing Console changes were submitted; its temporary edit was deleted.
+Publish run `44336411736` passed validation but commit rejected
+`changesNotSentForReview=true`, explicitly requiring automatic review submission.
+Commit now omits that flag and uses `changesInReviewBehavior=ERROR_IF_IN_REVIEW`
+to avoid cancelling an existing review. Commit is never retried automatically.
+Validation failure still blocks commit. Successful commit submits for review;
+with managed publishing on, approved changes still need publication in Console.
+The corrected commit request still needs live verification.
 
 Validation run `44259191028` stopped before compilation because AGP 9 defaults
 to generating JVM tests only for the tested (debug) build type. The project now
