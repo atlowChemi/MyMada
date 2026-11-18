@@ -488,10 +488,13 @@ grants are distinct cases.
 Run `44264600152` passed the optimized release build, JVM tests/lint, signing,
 OIDC authentication, and Play upload version/digest checks. Play rejected edit
 validation with HTTP 400 requiring `changesNotSentForReview=true`; the temporary
-edit was cleaned up without committing. Validation and commit now request manual
-review submission. After `publish-beta` commits, submit the changes for review
+edit was cleaned up without committing. Run `44269745077` then confirmed that
+validation rejects that commit-only query parameter. Validation now uses its
+documented URL without query parameters; commit requests manual review submission.
+Validation failure still blocks commit. After `publish-beta` commits, submit the changes for review
 from Play Console; a successful commit does not mean testers can install it.
-The updated validation request still needs confirmation against Play.
+Validation after the existing Console changes were submitted still needs confirmation
+against Play; the review-state error may remain a blocker.
 
 Validation run `44259191028` stopped before compilation because AGP 9 defaults
 to generating JVM tests only for the tested (debug) build type. The project now
