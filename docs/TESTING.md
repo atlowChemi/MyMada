@@ -520,7 +520,10 @@ APK assembly does not resolve AGP's detached host-side instrumentation runner
 classpath. The build/cache-writer now runs `:app:resolveInstrumentationRunner`
 to resolve the actual `connectedDebugAndroidTest` classpath before emulator jobs
 restore it read-only. No runner versions are duplicated and no test is retried.
-Hosted execution of this cache-warming change remains to be verified.
+Run `44572685325` caught a configuration mismatch before any tests ran: the build
+job used AGP's legacy task while emulator jobs explicitly enable
+`android.experimental.androidTest.builtin_test_platform=true`. Cache warming
+now uses that same flag; hosted execution remains to be verified.
 
 ### Play CI authentication and beta release
 

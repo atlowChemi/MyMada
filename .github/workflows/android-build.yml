@@ -48,7 +48,9 @@ jobs:
         # Downloads finish before any isolated emulator is started.
         run: |
           bash .github/scripts/download-test-fixtures.sh
-          ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:resolveInstrumentationRunner --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
+          ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:resolveInstrumentationRunner \
+            -Pandroid.experimental.androidTest.builtin_test_platform=true \
+            --no-daemon --build-cache '-Dorg.gradle.jvmargs=-Xmx3g'
       - name: Share verified fixtures with emulator jobs
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
