@@ -217,8 +217,35 @@ class ToolsBackNavigationTest {
             compose.onNodeWithTag("shell-navigation").performClick()
             compose.onNodeWithTag("shell-action-${R.id.app_bar_word_add}").performClick()
             androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.wordName))
+                .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
                 .check(androidx.test.espresso.assertion.ViewAssertions.matches(androidx.test.espresso.matcher.ViewMatchers.isDisplayed()))
             // No submit: all checks are isolated and never write dictionary data.
+        }
+    }
+
+    @Test fun emptySavedHostRestoresSelectedDestination() {
+        prefs.edit().putBoolean("Mapp", false).putBoolean("WasLangChanged", false)
+            .putStringSet("Tools", setOf("oxy")).commit()
+        for (activity in listOf(UtillitiesAndTools::class.java, SettingsPage::class.java)) {
+            ActivityScenario.launch(activity).use { scenario ->
+                scenario.onActivity {
+                    if (it is SettingsPage) it.displayFragment(SettingsNotificationsSounds(), R.id.soundAndVib)
+                }
+                compose.waitForIdle()
+                // Reproduce the saved-state shape of recreation before the first
+                // Compose host is installed: a destination, but no saved fragment.
+                scenario.onActivity {
+                    val manager = it.supportFragmentManager
+                    manager.beginTransaction().remove(requireNotNull(manager.findFragmentById(R.id.frame))).commitNow()
+                }
+                scenario.recreate()
+                compose.waitForIdle()
+                scenario.onActivity {
+                    val fragment = it.supportFragmentManager.findFragmentById(R.id.frame)
+                    if (it is UtillitiesAndTools) assertTrue(fragment is OxyCalc)
+                    else assertTrue(fragment is SettingsNotificationsSounds)
+                }
+            }
         }
     }
 

@@ -523,7 +523,19 @@ restore it read-only. No runner versions are duplicated and no test is retried.
 Run `44572685325` caught a configuration mismatch before any tests ran: the build
 job used AGP's legacy task while emulator jobs explicitly enable
 `android.experimental.androidTest.builtin_test_platform=true`. Cache warming
-now uses that same flag; hosted execution remains to be verified.
+now uses that same flag. The build/cache-warming step passed in `44573962487`;
+API37 navigation and settings then reached instrumentation failures. Retained
+video shows the test's locale-probe dialog still open after its click, blocking
+the drawer's host-focus check. The fixture now waits for probe focus/layout and
+confirms dismissal before continuing. The dictionary toolbar check explicitly
+targets the dialog root rather than the unfocused activity.
+
+The Oxygen failure reproduced after rapid activity recreation. Tools and
+Settings now install their selected destination whenever no fragment was
+restored, including saved state captured before Compose installed the first
+host. `emptySavedHostRestoresSelectedDestination` exercises that saved-state
+shape; existing route/state restoration checks remain. These changes await
+hosted validation; local offline compilation was blocked by the absent SDK.
 
 ### Play CI authentication and beta release
 
