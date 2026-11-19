@@ -508,6 +508,20 @@ grants are distinct cases.
 
 ## Packaging, upgrades and acceptance boundaries
 
+The rebased #187 run `44461765142` passed all 28 jobs: JUnit summaries report
+384 passes and one API33+ notification-permission test skipped on API24.
+#188 run `44461765224` passed Oxygen/navigation but three jobs never reached tests:
+API24 tools hit Maven HTTP429, API37 tools could not resolve JUnit-platform,
+and API24 sound settings failed downloading the emulator. Logs and available
+tools-job evidence are preserved locally. Historical Oxygen intermittency is
+not established as fixed by these passes.
+
+APK assembly does not resolve AGP's detached host-side instrumentation runner
+classpath. The build/cache-writer now runs `:app:resolveInstrumentationRunner`
+to resolve the actual `connectedDebugAndroidTest` classpath before emulator jobs
+restore it read-only. No runner versions are duplicated and no test is retried.
+Hosted execution of this cache-warming change remains to be verified.
+
 ### Play CI authentication and beta release
 
 Run `44264600152` passed the optimized release build, JVM tests/lint, signing,
