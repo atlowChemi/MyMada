@@ -228,6 +228,7 @@ class ToolsBackNavigationTest {
             .putStringSet("Tools", setOf("oxy")).commit()
         for (activity in listOf(UtillitiesAndTools::class.java, SettingsPage::class.java)) {
             ActivityScenario.launch(activity).use { scenario ->
+                compose.waitForIdle()
                 scenario.onActivity {
                     if (it is SettingsPage) it.displayFragment(SettingsNotificationsSounds(), R.id.soundAndVib)
                 }
