@@ -537,6 +537,15 @@ host. `emptySavedHostRestoresSelectedDestination` exercises that saved-state
 shape; existing route/state restoration checks remain. These changes await
 hosted validation; local offline compilation was blocked by the absent SDK.
 
+Run `44623873416` passed navigation (including the empty-host regression) and
+settings on both APIs. Its only failed job, API24 home/integrations, timed out
+during Hebrew About: the main thread waited in `ThreadedRenderer.nSyncAndDrawFrame`
+and RenderThread was blocked reading `QemuPipeStream` through `libGLESv2_enc`
+from Chrome. Logs, video and the pre-timeout thread dump are retained. The API24
+`swangle` selection previously introduced in #191 now belongs in the bottom
+layer too, so lower PRs do not keep validating against the failing `swiftshader`
+path. #191 retains kernel diagnostics. Full per-head acceptance is still pending.
+
 ### Play CI authentication and beta release
 
 Run `44264600152` passed the optimized release build, JVM tests/lint, signing,
