@@ -1,5 +1,30 @@
 # Build and verify locally
 
+The `call-regressions` CI domain selects `CallPopupComposeTest` and
+`CallRouteTest` on API24 and API37 actual16KB emulators. `CallRecoveryTest`
+runs in separate `call-recovery` jobs because listener revocation asynchronously
+turns detection off and must not race the next routing fixture.
+These offline checks cover popup/audio ownership, persisted recovery policy and
+notification routing through the real app callback/receiver. Recovery grants and
+revokes its own listener; route tests grant notification permission where needed.
+They require no source APK. Real listener delivery, overlay lifecycle, fresh
+notification-permission routes and MediaStore audio fixtures need separate jobs.
+Run `43086318106` passed 24/26 jobs; both call jobs failed. Notification checks
+now wait for replacement content as well as count, using one observed snapshot,
+and count the fixture's untagged notifications rather than Android-generated
+tagged aggregate summaries. API37 logs confirmed an aggregate summary alongside
+the four retained notifications and a listener-setting change during Home's
+test-call check. Runtime validation of these corrections is pending.
+
+Run `43093518194` passed 24/28 jobs. API24 recovery and Google4KB Vitals passed
+instrumentation but failed GitHub artifact uploads; API24 settings completed
+instrumentation before the overall job timeout. API37 routing hit Android's
+notification enqueue rate limit (logged rate 6.36825): replacement cancelled the
+old notification and the OS shed the new one. Independent payload-variant checks
+now wait one second between verified deliveries, preserving their content/source
+assertions. This does not fix or validate burst delivery: loss under OS throttling
+remains a production risk requiring separate resolution, not a fixture pass.
+
 Graphics investigation: run `42926381398` captured API24 `system_server` crashing
 in `android.display`/`memcpy`, and the API37 AOSP launcher waiting for its render
 thread in `glGetProgramiv` over the emulator GLES pipe. CI now explicitly selects
@@ -483,6 +508,44 @@ grants are distinct cases.
 
 ## Packaging, upgrades and acceptance boundaries
 
+The rebased #187 run `44461765142` passed all 28 jobs: JUnit summaries report
+384 passes and one API33+ notification-permission test skipped on API24.
+#188 run `44461765224` passed Oxygen/navigation but three jobs never reached tests:
+API24 tools hit Maven HTTP429, API37 tools could not resolve JUnit-platform,
+and API24 sound settings failed downloading the emulator. Logs and available
+tools-job evidence are preserved locally. Historical Oxygen intermittency is
+not established as fixed by these passes.
+
+APK assembly does not resolve AGP's detached host-side instrumentation runner
+classpath. The build/cache-writer now runs `:app:resolveInstrumentationRunner`
+to resolve the actual `connectedDebugAndroidTest` classpath before emulator jobs
+restore it read-only. No runner versions are duplicated and no test is retried.
+Run `44572685325` caught a configuration mismatch before any tests ran: the build
+job used AGP's legacy task while emulator jobs explicitly enable
+`android.experimental.androidTest.builtin_test_platform=true`. Cache warming
+now uses that same flag. The build/cache-warming step passed in `44573962487`;
+API37 navigation and settings then reached instrumentation failures. Retained
+video shows the test's locale-probe dialog still open after its click, blocking
+the drawer's host-focus check. The fixture now waits for probe focus/layout and
+confirms dismissal before continuing. The dictionary toolbar check explicitly
+targets the dialog root rather than the unfocused activity.
+
+The Oxygen failure reproduced after rapid activity recreation. Tools and
+Settings now install their selected destination whenever no fragment was
+restored, including saved state captured before Compose installed the first
+host. `emptySavedHostRestoresSelectedDestination` exercises that saved-state
+shape; existing route/state restoration checks remain. These changes await
+hosted validation; local offline compilation was blocked by the absent SDK.
+
+Run `44623873416` passed navigation (including the empty-host regression) and
+settings on both APIs. Its only failed job, API24 home/integrations, timed out
+during Hebrew About: the main thread waited in `ThreadedRenderer.nSyncAndDrawFrame`
+and RenderThread was blocked reading `QemuPipeStream` through `libGLESv2_enc`
+from Chrome. Logs, video and the pre-timeout thread dump are retained. The API24
+`swangle` selection previously introduced in #191 now belongs in the bottom
+layer too, so lower PRs do not keep validating against the failing `swiftshader`
+path. #191 retains kernel diagnostics. Full per-head acceptance is still pending.
+
 ### Play CI authentication and beta release
 
 Run `44264600152` passed the optimized release build, JVM tests/lint, signing,
@@ -552,6 +615,25 @@ bundle verification and production-compatible upgrade checks remain distinct
 acceptance evidence (Refs #11); Firebase's Xiaomi crash was in React Native's
 `Arguments.fromBundle` conversion of `android.os.UserHandle`, a path removed by
 the native candidate, not yet a verified physical-device beta fix.
+
+Follow-up jobs `132907543581` and `132908624026` exposed two synchronization gaps:
+API24 acknowledged the warm shade source and requested finish immediately, but
+destruction exceeded the fixture's three-second deadline; the fixture now retains
+its destruction/count assertions with a ten-second lifecycle budget. Settings Back
+was injected while the dismissed region dialog still held focus; drawer readiness
+now also requires its resumed host window to own focus before injecting Back.
+
+Intermediate-head review found an API24 guest kernel NULL dereference in
+`goldfish_pipe_dma_clear_lock` (job `131891276411`); disable GLDMA for API24
+before boot. This targets that crash, not every historical timeout. Job
+`131805951970` has no JUnit results and no kernel trace; job `131889057044`
+timed out during boot. Neither is an executed test pass.
+The edge-Back fixture now waits for gesture insets, window focus and the existing
+drawer-state predicate before/after its single swipe. Shared route readiness
+allows a temporarily absent Compose root during recreation (job `131891276436`).
+Call alerts must be group children before the call-regression layer runs: multiple
+summary notifications can replace each other. Rapid cancel-before-notify loss
+remains a separate unresolved issue. These corrections require new CI evidence.
 
 Use Android's [official alignment checks](https://developer.android.com/guide/practices/page-sizes#elf-alignment).
 No NDK is needed to compile app-owned code; inspection of packaged libraries is separate:

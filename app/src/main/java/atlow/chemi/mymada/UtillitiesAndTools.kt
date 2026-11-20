@@ -47,7 +47,8 @@ class UtillitiesAndTools : AppCompatActivity() {
         restored?.let { fragments[fragmentKey(restoredRoute)] = it }
         menuInflater.inflate(R.menu.popup_menu, shell.menu)
         shell.install(true, ::onNavigationItemSelected) {
-            if (savedInstanceState == null) displayFragment(shell.selected, false)
+            // Recreation can save the destination before Compose creates the first host.
+            if (supportFragmentManager.findFragmentById(R.id.frame) == null) displayFragment(shell.selected, false)
         }
     }
 
