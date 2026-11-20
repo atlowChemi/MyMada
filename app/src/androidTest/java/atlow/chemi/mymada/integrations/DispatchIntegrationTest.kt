@@ -22,6 +22,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import atlow.chemi.mymada.MokedPage
 import atlow.chemi.mymada.R
 import atlow.chemi.mymada.helpers.LocalHelper
+import atlow.chemi.mymada.waitForShellCondition
 import com.google.android.material.textfield.TextInputLayout
 import org.junit.Assert.*
 import org.junit.Test
@@ -248,11 +249,21 @@ class DispatchIntegrationTest {
     private fun capture(name: String, language: String) {
         instrumentation.waitForIdleSync()
         instrumentation.uiAutomation.waitForIdle(500, 5000)
-        val image = instrumentation.uiAutomation.takeScreenshot()
-        if (name == "custom" && android.os.Build.VERSION.SDK_INT >= 35)
-            assertEquals(context.getColor(R.color.ColorPrimary), image.getPixel(image.width / 2, 2))
+        var image = instrumentation.uiAutomation.takeScreenshot()!!
         val directory = File(context.getExternalFilesDir(null), "dispatch").apply { mkdirs() }
-        File(directory, "$name-$language.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
-        image.recycle()
+        try {
+            if (name == "custom" && android.os.Build.VERSION.SDK_INT >= 35) {
+                val color = context.getColor(R.color.ColorPrimary)
+                compose.waitForShellCondition("dispatch-status-$language") {
+                    image.recycle()
+                    image = instrumentation.uiAutomation.takeScreenshot()!!
+                    image.getPixel(image.width / 2, 2) == color
+                }
+                assertEquals(color, image.getPixel(image.width / 2, 2))
+            }
+        } finally {
+            File(directory, "$name-$language.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            image.recycle()
+        }
     }
 }
