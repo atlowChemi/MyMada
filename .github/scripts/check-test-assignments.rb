@@ -1,13 +1,5 @@
 #!/usr/bin/env ruby
-require 'yaml'
-
-def assigned?(job, test)
-  klass = test.split('#').first
-  excluded = job.fetch('exclude', '').split(',')
-  return false if excluded.include?(klass) || excluded.include?(test)
-  job.fetch('tests', '').split(',').any? { |selector| selector == klass || selector == test } ||
-    job.fetch('packages', '').split(',').any? { |package| klass.start_with?(package + '.') }
-end
+require_relative 'select-android-lanes'
 
 if ARGV == ['--self-test']
   test = 'example.calls.RouteTest#delivery'
@@ -22,8 +14,7 @@ if ARGV == ['--self-test']
 end
 abort 'Usage: check-test-assignments.rb [--self-test]' unless ARGV.empty?
 
-jobs = YAML.load_file('.github/workflows/android-build.yml').fetch('jobs')
-  .fetch('emulator').fetch('strategy').fetch('matrix').fetch('include')
+jobs = YAML.load_file('.github/android-lanes.yml').fetch('include')
 tests = Dir['app/src/androidTest/java/**/*.kt'].flat_map do |path|
   source = File.read(path)
   annotations = source.scan(/^\s*@(?:org\.junit\.)?Test\b/).length

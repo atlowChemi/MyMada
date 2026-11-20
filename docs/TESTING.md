@@ -263,6 +263,43 @@ after failures, but not cancellation; an early build failure may leave no report
 Download/unzip the artifact and open `index.html` for tests or `lint-results-*.html`
 for lint. Lint is not converted to JUnit. No live backend or emulator is used here.
 
+### Affected emulator lanes
+
+`.github/android-lanes.yml` is the canonical full inventory. PR builds select
+emulator lanes with `.github/scripts/select-android-lanes.rb`, comparing the PR
+head to its merge base with the target branch (including stacked PR targets).
+Renames include both paths; deleted files are included. Build, both JVM variants,
+lint and the complete instrumentation-assignment check still run on every PR.
+
+Feature-local Kotlin changes select their domain's lanes and all configured
+API/locale/permission/image variants. Every code change retains navigation and
+compatibility (including `RemainingBridgeTest` and `UpgradeEntryPointTest`),
+settings/persistence, startup-upgrade, widget-reinstall and API24 platform smoke.
+Instrumentation-test changes select every lane owning the changed class plus
+that baseline. Shared shell, settings, resources, manifest, build/CI files and
+unrecognized paths select **all** lanes. Missing/empty diffs and newly unmapped
+lanes also fall back to full coverage. Documentation-only changes omit emulators.
+
+Master pushes, weekly Monday runs and manual dispatch run the full inventory:
+
+```sh
+gh workflow run android-build.yml --ref <branch> -f cache_only=false
+ruby .github/scripts/select-android-lanes.rb --self-test
+printf '%s\0' app/src/main/java/atlow/chemi/mymada/oxygen/OxygenCalculation.kt \
+  | ruby .github/scripts/select-android-lanes.rb --paths
+```
+
+The selector writes `lane-selection.json` (also retained for seven days in CI)
+and a job summary listing selected/omitted lanes, diff SHAs, paths and the reason.
+Omitted lanes are not test passes; affected-only green is not full-stack or release
+acceptance. `cache_only=true` is explicitly a cache warm, not test acceptance.
+`Android CI` is the stable aggregate check: build failure, any selected-lane
+failure/cancellation, or unexpected skipping fails it. Configure that required
+check only after hosted pass/failure/skip behavior is verified under #101.
+The selector's local checks cover those gate outcomes, rename/deletion paths,
+moving PR bases, safe fallback and retained variants; hosted verification is
+still pending.
+
 ## CI emulator smoke
 
 After build/tests/lint pass, two disposable Linux runners exercise API24 and API37
