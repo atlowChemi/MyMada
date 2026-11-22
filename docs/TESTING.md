@@ -125,6 +125,10 @@ and system UI idleness before injecting the next tap; the existing history and
 toggle assertions remain the regression check. This synchronization change
 still requires hosted validation.
 
+The build job also assembles the standalone call-source fixture before saving
+its Gradle cache. Its separate plugin graph must be warmed explicitly; assembling
+the main application alone did not cover the listener-RN setup dependencies.
+
 `Android build` runs on pull requests (including forks) and pushes to `master`.
 It uses Ubuntu 24.04, Temurin 17.0.17+10, Android command-line tools 16111833 (23.0),
 platform `android-37.0`, build-tools 37.0.0 and the checked-in Gradle wrapper.
