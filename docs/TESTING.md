@@ -72,6 +72,18 @@ main-queue idle condition required by `ActivityScenario.launch`.
 
 ## CI build
 
+Run `44723024913` passed every job on #187 at `74be8104` with the API24
+ANGLE runtime. The separate #205 run `44713452194` failed its aggregate gate:
+API37 listener-RN failed resolving the call-source fixture's Kotlin plugin before
+instrumentation; API24 tools had a System UI boot crash
+(`PhoneStatusBar.onStartedWakingUp` on a null reference), whose modal crash dialog
+stole focus throughout the suite. Logs, screenshots and videos are preserved.
+API24 settings separately failed the Hebrew contraction toggle after returning
+from landscape. Its rotation helper now waits for a different, focused Activity
+and system UI idleness before injecting the next tap; the existing history and
+toggle assertions remain the regression check. This synchronization change
+still requires hosted validation.
+
 `Android build` runs on pull requests (including forks) and pushes to `master`.
 It uses Ubuntu 24.04, Temurin 17.0.17+10, Android command-line tools 16111833 (23.0),
 platform `android-37.0`, build-tools 37.0.0 and the checked-in Gradle wrapper.
