@@ -13,15 +13,15 @@ def assigned?(job, test)
     job.fetch('packages', '').split(',').any? { |package| klass.start_with?(package + '.') }
 end
 
-BASELINE = %w[navigation-and-compatibility settings-and-history startup-upgrade widget-reinstall platform-alone].freeze
+BASELINE = %w[platform-alone].freeze
 DOMAIN_LANES = {
   'oxygen' => /\A(tools-and-dictionary|oxygen-hebrew)\z/,
   # MedicalLocalAcceptanceTest also consumes DictionaryModel and VitalsScreen.
-  'tools' => /\A(tools-and-dictionary|vitals-.*|home-and-integrations|integrations-hebrew)\z/,
+  'tools' => /\A(tools-and-dictionary|vitals-.*|home-and-integrations|integrations-hebrew|settings-and-history)\z/,
   'documents' => /\Adocument-policy-fixtures\z/,
   'home' => /\A(home-and-integrations|integrations-hebrew|chat-theme-alone|document-policy-fixtures)\z/,
   # Call delivery and audio share settings, permissions, overlays and entry points.
-  'calls' => /\A(call-|listener-|monitor-|overlay-|notification-|detection-|metronome-|audio-|sound-|external-|platform-after-|home-|integrations-|chat-)/
+  'calls' => /\A(call-|listener-|monitor-|overlay-|notification-|detection-|metronome-|audio-|sound-|external-|platform-after-|home-|integrations-|chat-|widget-|startup-|settings-and-history|navigation-and-compatibility)/
 }.freeze
 
 def domain(path)
@@ -65,7 +65,7 @@ def select_lanes(lanes, paths, full_reason: nil)
   end
   return [[], 'Documentation-only: emulator lanes omitted; build/JVM/lint still required'] unless code_changed
   selected.concat(lanes.select { |lane| BASELINE.include?(lane.fetch('case')) })
-  [lanes.select { |lane| selected.include?(lane) }, 'Affected features plus compatibility/persistence/upgrade/widget baseline']
+  [lanes.select { |lane| selected.include?(lane) }, 'Affected features plus API24/API37 platform smoke']
 end
 
 def changed_paths(base, head, directory = '.')
@@ -86,6 +86,10 @@ def self_test(lanes)
   check.call(oxygen.size < lanes.size, 'Feature changes must reduce lanes')
   check.call(oxygen.any? { |lane| lane['case'] == 'oxygen-hebrew' }, 'Hebrew variant lost')
   BASELINE.each { |name| check.call(oxygen.any? { |lane| lane['case'] == name }, "Baseline lost: #{name}") }
+  check.call(oxygen.select { |lane| lane['case'] == 'platform-alone' }.map { |lane| lane['api'] }.sort == [24, 37], 'Smoke must run on both APIs')
+  %w[navigation-and-compatibility settings-and-history startup-upgrade widget-reinstall].each do |name|
+    check.call(oxygen.none? { |lane| lane['case'] == name }, "Unrelated expensive lane selected: #{name}")
+  end
   check.call(oxygen.map { |lane| lane['api'] }.uniq.sort == [24, 37], 'API variants lost')
   calls, = select_lanes(lanes, [main + 'recieversAndServices/GrobootRec.kt'])
   %w[notification-grant notification-deny notification-dismiss notification-settings listener-native listener-rn listener-both overlay-allowed overlay-denied external-audio].each do |name|

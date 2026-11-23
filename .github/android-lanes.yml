@@ -46,6 +46,7 @@ include:
   - {api: 24, case: document-policy-fixtures, tests: 'atlow.chemi.mymada.documents.DocumentsTest,atlow.chemi.mymada.privacy.PrivacyScreenTest', image: '24', target: google_apis, page-size: '', font: '1.0'}
   - {api: 37, case: document-policy-fixtures, tests: 'atlow.chemi.mymada.documents.DocumentsTest,atlow.chemi.mymada.privacy.PrivacyScreenTest', image: '37.0', target: google_apis_ps16k, page-size: '16384', font: '1.3'}
   - {api: 24, case: platform-alone, tests: atlow.chemi.mymada.PlatformSmokeTest, image: '24', target: google_apis, page-size: '', font: '1.0'}
+  - {api: 37, case: platform-alone, tests: atlow.chemi.mymada.PlatformSmokeTest, image: '37.0', target: google_apis_ps16k, page-size: '16384', font: '1.0'}
   - {api: 24, case: platform-after-metronome, tests: 'atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeControlTest,atlow.chemi.mymada.MetronomeNotificationTest,atlow.chemi.mymada.PlatformSmokeTest', image: '24', target: google_apis, page-size: '', font: '1.0'}
   - {api: 37, case: audio-and-notification, tests: 'atlow.chemi.mymada.MetronomeAudioTest,atlow.chemi.mymada.MetronomeControlTest', image: '37.0', target: google_apis_ps16k, page-size: '16384', font: '1.3'}
   - {api: 37, case: chat-theme-alone, tests: atlow.chemi.mymada.integrations.ChatDialogGeometryTest, image: '37.0', target: google_apis_ps16k, page-size: '16384', font: '1.3'}

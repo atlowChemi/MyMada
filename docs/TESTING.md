@@ -299,13 +299,17 @@ Renames include both paths; deleted files are included. Build, both JVM variants
 lint and the complete instrumentation-assignment check still run on every PR.
 
 Feature-local Kotlin changes select their domain's lanes and all configured
-API/locale/permission/image variants. Every code change retains navigation and
-compatibility (including `RemainingBridgeTest` and `UpgradeEntryPointTest`),
-settings/persistence, startup-upgrade, widget-reinstall and API24 platform smoke.
+API/locale/permission/image variants. Every code change retains only API24 and
+API37 `platform-alone` smoke: launch, navigation, preference recreation and a
+deterministic calculator check. Detailed settings/history, compatibility,
+startup-upgrade and widget-reinstall coverage is affected-only.
 Instrumentation-test changes select every lane owning the changed class plus
 that baseline. Shared shell, settings, resources, manifest, build/CI files and
 unrecognized paths select **all** lanes. Missing/empty diffs and newly unmapped
 lanes also fall back to full coverage. Documentation-only changes omit emulators.
+
+The beta-only `PreferenceMigrationTest` import fixtures were retired by maintainer
+decision; current-version persistence and recovery coverage remains.
 
 Master pushes, weekly Monday runs and manual dispatch run the full inventory:
 
