@@ -130,7 +130,10 @@ class CallRouteTest {
         notifications(4)
         settings.edit().putBoolean("ride", true).commit()
         instrumentation.runOnMainSync { post("הודעת צוות בדיקה ג", null, 3) }
-        val remaining = notifications(2)
+        // Cancellation passes through two entries before the replacement is enqueued.
+        val remaining = notifications(2) { current -> current.any {
+            it.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() == "הודעת צוות בדיקה ג"
+        } }
         assertTrue(remaining.any { it.extras.getCharSequence(Notification.EXTRA_TITLE)?.toString() == "Unrelated control" })
         val replacement = remaining.single { it.group == "Calls" }
         assertEquals("הודעת צוות בדיקה ג", replacement.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
