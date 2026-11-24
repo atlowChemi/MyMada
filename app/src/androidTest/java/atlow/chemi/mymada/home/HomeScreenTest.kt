@@ -410,7 +410,13 @@ class HomeScreenTest {
             }
             // Use the destination's actual back behavior, rather than finishing it from the test.
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-            compose.waitUntil(5_000) { activity!!.isDestroyed }
+            // API24 can spend five seconds resuming Home before destroying About.
+            // Match withHomeScenario's cleanup bound and read lifecycle state on main.
+            compose.waitUntil(10_000) {
+                var destroyed = false
+                instrumentation.runOnMainSync { destroyed = activity.isDestroyed }
+                destroyed
+            }
             compose.waitForIdle()
         } finally { instrumentation.removeMonitor(monitor) }
     }

@@ -98,7 +98,10 @@ class PrivacyScreenTest {
             var resumed = false
             instrumentation.runOnMainSync {
                 resumed = owner !== previous &&
-                    ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(owner) == Stage.RESUMED
+                    ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(owner) == Stage.RESUMED &&
+                    owner.hasWindowFocus() && webView(owner.window.decorView)?.let {
+                        it.isShown && it.width > 0 && it.height > 0
+                    } == true
             }
             resumed
         }
