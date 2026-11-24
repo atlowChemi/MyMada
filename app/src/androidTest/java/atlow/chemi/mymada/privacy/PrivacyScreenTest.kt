@@ -6,6 +6,7 @@ import android.webkit.WebView
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -98,12 +99,11 @@ class PrivacyScreenTest {
             var resumed = false
             instrumentation.runOnMainSync {
                 resumed = owner !== previous &&
-                    ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(owner) == Stage.RESUMED &&
-                    owner.hasWindowFocus() && webView(owner.window.decorView)?.let {
-                        it.isShown && it.width > 0 && it.height > 0
-                    } == true
+                    ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(owner) == Stage.RESUMED
             }
-            resumed
+            // Query Compose so the replacement root is synchronized and laid out.
+            // WebView visibility belongs to waitForBody, not toolbar readiness.
+            resumed && compose.onNodeWithTag("information-toolbar").isDisplayed()
         }
     }
 
