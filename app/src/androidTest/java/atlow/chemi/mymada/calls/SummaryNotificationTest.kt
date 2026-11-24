@@ -48,7 +48,8 @@ class SummaryNotificationTest {
     }
     private fun source(kind: String, id: Int = 4100) = context.sendBroadcast(Intent()
         .setComponent(ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
-        .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES).putExtra("kind", kind).putExtra("id", id))
+        .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES or Intent.FLAG_RECEIVER_FOREGROUND)
+        .putExtra("kind", kind).putExtra("id", id))
 
     @Test fun osSummariesDoNotReplaceCallsButMeaningfulSummariesAndRepeatsStillAlert() {
         assertTrue("Harness must grant overlay access", Settings.canDrawOverlays(context))

@@ -1,5 +1,11 @@
 # Build and verify locally
 
+Fixture broadcasts use `FLAG_RECEIVER_FOREGROUND` so API24 boot broadcasts cannot
+delay the source command past the listener assertion. Overlay failure checks await
+the visible overlay and restored alarm volume rather than a fixed sleep. Privacy
+recreation waits for focus/layout; Home navigation retains the destruction assertion
+with a ten-second teardown bound. These synchronization fixes require hosted validation.
+
 Run `43168223822` passed 41/48 jobs, including monitor and overlay allowed/denied
 on both APIs. API24 source setup timed out in `am start -W` before instrumentation:
 the source Details Activity immediately finishes. Source broadcasts now explicitly

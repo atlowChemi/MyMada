@@ -49,8 +49,9 @@ class ListenerAccessTest {
         broadcasts.registerReceiver(receiver, android.content.IntentFilter("MADA_APP"))
         try {
             repeat(2) { index ->
+                // Fixture commands must not queue behind API24's boot-time background broadcasts.
                 context.sendBroadcast(android.content.Intent().setComponent(android.content.ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
-                    .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
+                    .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES or android.content.Intent.FLAG_RECEIVER_FOREGROUND)
                     .putExtra("id", 412))
                 await { count.get() >= index + 1 }
                 instrumentation.uiAutomation.waitForIdle(300, 5000)
@@ -58,7 +59,7 @@ class ListenerAccessTest {
             }
             DetectionStatus.stop(context)
             context.sendBroadcast(android.content.Intent().setComponent(android.content.ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
-                .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
+                .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES or android.content.Intent.FLAG_RECEIVER_FOREGROUND)
                 .putExtra("id", 412))
             android.os.SystemClock.sleep(500)
             assertEquals("Stopped detection ignores source callbacks without revoking access", 2, count.get())
@@ -66,7 +67,7 @@ class ListenerAccessTest {
             preferences.edit().putBoolean("Mapp", true).commit()
             ListenerAccess.rebind(context)
             context.sendBroadcast(android.content.Intent().setComponent(android.content.ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
-                .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
+                .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES or android.content.Intent.FLAG_RECEIVER_FOREGROUND)
                 .putExtra("id", 412))
             await { count.get() == 3 }
         } finally {
