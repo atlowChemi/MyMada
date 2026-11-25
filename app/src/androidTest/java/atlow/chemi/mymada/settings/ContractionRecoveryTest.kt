@@ -77,16 +77,22 @@ class ContractionRecoveryTest {
         }
     }
     private fun rotate(scenario: ActivityScenario<UtillitiesAndTools>, landscape: Boolean) {
-        scenario.onActivity { it.requestedOrientation = if (landscape)
-            android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE else android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+        lateinit var previous: UtillitiesAndTools
+        scenario.onActivity {
+            previous = it
+            it.requestedOrientation = if (landscape)
+                android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE else android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
         // Wait for the replacement window, rather than awaiting a frame on the destroyed one.
         compose.waitUntil(10_000) {
             var ready = false
-            scenario.onActivity { ready = it.hasWindowFocus() &&
+            scenario.onActivity { ready = it !== previous && it.hasWindowFocus() &&
                 (it.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) == landscape }
             ready
         }
         instrumentation.waitForIdleSync()
+        // Compose idleness does not include the system rotation/input transition.
+        instrumentation.uiAutomation.waitForIdle(500, 5_000)
     }
 
     @Test fun recoveryDeleteAndEmptyDeleteUseNativeAlertWidth() {

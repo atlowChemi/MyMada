@@ -106,3 +106,12 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+// APK assembly does not resolve AGP's host-side instrumentation runner.
+tasks.register('resolveInstrumentationRunner') {
+    doLast {
+        def files = tasks.named('connectedDebugAndroidTest').get().classpath.files
+        if (files.empty) throw new GradleException('Instrumentation runner classpath is empty')
+        logger.lifecycle("Resolved instrumentation runner: ${files.size()} files")
+    }
+}

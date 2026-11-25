@@ -14,6 +14,7 @@ import atlow.chemi.mymada.SettingsPage
 import atlow.chemi.mymada.helpers.LocalHelper
 import atlow.chemi.mymada.selectShellDestination
 import atlow.chemi.mymada.waitForShellDrawer
+import atlow.chemi.mymada.waitForShellCondition
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -87,6 +88,16 @@ class SettingsChoiceTest {
                     withSettings {
                         LocaleProbeDialog().show(it.supportFragmentManager, "locale-probe")
                     }
+                    compose.waitForShellCondition("locale-probe-ready") {
+                        var ready = false
+                        withSettings {
+                            val dialog = (it.supportFragmentManager.findFragmentByTag("locale-probe")
+                                as? LocaleProbeDialog)?.dialog
+                            val decor = dialog?.window?.decorView
+                            ready = decor?.hasWindowFocus() == true && !decor.isLayoutRequested
+                        }
+                        ready
+                    }
                     onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1))
                         .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).check { button, error ->
                         if (error != null) throw error
@@ -95,6 +106,14 @@ class SettingsChoiceTest {
                     }
                     onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1))
                         .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).perform(click())
+                    compose.waitForShellCondition("locale-probe-dismissed") {
+                        var dismissed = false
+                        withSettings {
+                            dismissed = it.supportFragmentManager.findFragmentByTag("locale-probe") == null &&
+                                it.hasWindowFocus()
+                        }
+                        dismissed
+                    }
                     context.getSharedPreferences("Settings", 0).edit().putInt("merhav", 0).commit()
                     open(R.id.mokedPick)
                     awaitDialog()

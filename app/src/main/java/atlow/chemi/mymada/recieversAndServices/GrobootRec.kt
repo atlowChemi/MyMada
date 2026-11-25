@@ -67,7 +67,7 @@ class GrobootRec : BroadcastReceiver() {
                 .setVibrate(LongArray(9)).setSound(null).setContentIntent(dictation).setAutoCancel(true)
                 .addAction(R.drawable.ic_edit, "הכתב", dictation)
                 .setTicker(if (message) "התקבלה הודעה חדש באפליקציה!" else "התקבל אירוע חדש באפליקציה!")
-                .setStyle(NotificationCompat.BigTextStyle().bigText(event.text)).setGroup("Calls").setGroupSummary(true)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(event.text)).setGroup("Calls")
             event.source?.let { notification.addAction(R.drawable.ic_info, "פרטים", it) }
             if (NotificationPermission.granted(context)) {
                 if (preferences.getBoolean("ride", false)) {

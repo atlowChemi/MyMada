@@ -37,7 +37,8 @@ class SettingsPage : AppCompatActivity() {
         selected = savedInstanceState?.getInt("destination", restored) ?: R.id.notification
         shell.selected = selected
         shell.install(false, ::onNavigationItemSelected) {
-            if (savedInstanceState == null) displayFragment(SettingsNotifications(), selected, false)
+            if (supportFragmentManager.findFragmentById(R.id.frame) == null)
+                displayFragment(fragmentFor(selected) ?: SettingsNotifications(), selected, false)
         }
         if (savedInstanceState == null) {
             overlayPrompt()
@@ -67,14 +68,7 @@ class SettingsPage : AppCompatActivity() {
             R.id.language -> { SettingsChoiceDialog.show(this, false); return true }
             R.id.mokedPick -> { SettingsChoiceDialog.show(this, true); return true }
             else -> {
-                val fragment = when (item.itemId) {
-                    R.id.notification -> SettingsNotifications()
-                    R.id.soundAndVib -> SettingsNotificationsSounds()
-                    R.id.advanced -> SettingsAdvanced()
-                    R.id.ampm -> SettingsAmpm()
-                    R.id.tools -> SettingsTools()
-                    else -> return false
-                }
+                val fragment = fragmentFor(item.itemId) ?: return false
                 displayFragment(fragment, item.itemId)
             }
         }
@@ -82,6 +76,15 @@ class SettingsPage : AppCompatActivity() {
     }
 
     fun displayFragment(fragment: Fragment, toCheck: Int) = displayFragment(fragment, toCheck, true)
+
+    private fun fragmentFor(id: Int): Fragment? = when (id) {
+        R.id.notification -> SettingsNotifications()
+        R.id.soundAndVib -> SettingsNotificationsSounds()
+        R.id.advanced -> SettingsAdvanced()
+        R.id.ampm -> SettingsAmpm()
+        R.id.tools -> SettingsTools()
+        else -> null
+    }
 
     private fun displayFragment(fragment: Fragment, toCheck: Int, animate: Boolean) {
         selected = toCheck
