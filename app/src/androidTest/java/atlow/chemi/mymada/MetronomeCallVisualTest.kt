@@ -18,13 +18,29 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 /** Same fixtures run against the retained XML APK and Compose APK on isolated emulators. */
-class MetronomeCallVisualTest {
+@org.junit.runner.RunWith(org.junit.runners.Parameterized::class)
+class MetronomeCallVisualTest(private val screen: String, private val language: String, private val landscape: Boolean) {
+    companion object {
+        @JvmStatic
+        @org.junit.runners.Parameterized.Parameters(name = "{0}-{1}-landscape={2}")
+        fun fixtures(): List<Array<Any>> {
+            val arguments = InstrumentationRegistry.getArguments()
+            fun values(key: String, defaults: List<String>) = arguments.getString(key)?.let {
+                require(it in defaults) { "Unknown $key: $it" }
+                listOf(it)
+            } ?: defaults
+            return values("screen", listOf("metro", "call")).flatMap { screen ->
+                values("language", listOf("en", "he")).flatMap { language ->
+                    values("landscape", listOf("false", "true")).map { landscape ->
+                        arrayOf<Any>(screen, language, landscape.toBoolean())
+                    }
+                }
+            }
+        }
+    }
     @Test fun captureProductionFixtures() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
-        val screen = InstrumentationRegistry.getArguments().getString("screen", "metro")
-        val language = InstrumentationRegistry.getArguments().getString("language", "en")!!
-        val landscape = InstrumentationRegistry.getArguments().getString("landscape", "false") == "true"
         instrumentation.runOnMainSync { LocalHelper.setLocale(context, language) }
         context.getSharedPreferences("Settings", 0).edit().putBoolean("Mapp", false).putBoolean("cut", true)
             .putStringSet("Tools", setOf("metro")).putBoolean("NsouT1", false)
