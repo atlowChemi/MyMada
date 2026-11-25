@@ -134,6 +134,23 @@ class FirebaseClientLocalAcceptanceTest {
         try {
             ActivityScenario.launch(contactChatActivity::class.java).use { scenario ->
                 compose.onNodeWithTag("chat-dialog-confirm").performClick()
+                // Dismissing the disclaimer focuses the native draft editor. Its
+                // asynchronous IME resize can invalidate a just-completed list scroll.
+                compose.waitUntil(5_000) {
+                    var focused = false
+                    scenario.onActivity { focused = it.hasWindowFocus() }
+                    focused
+                }
+                androidx.test.espresso.Espresso.closeSoftKeyboard()
+                compose.waitUntil(5_000) {
+                    var hidden = false
+                    scenario.onActivity {
+                        hidden = androidx.core.view.ViewCompat.getRootWindowInsets(it.window.decorView)
+                            ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == false
+                    }
+                    hidden
+                }
+                compose.waitForIdle()
                 lateinit var model: ChatModel
                 scenario.onActivity { model = ViewModelProvider(it)[ChatModel::class.java] }
                 main {

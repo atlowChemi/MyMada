@@ -287,7 +287,15 @@ class HomeScreenTest {
             scenario.moveToState(Lifecycle.State.RESUMED)
             detection.assertIsOn().performClick().assertIsOff()
             if (atlow.chemi.mymada.calls.ListenerAccess.selected(context) == null) {
-                onView(withText(R.string.dialog_no)).inRoot(isDialog()).perform(click())
+                waitForPromptFocus(scenario)
+                scenario.onActivity { activity ->
+                    val prompt = activity.supportFragmentManager.fragments
+                        .filterIsInstance<atlow.chemi.mymada.settings.DetectionControls.Prompt>().single()
+                    val dialog = prompt.requireDialog() as androidx.appcompat.app.AlertDialog
+                    val decline = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
+                    assertEquals(activity.getString(R.string.dialog_no), decline.text.toString())
+                    assertTrue(decline.performClick())
+                }
                 waitForHomeFocus(scenario)
             }
             assertFalse(preferences.getBoolean("Mapp", true))
@@ -402,7 +410,13 @@ class HomeScreenTest {
             }
             // Use the destination's actual back behavior, rather than finishing it from the test.
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-            compose.waitUntil(5_000) { activity!!.isDestroyed }
+            // API24 can spend five seconds resuming Home before destroying About.
+            // Match withHomeScenario's cleanup bound and read lifecycle state on main.
+            compose.waitUntil(10_000) {
+                var destroyed = false
+                instrumentation.runOnMainSync { destroyed = activity.isDestroyed }
+                destroyed
+            }
             compose.waitForIdle()
         } finally { instrumentation.removeMonitor(monitor) }
     }

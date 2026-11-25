@@ -73,8 +73,18 @@ class ChatIntegrationTest {
                     compose.onNodeWithTag("chat-draft").performClick()
                     compose.waitUntil(5000) {
                         var visible = false
-                        scenario.onActivity { visible = androidx.core.view.ViewCompat.getRootWindowInsets(it.window.decorView)
-                            ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == true }
+                        scenario.onActivity { activity ->
+                            val content = activity.findViewById<android.view.View>(R.id.chat_content)
+                            val frame = android.graphics.Rect()
+                            activity.window.decorView.getWindowVisibleDisplayFrame(frame)
+                            val location = IntArray(2)
+                            content.getLocationOnScreen(location)
+                            // IME visibility precedes the host's resize/layout on API37.
+                            visible = androidx.core.view.ViewCompat.getRootWindowInsets(activity.window.decorView)
+                                ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == true &&
+                                !content.isLayoutRequested && content.height > 0 &&
+                                location[1] + content.height <= frame.bottom
+                        }
                         visible
                     }
                     compose.waitForIdle()
