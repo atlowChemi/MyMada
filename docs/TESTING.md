@@ -1,5 +1,27 @@
 # Build and verify locally
 
+Fixture broadcasts use `FLAG_RECEIVER_FOREGROUND` so API24 boot broadcasts cannot
+delay the source command past the listener assertion. Overlay failure checks await
+the visible overlay and restored alarm volume rather than a fixed sleep. Privacy
+recreation waits for focus/layout; Home navigation retains the destruction assertion
+with a ten-second teardown bound. These synchronization fixes require hosted validation.
+
+Run `43168223822` passed 41/48 jobs, including monitor and overlay allowed/denied
+on both APIs. API24 source setup timed out in `am start -W` before instrumentation:
+the source Details Activity immediately finishes. Source broadcasts now explicitly
+include stopped packages, avoiding that unnecessary Activity launch. API37 summary
+fallback now uses a fresh ID: a malformed update to an already-valid source is
+intentionally suppressed by the retained-content policy. Corrections await CI.
+
+Listener/source and overlay coverage adds twelve isolated API24/API37 jobs:
+native-only, RN-only and both OS listeners with the offline `atlow.mymadaadmin`
+source APK; monitor controls/component grants; and separate overlay allowed/denied
+states. The source APK is built before emulator boot and installed only after
+guest network isolation. `listenerFixture` and `overlayFixture` apply OS grants
+inside instrumentation, after its force-stop, and assert the resulting state.
+The source fixture has no network permission. Real reboot/kill acceptance remains
+separate from these callback/lifecycle checks. First runtime validation is pending.
+
 Run `43105329820` passed 34/36 jobs, including calls, recovery and all eight
 permission jobs. API37 navigation selected the unfocused Activity root while
 the native add-word dialog was open; its field assertion now targets `isDialog()`.
@@ -108,6 +130,10 @@ from landscape. Its rotation helper now waits for a different, focused Activity
 and system UI idleness before injecting the next tap; the existing history and
 toggle assertions remain the regression check. This synchronization change
 still requires hosted validation.
+
+The build job also assembles the standalone call-source fixture before saving
+its Gradle cache. Its separate plugin graph must be warmed explicitly; assembling
+the main application alone did not cover the listener-RN setup dependencies.
 
 `Android build` runs on pull requests (including forks) and pushes to `master`.
 It uses Ubuntu 24.04, Temurin 17.0.17+10, Android command-line tools 16111833 (23.0),

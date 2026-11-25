@@ -19,6 +19,7 @@ import org.junit.Test
 
 /** Disposable emulator with SYSTEM_ALERT_WINDOW explicitly granted by the harness. */
 class OverlayLifecycleTest {
+    @org.junit.Before fun fixture() = configureCallFixture()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private fun find(node: AccessibilityNodeInfo?, id: String): AccessibilityNodeInfo? {
@@ -74,6 +75,9 @@ class OverlayLifecycleTest {
 
     @Test fun failedPlaybackRestoresAlarmVolumeAndMalformedTimerDoesNotCrash() {
         assertTrue(Settings.canDrawOverlays(context))
+        instrumentation.uiAutomation.serviceInfo = instrumentation.uiAutomation.serviceInfo.apply {
+            flags = flags or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+        }
         val audio = context.getSystemService(AudioManager::class.java)
         val original = audio.getStreamVolume(AudioManager.STREAM_ALARM)
         val preferences = context.getSharedPreferences("Settings", 0)
@@ -83,8 +87,9 @@ class OverlayLifecycleTest {
         ActivityScenario.launch(InfoActivityKt::class.java).use { scenario ->
             try {
                 scenario.onActivity { it.startService(intent("invalid").putExtra("sou", true).putExtra("uri", "file:///missing-offline-alert")) }
-                instrumentation.waitForIdleSync()
-                SystemClock.sleep(300)
+                // startService is asynchronous; observe the overlay before checking restoration.
+                await { node("close_floating_view") != null }
+                await { audio.getStreamVolume(AudioManager.STREAM_ALARM) == original }
                 assertEquals(original, audio.getStreamVolume(AudioManager.STREAM_ALARM))
                 scenario.onActivity { it.stopService(intent("0")) }
                 assertEquals(original, audio.getStreamVolume(AudioManager.STREAM_ALARM))

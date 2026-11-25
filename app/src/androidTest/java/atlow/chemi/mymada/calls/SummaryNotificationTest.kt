@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 /** Real OS source app; run separately with native-only, RN-only, then both listener grants. */
 class SummaryNotificationTest {
+    @org.junit.Before fun fixture() = configureCallFixture()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private fun shell(command: String) = ParcelFileDescriptor.AutoCloseInputStream(
@@ -47,7 +48,8 @@ class SummaryNotificationTest {
     }
     private fun source(kind: String, id: Int = 4100) = context.sendBroadcast(Intent()
         .setComponent(ComponentName("atlow.mymadaadmin", "atlow.mymadaadmin.Source"))
-        .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES).putExtra("kind", kind).putExtra("id", id))
+        .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES or Intent.FLAG_RECEIVER_FOREGROUND)
+        .putExtra("kind", kind).putExtra("id", id))
 
     @Test fun osSummariesDoNotReplaceCallsButMeaningfulSummariesAndRepeatsStillAlert() {
         assertTrue("Harness must grant overlay access", Settings.canDrawOverlays(context))
@@ -103,7 +105,9 @@ class SummaryNotificationTest {
                 }
                 source("malformed", 4102)
                 await { received.size == 5 && text(popup()) == "תקלה" }
-                source("title-only-summary")
+                // A malformed update to the already-valid 4100 must retain its
+                // content; exercise the fresh-identity fallback with a new ID.
+                source("title-only-summary", 4103)
                 await { received.size == 6 && text(popup()) == "תקלה" }
                 source("expanded-summary")
                 await { received.size == 7 && text(popup()) == "הודעת צוות מורחבת" }
