@@ -1,5 +1,6 @@
 package atlow.chemi.mymada.about
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Debug
 import android.util.Log
@@ -8,9 +9,10 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import atlow.chemi.mymada.HomePage
 import atlow.chemi.mymada.InfoActivityKt
 import atlow.chemi.mymada.PrivacyActivity
@@ -45,14 +47,18 @@ class AboutMemoryTest {
             compose.waitForIdle()
             memory("recreated")
             var privacy = ""
-            about.onActivity { privacy = it.getString(R.string.title_activity_privacy) }
+            lateinit var aboutOwner: InfoActivityKt
+            about.onActivity {
+                aboutOwner = it
+                privacy = it.getString(R.string.title_activity_privacy)
+            }
             val monitor = instrumentation.addMonitor(PrivacyActivity::class.java.name, null, false)
             try {
                 compose.onNode(hasText(privacy) or hasContentDescription(privacy)).performScrollTo().performClick()
                 val activity = instrumentation.waitForMonitorWithTimeout(monitor, 5_000)
                 assertNotNull(activity)
                 instrumentation.runOnMainSync { activity!!.finish() }
-                compose.waitUntil(10_000) { about.state == Lifecycle.State.RESUMED }
+                awaitResumed(aboutOwner)
             } finally { instrumentation.removeMonitor(monitor) }
             memory("privacy returned")
             val settingsMonitor = instrumentation.addMonitor(SettingsPage::class.java.name, null, false)
@@ -61,7 +67,7 @@ class AboutMemoryTest {
                 val activity = instrumentation.waitForMonitorWithTimeout(settingsMonitor, 5_000)
                 assertNotNull(activity)
                 instrumentation.runOnMainSync { activity!!.finish() }
-                compose.waitUntil(10_000) { about.state == Lifecycle.State.RESUMED }
+                awaitResumed(aboutOwner)
             } finally { instrumentation.removeMonitor(settingsMonitor) }
             memory("settings returned")
         }
@@ -74,7 +80,11 @@ class AboutMemoryTest {
         }
         ActivityScenario.launch(HomePage::class.java).use { home ->
             var aboutLabel = ""
-            home.onActivity { aboutLabel = it.getString(R.string.title_activity_info) }
+            lateinit var homeOwner: HomePage
+            home.onActivity {
+                homeOwner = it
+                aboutLabel = it.getString(R.string.title_activity_info)
+            }
             compose.onNode(hasText(aboutLabel)).performScrollTo()
             compose.waitForIdle()
             memory("home")
@@ -87,8 +97,20 @@ class AboutMemoryTest {
                 memory("about from home")
                 instrumentation.runOnMainSync { about!!.finish() }
                 // close() cannot move a scenario out of the transient RESTARTED stage.
-                compose.waitUntil(10_000) { home.state == Lifecycle.State.RESUMED }
+                awaitResumed(homeOwner)
             } finally { instrumentation.removeMonitor(monitor) }
+        }
+    }
+
+    private fun awaitResumed(activity: Activity) {
+        compose.waitUntil(10_000) {
+            var resumed = false
+            // Unlike ActivityScenario.state, the monitor accepts transitional stages.
+            instrumentation.runOnMainSync {
+                resumed = ActivityLifecycleMonitorRegistry.getInstance()
+                    .getLifecycleStageOf(activity) == Stage.RESUMED
+            }
+            resumed
         }
     }
 
