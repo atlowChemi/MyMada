@@ -1,5 +1,10 @@
 # Build and verify locally
 
+Post-merge run `45517793016` passed 57/58 jobs. API37 `AboutMemoryTest`
+failed because `ActivityScenario.state` throws during `RESTARTED`. Its three
+return waits now read the lifecycle monitor on main, retaining the ten-second
+bound and requiring `RESUMED`. Hosted validation is pending.
+
 Run `43400543780` passed 56/58 jobs, including the preceding chat and warm-call
 regressions. API24 About dropped injected Back with `no window focus`; both
 About Back paths now wait for their actual target Activity's window focus.
