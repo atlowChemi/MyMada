@@ -1,5 +1,22 @@
 # Build and verify locally
 
+Run `43400543780` passed 56/58 jobs, including the preceding chat and warm-call
+regressions. API24 About dropped injected Back with `no window focus`; both
+About Back paths now wait for their actual target Activity's window focus.
+API37 Hebrew Home retained the listener prompt after a coordinate-based decline;
+the setup now waits for prompt focus and invokes its actual negative button,
+checking its label and subsequent Home focus. Navigation, detection-state and
+recreation assertions remain unchanged. Runtime verification is pending.
+
+Run `43308094500` passed 56/58 jobs. API24 chat failed touch injection because
+the automatically opening IME resized the editor after Espresso calculated its
+coordinates; the video shows the field moving above the keyboard. The fixture
+now waits for accessibility-window idleness before calculating the native tap.
+API37 warm shade fallback asserted the previous case before the asynchronous
+`onNewIntent` transaction completed; it now bounds the wait for delivery to the
+existing popup before checking saved content, silent state and recreation.
+Assertions remain intact; runtime validation of these changes is pending.
+
 Run `43280369521` passed 57/58 jobs: both API recovery, call-regression and
 Hebrew-pager jobs passed. API37 home/integrations timed out waiting for the chat
 IME after recreation. The fixture used `IntegrationField`'s semantics click,
@@ -7,6 +24,27 @@ which only requests native focus; it now physically taps the native editor.
 IME visibility, full-control geometry, retained draft and zero-write assertions
 remain intact. This correction awaits runtime validation. The earlier API24
 guest freeze remains intermittent, not proven eliminated by this passing run.
+
+Run `43257434506` had 48 passed, three failed and seven unfinished jobs before
+the next corrections. Both recovery-policy failures raced a real listener bind:
+the fixture called main-thread-owned `CallRecovery` state from the instrumentation
+thread. Its complete policy sequence now runs on the main thread, retaining all
+assertions and revoking grants in cleanup. API24 Hebrew integrations stopped
+during `ChatNameFieldAccessibilityTest`, before the pager test; guest output ended
+at a kernel warning and subsequent ADB diagnostic captures were empty. Host-side
+`-show-kernel` logging now preserves kernel output independently of ADB. This
+freeze remains unresolved; no pager pass or complete-suite pass is claimed.
+
+Run `43211894261` passed 56/58 jobs, including both API37 dispatch shards.
+API24 Hebrew paging hit the bottom Send control; swipes now use the visible
+top padding outside editable/button content, preserving all navigation checks.
+API37 call repeats exposed production grouping: each call incorrectly carried
+`FLAG_GROUP_SUMMARY`. Logs show `notification_summary_converted` and removal
+of ID5023 before the later repeat (ID5025), without rate-limit shedding at that
+failure. Individual calls now remain children of `Calls`, with an explicit
+flag assertion alongside the existing count/body/source-action regression.
+Runtime validation is pending; the separate cancel-before-notify burst-loss
+risk remains unresolved.
 
 Run `43180001381` passed 56/58 jobs. Listener/source, overlay, external audio and
 metronome variants passed; both failures were dispatch integration assertions.
