@@ -322,6 +322,13 @@ printf '%s\0' app/src/main/java/atlow/chemi/mymada/oxygen/OxygenCalculation.kt \
 
 The selector writes `lane-selection.json` (also retained for seven days in CI)
 and a job summary listing selected/omitted lanes, diff SHAs, paths and the reason.
+The report also records each file's lane-selection causes. After a PR run completes,
+`android-lane-comment.yml` creates or updates one Mermaid comment showing files,
+detailed lanes, the independent smoke baseline and full-suite fallbacks.
+It rejects superseded heads and closed PRs. Its write token stays in a separate
+`workflow_run` job that runs trusted default-branch code; PR code is not executed
+there. This publisher becomes active once its workflow lands on the default branch.
+Oversized graphs link to the complete mapping artifact instead.
 Omitted lanes are not test passes; affected-only green is not full-stack or release
 acceptance. `cache_only=true` is explicitly a cache warm, not test acceptance.
 `Android CI` is the stable aggregate check: build failure, any selected-lane

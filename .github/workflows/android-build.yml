@@ -38,6 +38,7 @@ jobs:
           ruby .github/scripts/check-test-assignments.rb --self-test
           ruby .github/scripts/check-test-assignments.rb > test-assignments.txt
           ruby .github/scripts/select-android-lanes.rb --self-test
+          ruby .github/scripts/render-lane-comment.rb --self-test
       - name: Select affected emulator lanes
         id: lanes
         env:

@@ -1,0 +1,83 @@
+name: Android lane selection comment
+
+on:
+  workflow_run:
+    workflows: [Android build]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+concurrency:
+  group: android-lane-comment-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+jobs:
+  comment:
+    if: ${{ github.event.workflow_run.event == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    steps:
+      # workflow_run uses trusted default-branch code, never the PR checkout.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/render-lane-comment.rb
+          sparse-checkout-cone-mode: false
+      - name: Update the PR selection comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GH_REPO/actions/runs/$RUN_ID" > run.json
+          # Read metadata as data, never interpolate PR-controlled text into shell.
+          ruby -rjson -e '
+            run = JSON.parse(File.read("run.json"))
+            pr = run.fetch("pull_requests").first
+            exit unless pr
+            puts pr.fetch("number")
+          ' > pr-number.txt
+          PR=$(cat pr-number.txt)
+          if [[ -z "$PR" ]]; then
+            echo "No associated PR; no comment written."
+            exit 0
+          fi
+          gh api "repos/$GH_REPO/pulls/$PR" > pr.json
+          if ! ruby -rjson -e '
+            run = JSON.parse(File.read("run.json"))
+            pr = JSON.parse(File.read("pr.json"))
+            exit(pr["state"] == "open" && pr.dig("head", "sha") == run["head_sha"] ? 0 : 1)
+          '; then
+            echo "Closed PR or superseded commit; no comment written."
+            exit 0
+          fi
+          gh api "repos/$GH_REPO/actions/runs/$RUN_ID/artifacts?per_page=100" > artifacts.json
+          ARTIFACT=$(ruby -rjson -e '
+            artifacts = JSON.parse(File.read("artifacts.json")).fetch("artifacts")
+            found = artifacts.find { |a| a["name"].start_with?("lane-selection-") && !a["expired"] }
+            puts found.fetch("name") if found
+          ')
+          if [[ -z "$ARTIFACT" ]]; then
+            echo "No selection artifact; no comment written."
+            exit 0
+          fi
+          gh run download "$RUN_ID" --name "$ARTIFACT" --dir selection
+          RUN_URL=$(ruby -rjson -e 'puts JSON.parse(File.read("run.json")).fetch("html_url")')
+          ruby .github/scripts/render-lane-comment.rb selection/lane-selection.json "$RUN_URL" > comment.md
+          gh api --paginate "repos/$GH_REPO/issues/$PR/comments" \
+            --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- android-lane-selection -->"))) | .id' > comment-ids.txt
+          COMMENT=$(head -n 1 comment-ids.txt)
+          ruby -rjson -e 'puts JSON.generate(body: File.read("comment.md"))' > comment.json
+          # Recheck after downloading so an older run cannot overwrite newer-head evidence.
+          CURRENT=$(gh api "repos/$GH_REPO/pulls/$PR" --jq .head.sha)
+          EXPECTED=$(ruby -rjson -e 'puts JSON.parse(File.read("run.json")).fetch("head_sha")')
+          [[ "$CURRENT" == "$EXPECTED" ]] || exit 0
+          if [[ -n "$COMMENT" ]]; then
+            gh api --method PATCH "repos/$GH_REPO/issues/comments/$COMMENT" --input comment.json
+          else
+            gh api --method POST "repos/$GH_REPO/issues/$PR/comments" --input comment.json
+          fi

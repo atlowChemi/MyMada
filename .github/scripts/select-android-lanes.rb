@@ -184,6 +184,16 @@ if $PROGRAM_NAME == __FILE__
   end
   names = ->(items) { items.map { |lane| "api#{lane.fetch('api')}/#{lane.fetch('case')}" } }
   report = {base: base, head: head, reason: reason, paths: paths, selected: names.call(selected), omitted: names.call(lanes - selected)}
+  report[:baseline] = names.call(selected.select { |lane| BASELINE.include?(lane.fetch('case')) })
+  report[:causes] = (paths || []).map do |path|
+    affected, why = select_lanes(lanes, [path])
+    {
+      path: path,
+      reason: why,
+      full: affected == lanes,
+      lanes: names.call(affected.reject { |lane| BASELINE.include?(lane.fetch('case')) })
+    }
+  end
   File.write('lane-selection.json', JSON.pretty_generate(report) + "\n")
   puts JSON.pretty_generate(report)
   if ENV['GITHUB_OUTPUT']
