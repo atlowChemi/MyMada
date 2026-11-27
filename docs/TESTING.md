@@ -329,6 +329,27 @@ It rejects superseded heads and closed PRs. Its write token stays in a separate
 `workflow_run` job that runs trusted default-branch code; PR code is not executed
 there. This publisher becomes active once its workflow lands on the default branch.
 Oversized graphs link to the complete mapping artifact instead.
+
+#### Finding selection reports and failure videos
+
+Open the PR's **Android build** run from its Checks tab. The run summary lists
+selected and omitted lanes; download `lane-selection-<sha>` for the JSON mapping
+of files to lanes. The single Mermaid PR comment updates after the run completes.
+It describes selection, not test success; use the linked run for results.
+
+For a failed lane, download its `emulator-api<api>-<case>-<sha>` artifact from
+the run's **Artifacts** section (GitHub sign-in required). Extract it and play
+`emulator-evidence/ci-video/segment-0.mp4`, then subsequent numbered segments.
+Recordings rotate every two minutes; correlate `test-progress.txt` and the
+JUnit results under `emulator-evidence/results/` with the lane's test selectors.
+`build-device.txt` records the source revision, device and APK hashes.
+If no recording was recovered, inspect `capture.log` and `recorder.log`;
+a missing video must not be mistaken for a passing or unexecuted test.
+
+Emulator artifacts expire after two days; selection reports after seven.
+Preserve needed incident evidence before expiry. Documentation-only PRs still
+run build/JVM/lint and must pass `Android CI`, but intentionally have no emulator
+artifacts or videos.
 Omitted lanes are not test passes; affected-only green is not full-stack or release
 acceptance. `cache_only=true` is explicitly a cache warm, not test acceptance.
 `Android CI` is the stable aggregate check: build failure, any selected-lane
