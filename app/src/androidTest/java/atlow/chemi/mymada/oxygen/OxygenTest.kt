@@ -107,6 +107,8 @@ class OxygenTest {
                 assertEquals("0", it.findViewById<TextView>(R.id.txtOxyMin).text.toString())
                 assertEquals("", it.findViewById<EditText>(R.id.ATM).text.toString())
                 assertEquals("", it.findViewById<EditText>(R.id.PSI).text.toString())
+                // Disposable acceptance probe only: never merge this deliberate failure.
+                fail("CONTROLLED CI ACCEPTANCE: verify failure gate and preceding UI video")
             }
         }
     }
