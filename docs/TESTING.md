@@ -336,6 +336,8 @@ Open the PR's **Android build** run from its Checks tab. The run summary lists
 selected and omitted lanes; download `lane-selection-<sha>` for the JSON mapping
 of files to lanes. The single Mermaid PR comment updates after the run completes.
 It describes selection, not test success; use the linked run for results.
+Later commits update the same comment rather than adding another. Check its
+commit SHA: superseded runs cannot replace a newer head's selection report.
 
 For a failed lane, download its `emulator-api<api>-<case>-<sha>` artifact from
 the run's **Artifacts** section (GitHub sign-in required). Extract it and play
