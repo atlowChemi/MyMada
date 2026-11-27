@@ -352,6 +352,10 @@ Emulator artifacts expire after two days; selection reports after seven.
 Preserve needed incident evidence before expiry. Documentation-only PRs still
 run build/JVM/lint and must pass `Android CI`, but intentionally have no emulator
 artifacts or videos.
+
+The default branch's **Main branch** ruleset requires `Android CI` from the
+GitHub Actions app. Existing review and bypass settings remain in force.
+Do not bypass a failed check: diagnose it and preserve its evidence first.
 Omitted lanes are not test passes; affected-only green is not full-stack or release
 acceptance. `cache_only=true` is explicitly a cache warm, not test acceptance.
 `Android CI` is the stable aggregate check: build failure, any selected-lane
