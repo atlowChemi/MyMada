@@ -292,6 +292,16 @@ for lint. Lint is not converted to JUnit. No live backend or emulator is used he
 
 ### Affected emulator lanes
 
+Every emulator lane checks boot health before instrumentation: completed boot,
+running System UI/system_server, launcher focus, and no recorded crash/ANR in
+those processes or the launcher. Readiness is bounded; an unhealthy boot fails
+the job and retains `emulator-evidence/health/preflight/` plus normal diagnostics.
+There are no automatic reboot or instrumentation retries. A postflight check
+also rejects core-process crashes during otherwise passing tests.
+On failure the harness saves broadcast/notification dumps; monitor timeouts log
+their preference, notification and broadcast state before test cleanup alters it.
+This classifies unhealthy boots; it does not fix Android 7's System UI wake race.
+
 `.github/android-lanes.yml` is the canonical full inventory. PR builds select
 emulator lanes with `.github/scripts/select-android-lanes.rb`, comparing the PR
 head to its merge base with the target branch (including stacked PR targets).

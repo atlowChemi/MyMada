@@ -89,6 +89,8 @@ cleanup() {
   fi
   if (( status != 0 )); then
     # A hung test can time out without an Android ANR. Ask ART for its thread dump.
+    adb shell dumpsys activity broadcasts > "$out/broadcasts.txt"
+    adb shell dumpsys notification > "$out/notifications.txt"
     dump_app_threads
     adb shell dumpsys activity processes > "$out/processes.txt"
   fi
@@ -138,15 +140,6 @@ adb shell settings put system font_scale "${FONT_SCALE:-1.0}"
 adb shell settings put system accelerometer_rotation 0
 adb shell settings put system user_rotation 0
 adb shell settings put secure show_ime_with_hard_keyboard 0
-# The workflow assembles before boot; do not start another Gradle JVM while
-# SystemUI is initializing. The connected test task still owns installation.
-if [[ ${TEST_CLASSES:-} == atlow.chemi.mymada.tools.vitals.VitalsScreenTest ]]; then
-  adb logcat -b events -d > "$out/boot-events.txt"
-  if grep -E 'am_anr.*com.android.systemui' "$out/boot-events.txt"; then
-    echo 'Boot has a System UI ANR; refusing to run focus tests' >&2
-    exit 1
-  fi
-fi
 {
   git rev-parse HEAD
   java -version 2>&1
@@ -157,6 +150,8 @@ fi
   adb shell settings get system font_scale
   sha256sum app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 } > "$out/build-device.txt"
+# Check every lane, not just Vitals. Preserve boot failure evidence via EXIT.
+bash .github/scripts/emulator-health.sh preflight "$out/health"
 adb shell 'rm -f /sdcard/ci-stop; mkdir -p /sdcard/ci-video'
 # Rotating two-minute segments avoid screenrecord's duration ceiling. The bounded
 # test command below bounds recording at 1Mbps (10 minutes focused, 60 full suite).
@@ -273,3 +268,4 @@ for phase in "${phases[@]}"; do
     exit 1
   fi
 done
+bash .github/scripts/emulator-health.sh postflight "$out/health"
