@@ -29,6 +29,9 @@ if [[ ${1:-} == --self-test ]]; then
   if ready "$dir"; then exit 1; fi
   printf 'mCurrentFocus=null\n' > "$dir/windows.txt"
   if ready "$dir"; then exit 1; fi
+  # Modern dumps put focus in the display section of the full dump.
+  printf 'WINDOW MANAGER DISPLAYS\n  mCurrentFocus=Window{123 u0 com.google.android.apps.nexuslauncher/.NexusLauncherActivity}\nWINDOW MANAGER WINDOWS\n' > "$dir/windows.txt"
+  ready "$dir"
   echo 'Emulator health checks passed: crash, ANR, app-crash separation, launcher and keyguard'
   exit
 fi
@@ -51,7 +54,8 @@ while :; do
   fi
   adb shell getprop sys.boot_completed | tr -d '\r' > "$out/$phase/boot-completed.txt"
   adb shell 'ps -A 2>/dev/null || ps' | tr -d '\r' > "$out/$phase/processes.txt"
-  adb shell dumpsys window windows > "$out/$phase/windows.txt"
+  # API37 puts mCurrentFocus in the display section, not the windows subsection.
+  adb shell dumpsys window > "$out/$phase/windows.txt"
   if ready "$out/$phase"; then
     echo 'Boot complete; system_server/System UI present; launcher focused' > "$out/$phase/result.txt"
     exit
