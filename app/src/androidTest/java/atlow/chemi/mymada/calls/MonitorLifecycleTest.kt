@@ -31,7 +31,18 @@ class MonitorLifecycleTest {
     private fun await(predicate: () -> Boolean) {
         val deadline = SystemClock.uptimeMillis() + 5000
         while (!predicate() && SystemClock.uptimeMillis() < deadline) SystemClock.sleep(30)
-        assertTrue(predicate())
+        if (!predicate()) {
+            // Capture before finally disables Mapp and removes notification 78.
+            android.util.Log.e("MonitorLifecycleTest",
+                "Timed out: Mapp=${preferences.getBoolean("Mapp", false)}, " +
+                    "notificationIds=${context.getSystemService(NotificationManager::class.java).activeNotifications.map { it.id }}")
+            ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
+                "dumpsys activity broadcasts"
+            )).bufferedReader().useLines { lines ->
+                lines.forEach { android.util.Log.e("MonitorLifecycleTest", it) }
+            }
+            fail("Monitor state did not settle within 5 seconds; see pre-cleanup broadcast evidence")
+        }
     }
 
     @Test fun repeatedStartAndNotificationStopCleanUpOnlyTheMonitor() {
